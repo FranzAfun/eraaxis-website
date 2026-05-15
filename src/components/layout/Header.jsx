@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { NavLink, Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
+import logo from "../../assets/brand/logo.webp";
 
 const navLinks = [
   { label: "Programs", to: "/programs" },
@@ -38,11 +39,16 @@ export default function Header() {
     >
       <div className="container flex h-16 items-center justify-between">
         {/* Brand */}
-        <Link
-          to="/"
-          className="text-base font-black tracking-widest text-[var(--color-primary)] uppercase"
-        >
-          ERA AXIS
+        <Link to="/" className="flex items-center">
+          <img
+            src={logo}
+            alt="ERA AXIS"
+            width={120}
+            height={40}
+            className="h-10 w-auto"
+            loading="eager"
+            decoding="async"
+          />
         </Link>
 
         {/* Desktop nav */}
