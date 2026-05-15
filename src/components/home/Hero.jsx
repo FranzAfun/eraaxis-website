@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import heroBg from "../../assets/images/hero/hero-main.jpg";
+import heroBg from "../../assets/images/hero/hero-main.webp";
 
 const stats = [
   { value: "500+", label: "Learners" },
