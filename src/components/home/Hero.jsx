@@ -51,10 +51,10 @@ export default function Hero() {
           </p>
 
           {/* CTA buttons */}
-          <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
+          <div className="flex flex-col items-start gap-3 sm:flex-row sm:gap-4">
             <Link
               to="/programs"
-              className="btn-primary group w-full rounded-xl px-7 py-4 text-sm font-semibold sm:w-auto md:px-8 md:text-base"
+              className="btn-primary group min-w-[220px] rounded-xl px-7 py-4 text-sm font-semibold sm:min-w-0 md:px-8 md:text-base"
             >
               Explore Programmes
               <ArrowRight
@@ -65,7 +65,7 @@ export default function Hero() {
             </Link>
             <Link
               to="/partners"
-              className="btn-secondary group w-full rounded-xl px-7 py-4 text-sm font-semibold sm:w-auto md:px-8 md:text-base"
+              className="btn-secondary group min-w-[220px] rounded-xl px-7 py-4 text-sm font-semibold sm:min-w-0 md:px-8 md:text-base"
             >
               Partner With ERA
               <ArrowRight

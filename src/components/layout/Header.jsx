@@ -35,7 +35,7 @@ export default function Header() {
 
   return (
     <header
-      className="fixed inset-x-0 top-0 z-50 border-b border-[var(--color-border-soft)] bg-[var(--color-background)]/90 backdrop-blur-md"
+      className="fixed inset-x-0 top-0 z-50 border-b border-[var(--color-border-soft)] bg-white/75 backdrop-blur-xl"
     >
       <div className="container flex h-16 items-center justify-between">
         {/* Brand */}

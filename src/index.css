@@ -189,6 +189,24 @@
     background-color: var(--color-primary-dark);
   }
 
+  /* Dark glass — for use on dark/image backgrounds */
+  .glass-surface {
+    background: rgb(255 255 255 / 0.08);
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
+    border: 1px solid rgb(255 255 255 / 0.14);
+    box-shadow: 0 4px 24px rgb(0 0 0 / 0.12);
+  }
+
+  /* Light glass — for use on light/white backgrounds */
+  .glass-surface-light {
+    background: rgb(255 255 255 / 0.72);
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
+    border: 1px solid rgb(255 255 255 / 0.65);
+    box-shadow: 0 2px 16px rgb(0 0 0 / 0.06);
+  }
+
   /* Premium card with lift interaction */
   .card-interactive {
     background-color: var(--color-surface);
