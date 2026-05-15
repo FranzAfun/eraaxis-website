@@ -1,18 +1,35 @@
-function App() {
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import SiteLayout from "./layouts/SiteLayout";
+import Home from "./pages/Home";
+import Programs from "./pages/Programs";
+import SchoolStem from "./pages/SchoolStem";
+import OutOfSchoolYouth from "./pages/OutOfSchoolYouth";
+import OnlineLearning from "./pages/OnlineLearning";
+import EraDigitalSkills from "./pages/EraDigitalSkills";
+import DevBoard from "./pages/DevBoard";
+import Partners from "./pages/Partners";
+import Insights from "./pages/Insights";
+import Contact from "./pages/Contact";
+import Payments from "./pages/Payments";
+
+export default function App() {
   return (
-    <main className="min-h-screen bg-[var(--color-background)] text-[var(--color-text-primary)]">
-      <section className="container flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-[var(--color-primary)]">
-            ERA AXIS
-          </p>
-          <h1 className="text-4xl font-black tracking-tight md:text-6xl">
-            Website Foundation Ready
-          </h1>
-        </div>
-      </section>
-    </main>
+    <BrowserRouter>
+      <SiteLayout>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/programs" element={<Programs />} />
+          <Route path="/programs/school-stem" element={<SchoolStem />} />
+          <Route path="/programs/out-of-school-youth" element={<OutOfSchoolYouth />} />
+          <Route path="/programs/online-learning" element={<OnlineLearning />} />
+          <Route path="/programs/era-digital-skills" element={<EraDigitalSkills />} />
+          <Route path="/dev-board" element={<DevBoard />} />
+          <Route path="/partners" element={<Partners />} />
+          <Route path="/insights" element={<Insights />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/payments" element={<Payments />} />
+        </Routes>
+      </SiteLayout>
+    </BrowserRouter>
   );
 }
-
-export default App;
