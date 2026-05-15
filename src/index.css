@@ -32,3 +32,31 @@ textarea {
   width: min(100% - 2rem, var(--container-max));
   margin-inline: auto;
 }
+
+/* Hero entrance animation */
+@keyframes heroFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.hero-content {
+  animation: heroFadeUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.hero-btn-primary {
+  box-shadow: 0 4px 24px rgba(56, 0, 128, 0.35);
+}
+
+.hero-btn-primary:hover {
+  box-shadow: 0 6px 32px rgba(82, 0, 184, 0.45);
+}
+
+.hero-btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.18);
+}
