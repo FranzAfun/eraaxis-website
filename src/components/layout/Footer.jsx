@@ -41,7 +41,7 @@ function FooterLink({ to, label }) {
 export default function Footer() {
   return (
     <footer className="border-t border-[var(--color-border)] bg-[var(--color-surface-soft)]">
-      <div className="container py-14">
+      <div className="container py-16 md:py-20">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {/* Brand summary */}
           <div className="sm:col-span-2 lg:col-span-1">

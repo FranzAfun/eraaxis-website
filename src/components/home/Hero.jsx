@@ -30,7 +30,7 @@ export default function Hero() {
       <div className="absolute inset-0 bg-gradient-to-b from-[#06060a]/50 via-transparent to-[#06060a]/55" />
 
       {/* Hero content */}
-      <div className="container relative z-10 pb-24 pt-40 md:pt-44 lg:pt-48">
+      <div className="container relative z-10 pb-20 pt-32 md:pb-24 md:pt-36 lg:pb-28 lg:pt-40">
         <div className="hero-content max-w-2xl">
           {/* Eyebrow */}
           <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-[var(--color-accent)]/30 bg-[var(--color-accent)]/10 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-widest text-[var(--color-accent)]">
@@ -38,7 +38,7 @@ export default function Hero() {
           </p>
 
           {/* Headline */}
-          <h1 className="mb-6 text-4xl font-black leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-6xl xl:text-[68px]">
+          <h1 className="mb-6 text-4xl font-black leading-[1.1] tracking-tight text-white sm:text-5xl lg:text-[52px] xl:text-[56px]">
             Building Africa&apos;s Next Generation of&nbsp;Innovators.
           </h1>
 
