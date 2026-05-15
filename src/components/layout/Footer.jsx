@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import logo from "../../assets/brand/logo.webp";
 
 const programmes = [
   { label: "School STEM", to: "/programs/school-stem" },
@@ -45,9 +46,17 @@ export default function Footer() {
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {/* Brand summary */}
           <div className="sm:col-span-2 lg:col-span-1">
-            <p className="mb-3 text-base font-black tracking-widest text-[var(--color-primary)] uppercase">
-              ERA AXIS
-            </p>
+            <Link to="/" className="mb-2 inline-flex">
+              <img
+                src={logo}
+                alt="ERA AXIS"
+                width={112}
+                height={112}
+                className="h-28 w-auto"
+                loading="lazy"
+                decoding="async"
+              />
+            </Link>
             <p className="max-w-xs text-sm leading-relaxed text-[var(--color-text-secondary)]">
               Practical STEM and digital skills education for African innovators.
             </p>

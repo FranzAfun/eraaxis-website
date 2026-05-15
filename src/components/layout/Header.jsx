@@ -43,9 +43,9 @@ export default function Header() {
           <img
             src={logo}
             alt="ERA AXIS"
-            width={120}
-            height={40}
-            className="h-10 w-auto"
+            width={80}
+            height={80}
+            className="-my-2 h-20 w-auto"
             loading="eager"
             decoding="async"
           />
