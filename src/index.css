@@ -61,14 +61,146 @@
   animation: heroFadeUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-.hero-btn-primary {
-  box-shadow: 0 4px 24px rgba(56, 0, 128, 0.35);
-}
+/* ── Reusable component classes ────────────────────────────────────────── */
+@layer components {
 
-.hero-btn-primary:hover {
-  box-shadow: 0 6px 32px rgba(82, 0, 184, 0.45);
-}
+  /* Content-area primary button — lifts on hover, no glow */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: var(--radius-sm);
+    background-color: var(--color-primary);
+    padding-inline: 1.25rem;
+    padding-block: 0.625rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-text-inverse);
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    transition: all 300ms;
+  }
 
-.hero-btn-secondary:hover {
-  background-color: rgba(255, 255, 255, 0.18);
+  .btn-primary:hover {
+    background-color: var(--color-primary-dark);
+    transform: translateY(-0.25rem);
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  }
+
+  .btn-primary:active {
+    transform: scale(0.97);
+  }
+
+  .btn-primary > svg {
+    transition: transform 300ms;
+  }
+
+  .btn-primary:hover > svg {
+    transform: translateX(0.5rem);
+  }
+
+  /* Glass secondary — for dark/image backgrounds; fills white on hover */
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgb(255 255 255 / 0.35);
+    background-color: rgb(255 255 255 / 0.08);
+    padding-inline: 1.25rem;
+    padding-block: 0.625rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-text-inverse);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    transition: all 300ms;
+  }
+
+  .btn-secondary:hover {
+    background-color: var(--color-text-inverse);
+    border-color: var(--color-text-inverse);
+    color: var(--color-primary);
+    transform: translateY(-0.25rem);
+  }
+
+  .btn-secondary:active {
+    transform: scale(0.97);
+  }
+
+  .btn-secondary > svg {
+    transition: transform 300ms;
+  }
+
+  .btn-secondary:hover > svg {
+    transform: translateX(0.5rem);
+  }
+
+  /* Outline — inverts to filled on hover */
+  .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-primary);
+    background-color: transparent;
+    padding-inline: 1.25rem;
+    padding-block: 0.625rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    transition: all 300ms;
+  }
+
+  .btn-outline:hover {
+    background-color: var(--color-primary);
+    color: var(--color-text-inverse);
+    transform: translateY(-0.25rem);
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  }
+
+  .btn-outline:active {
+    transform: scale(0.97);
+  }
+
+  .btn-outline > svg {
+    transition: transform 300ms;
+  }
+
+  .btn-outline:hover > svg {
+    transform: translateX(0.5rem);
+  }
+
+  /* Compact nav CTA — no lift, no scale, no shadow; transition-colors only */
+  .btn-nav-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: var(--radius-sm);
+    background-color: var(--color-primary);
+    padding-inline: 1rem;
+    padding-block: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-text-inverse);
+    transition: background-color 200ms;
+  }
+
+  .btn-nav-primary:hover {
+    background-color: var(--color-primary-dark);
+  }
+
+  /* Premium card with lift interaction */
+  .card-interactive {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: 0 1px 4px rgb(0 0 0 / 0.06);
+    transition: all 300ms;
+  }
+
+  .card-interactive:hover {
+    box-shadow: var(--shadow-soft);
+    transform: translateY(-0.25rem);
+    border-color: var(--color-border-soft);
+  }
 }

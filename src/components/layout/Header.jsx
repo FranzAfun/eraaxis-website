@@ -54,10 +54,7 @@ export default function Header() {
 
         {/* Desktop CTA */}
         <div className="hidden md:flex">
-          <Link
-            to="/contact"
-            className="rounded-[var(--radius-sm)] bg-[var(--color-primary)] px-4 py-2 text-sm font-semibold text-[var(--color-text-inverse)] transition-colors duration-200 hover:bg-[var(--color-primary-soft)]"
-          >
+          <Link to="/contact" className="btn-nav-primary">
             Get Started
           </Link>
         </div>
@@ -88,7 +85,7 @@ export default function Header() {
             <Link
               to="/contact"
               onClick={() => setOpen(false)}
-              className="mt-3 inline-block rounded-[var(--radius-sm)] bg-[var(--color-primary)] px-4 py-2 text-center text-sm font-semibold text-[var(--color-text-inverse)]"
+              className="btn-nav-primary mt-3 w-full justify-center"
             >
               Get Started
             </Link>

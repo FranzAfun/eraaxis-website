@@ -36,7 +36,7 @@ function ProgrammeCard({ icon: Icon, title, text, to, cta }) {
   return (
     <Link
       to={to}
-      className="programme-card group flex flex-col rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface)] p-7 transition-all duration-200 hover:-translate-y-1 hover:border-[var(--color-border-soft)] hover:shadow-[var(--shadow-soft)]"
+      className="card-interactive group flex flex-col p-7"
     >
       {/* Icon */}
       <span className="mb-5 inline-flex h-11 w-11 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--color-surface-soft)]">

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 import heroBg from "../../assets/images/hero/hero-main.webp";
 
 const stats = [
@@ -50,18 +51,28 @@ export default function Hero() {
           </p>
 
           {/* CTA buttons */}
-          <div className="flex flex-wrap gap-3 sm:gap-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
             <Link
               to="/programs"
-              className="hero-btn-primary rounded-[var(--radius-sm)] bg-[var(--color-primary)] px-6 py-3 text-sm font-semibold text-white transition-all duration-200 hover:bg-[var(--color-primary-soft)] active:scale-[0.97]"
+              className="btn-primary group w-full rounded-xl px-7 py-4 text-sm font-semibold sm:w-auto md:px-8 md:text-base"
             >
               Explore Programmes
+              <ArrowRight
+                size={18}
+                strokeWidth={2}
+                className="transition-transform duration-300 group-hover:translate-x-2"
+              />
             </Link>
             <Link
               to="/partners"
-              className="hero-btn-secondary rounded-[var(--radius-sm)] border border-white/30 bg-white/10 px-6 py-3 text-sm font-semibold text-white backdrop-blur-sm transition-all duration-200 hover:border-white/50 hover:bg-white/18 active:scale-[0.97]"
+              className="btn-secondary group w-full rounded-xl px-7 py-4 text-sm font-semibold sm:w-auto md:px-8 md:text-base"
             >
               Partner With ERA
+              <ArrowRight
+                size={18}
+                strokeWidth={2}
+                className="transition-transform duration-300 group-hover:translate-x-2"
+              />
             </Link>
           </div>
 
