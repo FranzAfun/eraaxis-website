@@ -45,6 +45,12 @@
   margin-inline: auto;
 }
 
+/* Partners strip marquee */
+@keyframes marquee-left {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+
 /* Hero entrance animation */
 @keyframes heroFadeUp {
   from {
@@ -205,6 +211,118 @@
     backdrop-filter: blur(18px);
     border: 1px solid rgb(255 255 255 / 0.65);
     box-shadow: 0 2px 16px rgb(0 0 0 / 0.06);
+  }
+
+  /* ── Partners strip ───────────────────────────────────────────────────── */
+
+  /* Subtle tinted background so the glass cards are visible */
+  .partners-section {
+    background: linear-gradient(
+      135deg,
+      var(--color-surface-soft) 0%,
+      #eeeaf8 100%
+    );
+  }
+
+  /*
+    Viewport clips overflow and applies edge-fade mask.
+    The mask uses the section background colours so the fade blends cleanly.
+  */
+  .marquee-viewport {
+    overflow: hidden;
+    mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      black 7%,
+      black 93%,
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      black 7%,
+      black 93%,
+      transparent 100%
+    );
+  }
+
+  /*
+    Track: two identical groups side-by-side.
+    width:max-content lets it extend naturally; -50% of that equals
+    exactly one group width, so the loop is mathematically seamless.
+  */
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee-left 24s linear infinite;
+    will-change: transform;
+  }
+
+  @media (hover: hover) {
+    .marquee-viewport:hover .marquee-track {
+      animation-play-state: paused;
+    }
+  }
+
+  .marquee-track.is-paused {
+    animation-play-state: paused;
+  }
+
+  /*
+    Each group is a self-contained flex row.
+    padding-right == gap so the last card carries one trailing gap unit,
+    making both groups identically wide — the seam is invisible.
+  */
+  .marquee-group {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 1.5rem;
+    padding-right: 1.5rem;
+    padding-block: 0.75rem;
+  }
+
+  /* Glass card — visible against the tinted section background */
+  .partner-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 11rem;
+    height: 5.75rem;
+    padding: 1rem 1.375rem;
+    border-radius: var(--radius-md);
+    background: rgb(255 255 255 / 0.7);
+    -webkit-backdrop-filter: blur(14px) saturate(1.4);
+    backdrop-filter: blur(14px) saturate(1.4);
+    border: 1px solid rgb(255 255 255 / 0.75);
+    box-shadow:
+      0 1px 3px rgb(0 0 0 / 0.07),
+      0 1px 2px rgb(0 0 0 / 0.04),
+      inset 0 1px 0 rgb(255 255 255 / 0.9);
+    transition: transform 300ms ease, box-shadow 300ms ease;
+  }
+
+  .partner-card:hover {
+    transform: translateY(-4px);
+    box-shadow:
+      0 6px 16px rgb(0 0 0 / 0.1),
+      0 2px 4px rgb(0 0 0 / 0.06),
+      inset 0 1px 0 rgb(255 255 255 / 0.9);
+  }
+
+  .partner-logo {
+    max-height: 2.75rem;
+    width: 100%;
+    object-fit: contain;
+    object-position: center;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-track {
+      animation: none;
+      transform: none;
+    }
   }
 
   /* Premium card with lift interaction */
