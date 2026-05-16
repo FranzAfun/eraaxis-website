@@ -35,7 +35,7 @@ export default function Header() {
 
   return (
     <header
-      className="fixed inset-x-0 top-0 z-50 border-b border-[var(--color-border-soft)] bg-white/75 backdrop-blur-xl"
+      className="fixed inset-x-0 top-0 z-50 border-b border-[var(--color-primary)]/10 bg-[var(--color-surface-soft)]/80 backdrop-blur-xl"
     >
       <div className="container flex h-16 items-center justify-between">
         {/* Brand */}
@@ -78,7 +78,7 @@ export default function Header() {
 
       {/* Mobile dropdown */}
       {open && (
-        <div className="border-t border-[var(--color-border-soft)] bg-[var(--color-background)] md:hidden">
+        <div className="border-t border-[var(--color-primary)]/10 bg-[var(--color-surface-soft)]/95 backdrop-blur-xl md:hidden">
           <nav className="container flex flex-col gap-1 py-4">
             {navLinks.map((link) => (
               <NavItem

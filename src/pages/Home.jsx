@@ -3,6 +3,7 @@ import ProgrammesOverview from "../components/home/ProgrammesOverview";
 import PartnersStrip from "../components/home/PartnersStrip";
 import DevBoardFeature from "../components/home/DevBoardFeature";
 import ImpactMetrics from "../components/home/ImpactMetrics";
+import ImpactStories from "../components/home/ImpactStories";
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
       <PartnersStrip />
       <DevBoardFeature />
       <ImpactMetrics />
+      <ImpactStories />
     </>
   );
 }
