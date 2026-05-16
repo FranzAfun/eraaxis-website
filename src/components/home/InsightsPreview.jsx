@@ -9,23 +9,23 @@ function InsightCard({ type, title, excerpt, slug, isVisible, reducedMotion, ind
   return (
     <Link
       to={`/insights/${slug}`}
-      className={`card-interactive group flex flex-col p-7 transition-all duration-700 ease-out ${
+      className={`insights-card group flex flex-col p-7 transition-all duration-700 ease-out hover:-translate-y-1 hover:duration-300 ${
         isVisible || reducedMotion
           ? "opacity-100 translate-y-0"
           : "opacity-0 translate-y-6"
       }`}
       style={{ transitionDelay: `${delay}ms` }}
     >
-      <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
+      <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)]">
         {type}
       </p>
-      <h3 className="mb-3 text-base font-bold leading-snug text-[var(--color-text-primary)]">
+      <h3 className="mb-3 text-base font-bold leading-snug text-white">
         {title}
       </h3>
-      <p className="mb-6 flex-1 text-sm leading-relaxed text-[var(--color-text-secondary)]">
+      <p className="mb-6 flex-1 text-sm leading-relaxed text-white/55">
         {excerpt}
       </p>
-      <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--color-primary)] transition-[gap] duration-200 group-hover:gap-2.5">
+      <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--color-accent)] transition-[gap] duration-200 group-hover:gap-2.5">
         Read insight
         <ArrowRight size={15} strokeWidth={2} />
       </span>
@@ -60,9 +60,12 @@ export default function InsightsPreview() {
     <section
       ref={sectionRef}
       aria-label="Insights preview"
-      className="bg-[var(--color-background)] py-16 md:py-20 lg:py-24"
+      className="relative overflow-hidden bg-[var(--color-background-dark)] py-16 md:py-20 lg:py-24"
     >
-      <div className="container">
+      {/* Background orb — top-right, distinct from ImpactMetrics orb */}
+      <div aria-hidden="true" className="insights-orb-bg pointer-events-none absolute inset-0" />
+
+      <div className="container relative z-10">
         {/* Section header + CTA row */}
         <div
           className={`mb-10 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between transition-all duration-700 ease-out ${
@@ -72,21 +75,28 @@ export default function InsightsPreview() {
           }`}
         >
           <div className="max-w-xl">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)]">
               Insights
             </p>
-            <h2 className="mb-3 text-3xl font-black leading-tight tracking-tight text-[var(--color-text-primary)] sm:text-4xl">
+            <h2 className="mb-3 text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl">
               Thinking behind the work.
             </h2>
-            <p className="text-base leading-relaxed text-[var(--color-text-secondary)]">
+            <p className="text-base leading-relaxed text-white/60">
               Perspectives on STEM education, digital skills, and how practical
               learning shapes better outcomes.
             </p>
           </div>
 
-          <Link to="/insights" className="btn-outline shrink-0 self-start sm:self-auto">
+          <Link
+            to="/insights"
+            className="btn-secondary group shrink-0 self-start sm:self-auto"
+          >
             View all insights
-            <ArrowRight size={16} strokeWidth={2} />
+            <ArrowRight
+              size={16}
+              strokeWidth={2}
+              className="transition-transform duration-300 group-hover:translate-x-2"
+            />
           </Link>
         </div>
 

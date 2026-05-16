@@ -369,6 +369,51 @@
     }
   }
 
+  /* Insights section background orb — top-right position differentiates from impact orb */
+  .insights-orb-bg {
+    background: radial-gradient(
+      ellipse 55% 60% at 80% 0%,
+      color-mix(in srgb, var(--color-primary) 18%, transparent) 0%,
+      transparent 70%
+    );
+  }
+
+  /* Insights preview dark glass cards */
+  .insights-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    background: rgb(255 255 255 / 0.05);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgb(255 255 255 / 0.09);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.2);
+  }
+
+  /* Gradient top accent line */
+  .insights-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      color-mix(in srgb, var(--color-accent) 55%, transparent) 50%,
+      transparent 100%
+    );
+  }
+
+  @media (hover: hover) {
+    .insights-card:hover {
+      border-color: rgb(255 255 255 / 0.17);
+      background: rgb(255 255 255 / 0.08);
+      box-shadow: 0 20px 44px rgb(0 0 0 / 0.38);
+    }
+  }
+
   /* Premium card with lift interaction */
   .card-interactive {
     background-color: var(--color-surface);
