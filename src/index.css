@@ -51,6 +51,26 @@
   to   { transform: translate3d(-50%, 0, 0); }
 }
 
+/* Hero overlay gradients — use theme token so the colour is maintained in one place */
+.hero-overlay-h {
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--color-background-dark) 92%, transparent) 0%,
+    color-mix(in srgb, var(--color-background-dark) 70%, transparent) 45%,
+    color-mix(in srgb, var(--color-background-dark) 20%, transparent) 100%
+  );
+}
+
+.hero-overlay-v {
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--color-background-dark) 50%, transparent) 0%,
+    transparent 40%,
+    transparent 65%,
+    color-mix(in srgb, var(--color-background-dark) 55%, transparent) 100%
+  );
+}
+
 /* Hero entrance animation */
 @keyframes heroFadeUp {
   from {

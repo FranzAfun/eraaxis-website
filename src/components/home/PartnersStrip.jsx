@@ -5,7 +5,7 @@ export default function PartnersStrip() {
   const [paused, setPaused] = useState(false);
 
   return (
-    <section className="py-20 md:py-24 lg:py-28 overflow-hidden partners-section">
+    <section className="pt-0 pb-20 md:pb-24 lg:pb-28 overflow-hidden partners-section">
       <div className="container mb-12">
         <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
           Partners &amp; Recognition
