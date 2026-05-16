@@ -5,6 +5,7 @@ import DevBoardFeature from "../components/home/DevBoardFeature";
 import ImpactMetrics from "../components/home/ImpactMetrics";
 import ImpactStories from "../components/home/ImpactStories";
 import InsightsPreview from "../components/home/InsightsPreview";
+import FinalCTA from "../components/home/FinalCTA";
 
 export default function Home() {
   return (
@@ -16,6 +17,7 @@ export default function Home() {
       <ImpactMetrics />
       <ImpactStories />
       <InsightsPreview />
+      <FinalCTA />
     </>
   );
 }

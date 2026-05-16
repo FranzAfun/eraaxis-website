@@ -434,6 +434,62 @@
     }
   }
 
+  /* Final CTA band — purple gradient bridge between dark InsightsPreview and Footer */
+  .final-cta-band {
+    background: linear-gradient(
+      135deg,
+      var(--color-primary-deep) 0%,
+      var(--color-primary) 55%,
+      var(--color-primary-dark) 100%
+    );
+  }
+
+  /* Subtle accent orb at top-center for depth */
+  .final-cta-orb {
+    background: radial-gradient(
+      ellipse 80% 55% at 50% 0%,
+      color-mix(in srgb, var(--color-accent) 14%, transparent) 0%,
+      transparent 60%
+    );
+  }
+
+  /* White-filled primary button — pops on purple gradient */
+  .final-cta-btn-primary {
+    background-color: var(--color-text-inverse);
+    color: var(--color-primary);
+    transition: all 300ms;
+  }
+
+  .final-cta-btn-primary:hover {
+    background-color: rgb(255 255 255 / 0.9);
+    transform: translateY(-2px);
+  }
+
+  .final-cta-btn-primary:active {
+    transform: scale(0.97);
+  }
+
+  /* Glass secondary button — matches dark-bg glass system */
+  .final-cta-btn-secondary {
+    background-color: rgb(255 255 255 / 0.08);
+    border: 1px solid rgb(255 255 255 / 0.35);
+    color: var(--color-text-inverse);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    transition: all 300ms;
+  }
+
+  .final-cta-btn-secondary:hover {
+    background-color: var(--color-text-inverse);
+    border-color: var(--color-text-inverse);
+    color: var(--color-primary);
+    transform: translateY(-2px);
+  }
+
+  .final-cta-btn-secondary:active {
+    transform: scale(0.97);
+  }
+
   /* Premium card with lift interaction */
   .card-interactive {
     background-color: var(--color-surface);
