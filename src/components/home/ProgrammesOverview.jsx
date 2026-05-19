@@ -1,30 +1,35 @@
 import { Link } from "react-router-dom";
-import { GraduationCap, Users, Monitor, Briefcase, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+
+import schoolStemImg from "../../assets/images/programmes/school-stem-programs.webp";
+import outOfSchoolImg from "../../assets/images/programmes/out-of-school-youth.webp";
+import onlineLearningImg from "../../assets/images/programmes/online-learning.webp";
+import eraDigitalImg from "../../assets/images/programmes/era-digital-skill.webp";
 
 const programmes = [
   {
-    icon: GraduationCap,
+    image: schoolStemImg,
     title: "School STEM Programmes",
     text: "Hands-on STEM education for Basic to SHS learners, aligned with classroom learning and built around practical projects.",
     to: "/programs/school-stem",
     cta: "Explore School STEM",
   },
   {
-    icon: Users,
+    image: outOfSchoolImg,
     title: "Out-of-School Youth",
     text: "Practical innovation training for young people ready to gain employable skills and build community-focused solutions.",
     to: "/programs/out-of-school-youth",
     cta: "Explore Youth Programme",
   },
   {
-    icon: Monitor,
+    image: onlineLearningImg,
     title: "Online Learning",
     text: "Flexible online training in programming, AI, electronics, PCB design, and digital technology tools.",
     to: "/programs/online-learning",
     cta: "Explore Online Learning",
   },
   {
-    icon: Briefcase,
+    image: eraDigitalImg,
     title: "ERA Digital Skills",
     text: "A practical digital productivity and AI tools programme for workers, professionals, and business owners.",
     to: "/programs/era-digital-skills",
@@ -32,36 +37,34 @@ const programmes = [
   },
 ];
 
-function ProgrammeCard({ icon: Icon, title, text, to, cta }) {
+function ProgrammeCard({ image, title, text, to, cta }) {
   return (
     <Link
       to={to}
-      className="card-interactive group flex flex-col p-7"
+      className="card-interactive group flex flex-col overflow-hidden"
     >
-      {/* Icon */}
-      <span className="mb-5 inline-flex h-11 w-11 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--color-surface-soft)]">
-        <Icon
-          size={22}
-          strokeWidth={1.75}
-          className="text-[var(--color-primary)]"
+      {/* Image */}
+      <div className="aspect-[16/9] overflow-hidden">
+        <img
+          src={image}
+          alt={title}
+          className="h-full w-full object-cover brightness-75 transition-transform duration-500 group-hover:scale-105"
         />
-      </span>
+      </div>
 
-      {/* Title */}
-      <h3 className="mb-3 text-base font-bold leading-snug text-[var(--color-text-primary)]">
-        {title}
-      </h3>
-
-      {/* Body text */}
-      <p className="mb-6 flex-1 text-sm leading-relaxed text-[var(--color-text-secondary)]">
-        {text}
-      </p>
-
-      {/* CTA */}
-      <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--color-primary)] transition-gap duration-200 group-hover:gap-2.5">
-        {cta}
-        <ArrowRight size={15} strokeWidth={2} />
-      </span>
+      {/* Content */}
+      <div className="flex flex-1 flex-col p-6">
+        <h3 className="mb-3 text-base font-bold leading-snug text-[var(--color-text-primary)]">
+          {title}
+        </h3>
+        <p className="mb-5 flex-1 text-sm leading-relaxed text-[var(--color-text-secondary)]">
+          {text}
+        </p>
+        <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--color-primary)] transition-gap duration-200 group-hover:gap-2.5">
+          {cta}
+          <ArrowRight size={15} strokeWidth={2} />
+        </span>
+      </div>
     </Link>
   );
 }
