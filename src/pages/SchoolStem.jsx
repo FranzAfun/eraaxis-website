@@ -94,6 +94,15 @@ const infoItems = [
   { label: "Focus areas", value: "Electronics, coding, sensors, automation" },
 ];
 
+const heroPrimaryClass =
+  "btn-primary min-h-[44px] justify-center";
+const heroSecondaryClass =
+  "btn-outline min-h-[44px] justify-center";
+const ctaPrimaryClass =
+  "final-cta-btn-primary inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[var(--radius-sm)] px-5 text-sm font-semibold";
+const ctaSecondaryClass =
+  "final-cta-btn-secondary inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[var(--radius-sm)] px-5 text-sm font-semibold";
+
 export default function SchoolStem() {
   return (
     <>
@@ -120,12 +129,12 @@ export default function SchoolStem() {
                 Built for schools that want learners to understand technology by
                 building it.
               </p>
-              <div className="flex flex-wrap gap-3">
-                <Link to="/partners" className="btn-primary">
+              <div className="inline-flex flex-col gap-3 sm:flex-row">
+                <Link to="/partners" className={heroPrimaryClass}>
                   Partner With ERA
                   <ArrowRight size={16} strokeWidth={2} />
                 </Link>
-                <Link to="/contact" className="btn-outline">
+                <Link to="/contact" className={heroSecondaryClass}>
                   Contact the Team
                   <ArrowRight size={16} strokeWidth={2} />
                 </Link>
@@ -398,21 +407,17 @@ export default function SchoolStem() {
             Partner with ERA AXIS to introduce structured, hands-on STEM
             learning for learners from Basic 1 to SHS 3.
           </p>
-          <div className="flex flex-wrap justify-center gap-3">
-            <Link
-              to="/partners"
-              className="final-cta-btn-primary inline-flex items-center gap-2 rounded-[var(--radius-sm)] px-5 py-2.5 text-sm font-semibold"
-            >
-              Partner With ERA
-              <ArrowRight size={15} strokeWidth={2.2} />
-            </Link>
-            <Link
-              to="/contact"
-              className="final-cta-btn-secondary inline-flex items-center gap-2 rounded-[var(--radius-sm)] px-5 py-2.5 text-sm font-semibold"
-            >
-              Contact ERA
-              <ArrowRight size={15} strokeWidth={2.2} />
-            </Link>
+          <div className="flex justify-center">
+            <div className="inline-flex flex-col gap-3 sm:flex-row">
+              <Link to="/partners" className={ctaPrimaryClass}>
+                Partner With ERA
+                <ArrowRight size={15} strokeWidth={2.2} />
+              </Link>
+              <Link to="/contact" className={ctaSecondaryClass}>
+                Contact ERA
+                <ArrowRight size={15} strokeWidth={2.2} />
+              </Link>
+            </div>
           </div>
         </div>
       </section>
