@@ -159,7 +159,7 @@ export default function OutOfSchoolYouth() {
               </p>
               <div className="inline-flex flex-col gap-3 sm:flex-row">
                 <Link to="/contact" className={heroPrimaryClass}>
-                  Apply / Enquire
+                  Enquire Now
                   <ArrowRight size={16} strokeWidth={2} />
                 </Link>
                 <Link to="/partners" className={heroSecondaryClass}>
