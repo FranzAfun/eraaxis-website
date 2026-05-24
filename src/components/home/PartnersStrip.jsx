@@ -8,13 +8,13 @@ export default function PartnersStrip() {
     <section className="pt-0 pb-20 md:pb-24 lg:pb-28 overflow-hidden partners-section">
       <div className="container mb-12">
         <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
-          Partners &amp; Recognition
+          Partners, Accelerators &amp; Recognition
         </p>
         <h2 className="mb-4 text-3xl font-black leading-tight tracking-tight text-[var(--color-text-primary)] sm:text-4xl max-w-2xl">
-          Trusted by organisations supporting innovation and learning.
+          Trusted by the ecosystem helping us grow.
         </h2>
         <p className="text-base leading-relaxed text-[var(--color-text-secondary)] max-w-xl">
-          ERA AXIS works within a growing ecosystem of education, innovation, and development partners.
+          Partners, accelerators, and recognition programmes helping ERA AXIS expand practical STEM and digital skills learning.
         </p>
       </div>
 
