@@ -124,8 +124,9 @@ export default function Insights() {
           ) : (
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {published.map((item) => (
-                <article
+                <Link
                   key={item.slug}
+                  to={`/insights/${item.slug}`}
                   className="card-interactive flex flex-col overflow-hidden"
                 >
                   {/* Image slot — rendered only when featuredImage exists */}
@@ -158,14 +159,13 @@ export default function Insights() {
                           {formatDate(item.publishedAt)}
                         </p>
                       </div>
-                      {/* Read insight — detail route not yet available */}
                       <span className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap text-sm font-semibold text-[var(--color-primary)]">
                         Read insight
                         <ArrowRight size={14} strokeWidth={2} />
                       </span>
                     </div>
                   </div>
-                </article>
+                </Link>
               ))}
             </div>
           )}

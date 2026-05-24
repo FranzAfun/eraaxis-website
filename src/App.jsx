@@ -10,6 +10,7 @@ import EraDigitalSkills from "./pages/EraDigitalSkills";
 import DevBoard from "./pages/DevBoard";
 import Partners from "./pages/Partners";
 import Insights from "./pages/Insights";
+import InsightDetail from "./pages/InsightDetail";
 import Contact from "./pages/Contact";
 import Payments from "./pages/Payments";
 
@@ -28,6 +29,7 @@ export default function App() {
           <Route path="/dev-board" element={<DevBoard />} />
           <Route path="/partners" element={<Partners />} />
           <Route path="/insights" element={<Insights />} />
+          <Route path="/insights/:slug" element={<InsightDetail />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/payments" element={<Payments />} />
         </Routes>
