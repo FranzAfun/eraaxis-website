@@ -3,12 +3,12 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { insights } from "../../data/insights";
 
-function InsightCard({ type, title, excerpt, slug, isVisible, reducedMotion, index }) {
+function InsightCard({ type, title, excerpt, isVisible, reducedMotion, index }) {
   const delay = reducedMotion ? 0 : index * 100;
 
   return (
     <Link
-      to={`/insights/${slug}`}
+      to="/insights"
       className={`insights-card group flex flex-col p-7 transition-all duration-700 ease-out hover:-translate-y-1 hover:duration-300 ${
         isVisible || reducedMotion
           ? "opacity-100 translate-y-0"
