@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SiteLayout from "./layouts/SiteLayout";
+import ScrollToTop from "./components/ScrollToTop";
 import Home from "./pages/Home";
 import Programs from "./pages/Programs";
 import SchoolStem from "./pages/SchoolStem";
@@ -15,6 +16,7 @@ import Payments from "./pages/Payments";
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <SiteLayout>
         <Routes>
           <Route path="/" element={<Home />} />
