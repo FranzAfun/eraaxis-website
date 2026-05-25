@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Check, FileText, Info, Lock } from "lucide-react";
 import {
   getPaymentCategoryBySlug,
@@ -37,9 +37,19 @@ const optionalTag = (
 );
 
 export default function ProgrammeEnrolmentPayment() {
+  const location = useLocation();
   const [selectedProgrammeSlug, setSelectedProgrammeSlug] =
     useState("junior-stem");
   const [paymentOption, setPaymentOption] = useState("monthly");
+  const returnTo =
+    typeof location.state?.returnTo === "string" &&
+    location.state.returnTo.startsWith("/")
+      ? location.state.returnTo
+      : "/payments";
+  const returnLabel =
+    typeof location.state?.returnLabel === "string"
+      ? location.state.returnLabel
+      : "Back to payment options";
 
   const selectedProgramme =
     category.items.find((programme) => programme.slug === selectedProgrammeSlug) ||
@@ -76,11 +86,11 @@ export default function ProgrammeEnrolmentPayment() {
 
         <div className="container relative z-10">
           <Link
-            to="/payments"
+            to={returnTo}
             className="mb-8 flex w-fit items-center gap-1.5 text-xs font-medium text-white/40 transition-colors hover:text-white/70"
           >
             <ArrowLeft size={12} strokeWidth={2.5} aria-hidden="true" />
-            Back to payment options
+            {returnLabel}
           </Link>
 
           <div className="max-w-3xl">

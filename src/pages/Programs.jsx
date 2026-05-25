@@ -109,6 +109,7 @@ function ProgrammeCard({
           </Link>
           <Link
             to="/payments/programme-enrolment"
+            state={{ returnTo: "/programs", returnLabel: "Back to programmes" }}
             className="inline-flex min-h-[38px] items-center justify-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--color-primary)] px-3 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-primary-dark)]"
           >
             Enrol

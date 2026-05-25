@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import {
+  ArrowLeft,
   ArrowRight,
   Brain,
   FolderOpen,
@@ -179,6 +180,14 @@ export default function EraDigitalSkills() {
           className="absolute -bottom-24 right-4 h-96 w-96 rounded-full bg-[var(--color-accent)]/10 blur-3xl"
         />
         <div className="container relative z-10">
+          <Link
+            to="/programs"
+            className="mb-8 flex w-fit items-center gap-1.5 text-xs font-medium text-white/40 transition-colors hover:text-white/70"
+          >
+            <ArrowLeft size={12} strokeWidth={2.5} aria-hidden="true" />
+            Back to programmes
+          </Link>
+
           <div className="grid gap-10 lg:grid-cols-2 lg:items-stretch lg:gap-14">
 
             {/* Left: text */}
@@ -202,13 +211,17 @@ export default function EraDigitalSkills() {
               <div className="inline-flex flex-col gap-3 sm:flex-row">
                 <Link
                   to="/payments/programme-enrolment"
+                  state={{
+                    returnTo: "/programs/era-digital-skills",
+                    returnLabel: "Back to ERA Digital Skills",
+                  }}
                   className={heroPrimaryClass}
                 >
                   Start Enrolment
                   <ArrowRight size={16} strokeWidth={2} />
                 </Link>
                 <Link to="/contact#enquiry" className={heroSecondaryClass}>
-                  Ask a Question
+                  Inquire about the programme
                   <ArrowRight size={16} strokeWidth={2} />
                 </Link>
               </div>
@@ -525,6 +538,10 @@ export default function EraDigitalSkills() {
             <div className="inline-flex flex-col gap-3 sm:flex-row">
               <Link
                 to="/payments/programme-enrolment"
+                state={{
+                  returnTo: "/programs/era-digital-skills",
+                  returnLabel: "Back to ERA Digital Skills",
+                }}
                 className={ctaPrimaryClass}
               >
                 Start Enrolment
