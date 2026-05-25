@@ -1,28 +1,26 @@
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
-  Building2,
+  CalendarDays,
   GraduationCap,
-  ReceiptText,
-  Sparkles,
-  WalletCards,
+  Landmark,
+  Users,
 } from "lucide-react";
 
 const paymentOptions = [
   {
     title: "Programme Enrolment",
-    amount: "Programme fees vary",
+    amount: "From GHS 200/month",
     description:
-      "Pay for an ERA AXIS learning programme.",
+      "Pay for an ERA AXIS learning programme. Monthly or full upfront.",
     bullets: [
-      "Junior STEM: GHS 200/month",
-      "Out-of-School Youth: GHS 400/month",
-      "Online Learning: GHS 400/month",
-      "ERA Digital Skills: GHS 700/month",
+      "4 programmes across school, youth, and professional tracks",
+      "Monthly or full programme payment options",
+      "Full pricing and checkout totals shown at the next step",
     ],
     cta: "Choose programme",
     to: "/payments/programme-enrolment",
-    Icon: WalletCards,
+    Icon: GraduationCap,
   },
   {
     title: "Student Chapter",
@@ -35,7 +33,7 @@ const paymentOptions = [
     ],
     cta: "Start chapter payment",
     to: "/payments/student-chapter",
-    Icon: Sparkles,
+    Icon: Users,
   },
   {
     title: "Monthly Dues",
@@ -48,7 +46,7 @@ const paymentOptions = [
     ],
     cta: "Pay dues",
     to: "/payments/monthly-dues",
-    Icon: ReceiptText,
+    Icon: CalendarDays,
   },
   {
     title: "Institutional / Group Payments",
@@ -62,48 +60,43 @@ const paymentOptions = [
     ],
     cta: "Request quote",
     to: "/contact#enquiry",
-    Icon: Building2,
+    Icon: Landmark,
     isSecondary: true,
   },
 ];
-
-const glassCard =
-  "rounded-3xl border border-white/10 bg-white/[0.075] shadow-[0_24px_70px_rgb(0_0_0/0.28)] backdrop-blur-xl";
-const glassHover =
-  "transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.105]";
 
 function OptionCard({ option }) {
   const { Icon } = option;
 
   return (
-    <article className={`${glassCard} ${glassHover} flex min-h-[360px] flex-col p-6`}>
+    <article className="card-interactive flex min-h-[360px] flex-col p-6 transition-all duration-300 hover:-translate-y-1">
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
-          <p className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-[var(--color-accent)]">
+          <p className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-[var(--color-primary)]">
             Payment option
           </p>
-          <h2 className="text-2xl font-black tracking-tight text-white">
+          <h2 className="text-2xl font-black tracking-tight text-[var(--color-text-primary)]">
             {option.title}
           </h2>
         </div>
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.09] shadow-[0_10px_30px_rgb(0_0_0/0.2)]">
-          <Icon size={21} className="text-[var(--color-accent)]" strokeWidth={1.85} />
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-soft)] shadow-sm">
+          <Icon size={21} className="text-[var(--color-primary)]" strokeWidth={1.85} />
         </span>
       </div>
 
-      <p className="text-2xl font-black tracking-tight text-[var(--color-accent)]">
+      <p className="text-2xl font-black tracking-tight text-[var(--color-primary)]">
         {option.amount}
       </p>
-      <p className="mt-4 text-sm leading-relaxed text-white/66">
+      <p className="mt-4 text-sm leading-relaxed text-[var(--color-text-secondary)]">
         {option.description}
       </p>
 
       <ul className="mt-6 space-y-3">
         {option.bullets.map((bullet) => (
-          <li key={bullet} className="flex items-start gap-3 text-sm text-white/74">
+          <li key={bullet} className="flex items-start gap-3 text-sm text-[var(--color-text-secondary)]">
             <span
               aria-hidden="true"
-              className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-accent)]"
+              className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-primary)]"
             />
             <span>{bullet}</span>
           </li>
@@ -114,9 +107,7 @@ function OptionCard({ option }) {
         <Link
           to={option.to}
           className={
-            option.isSecondary
-              ? "inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[var(--radius-sm)] border border-white/25 bg-white/[0.08] px-5 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:text-[var(--color-primary)]"
-              : "inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-white px-5 text-sm font-semibold text-[var(--color-primary)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/90"
+            option.isSecondary ? "btn-outline" : "btn-primary"
           }
         >
           {option.cta}
@@ -129,8 +120,8 @@ function OptionCard({ option }) {
 
 export default function Payments() {
   return (
-    <main className="bg-[var(--color-background-dark)] text-white">
-      <section className="relative -mt-20 overflow-hidden pb-16 pt-36 md:pb-24 md:pt-44">
+    <>
+      <section className="relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-16 pt-36 text-white md:pb-24 md:pt-44">
         <div
           aria-hidden="true"
           className="absolute inset-0"
@@ -181,24 +172,24 @@ export default function Payments() {
         </div>
       </section>
 
-      <section id="payment-options" className="relative py-16 md:py-24">
+      <section id="payment-options" className="bg-[var(--color-surface-soft)] py-16 md:py-24">
         <div className="container">
           <div className="mb-10 flex max-w-2xl items-start gap-4">
-            <span className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.08] sm:flex">
+            <span className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[var(--color-border)] bg-white shadow-sm sm:flex">
               <GraduationCap
                 size={21}
-                className="text-[var(--color-accent)]"
+                className="text-[var(--color-primary)]"
                 strokeWidth={1.85}
               />
             </span>
             <div>
-              <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)]">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
                 Payment options
               </p>
-              <h2 className="mb-4 text-3xl font-black tracking-tight text-white sm:text-4xl">
+              <h2 className="mb-4 text-3xl font-black tracking-tight text-[var(--color-text-primary)] sm:text-4xl">
                 Start with the payment path that fits.
               </h2>
-              <p className="text-sm leading-relaxed text-white/62 sm:text-base">
+              <p className="text-sm leading-relaxed text-[var(--color-text-secondary)] sm:text-base">
                 Choose a category now. Final totals and confirmation steps will
                 be shown clearly before any payment is made.
               </p>
@@ -209,13 +200,6 @@ export default function Payments() {
             {paymentOptions.map((option) => (
               <OptionCard key={option.title} option={option} />
             ))}
-          </div>
-
-          <div className="mt-6 rounded-3xl border border-white/10 bg-white/[0.07] p-5 shadow-[0_18px_50px_rgb(0_0_0/0.22)] backdrop-blur-xl">
-            <p className="text-sm leading-relaxed text-white/68">
-              Final checkout totals include the selected fee, a GHS 2 transaction
-              maintenance fee, and Paystack processing charges.
-            </p>
           </div>
         </div>
       </section>
@@ -238,6 +222,6 @@ export default function Payments() {
           </Link>
         </div>
       </section>
-    </main>
+    </>
   );
 }
