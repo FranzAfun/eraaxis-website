@@ -1,5 +1,8 @@
 export const PAYSTACK_FEE_RATE = 0.0195;
 export const MAINTENANCE_FEE_GHS = 2;
+export const PAYMENT_REFERENCE_FORMAT = "ERA-TYPE-YYYYMMDD-UNIQUEID";
+export const PAYMENT_REFERENCE_NOTE =
+  "Final payment references are generated securely by the backend when payment is initiated.";
 
 export function formatGhs(amount) {
   return `GHS ${Number(amount).toFixed(2)}`;
@@ -31,7 +34,7 @@ export function calculateFullProgrammeBase(monthlyAmount, months) {
 }
 
 export function generateStaticReferencePreview(prefix) {
-  return `${prefix}-YOURNAME-YYYYMMDD`;
+  return `${prefix}-YYYYMMDD-8B1F4F`;
 }
 
 export const PAYMENT_METHODS = [
