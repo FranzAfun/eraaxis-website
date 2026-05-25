@@ -68,19 +68,35 @@ export default function Partners() {
   return (
     <>
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <section className="bg-[var(--color-surface-soft)] py-16 md:py-24">
-        <div className="container">
+      <section className="relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-16 pt-36 text-white md:pb-24 md:pt-44">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(circle at 15% 18%, color-mix(in srgb, var(--color-accent) 24%, transparent) 0%, transparent 30%), radial-gradient(circle at 84% 8%, color-mix(in srgb, var(--color-primary) 38%, transparent) 0%, transparent 34%), linear-gradient(135deg, var(--color-background-dark) 0%, var(--color-primary-deep) 54%, var(--color-background-dark) 100%)",
+          }}
+        />
+        <div
+          aria-hidden="true"
+          className="absolute -left-28 top-28 h-80 w-80 rounded-full bg-white/[0.05] blur-3xl"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute -bottom-24 right-4 h-96 w-96 rounded-full bg-[var(--color-accent)]/10 blur-3xl"
+        />
+        <div className="container relative z-10">
           <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
 
             {/* Left: text */}
             <div className="flex flex-col justify-center">
-              <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
+              <p className="mb-5 inline-flex w-fit self-start rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
                 Partners, Accelerators &amp; Recognition
               </p>
-              <h1 className="mb-5 text-4xl font-black leading-[1.1] tracking-tight text-[var(--color-text-primary)] sm:text-5xl md:text-[3.25rem]">
+              <h1 className="mb-5 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-[4rem]">
                 Building practical STEM education with the right ecosystem.
               </h1>
-              <p className="text-base leading-relaxed text-[var(--color-text-secondary)] sm:text-lg">
+              <p className="text-base leading-relaxed text-white/72 sm:text-lg">
                 ERA AXIS is supported by a growing network of partners,
                 accelerator programs, and organizations advancing innovation,
                 education, and youth development.
@@ -89,7 +105,7 @@ export default function Partners() {
 
             {/* Right: image */}
             <div className="relative hidden lg:block">
-              <div className="relative overflow-hidden rounded-[var(--radius-lg)] shadow-[var(--shadow-soft)]">
+              <div className="relative overflow-hidden rounded-[var(--radius-lg)] border border-white/10 shadow-2xl shadow-black/20">
                 <img
                   src={heroImg}
                   alt="ERA AXIS at the EdTech Fellowship ecosystem showcase"

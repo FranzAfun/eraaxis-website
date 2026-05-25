@@ -14,6 +14,7 @@ import InsightDetail from "./pages/InsightDetail";
 import Contact from "./pages/Contact";
 import Payments from "./pages/Payments";
 import ProgrammeEnrolmentPayment from "./pages/ProgrammeEnrolmentPayment";
+import MonthlyDuesPayment from "./pages/MonthlyDuesPayment";
 import StudentChapterPayment from "./pages/StudentChapterPayment";
 
 export default function App() {
@@ -35,6 +36,7 @@ export default function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/payments" element={<Payments />} />
           <Route path="/payments/programme-enrolment" element={<ProgrammeEnrolmentPayment />} />
+          <Route path="/payments/monthly-dues" element={<MonthlyDuesPayment />} />
           <Route path="/payments/student-chapter" element={<StudentChapterPayment />} />
         </Routes>
       </SiteLayout>

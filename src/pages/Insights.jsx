@@ -81,22 +81,38 @@ export default function Insights() {
   return (
     <>
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <section className="bg-[var(--color-surface-soft)] py-16 md:py-24">
-        <div className="container">
-          <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
+      <section className="relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-16 pt-36 text-white md:pb-24 md:pt-44">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(circle at 15% 18%, color-mix(in srgb, var(--color-accent) 24%, transparent) 0%, transparent 30%), radial-gradient(circle at 84% 8%, color-mix(in srgb, var(--color-primary) 38%, transparent) 0%, transparent 34%), linear-gradient(135deg, var(--color-background-dark) 0%, var(--color-primary-deep) 54%, var(--color-background-dark) 100%)",
+          }}
+        />
+        <div
+          aria-hidden="true"
+          className="absolute -left-28 top-28 h-80 w-80 rounded-full bg-white/[0.05] blur-3xl"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute -bottom-24 right-4 h-96 w-96 rounded-full bg-[var(--color-accent)]/10 blur-3xl"
+        />
+        <div className="container relative z-10">
+          <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
             Insights
           </p>
-          <h1 className="mb-5 max-w-3xl text-4xl font-black leading-[1.1] tracking-tight text-[var(--color-text-primary)] sm:text-5xl md:text-[3.25rem]">
+          <h1 className="mb-5 max-w-3xl text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-[4rem]">
             Ideas, stories, and updates from practical STEM learning.
           </h1>
-          <p className="mb-8 max-w-2xl text-base leading-relaxed text-[var(--color-text-secondary)] sm:text-lg">
+          <p className="mb-8 max-w-2xl text-base leading-relaxed text-white/72 sm:text-lg">
             Explore ERA AXIS perspectives on STEM education, digital skills,
             learner outcomes, programme stories, and the future of practical
             learning in Africa.
           </p>
           <a
             href="#insights-listing"
-            className="btn-primary inline-flex min-h-[44px] items-center gap-2"
+            className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-white px-5 text-sm font-semibold text-[var(--color-primary)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/90"
           >
             Explore latest insights <ArrowRight size={16} />
           </a>

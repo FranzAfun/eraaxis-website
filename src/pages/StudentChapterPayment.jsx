@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, FileText, Info, Lock } from "lucide-react";
 import {
   getPaymentCategoryBySlug,
   calculatePaymentBreakdown,
@@ -18,10 +18,10 @@ const BENEFITS = [
 ];
 
 const fieldCls =
-  "min-h-[44px] w-full rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-white px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] outline-none transition-colors focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20";
+  "min-h-[38px] w-full border-0 border-b border-[var(--color-border)] bg-transparent px-0 py-2 text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] outline-none transition-colors focus:border-[var(--color-primary)] focus:ring-0";
 
 const labelCls =
-  "mb-1.5 block text-xs font-semibold uppercase tracking-wider text-[var(--color-text-muted)]";
+  "mb-1.5 block text-[10px] font-semibold uppercase tracking-wide text-[var(--color-text-primary)]";
 
 const optionalTag = (
   <span className="ml-1 font-normal normal-case tracking-normal text-[var(--color-text-muted)]">
@@ -53,7 +53,7 @@ export default function StudentChapterPayment() {
         <div className="container relative z-10">
           <Link
             to="/payments"
-            className="mb-8 inline-flex items-center gap-1.5 text-xs font-medium text-white/40 transition-colors hover:text-white/70"
+            className="mb-8 flex w-fit items-center gap-1.5 text-xs font-medium text-white/40 transition-colors hover:text-white/70"
           >
             <ArrowLeft size={12} strokeWidth={2.5} aria-hidden="true" />
             Back to payment options
@@ -75,28 +75,40 @@ export default function StudentChapterPayment() {
         </div>
       </section>
 
-      <section className="bg-[var(--color-surface-soft)] py-16 md:py-20">
+      <section className="bg-[var(--color-surface-soft)] py-8 md:py-10">
         <div className="container">
-          <div className="grid gap-8 lg:grid-cols-[1fr_380px] lg:items-start">
+          <div className="grid gap-6 lg:grid-cols-[1fr_330px] lg:items-start">
+            <div className="space-y-6">
+              <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white p-6 shadow-sm md:p-8">
+                <div className="mb-6 flex items-center gap-2">
+                  <FileText
+                    size={19}
+                    strokeWidth={2.25}
+                    aria-hidden="true"
+                    className="text-[var(--color-primary)]"
+                  />
+                  <h2 className="text-xl font-bold tracking-tight text-[var(--color-text-primary)]">
+                    Member information
+                  </h2>
+                </div>
 
-            {/* ── Left column ──────────────────────────────────────────── */}
-            <div className="space-y-5">
-
-              {/* Form card */}
-              <div className="card-interactive p-6 md:p-8">
-                <h2 className="mb-1 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
-                  Member information
-                </h2>
-                <p className="mb-6 text-sm text-[var(--color-text-muted)]">
-                  Tell us a bit about yourself. No payment details needed here.
-                </p>
+                <div className="mb-6 flex gap-3 rounded-[var(--radius-sm)] bg-[var(--color-primary)]/10 px-4 py-3 text-xs leading-relaxed text-[var(--color-primary-deep)]">
+                  <Info
+                    size={16}
+                    strokeWidth={2.25}
+                    aria-hidden="true"
+                    className="mt-0.5 shrink-0"
+                  />
+                  <p>
+                    Tell us a bit about yourself. No payment details are
+                    collected on this page.
+                  </p>
+                </div>
 
                 <div className="space-y-5">
                   <div className="grid gap-5 sm:grid-cols-2">
                     <div>
-                      <label className={labelCls}>
-                        Full name <span className="text-red-500">*</span>
-                      </label>
+                      <label className={labelCls}>Full name</label>
                       <input
                         type="text"
                         placeholder="Your full name"
@@ -104,9 +116,7 @@ export default function StudentChapterPayment() {
                       />
                     </div>
                     <div>
-                      <label className={labelCls}>
-                        Email address <span className="text-red-500">*</span>
-                      </label>
+                      <label className={labelCls}>Email address</label>
                       <input
                         type="email"
                         placeholder="you@example.com"
@@ -117,9 +127,7 @@ export default function StudentChapterPayment() {
 
                   <div className="grid gap-5 sm:grid-cols-2">
                     <div>
-                      <label className={labelCls}>
-                        Phone number <span className="text-red-500">*</span>
-                      </label>
+                      <label className={labelCls}>Phone number</label>
                       <input
                         type="tel"
                         placeholder="+233 XX XXX XXXX"
@@ -128,8 +136,7 @@ export default function StudentChapterPayment() {
                     </div>
                     <div>
                       <label className={labelCls}>
-                        Institution / School / Community{" "}
-                        <span className="text-red-500">*</span>
+                        Institution / School / Community
                       </label>
                       <input
                         type="text"
@@ -157,29 +164,26 @@ export default function StudentChapterPayment() {
                     <textarea
                       rows={3}
                       placeholder="Anything you want ERA AXIS to know before joining..."
-                      className={fieldCls.replace("min-h-[44px]", "min-h-0")}
+                      className={`${fieldCls} min-h-20 resize-none`}
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Benefits card */}
-              <div className="card-interactive p-6">
-                <h3 className="mb-4 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
+              <div className="rounded-[var(--radius-md)] border border-[var(--color-primary)]/15 bg-[var(--color-primary)]/10 p-6 md:p-7">
+                <h3 className="mb-5 text-sm font-semibold tracking-tight text-[var(--color-primary-deep)]">
                   What you get
                 </h3>
-                <ul className="space-y-3">
+                <ul className="space-y-4">
                   {BENEFITS.map((benefit) => (
                     <li key={benefit} className="flex items-start gap-3">
-                      <span className="mt-0.5 flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full bg-[var(--color-surface-soft)]">
-                        <Check
-                          size={10}
-                          strokeWidth={3}
-                          aria-hidden="true"
-                          className="text-[var(--color-primary)]"
-                        />
-                      </span>
-                      <span className="text-sm leading-snug text-[var(--color-text-secondary)]">
+                      <Check
+                        size={15}
+                        strokeWidth={2}
+                        aria-hidden="true"
+                        className="mt-0.5 shrink-0 text-[var(--color-primary)]"
+                      />
+                      <span className="text-sm leading-relaxed text-[var(--color-text-secondary)]">
                         {benefit}
                       </span>
                     </li>
@@ -188,23 +192,20 @@ export default function StudentChapterPayment() {
               </div>
             </div>
 
-            {/* ── Right column (sticky) ─────────────────────────────────── */}
             <div className="space-y-4 lg:sticky lg:top-28">
-
-              {/* Order summary card */}
-              <div className="card-interactive overflow-hidden p-6">
-                <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-[var(--color-primary)]">
+              <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white p-6 shadow-sm">
+                <p className="mb-5 text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--color-primary)]">
                   Order summary
                 </p>
-                <h2 className="mb-6 text-lg font-black tracking-tight text-[var(--color-text-primary)]">
+                <h2 className="mb-5 text-lg font-bold tracking-tight text-[var(--color-text-primary)]">
                   {item.title}
                 </h2>
 
-                <div className="space-y-2.5">
+                <div className="space-y-4">
                   {item.breakdown.map(({ label, amount }) => (
                     <div
                       key={label}
-                      className="flex items-center justify-between text-sm"
+                      className="flex items-center justify-between gap-4 border-b border-[var(--color-border)] pb-4 text-sm"
                     >
                       <span className="text-[var(--color-text-secondary)]">
                         {label}
@@ -214,73 +215,65 @@ export default function StudentChapterPayment() {
                       </span>
                     </div>
                   ))}
-                </div>
 
-                <div className="my-4 border-t border-[var(--color-border)]" />
-
-                <div className="space-y-2.5">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="font-medium text-[var(--color-text-primary)]">
+                  <div className="flex items-center justify-between gap-4 border-b border-[var(--color-border)] pb-4 text-sm">
+                    <span className="text-[var(--color-text-secondary)]">
                       Base total
                     </span>
                     <span className="font-semibold text-[var(--color-text-primary)]">
                       {formatGhs(breakdown.baseAmount)}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-[var(--color-text-muted)]">
+                  <div className="flex items-center justify-between gap-4 border-b border-[var(--color-border)] pb-4 text-sm">
+                    <span className="text-[var(--color-text-secondary)]">
                       Maintenance fee
                     </span>
-                    <span className="text-[var(--color-text-muted)]">
+                    <span className="font-semibold text-[var(--color-text-primary)]">
                       {formatGhs(breakdown.maintenanceFee)}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-[var(--color-text-muted)]">
+                  <div className="flex items-center justify-between gap-4 text-sm">
+                    <span className="text-[var(--color-text-secondary)]">
                       Paystack processing fee
                     </span>
-                    <span className="text-[var(--color-text-muted)]">
+                    <span className="font-semibold text-[var(--color-text-primary)]">
                       {formatGhs(breakdown.paystackFee)}
                     </span>
                   </div>
                 </div>
 
-                <div className="my-4 border-t border-[var(--color-border)]" />
-
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-black text-[var(--color-text-primary)]">
+                <div className="my-5 flex items-center justify-between gap-4 rounded-[var(--radius-sm)] bg-[var(--color-primary)]/10 px-4 py-4">
+                  <span className="text-sm font-semibold text-[var(--color-primary-deep)]">
                     Total payable
                   </span>
-                  <span className="text-2xl font-black text-[var(--color-primary)]">
+                  <span className="text-xl font-bold text-[var(--color-primary)]">
                     {formatGhs(breakdown.customerTotal)}
                   </span>
                 </div>
+
+                <div className="space-y-3">
+                  <button
+                    type="button"
+                    disabled
+                    className="btn-primary w-full cursor-not-allowed justify-center opacity-50"
+                  >
+                    Continue to checkout
+                    <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
+                  </button>
+                  <Link
+                    to="/payments"
+                    className="btn-outline w-full justify-center"
+                  >
+                    Back to payment options
+                  </Link>
+                </div>
               </div>
 
-              {/* CTA */}
-              <div className="space-y-3">
-                <button
-                  type="button"
-                  disabled
-                  className="btn-primary w-full cursor-not-allowed justify-center opacity-50"
-                >
-                  Continue to checkout
-                  <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
-                </button>
-                <Link
-                  to="/payments"
-                  className="btn-outline w-full justify-center"
-                >
-                  <ArrowLeft size={15} strokeWidth={2} aria-hidden="true" />
-                  Back to payment options
-                </Link>
-              </div>
-
-              <p className="text-center text-[11px] text-[var(--color-text-muted)]">
-                Payments are processed securely via Paystack.
+              <p className="flex items-center justify-center gap-2 text-center text-xs text-[var(--color-text-muted)]">
+                <Lock size={14} strokeWidth={2} aria-hidden="true" />
+                Secured by Paystack
               </p>
             </div>
-
           </div>
         </div>
       </section>

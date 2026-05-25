@@ -184,8 +184,10 @@ const aiSupportCards = [
   },
 ];
 
-const heroPrimaryClass = "btn-primary min-h-[44px] justify-center";
-const heroSecondaryClass = "btn-outline min-h-[44px] justify-center";
+const heroPrimaryClass =
+  "inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-white px-5 text-sm font-semibold text-[var(--color-primary)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/90";
+const heroSecondaryClass =
+  "inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[var(--radius-sm)] border border-white/25 bg-white/[0.08] px-5 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:text-[var(--color-primary)]";
 const ctaPrimaryClass =
   "final-cta-btn-primary inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[var(--radius-sm)] px-5 text-sm font-semibold";
 const ctaSecondaryClass =
@@ -195,24 +197,40 @@ export default function DevBoard() {
   return (
     <>
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <section className="bg-[var(--color-surface-soft)] py-16 md:py-24">
-        <div className="container">
+      <section className="relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-16 pt-36 text-white md:pb-24 md:pt-44">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(circle at 15% 18%, color-mix(in srgb, var(--color-accent) 24%, transparent) 0%, transparent 30%), radial-gradient(circle at 84% 8%, color-mix(in srgb, var(--color-primary) 38%, transparent) 0%, transparent 34%), linear-gradient(135deg, var(--color-background-dark) 0%, var(--color-primary-deep) 54%, var(--color-background-dark) 100%)",
+          }}
+        />
+        <div
+          aria-hidden="true"
+          className="absolute -left-28 top-28 h-80 w-80 rounded-full bg-white/[0.05] blur-3xl"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute -bottom-24 right-4 h-96 w-96 rounded-full bg-[var(--color-accent)]/10 blur-3xl"
+        />
+        <div className="container relative z-10">
           <div className="grid gap-10 lg:grid-cols-2 lg:items-stretch lg:gap-14">
 
             {/* Left: text */}
             <div className="flex flex-col justify-center">
-              <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
+              <p className="mb-5 inline-flex w-fit self-start rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
                 ERA Dev Board
               </p>
-              <h1 className="mb-5 text-4xl font-black leading-[1.1] tracking-tight text-[var(--color-text-primary)] sm:text-5xl md:text-[3.25rem]">
+              <h1 className="mb-5 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-[4rem]">
                 A hands-on electronics learning kit for real circuits.
               </h1>
-              <p className="mb-3 text-base leading-relaxed text-[var(--color-text-secondary)] sm:text-lg">
+              <p className="mb-3 text-base leading-relaxed text-white/72 sm:text-lg">
                 The ERA Kids Development Board introduces children and learners to
                 basic electrical and electronic principles through circuits they
                 can build, test, compare, and explain for themselves.
               </p>
-              <p className="mb-8 text-sm text-[var(--color-text-muted)]">
+              <p className="mb-8 text-sm text-white/55">
                 From LEDs and resistors to series and parallel circuits, learners
                 move from observation to independent building at their own pace.
               </p>
@@ -230,7 +248,7 @@ export default function DevBoard() {
 
             {/* Right: board image (tablet and up only) */}
             <div className="hidden md:flex">
-              <div className="relative min-h-[320px] w-full overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-border-soft)] bg-[var(--color-surface-soft)] shadow-[var(--shadow-soft)]">
+              <div className="relative min-h-[320px] w-full overflow-hidden rounded-[var(--radius-lg)] border border-white/10 bg-white/[0.04] shadow-2xl shadow-black/20">
                 <img
                   src={devBoardFrontImg}
                   alt="ERA Kids Development Board, front view"
