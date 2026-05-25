@@ -13,7 +13,7 @@ const programmes = [
     audience: "Basic 1 – SHS 3",
     title: "School STEM Programmes",
     body: "Hands-on STEM education for Basic to SHS learners, aligned with classroom learning and built around practical projects.",
-    cta: "Explore School STEM",
+    cta: "Explore",
     to: "/programs/school-stem",
   },
   {
@@ -22,7 +22,7 @@ const programmes = [
     audience: "Ages 16 – 30",
     title: "Out-of-School Youth",
     body: "Practical innovation training for young people ready to gain employable skills and build community-focused solutions.",
-    cta: "Explore Youth Programme",
+    cta: "Explore",
     to: "/programs/out-of-school-youth",
   },
   {
@@ -31,7 +31,7 @@ const programmes = [
     audience: "Remote & self-paced learners",
     title: "Online Learning",
     body: "Flexible online training in programming, AI, electronics, PCB design, and digital technology tools.",
-    cta: "Explore Online Learning",
+    cta: "Explore",
     to: "/programs/online-learning",
   },
   {
@@ -40,7 +40,7 @@ const programmes = [
     audience: "Working adults & professionals",
     title: "ERA Digital Skills",
     body: "A practical digital productivity and AI tools programme for workers, professionals, and business owners.",
-    cta: "Explore Digital Skills",
+    cta: "Explore",
     to: "/programs/era-digital-skills",
   },
 ];
@@ -72,19 +72,24 @@ const learningSteps = [
   },
 ];
 
-function ProgrammeCard({ image, imageAlt, audience, title, body, cta, to }) {
+function ProgrammeCard({
+  image,
+  imageAlt,
+  audience,
+  title,
+  body,
+  cta,
+  to,
+}) {
   return (
-    <Link
-      to={to}
-      className="card-interactive group flex flex-col overflow-hidden"
-    >
-      <div className="h-48 shrink-0 overflow-hidden">
+    <article className="card-interactive group flex flex-col overflow-hidden">
+      <Link to={to} className="h-48 shrink-0 overflow-hidden">
         <img
           src={image}
           alt={imageAlt}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
-      </div>
+      </Link>
       <div className="flex flex-1 flex-col p-6">
         <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary-light)]">
           {audience}
@@ -95,12 +100,23 @@ function ProgrammeCard({ image, imageAlt, audience, title, body, cta, to }) {
         <p className="mb-5 flex-1 text-sm leading-relaxed text-[var(--color-text-secondary)]">
           {body}
         </p>
-        <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--color-primary)] transition-gap duration-200 group-hover:gap-3">
-          {cta}
-          <ArrowRight size={15} strokeWidth={2.2} />
-        </span>
+        <div className="mt-auto grid grid-cols-2 gap-2">
+          <Link
+            to={to}
+            className="inline-flex min-h-[38px] items-center justify-center rounded-[var(--radius-sm)] border border-[var(--color-primary)] px-3 text-sm font-semibold text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)] hover:text-white"
+          >
+            {cta}
+          </Link>
+          <Link
+            to="/payments/programme-enrolment"
+            className="inline-flex min-h-[38px] items-center justify-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--color-primary)] px-3 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-primary-dark)]"
+          >
+            Enrol
+            <ArrowRight size={15} strokeWidth={2.2} />
+          </Link>
+        </div>
       </div>
-    </Link>
+    </article>
   );
 }
 
@@ -146,7 +162,7 @@ export default function Programs() {
         />
         <div className="container relative z-10">
           <div className="max-w-2xl">
-            <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
+            <p className="mb-5 inline-flex w-fit rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
               Programmes
             </p>
             <h1 className="mb-5 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-[4rem]">

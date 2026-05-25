@@ -19,7 +19,7 @@ const company = [
   { label: "Partners", to: "/partners" },
   { label: "Insights", to: "/insights" },
   { label: "Contact",  to: "/contact" },
-  { label: "Payments", to: "/payments" },
+  { label: "Enrolment & Dues", to: "/payments" },
 ];
 
 // TODO: Replace temporary social hrefs with official ERA AXIS social URLs when confirmed.
@@ -182,7 +182,7 @@ export default function Footer() {
             © {new Date().getFullYear()} ERA AXIS Limited. All rights reserved.
           </p>
           <p className="text-xs text-white/25">
-            Website by ERA Technologies.
+            Practical learning. Real outcomes.
           </p>
         </div>
 

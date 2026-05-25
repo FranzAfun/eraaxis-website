@@ -171,7 +171,7 @@ export default function OnlineLearning() {
 
             {/* Left: text */}
             <div className="flex flex-col justify-center">
-              <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
+              <p className="mb-5 inline-flex w-fit self-start rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
                 Online Learning Programme
               </p>
               <h1 className="mb-5 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-[4rem]">
@@ -187,12 +187,15 @@ export default function OnlineLearning() {
                 show what you can do.
               </p>
               <div className="inline-flex flex-col gap-3 sm:flex-row">
-                <Link to="/contact" className={heroPrimaryClass}>
-                  Enquire Now
+                <Link
+                  to="/payments/programme-enrolment"
+                  className={heroPrimaryClass}
+                >
+                  Start Enrolment
                   <ArrowRight size={16} strokeWidth={2} />
                 </Link>
-                <Link to="/programs" className={heroSecondaryClass}>
-                  View All Programmes
+                <Link to="/contact#enquiry" className={heroSecondaryClass}>
+                  Ask a Question
                   <ArrowRight size={16} strokeWidth={2} />
                 </Link>
               </div>
@@ -492,12 +495,15 @@ export default function OnlineLearning() {
           </p>
           <div className="flex justify-center">
             <div className="inline-flex flex-col gap-3 sm:flex-row">
-              <Link to="/contact" className={ctaPrimaryClass}>
-                Contact ERA
+              <Link
+                to="/payments/programme-enrolment"
+                className={ctaPrimaryClass}
+              >
+                Start Enrolment
                 <ArrowRight size={15} strokeWidth={2.2} />
               </Link>
-              <Link to="/programs" className={ctaSecondaryClass}>
-                View All Programmes
+              <Link to="/contact#enquiry" className={ctaSecondaryClass}>
+                Ask a Question
                 <ArrowRight size={15} strokeWidth={2.2} />
               </Link>
             </div>

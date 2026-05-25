@@ -129,7 +129,7 @@ export default function SchoolStem() {
 
             {/* Left: text */}
             <div className="flex flex-col justify-center">
-              <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
+              <p className="mb-5 inline-flex w-fit self-start rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
                 School STEM Programmes
               </p>
               <h1 className="mb-5 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-[4rem]">
@@ -146,12 +146,15 @@ export default function SchoolStem() {
                 building it.
               </p>
               <div className="inline-flex flex-col gap-3 sm:flex-row">
-                <Link to="/partners" className={heroPrimaryClass}>
-                  Partner With ERA
+                <Link
+                  to="/payments/programme-enrolment"
+                  className={heroPrimaryClass}
+                >
+                  Start Learner Enrolment
                   <ArrowRight size={16} strokeWidth={2} />
                 </Link>
-                <Link to="/contact" className={heroSecondaryClass}>
-                  Contact the Team
+                <Link to="/contact#enquiry" className={heroSecondaryClass}>
+                  Discuss School Partnership
                   <ArrowRight size={16} strokeWidth={2} />
                 </Link>
               </div>
@@ -425,12 +428,15 @@ export default function SchoolStem() {
           </p>
           <div className="flex justify-center">
             <div className="inline-flex flex-col gap-3 sm:flex-row">
-              <Link to="/partners" className={ctaPrimaryClass}>
-                Partner With ERA
+              <Link
+                to="/payments/programme-enrolment"
+                className={ctaPrimaryClass}
+              >
+                Start Learner Enrolment
                 <ArrowRight size={15} strokeWidth={2.2} />
               </Link>
-              <Link to="/contact" className={ctaSecondaryClass}>
-                Contact ERA
+              <Link to="/contact#enquiry" className={ctaSecondaryClass}>
+                Discuss School Partnership
                 <ArrowRight size={15} strokeWidth={2.2} />
               </Link>
             </div>

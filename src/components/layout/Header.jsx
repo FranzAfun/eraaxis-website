@@ -60,8 +60,8 @@ export default function Header() {
 
         {/* Desktop CTA */}
         <div className="hidden md:flex">
-          <Link to="/contact#enquiry" className="btn-nav-primary">
-            Get Started
+          <Link to="/payments" className="btn-nav-primary">
+            Enrol Now
           </Link>
         </div>
 
@@ -89,11 +89,11 @@ export default function Header() {
               />
             ))}
             <Link
-              to="/contact#enquiry"
+              to="/payments"
               onClick={() => setOpen(false)}
               className="btn-nav-primary mt-3 w-full justify-center"
             >
-              Get Started
+              Enrol Now
             </Link>
           </nav>
         </div>

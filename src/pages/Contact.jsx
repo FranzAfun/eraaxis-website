@@ -122,23 +122,45 @@ export default function Contact() {
   return (
     <>
       {/* ── Hero ───────────────────────────────────────────────────────── */}
-      <section className="bg-[var(--color-surface-soft)] py-16 md:py-24">
-        <div className="container">
-          <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
+      <section className="relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-16 pt-36 text-white md:pb-24 md:pt-44">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(circle at 15% 18%, color-mix(in srgb, var(--color-accent) 24%, transparent) 0%, transparent 30%), radial-gradient(circle at 84% 8%, color-mix(in srgb, var(--color-primary) 38%, transparent) 0%, transparent 34%), linear-gradient(135deg, var(--color-background-dark) 0%, var(--color-primary-deep) 54%, var(--color-background-dark) 100%)",
+          }}
+        />
+        <div
+          aria-hidden="true"
+          className="absolute -left-28 top-28 h-80 w-80 rounded-full bg-white/[0.05] blur-3xl"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute -bottom-24 right-4 h-96 w-96 rounded-full bg-[var(--color-accent)]/10 blur-3xl"
+        />
+        <div className="container relative z-10">
+          <p className="mb-5 inline-flex w-fit rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
             Contact ERA AXIS
           </p>
-          <h1 className="mb-5 max-w-3xl text-4xl font-black leading-[1.1] tracking-tight text-[var(--color-text-primary)] sm:text-5xl md:text-[3.25rem]">
+          <h1 className="mb-5 max-w-3xl text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-[4rem]">
             Let&apos;s talk about practical STEM and digital skills learning.
           </h1>
-          <p className="mb-8 max-w-2xl text-base leading-relaxed text-[var(--color-text-secondary)] sm:text-lg">
+          <p className="mb-8 max-w-2xl text-base leading-relaxed text-white/72 sm:text-lg">
             Reach out about programmes, school partnerships, sponsorships, media
             enquiries, or general questions about ERA AXIS.
           </p>
           <div className="flex flex-col gap-3 sm:flex-row">
-            <a href="#enquiry" className="btn-primary min-h-[44px] justify-center">
+            <a
+              href="#enquiry"
+              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-white px-5 text-sm font-semibold text-[var(--color-primary)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/90"
+            >
               Start enquiry <ArrowRight size={16} />
             </a>
-            <Link to="/programs" className="btn-outline min-h-[44px] justify-center">
+            <Link
+              to="/programs"
+              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[var(--radius-sm)] border border-white/25 bg-white/[0.08] px-5 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:text-[var(--color-primary)]"
+            >
               View programmes
             </Link>
           </div>
@@ -273,8 +295,8 @@ export default function Contact() {
                       Send Message <ArrowRight size={16} />
                     </button>
                     <p className="mt-3 text-xs text-[var(--color-text-muted)]">
-                      Enquiries will be connected to the ERA AXIS backend and EDOS
-                      inbox when the backend is ready.
+                      Enquiries will be connected to the ERA AXIS team inbox
+                      when the backend is ready.
                     </p>
                   </div>
                 </form>
