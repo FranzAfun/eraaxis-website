@@ -34,7 +34,7 @@ const fieldCls =
   "min-h-[38px] w-full border-0 border-b border-[var(--color-border)] bg-transparent px-0 py-2 text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] outline-none transition-colors focus:border-[var(--color-primary)] focus:ring-0";
 
 const labelCls =
-  "mb-1.5 block text-[10px] font-semibold uppercase tracking-wide text-[var(--color-text-primary)]";
+  "mb-1.5 block text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--color-primary-deep)]";
 
 export default function MonthlyDuesPayment() {
   const [showManualForm, setShowManualForm] = useState(false);
@@ -131,7 +131,7 @@ export default function MonthlyDuesPayment() {
 
                     <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
                       <div>
-                        <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
+                        <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--color-primary-deep)]">
                           Email address or phone number
                         </label>
                         <input

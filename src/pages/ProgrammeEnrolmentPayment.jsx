@@ -29,7 +29,7 @@ const fieldCls =
   "min-h-[38px] w-full border-0 border-b border-[var(--color-border)] bg-transparent px-0 py-2 text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] outline-none transition-colors focus:border-[var(--color-primary)] focus:ring-0";
 
 const labelCls =
-  "mb-1.5 block text-[10px] font-semibold uppercase tracking-wide text-[var(--color-text-primary)]";
+  "mb-1.5 block text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--color-primary-deep)]";
 
 const optionalTag = (
   <span className="ml-1 font-normal normal-case tracking-normal text-[var(--color-text-muted)]">
