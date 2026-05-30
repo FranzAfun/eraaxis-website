@@ -1,5 +1,6 @@
 import Hero from "../components/home/Hero";
 import WhoItIsFor from "../components/sections/WhoItIsFor";
+import WhatYouLearn from "../components/sections/WhatYouLearn";
 import ProgrammesOverview from "../components/home/ProgrammesOverview";
 import PartnersStrip from "../components/home/PartnersStrip";
 import DevBoardFeature from "../components/home/DevBoardFeature";
@@ -13,6 +14,7 @@ export default function Home() {
     <>
       <Hero />
       <WhoItIsFor />
+      <WhatYouLearn />
       <ProgrammesOverview />
       <PartnersStrip />
       <DevBoardFeature />
