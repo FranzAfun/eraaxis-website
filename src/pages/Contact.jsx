@@ -7,6 +7,7 @@ import instagramImg from "../assets/social/instagram.webp";
 import tiktokImg    from "../assets/social/tiktok.webp";
 import whatsappImg  from "../assets/social/whatsapp.webp";
 import { generalFaqs } from "../data/faqs";
+import SelectField from "../components/ui/SelectField";
 
 /* ── Static data ─────────────────────────────────────────────────────────── */
 
@@ -242,7 +243,7 @@ export default function Contact() {
                       name="name"
                       value={form.name}
                       onChange={handleChange}
-                      placeholder="Your full name"
+                      placeholder="Genny Amadapah"
                       className={fieldCls(!!errors.name)}
                     />
                     <FieldError msg={errors.name} />
@@ -272,7 +273,7 @@ export default function Contact() {
                         name="email"
                         value={form.email}
                         onChange={handleChange}
-                        placeholder="you@example.com"
+                        placeholder="genny@example.com"
                         className={fieldCls(!!errors.email)}
                       />
                       <FieldError msg={errors.email} />
@@ -284,25 +285,17 @@ export default function Contact() {
                     <label className="mb-1.5 block text-sm font-semibold text-[var(--color-text-primary)]">
                       Inquiry Type
                     </label>
-                    <div className="relative">
-                      <select
-                        name="type"
-                        value={form.type}
-                        onChange={handleChange}
-                        className={`${fieldCls(false)} appearance-none pr-10`}
-                      >
-                        <option value="">Select inquiry type</option>
-                        {INQUIRY_TYPES.map((t) => (
-                          <option key={t} value={t}>{t}</option>
-                        ))}
-                      </select>
-                      <ChevronDown
-                        size={16}
-                        strokeWidth={2}
-                        aria-hidden="true"
-                        className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]"
-                      />
-                    </div>
+                    <SelectField
+                      name="type"
+                      value={form.type}
+                      onChange={handleChange}
+                      className={fieldCls(false)}
+                      placeholder="Select inquiry type"
+                      options={INQUIRY_TYPES.map((type) => ({
+                        value: type,
+                        label: type,
+                      }))}
+                    />
                   </div>
 
                   {/* Message */}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowLeft,
@@ -17,12 +17,10 @@ import {
   formatGhs,
 } from "../data/payments";
 import BackLinkButton from "../components/navigation/BackLinkButton";
+import SelectField from "../components/ui/SelectField";
 
 const category = getPaymentCategoryBySlug("monthly-dues");
 const item = category.items[0];
-const selectedMonths = 1;
-const baseTotal = item.baseAmount * selectedMonths;
-const breakdown = calculatePaymentBreakdown(baseTotal);
 
 const HISTORY_ACCESS = [
   "Secure OTP login ensures your payment data is protected.",
@@ -36,8 +34,73 @@ const fieldCls =
 const labelCls =
   "mb-1.5 block text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--color-primary-deep)]";
 
+function PaymentHistoryAccessCard({ className = "" }) {
+  return (
+    <div
+      className={`rounded-[var(--radius-md)] border border-[var(--color-primary)]/15 bg-[var(--color-primary)]/10 p-6 md:p-7 ${className}`.trim()}
+    >
+      <div className="mb-5 flex items-center gap-2">
+        <ShieldCheck
+          size={17}
+          strokeWidth={2.25}
+          aria-hidden="true"
+          className="text-[var(--color-primary)]"
+        />
+        <h3 className="text-sm font-semibold tracking-tight text-[var(--color-primary-deep)]">
+          Payment history access
+        </h3>
+      </div>
+      <ul className="space-y-4">
+        {HISTORY_ACCESS.map((detail) => (
+          <li key={detail} className="flex items-start gap-3">
+            <CheckCircle2
+              size={15}
+              strokeWidth={2}
+              aria-hidden="true"
+              className="mt-0.5 shrink-0 text-[var(--color-primary)]"
+            />
+            <span className="text-sm leading-relaxed text-[var(--color-text-secondary)]">
+              {detail}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export default function MonthlyDuesPayment() {
   const [showManualForm, setShowManualForm] = useState(false);
+  const [selectedMonths, setSelectedMonths] = useState("1");
+  const manualFormInnerRef = useRef(null);
+  const [manualFormHeight, setManualFormHeight] = useState(0);
+  const baseTotal = item.baseAmount * Number(selectedMonths);
+  const breakdown = calculatePaymentBreakdown(baseTotal);
+  const duesPeriodOptions = [
+    { value: "1", label: "1 Month (Current)" },
+    { value: "3", label: "Quarter" },
+    { value: "6", label: "Half Year" },
+    { value: "12", label: "1 Year" },
+  ];
+
+  useEffect(() => {
+    const updateManualFormHeight = () => {
+      if (!manualFormInnerRef.current) {
+        return;
+      }
+
+      setManualFormHeight(manualFormInnerRef.current.scrollHeight);
+    };
+
+    updateManualFormHeight();
+
+    if (!showManualForm) {
+      return undefined;
+    }
+
+    window.addEventListener("resize", updateManualFormHeight);
+    return () => window.removeEventListener("resize", updateManualFormHeight);
+  }, [showManualForm]);
 
   return (
     <>
@@ -107,8 +170,8 @@ export default function MonthlyDuesPayment() {
         className="bg-[var(--color-surface-soft)] py-8 md:py-10"
       >
         <div className="container">
-          <div className="grid gap-6 lg:grid-cols-[1fr_330px] lg:items-start">
-            <div className="order-1 space-y-6 lg:order-none">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
+            <div className="order-1 space-y-6 lg:flex-1">
               <div
                 id="member-login"
                 className="scroll-mt-24 rounded-[var(--radius-md)] border border-[var(--color-primary)]/12 bg-white p-6 shadow-sm md:scroll-mt-28 md:p-7"
@@ -136,7 +199,7 @@ export default function MonthlyDuesPayment() {
                         </label>
                         <input
                           type="text"
-                          placeholder="e.g. member@eraaxis.com"
+                          placeholder="genny@example.com"
                           className="min-h-[46px] w-full rounded-[var(--radius-sm)] border border-[var(--color-primary)]/18 bg-white px-4 py-3 text-sm text-[var(--color-text-primary)] shadow-[inset_0_1px_0_rgb(255_255_255/0.7)] placeholder:text-[var(--color-text-secondary)] outline-none transition-[border-color,box-shadow,background-color] focus:border-[var(--color-primary)] focus:bg-white focus:ring-2 focus:ring-[var(--color-primary)]/10"
                         />
                       </div>
@@ -171,90 +234,88 @@ export default function MonthlyDuesPayment() {
               </div>
 
               <div
-                className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out ${
+                aria-hidden={!showManualForm}
+                style={{ maxHeight: showManualForm ? `${manualFormHeight}px` : "0px" }}
+                className={`overflow-hidden transition-[max-height,opacity] duration-300 ease-out ${
                   showManualForm
-                    ? "grid-rows-[1fr] opacity-100"
-                    : "grid-rows-[0fr] opacity-90"
+                    ? "opacity-100"
+                    : "pointer-events-none opacity-0"
                 }`}
               >
-                <div className="overflow-hidden">
-                  <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white p-6 shadow-sm md:p-8">
-                    <div className="mb-6 flex items-center gap-2">
-                      <FileText
-                        size={19}
-                        strokeWidth={2.25}
-                        aria-hidden="true"
-                        className="text-[var(--color-primary)]"
+                <div
+                  ref={manualFormInnerRef}
+                  className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white p-6 shadow-sm md:p-8"
+                >
+                  <div className="mb-6 flex items-center gap-2">
+                    <FileText
+                      size={19}
+                      strokeWidth={2.25}
+                      aria-hidden="true"
+                      className="text-[var(--color-primary)]"
+                    />
+                    <h2 className="text-xl font-bold tracking-tight text-[var(--color-text-primary)]">
+                      First-Time Dues Payment
+                    </h2>
+                  </div>
+
+                  <div className="mb-6 flex gap-3 rounded-[var(--radius-sm)] bg-[var(--color-primary)]/10 px-4 py-3 text-xs leading-relaxed text-[var(--color-primary-deep)]">
+                    <Info
+                      size={16}
+                      strokeWidth={2.25}
+                      aria-hidden="true"
+                      className="mt-0.5 shrink-0"
+                    />
+                    <p>
+                      Use this form if you are paying dues for the first time.
+                    </p>
+                  </div>
+
+                  <div className="grid gap-x-6 gap-y-5 sm:grid-cols-2">
+                    <div>
+                      <label className={labelCls}>Full name</label>
+                      <input
+                        type="text"
+                        placeholder="Genny Amadapah"
+                        className={fieldCls}
                       />
-                      <h2 className="text-xl font-bold tracking-tight text-[var(--color-text-primary)]">
-                        First-Time Dues Payment
-                      </h2>
                     </div>
 
-                    <div className="mb-6 flex gap-3 rounded-[var(--radius-sm)] bg-[var(--color-primary)]/10 px-4 py-3 text-xs leading-relaxed text-[var(--color-primary-deep)]">
-                      <Info
-                        size={16}
-                        strokeWidth={2.25}
-                        aria-hidden="true"
-                        className="mt-0.5 shrink-0"
+                    <div>
+                      <label className={labelCls}>Email address</label>
+                      <input
+                        type="email"
+                        placeholder="genny@example.com"
+                        className={fieldCls}
                       />
-                      <p>
-                        Use this form if you are paying dues for the first time
-                        or if you do not want to continue through the returning
-                        member OTP path above.
-                      </p>
                     </div>
 
-                    <div className="grid gap-x-6 gap-y-5 sm:grid-cols-2">
-                      <div>
-                        <label className={labelCls}>Full name</label>
-                        <input
-                          type="text"
-                          placeholder="Jane Doe"
-                          className={fieldCls}
-                        />
-                      </div>
+                    <div>
+                      <label className={labelCls}>Phone number</label>
+                      <input
+                        type="tel"
+                        placeholder="+233 xx xxx xxxx"
+                        className={fieldCls}
+                      />
+                    </div>
 
-                      <div>
-                        <label className={labelCls}>Email address</label>
-                        <input
-                          type="email"
-                          placeholder="jane@example.com"
-                          className={fieldCls}
-                        />
-                      </div>
-
-                      <div>
-                        <label className={labelCls}>Phone number</label>
-                        <input
-                          type="tel"
-                          placeholder="+233 54 123 4567"
-                          className={fieldCls}
-                        />
-                      </div>
-
-                      <div>
-                        <label className={labelCls}>Pay ahead months</label>
-                        <select defaultValue="1" className={fieldCls}>
-                          {Array.from({ length: 12 }, (_, index) => {
-                            const month = index + 1;
-
-                            return (
-                              <option key={month} value={month}>
-                                {month}{" "}
-                                {month === 1 ? "Month (Current)" : "Months"}
-                              </option>
-                            );
-                          })}
-                        </select>
-                      </div>
+                    <div>
+                      <label className={labelCls}>Dues period</label>
+                      <SelectField
+                        name="selectedMonths"
+                        value={selectedMonths}
+                        onChange={(event) => setSelectedMonths(event.target.value)}
+                        className={fieldCls}
+                        options={duesPeriodOptions}
+                      />
                     </div>
                   </div>
                 </div>
               </div>
+
+              <PaymentHistoryAccessCard className="hidden lg:block" />
             </div>
 
-            <div className="order-2 space-y-4 lg:order-none lg:sticky lg:top-28">
+            <div className="order-2 space-y-4 lg:w-[330px] lg:shrink-0 lg:sticky lg:top-28">
               <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white p-6 shadow-sm">
                 <p className="mb-5 text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--color-primary)]">
                   Order summary
@@ -274,7 +335,7 @@ export default function MonthlyDuesPayment() {
                       Selected months
                     </span>
                     <span className="font-semibold text-[var(--color-text-primary)]">
-                      x {selectedMonths}
+                      x {Number(selectedMonths)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between gap-4 border-b border-[var(--color-border)] pb-4 text-sm">
@@ -336,34 +397,7 @@ export default function MonthlyDuesPayment() {
               </p>
             </div>
 
-            <div className="order-3 rounded-[var(--radius-md)] border border-[var(--color-primary)]/15 bg-[var(--color-primary)]/10 p-6 md:p-7 lg:order-none lg:col-start-1 lg:row-start-2">
-              <div className="mb-5 flex items-center gap-2">
-                <ShieldCheck
-                  size={17}
-                  strokeWidth={2.25}
-                  aria-hidden="true"
-                  className="text-[var(--color-primary)]"
-                />
-                <h3 className="text-sm font-semibold tracking-tight text-[var(--color-primary-deep)]">
-                  Payment history access
-                </h3>
-              </div>
-              <ul className="space-y-4">
-                {HISTORY_ACCESS.map((detail) => (
-                  <li key={detail} className="flex items-start gap-3">
-                    <CheckCircle2
-                      size={15}
-                      strokeWidth={2}
-                      aria-hidden="true"
-                      className="mt-0.5 shrink-0 text-[var(--color-primary)]"
-                    />
-                    <span className="text-sm leading-relaxed text-[var(--color-text-secondary)]">
-                      {detail}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <PaymentHistoryAccessCard className="order-3 lg:hidden" />
           </div>
         </div>
       </section>

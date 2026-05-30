@@ -15,7 +15,8 @@ const BENEFITS = [
   "Student Chapter community access",
   "One practical class every month",
   "Collaborative project and build sessions",
-  "Monthly dues of GHS 15 continue after first payment",
+  "Opportunities to connect with mentors and industry partners",
+  
 ];
 
 const fieldCls =
@@ -79,7 +80,7 @@ export default function StudentChapterPayment() {
       <section className="bg-[var(--color-surface-soft)] py-8 md:py-10">
         <div className="container">
           <div className="grid gap-6 lg:grid-cols-[1fr_330px] lg:items-start">
-            <div className="space-y-6">
+            <div className="order-1 lg:order-none">
               <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white p-6 shadow-sm md:p-8">
                 <div className="mb-6 flex items-center gap-2">
                   <FileText
@@ -101,8 +102,7 @@ export default function StudentChapterPayment() {
                     className="mt-0.5 shrink-0"
                   />
                   <p>
-                    Tell us a bit about yourself. No payment details are
-                    collected on this page.
+                    Kindly provide your official information. This will be used for your Student Chapter membership and to keep you updated on chapter activities and opportunities.
                   </p>
                 </div>
 
@@ -112,7 +112,7 @@ export default function StudentChapterPayment() {
                       <label className={labelCls}>Full name</label>
                       <input
                         type="text"
-                        placeholder="Your full name"
+                        placeholder="Genny Amadapah"
                         className={fieldCls}
                       />
                     </div>
@@ -120,7 +120,7 @@ export default function StudentChapterPayment() {
                       <label className={labelCls}>Email address</label>
                       <input
                         type="email"
-                        placeholder="you@example.com"
+                        placeholder="genny@example.com"
                         className={fieldCls}
                       />
                     </div>
@@ -171,29 +171,9 @@ export default function StudentChapterPayment() {
                 </div>
               </div>
 
-              <div className="rounded-[var(--radius-md)] border border-[var(--color-primary)]/15 bg-[var(--color-primary)]/10 p-6 md:p-7">
-                <h3 className="mb-5 text-sm font-semibold tracking-tight text-[var(--color-primary-deep)]">
-                  What you get
-                </h3>
-                <ul className="space-y-4">
-                  {BENEFITS.map((benefit) => (
-                    <li key={benefit} className="flex items-start gap-3">
-                      <Check
-                        size={15}
-                        strokeWidth={2}
-                        aria-hidden="true"
-                        className="mt-0.5 shrink-0 text-[var(--color-primary)]"
-                      />
-                      <span className="text-sm leading-relaxed text-[var(--color-text-secondary)]">
-                        {benefit}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
             </div>
 
-            <div className="space-y-4 lg:sticky lg:top-28">
+            <div className="order-2 space-y-4 lg:order-none lg:sticky lg:top-28">
               <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white p-6 shadow-sm">
                 <p className="mb-5 text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--color-primary)]">
                   Order summary
@@ -274,6 +254,27 @@ export default function StudentChapterPayment() {
                 <Lock size={14} strokeWidth={2} aria-hidden="true" />
                 Secured by Paystack
               </p>
+            </div>
+
+            <div className="order-3 rounded-[var(--radius-md)] border border-[var(--color-primary)]/15 bg-[var(--color-primary)]/10 p-6 md:p-7 lg:order-none lg:col-start-1 lg:row-start-2">
+              <h3 className="mb-5 text-sm font-semibold tracking-tight text-[var(--color-primary-deep)]">
+                What you get
+              </h3>
+              <ul className="space-y-4">
+                {BENEFITS.map((benefit) => (
+                  <li key={benefit} className="flex items-start gap-3">
+                    <Check
+                      size={15}
+                      strokeWidth={2}
+                      aria-hidden="true"
+                      className="mt-0.5 shrink-0 text-[var(--color-primary)]"
+                    />
+                    <span className="text-sm leading-relaxed text-[var(--color-text-secondary)]">
+                      {benefit}
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>

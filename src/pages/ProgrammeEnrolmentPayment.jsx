@@ -8,6 +8,7 @@ import {
   formatGhs,
 } from "../data/payments";
 import BackLinkButton from "../components/navigation/BackLinkButton";
+import SelectField from "../components/ui/SelectField";
 
 const category = getPaymentCategoryBySlug("programme-enrolment");
 
@@ -41,6 +42,7 @@ export default function ProgrammeEnrolmentPayment() {
   const [selectedProgrammeSlug, setSelectedProgrammeSlug] =
     useState("junior-stem");
   const [paymentOption, setPaymentOption] = useState("monthly");
+  const [learnerType, setLearnerType] = useState("");
 
   const selectedProgramme =
     category.items.find((programme) => programme.slug === selectedProgrammeSlug) ||
@@ -102,7 +104,7 @@ export default function ProgrammeEnrolmentPayment() {
       <section className="bg-[var(--color-surface-soft)] py-8 md:py-10">
         <div className="container">
           <div className="grid gap-6 lg:grid-cols-[1fr_330px] lg:items-start">
-            <div className="space-y-6">
+            <div className="order-1 lg:order-none">
               <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white p-6 shadow-sm md:p-8">
                 <div className="mb-6 flex items-center gap-2">
                   <FileText
@@ -135,7 +137,7 @@ export default function ProgrammeEnrolmentPayment() {
                       <label className={labelCls}>Full name</label>
                       <input
                         type="text"
-                        placeholder="Your full name"
+                        placeholder="Genny Amadapah"
                         className={fieldCls}
                       />
                     </div>
@@ -143,7 +145,7 @@ export default function ProgrammeEnrolmentPayment() {
                       <label className={labelCls}>Email address</label>
                       <input
                         type="email"
-                        placeholder="you@example.com"
+                        placeholder="e.g. genny@example.com"
                         className={fieldCls}
                       />
                     </div>
@@ -160,33 +162,34 @@ export default function ProgrammeEnrolmentPayment() {
                     </div>
                     <div>
                       <label className={labelCls}>Programme</label>
-                      <select
+                      <SelectField
+                        name="programme"
                         value={selectedProgrammeSlug}
                         onChange={(event) =>
                           setSelectedProgrammeSlug(event.target.value)
                         }
                         className={fieldCls}
-                      >
-                        {category.items.map((programme) => (
-                          <option key={programme.slug} value={programme.slug}>
-                            {programme.title}
-                          </option>
-                        ))}
-                      </select>
+                        options={category.items.map((programme) => ({
+                          value: programme.slug,
+                          label: programme.title,
+                        }))}
+                      />
                     </div>
                   </div>
 
                   <div className="grid gap-5 sm:grid-cols-2">
                     <div>
                       <label className={labelCls}>Payment option</label>
-                      <select
+                      <SelectField
+                        name="paymentOption"
                         value={paymentOption}
                         onChange={(event) => setPaymentOption(event.target.value)}
                         className={fieldCls}
-                      >
-                        <option value="monthly">Monthly</option>
-                        <option value="full">Full programme</option>
-                      </select>
+                        options={[
+                          { value: "monthly", label: "Monthly" },
+                          { value: "full", label: "Full programme" },
+                        ]}
+                      />
                     </div>
                     <div>
                       <label className={labelCls}>
@@ -203,16 +206,17 @@ export default function ProgrammeEnrolmentPayment() {
                   <div className="grid gap-5 sm:grid-cols-2">
                     <div>
                       <label className={labelCls}>Learner type {optionalTag}</label>
-                      <select defaultValue="" className={fieldCls}>
-                        <option value="" disabled>
-                          Select learner type
-                        </option>
-                        {learnerTypes.map((type) => (
-                          <option key={type} value={type}>
-                            {type}
-                          </option>
-                        ))}
-                      </select>
+                      <SelectField
+                        name="learnerType"
+                        value={learnerType}
+                        onChange={(event) => setLearnerType(event.target.value)}
+                        className={fieldCls}
+                        placeholder="Select learner type"
+                        options={learnerTypes.map((type) => ({
+                          value: type,
+                          label: type,
+                        }))}
+                      />
                     </div>
                     <div>
                       <label className={labelCls}>Learning goal {optionalTag}</label>
@@ -248,29 +252,9 @@ export default function ProgrammeEnrolmentPayment() {
                 </div>
               </div>
 
-              <div className="rounded-[var(--radius-md)] border border-[var(--color-primary)]/15 bg-[var(--color-primary)]/10 p-6 md:p-7">
-                <h3 className="mb-5 text-sm font-semibold tracking-tight text-[var(--color-primary-deep)]">
-                  What happens next
-                </h3>
-                <ul className="space-y-4">
-                  {NEXT_STEPS.map((step) => (
-                    <li key={step} className="flex items-start gap-3">
-                      <Check
-                        size={15}
-                        strokeWidth={2}
-                        aria-hidden="true"
-                        className="mt-0.5 shrink-0 text-[var(--color-primary)]"
-                      />
-                      <span className="text-sm leading-relaxed text-[var(--color-text-secondary)]">
-                        {step}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
             </div>
 
-            <div className="space-y-4 lg:sticky lg:top-28">
+            <div className="order-2 space-y-4 lg:order-none lg:sticky lg:top-28">
               <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white p-6 shadow-sm">
                 <p className="mb-5 text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--color-primary)]">
                   Order summary
@@ -357,6 +341,27 @@ export default function ProgrammeEnrolmentPayment() {
                 <Lock size={14} strokeWidth={2} aria-hidden="true" />
                 Payments are processed securely via Paystack.
               </p>
+            </div>
+
+            <div className="order-3 rounded-[var(--radius-md)] border border-[var(--color-primary)]/15 bg-[var(--color-primary)]/10 p-6 md:p-7 lg:order-none lg:col-start-1 lg:row-start-2">
+              <h3 className="mb-5 text-sm font-semibold tracking-tight text-[var(--color-primary-deep)]">
+                What happens next
+              </h3>
+              <ul className="space-y-4">
+                {NEXT_STEPS.map((step) => (
+                  <li key={step} className="flex items-start gap-3">
+                    <Check
+                      size={15}
+                      strokeWidth={2}
+                      aria-hidden="true"
+                      className="mt-0.5 shrink-0 text-[var(--color-primary)]"
+                    />
+                    <span className="text-sm leading-relaxed text-[var(--color-text-secondary)]">
+                      {step}
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>
