@@ -13,6 +13,7 @@ const navLinks = [
 
 const moreLinks = [
   { label: "Gallery", to: "/gallery" },
+  { label: "FAQ", to: "/faq" },
   { label: "Enrolment & Dues", to: "/payments" },
 ];
 
@@ -39,7 +40,9 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const moreIsActive =
-    location.pathname === "/gallery" || location.pathname.startsWith("/payments");
+    location.pathname === "/gallery" ||
+    location.pathname === "/faq" ||
+    location.pathname.startsWith("/payments");
 
   return (
     <header

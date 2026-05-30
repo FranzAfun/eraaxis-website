@@ -6,6 +6,7 @@ import xImg         from "../assets/social/X_white.webp";
 import instagramImg from "../assets/social/instagram.webp";
 import tiktokImg    from "../assets/social/tiktok.webp";
 import whatsappImg  from "../assets/social/whatsapp.webp";
+import { generalFaqs } from "../data/faqs";
 
 /* ── Static data ─────────────────────────────────────────────────────────── */
 
@@ -49,21 +50,6 @@ const socials = [
   { label: "WhatsApp",  href: "https://whatsapp.com/channel/0029Va9foNM002T9PHdytX1h",                                 img: whatsappImg  },
 ];
 
-const faqs = [
-  {
-    q: "How do I enquire about joining a programme?",
-    a: "Use the form and choose Enrollment / Admissions. Share the programme you are interested in and the team will follow up.",
-  },
-  {
-    q: "Can schools or organisations partner with ERA AXIS?",
-    a: "Yes. Schools, NGOs, sponsors, and institutions can contact ERA AXIS about practical STEM programmes, youth skills training, and partnership opportunities.",
-  },
-  {
-    q: "Can I contact ERA AXIS about media or sponsorship?",
-    a: "Yes. Choose Media & Press or Sponsorship or Donation from the inquiry type dropdown and include details in your message.",
-  },
-];
-
 const ctaPrimaryClass =
   "final-cta-btn-primary inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[var(--radius-sm)] px-5 text-sm font-semibold";
 const ctaSecondaryClass =
@@ -87,13 +73,58 @@ function FieldError({ msg }) {
   return <p className="mt-1 text-xs text-red-600">{msg}</p>;
 }
 
+function ContactFaqItem({ item, isOpen, onToggle }) {
+  return (
+    <div className="card-interactive overflow-hidden">
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={isOpen}
+        className="flex w-full items-center justify-between gap-4 p-5 text-left sm:p-6"
+      >
+        <span className="text-sm font-bold text-[var(--color-text-primary)] sm:text-base">
+          {item.question}
+        </span>
+        <ChevronDown
+          size={18}
+          strokeWidth={2}
+          aria-hidden="true"
+          className={`shrink-0 text-[var(--color-primary)] transition-transform duration-200 ${
+            isOpen ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+      <div
+        className={`grid transition-[grid-template-rows] duration-300 ease-out ${
+          isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+        }`}
+      >
+        <div className="overflow-hidden">
+          <div className="px-5 pb-5 sm:px-6 sm:pb-6">
+            <p className="text-sm leading-relaxed text-[var(--color-text-secondary)]">
+              {item.answer}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ── Component ───────────────────────────────────────────────────────────── */
 
 export default function Contact() {
   const [form, setForm]           = useState(EMPTY_FORM);
   const [errors, setErrors]       = useState({});
   const [submitted, setSubmitted] = useState(false);
-  const [openFaq, setOpenFaq]     = useState(null);
+  const contactFaqs = generalFaqs.filter((item) =>
+    [
+      "faq-how-to-enrol",
+      "faq-group-enrolment",
+      "faq-partners",
+    ].includes(item.id)
+  );
+  const [openFaqId, setOpenFaqId] = useState(contactFaqs[0]?.id ?? null);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -409,44 +440,38 @@ export default function Contact() {
         </div>
       </section>
 
-      {/* ── FAQ ────────────────────────────────────────────────────────────── */}
       <section id="faq" className="bg-white py-16 md:py-24">
         <div className="container">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
-            Common questions
-          </p>
-          <h2 className="mb-10 text-2xl font-black leading-tight tracking-tight text-[var(--color-text-primary)] sm:text-3xl">
-            Frequently asked questions.
-          </h2>
+          <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div className="max-w-2xl">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
+                Contact FAQ
+              </p>
+              <h2 className="mb-3 text-2xl font-black leading-tight tracking-tight text-[var(--color-text-primary)] sm:text-3xl">
+                A few quick answers before you reach out.
+              </h2>
+              <p className="text-base leading-relaxed text-[var(--color-text-secondary)]">
+                These cover the most common contact and support questions. For
+                everything else, use the full FAQ page.
+              </p>
+            </div>
+
+            <Link to="/faq" className="btn-outline">
+              View full FAQ
+              <ArrowRight size={16} strokeWidth={2} />
+            </Link>
+          </div>
 
           <div className="mx-auto max-w-3xl space-y-3">
-            {faqs.map((item, i) => (
-              <div key={i} className="card-interactive overflow-hidden">
-                <button
-                  type="button"
-                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="flex w-full items-center justify-between gap-4 p-6 text-left"
-                >
-                  <span className="text-sm font-bold text-[var(--color-text-primary)] sm:text-base">
-                    {item.q}
-                  </span>
-                  <ChevronDown
-                    size={18}
-                    strokeWidth={2}
-                    aria-hidden="true"
-                    className={`shrink-0 text-[var(--color-primary)] transition-transform duration-200 ${
-                      openFaq === i ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
-                {openFaq === i && (
-                  <div className="px-6 pb-6">
-                    <p className="text-sm leading-relaxed text-[var(--color-text-secondary)]">
-                      {item.a}
-                    </p>
-                  </div>
-                )}
-              </div>
+            {contactFaqs.map((item) => (
+              <ContactFaqItem
+                key={item.id}
+                item={item}
+                isOpen={openFaqId === item.id}
+                onToggle={() =>
+                  setOpenFaqId(openFaqId === item.id ? null : item.id)
+                }
+              />
             ))}
           </div>
         </div>

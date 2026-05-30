@@ -12,6 +12,7 @@ import Partners from "./pages/Partners";
 import Insights from "./pages/Insights";
 import InsightDetail from "./pages/InsightDetail";
 import Gallery from "./pages/Gallery";
+import Faq from "./pages/Faq";
 import Contact from "./pages/Contact";
 import Payments from "./pages/Payments";
 import ProgrammeEnrolmentPayment from "./pages/ProgrammeEnrolmentPayment";
@@ -35,6 +36,7 @@ export default function App() {
           <Route path="/insights" element={<Insights />} />
           <Route path="/insights/:slug" element={<InsightDetail />} />
           <Route path="/gallery" element={<Gallery />} />
+          <Route path="/faq" element={<Faq />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/payments" element={<Payments />} />
           <Route path="/payments/programme-enrolment" element={<ProgrammeEnrolmentPayment />} />
