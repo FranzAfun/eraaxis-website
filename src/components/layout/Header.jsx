@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { NavLink, Link } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { NavLink, Link, useLocation } from "react-router-dom";
+import { ChevronDown, Menu, X } from "lucide-react";
 import logo from "../../assets/brand/logo.webp";
 
 const navLinks = [
@@ -9,6 +9,11 @@ const navLinks = [
   { label: "Partners", to: "/partners" },
   { label: "Insights", to: "/insights" },
   { label: "Contact", to: "/contact" },
+];
+
+const moreLinks = [
+  { label: "Gallery", to: "/gallery" },
+  { label: "Enrolment & Dues", to: "/payments" },
 ];
 
 function NavItem({ to, label, onClick }) {
@@ -32,6 +37,9 @@ function NavItem({ to, label, onClick }) {
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const location = useLocation();
+  const moreIsActive =
+    location.pathname === "/gallery" || location.pathname.startsWith("/payments");
 
   return (
     <header
@@ -56,6 +64,42 @@ export default function Header() {
           {navLinks.map((link) => (
             <NavItem key={link.to} to={link.to} label={link.label} />
           ))}
+          <div className="group relative">
+            <button
+              type="button"
+              aria-haspopup="menu"
+              className={[
+                "inline-flex items-center gap-1 text-sm font-medium transition-colors duration-200",
+                moreIsActive
+                  ? "text-[var(--color-primary)]"
+                  : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]",
+              ].join(" ")}
+            >
+              More
+              <ChevronDown size={16} strokeWidth={2} />
+            </button>
+
+            <div className="pointer-events-none absolute right-0 top-full pt-3 opacity-0 transition-all duration-200 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
+              <div className="min-w-[13rem] rounded-[var(--radius-md)] border border-[var(--color-primary)]/10 bg-white/95 p-2 shadow-[var(--shadow-soft)] backdrop-blur-xl">
+                {moreLinks.map((link) => (
+                  <NavLink
+                    key={link.to}
+                    to={link.to}
+                    className={({ isActive }) =>
+                      [
+                        "flex rounded-[var(--radius-sm)] px-3 py-2 text-sm font-medium transition-colors duration-200",
+                        isActive
+                          ? "bg-[var(--color-surface-soft)] text-[var(--color-primary)]"
+                          : "text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-soft)] hover:text-[var(--color-text-primary)]",
+                      ].join(" ")
+                    }
+                  >
+                    {link.label}
+                  </NavLink>
+                ))}
+              </div>
+            </div>
+          </div>
         </nav>
 
         {/* Desktop CTA */}
@@ -81,6 +125,17 @@ export default function Header() {
         <div className="border-t border-[var(--color-primary)]/10 bg-[var(--color-surface-soft)]/95 backdrop-blur-xl md:hidden">
           <nav className="container flex flex-col gap-1 py-4">
             {navLinks.map((link) => (
+              <NavItem
+                key={link.to}
+                to={link.to}
+                label={link.label}
+                onClick={() => setOpen(false)}
+              />
+            ))}
+            <p className="mt-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-text-muted)]">
+              More
+            </p>
+            {moreLinks.map((link) => (
               <NavItem
                 key={link.to}
                 to={link.to}

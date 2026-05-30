@@ -79,6 +79,7 @@ function AudienceCard({ icon: Icon, title, badge, description }) {
 export default function WhoItIsFor() {
   return (
     <section
+      id="everyone"
       aria-label="Who ERA AXIS is for"
       className="relative overflow-hidden bg-[linear-gradient(180deg,#fcfbff_0%,var(--color-surface-soft)_100%)] py-20 md:py-24 lg:py-28"
     >

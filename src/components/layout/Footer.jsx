@@ -15,8 +15,8 @@ const programmes = [
 ];
 
 const company = [
-  { label: "About",    to: "/" },
   { label: "Partners", to: "/partners" },
+  { label: "Gallery", to: "/gallery" },
   { label: "Insights", to: "/insights" },
   { label: "Contact",  to: "/contact" },
   { label: "Enrolment & Dues", to: "/payments" },

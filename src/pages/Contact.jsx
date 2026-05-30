@@ -410,7 +410,7 @@ export default function Contact() {
       </section>
 
       {/* ── FAQ ────────────────────────────────────────────────────────────── */}
-      <section className="bg-white py-16 md:py-24">
+      <section id="faq" className="bg-white py-16 md:py-24">
         <div className="container">
           <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
             Common questions

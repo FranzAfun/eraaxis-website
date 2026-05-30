@@ -51,6 +51,16 @@
   to   { transform: translate3d(-50%, 0, 0); }
 }
 
+@keyframes marquee-right {
+  from { transform: translate3d(-50%, 0, 0); }
+  to   { transform: translate3d(0, 0, 0); }
+}
+
+@keyframes galleryProgressFill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
 /* Hero overlay gradients — use theme token so the colour is maintained in one place */
 .hero-overlay-h {
   background: linear-gradient(
@@ -251,6 +261,21 @@
     );
   }
 
+  .gallery-preview-section {
+    background:
+      radial-gradient(
+        ellipse 55% 40% at 50% 0%,
+        color-mix(in srgb, var(--color-accent) 14%, transparent) 0%,
+        transparent 72%
+      ),
+      linear-gradient(
+        180deg,
+        var(--color-background-dark) 0%,
+        var(--color-primary-deep) 58%,
+        #110f1f 100%
+      );
+  }
+
   /*
     Viewport clips overflow and applies edge-fade mask.
     The mask uses the section background colours so the fade blends cleanly.
@@ -293,6 +318,168 @@
 
   .marquee-track.is-paused {
     animation-play-state: paused;
+  }
+
+  .gallery-hero-shell {
+    padding: 0;
+  }
+
+  .gallery-stage {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1.1rem;
+    min-height: 29rem;
+    background: rgb(5 5 12 / 0.88);
+    box-shadow: 0 26px 70px rgb(0 0 0 / 0.24);
+  }
+
+  .gallery-stage-image-wrap {
+    position: absolute;
+    inset: 0;
+  }
+
+  .gallery-stage-slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition:
+      opacity 900ms ease,
+      transform 1200ms cubic-bezier(0.16, 1, 0.3, 1);
+    transform: scale(1.018);
+  }
+
+  .gallery-stage-slide.is-active {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .gallery-stage-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .gallery-stage-overlay {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(
+        to top,
+        rgb(5 5 12 / 0.92) 0%,
+        rgb(5 5 12 / 0.4) 42%,
+        rgb(5 5 12 / 0.18) 100%
+      );
+  }
+
+  .gallery-stage-content {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2;
+    padding: 1.5rem;
+    opacity: 0;
+    transform: translateY(10px);
+    transition:
+      opacity 700ms ease,
+      transform 900ms cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+  }
+
+  .gallery-stage-content.is-active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .gallery-stage-arrows {
+    position: absolute;
+    inset-inline: 0;
+    top: 50%;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    padding-inline: 1rem;
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+
+  .gallery-stage-arrow {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 999px;
+    border: 1px solid rgb(255 255 255 / 0.14);
+    background: rgb(10 10 20 / 0.68);
+    color: var(--color-text-inverse);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+    transition: all 200ms;
+  }
+
+  .gallery-stage-arrow:hover {
+    background: var(--color-primary);
+    border-color: color-mix(in srgb, var(--color-accent) 50%, transparent);
+  }
+
+  .gallery-stage-dots {
+    position: absolute;
+    right: 1.25rem;
+    bottom: 1.25rem;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+  }
+
+  .gallery-stage-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.3);
+    transition: all 220ms;
+  }
+
+  .gallery-stage-dot.is-active {
+    width: 1.6rem;
+    border-radius: 999px;
+    background: var(--color-accent);
+  }
+
+  .gallery-stage-progress-track {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    height: 0.2rem;
+    background: rgb(255 255 255 / 0.08);
+    overflow: hidden;
+  }
+
+  .gallery-stage-progress-bar {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      var(--color-accent) 0%,
+      color-mix(in srgb, var(--color-accent) 55%, white) 100%
+    );
+    transform-origin: left center;
+    animation: galleryProgressFill linear both;
+  }
+
+  .gallery-stage-progress-bar.is-paused {
+    animation-play-state: paused;
+  }
+
+  .gallery-thumb-grid {
+    margin-top: 0.55rem;
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 0.5rem;
   }
 
   /*
@@ -349,6 +536,55 @@
     .marquee-track {
       animation: none;
       transform: none;
+    }
+
+    .gallery-stage-image,
+    .gallery-stage-progress-bar {
+      animation: none;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .gallery-stage {
+      min-height: 25rem;
+    }
+
+    .gallery-thumb-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 768px) {
+    .gallery-hero-shell {
+      padding: 0;
+    }
+
+    .gallery-stage {
+      min-height: 21rem;
+      border-radius: 0.9rem;
+    }
+
+    .gallery-stage-content {
+      padding: 1.1rem;
+    }
+
+    .gallery-stage-arrows {
+      padding-inline: 0.65rem;
+    }
+
+    .gallery-stage-arrow {
+      width: 2.4rem;
+      height: 2.4rem;
+    }
+
+    .gallery-stage-dots {
+      right: 1rem;
+      bottom: 1rem;
+    }
+
+    .gallery-thumb-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.5rem;
     }
   }
 

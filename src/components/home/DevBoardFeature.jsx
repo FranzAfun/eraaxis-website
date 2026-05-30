@@ -58,11 +58,11 @@ export default function DevBoardFeature() {
           </div>
 
           {/* Product image card */}
-          <div className="glass-surface rounded-[var(--radius-lg)] p-4 shadow-2xl transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_40px_80px_rgb(0_0_0_/_0.5)] sm:p-6">
+          <div className="transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_28px_60px_rgb(0_0_0_/_0.28)]">
             <img
               src={devBoardImg}
               alt="ERA Dev Board — hands-on electronics learning kit"
-              className="w-full rounded-[var(--radius-md)] object-cover"
+              className="w-full rounded-[18px] object-cover shadow-[0_20px_55px_rgb(0_0_0_/_0.24)]"
               loading="lazy"
               decoding="async"
             />

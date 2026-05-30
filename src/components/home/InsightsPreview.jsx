@@ -58,6 +58,7 @@ export default function InsightsPreview() {
 
   return (
     <section
+      id="insights"
       ref={sectionRef}
       aria-label="Insights preview"
       className="relative overflow-hidden bg-[var(--color-background-dark)] py-16 md:py-20 lg:py-24"
