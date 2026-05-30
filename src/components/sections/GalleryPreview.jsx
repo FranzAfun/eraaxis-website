@@ -67,7 +67,7 @@ export default function GalleryPreview() {
       className="gallery-preview-section overflow-hidden py-20 md:py-24 lg:py-28"
     >
       <div className="container">
-        <div className="mb-10 flex flex-col gap-6 lg:mb-12 lg:flex-row lg:items-end lg:justify-between">
+        <div className="mb-8 flex flex-col gap-6 md:mb-10 lg:mb-12 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
             <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)]">
               Gallery
@@ -81,7 +81,7 @@ export default function GalleryPreview() {
             </p>
           </div>
 
-          <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+          <div className="hidden flex-col items-start gap-3 sm:flex-row sm:items-center lg:flex">
             <Link to="/gallery" className="btn-primary">
               View gallery
               <ArrowRight size={16} strokeWidth={2} />
@@ -179,7 +179,7 @@ export default function GalleryPreview() {
             </div>
           </div>
 
-          <div className="gallery-thumb-grid">
+          <div className="hidden md:grid gallery-thumb-grid">
             {featuredItems.map((item, index) => (
               <GalleryThumbnail
                 key={item.id}
@@ -189,6 +189,17 @@ export default function GalleryPreview() {
               />
             ))}
           </div>
+        </div>
+
+        <div className="mt-6 flex flex-col items-start gap-3 sm:flex-row sm:items-center lg:hidden">
+          <Link to="/gallery" className="btn-primary">
+            View gallery
+            <ArrowRight size={16} strokeWidth={2} />
+          </Link>
+          <Link to="/payments" className="btn-secondary">
+            Enrol now
+            <ArrowRight size={16} strokeWidth={2} />
+          </Link>
         </div>
       </div>
     </section>
