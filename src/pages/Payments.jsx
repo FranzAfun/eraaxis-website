@@ -21,6 +21,7 @@ const paymentOptions = [
     cta: "Choose programme",
     to: "/payments/programme-enrolment",
     Icon: GraduationCap,
+    isPopular: true,
   },
   {
     title: "Student Chapter",
@@ -66,10 +67,19 @@ const paymentOptions = [
 ];
 
 function OptionCard({ option }) {
-  const { Icon } = option;
+  const { Icon, isPopular } = option;
+
+  const baseClasses = "flex min-h-[360px] flex-col p-6 transition-all duration-300 hover:-translate-y-1";
+  const popularClasses = "relative rounded-[var(--radius-md)] border-2 border-[var(--color-primary)] bg-white bg-gradient-to-b from-[var(--color-primary)]/[0.06] to-transparent shadow-lg shadow-[var(--color-primary)]/10 hover:shadow-xl hover:shadow-[var(--color-primary)]/20";
+  const standardClasses = "card-interactive";
 
   return (
-    <article className="card-interactive flex min-h-[360px] flex-col p-6 transition-all duration-300 hover:-translate-y-1">
+    <article className={`${baseClasses} ${isPopular ? popularClasses : standardClasses}`}>
+      {isPopular && (
+        <div className="absolute right-5 top-0 -translate-y-1/2 rounded-full bg-[var(--color-primary)] px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white shadow-sm">
+          Most Popular
+        </div>
+      )}
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
           <p className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-[var(--color-primary)]">
@@ -79,7 +89,13 @@ function OptionCard({ option }) {
             {option.title}
           </h2>
         </div>
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-soft)] shadow-sm">
+        <span
+          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border shadow-sm ${
+            isPopular
+              ? "border-[var(--color-primary)]/20 bg-white"
+              : "border-[var(--color-border)] bg-[var(--color-surface-soft)]"
+          }`}
+        >
           <Icon size={21} className="text-[var(--color-primary)]" strokeWidth={1.85} />
         </span>
       </div>
@@ -106,9 +122,7 @@ function OptionCard({ option }) {
       <div className="mt-auto pt-7">
         <Link
           to={option.to}
-          className={
-            option.isSecondary ? "btn-outline" : "btn-primary"
-          }
+          className={option.isSecondary ? "btn-outline" : "btn-primary"}
         >
           {option.cta}
           <ArrowRight size={16} strokeWidth={2} />
