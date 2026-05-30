@@ -60,12 +60,12 @@ export default function Gallery() {
             </p>
 
             <div className="flex flex-col gap-3 sm:flex-row">
-              <Link to="/programs" className="btn-primary">
-                Explore programmes
+              <Link to="/payments" className="btn-primary">
+                Enrol now
                 <ArrowRight size={16} strokeWidth={2} />
               </Link>
-              <Link to="/payments" className="btn-secondary">
-                Enrol now
+              <Link to="/programs" className="btn-secondary">
+                Explore programmes
                 <ArrowRight size={16} strokeWidth={2} />
               </Link>
             </div>

@@ -16,13 +16,13 @@ export default function Home() {
       <Hero />
       <WhoItIsFor />
       <WhatYouLearn />
-      <GalleryPreview />
       <ProgrammesOverview />
       <PartnersStrip />
       <DevBoardFeature />
       <ImpactMetrics />
       <ImpactStories />
       <InsightsPreview />
+      <GalleryPreview />
       <FinalCTA />
     </>
   );

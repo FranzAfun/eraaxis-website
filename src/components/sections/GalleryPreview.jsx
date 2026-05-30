@@ -64,7 +64,7 @@ export default function GalleryPreview() {
     <section
       id="gallery"
       aria-label="Gallery preview"
-      className="gallery-preview-section overflow-hidden py-20 md:py-24 lg:py-28"
+      className="overflow-hidden bg-[var(--color-background-dark)] pt-8 pb-16 md:pt-10 md:pb-20 lg:pt-0 lg:pb-24"
     >
       <div className="container">
         <div className="mb-8 flex flex-col gap-6 md:mb-10 lg:mb-12 lg:flex-row lg:items-end lg:justify-between">
@@ -82,12 +82,12 @@ export default function GalleryPreview() {
           </div>
 
           <div className="hidden flex-col items-start gap-3 sm:flex-row sm:items-center lg:flex">
-            <Link to="/gallery" className="btn-primary">
-              View gallery
+            <Link to="/payments" className="btn-primary">
+              Enrol now
               <ArrowRight size={16} strokeWidth={2} />
             </Link>
-            <Link to="/payments" className="btn-secondary">
-              Enrol now
+            <Link to="/gallery" className="btn-secondary">
+              View gallery
               <ArrowRight size={16} strokeWidth={2} />
             </Link>
           </div>
@@ -192,12 +192,12 @@ export default function GalleryPreview() {
         </div>
 
         <div className="mt-6 flex flex-col items-start gap-3 sm:flex-row sm:items-center lg:hidden">
-          <Link to="/gallery" className="btn-primary">
-            View gallery
+          <Link to="/payments" className="btn-primary">
+            Enrol now
             <ArrowRight size={16} strokeWidth={2} />
           </Link>
-          <Link to="/payments" className="btn-secondary">
-            Enrol now
+          <Link to="/gallery" className="btn-secondary">
+            View gallery
             <ArrowRight size={16} strokeWidth={2} />
           </Link>
         </div>

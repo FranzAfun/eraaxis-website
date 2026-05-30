@@ -48,12 +48,6 @@ const tracks = [
   },
 ];
 
-const highlights = [
-  "70%+ practical learning",
-  "Real tools",
-  "Learner-built projects",
-];
-
 function TrackCard({ icon: Icon, title, description }) {
   return (
     <article className="insights-card group flex h-full flex-col p-6 sm:p-7">
@@ -98,31 +92,13 @@ export default function WhatYouLearn() {
               practical, project-based, and connected to real outcomes.
             </p>
 
-            <div className="glass-surface mt-8 rounded-[var(--radius-lg)] p-6 sm:mt-10 sm:p-7">
-              <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)]">
-                Learning model
-              </p>
-              <div className="grid gap-3 sm:grid-cols-3">
-                {highlights.map((item) => (
-                  <div
-                    key={item}
-                    className="rounded-[var(--radius-md)] border border-white/10 bg-white/[0.03] px-4 py-4"
-                  >
-                    <p className="text-sm font-semibold leading-snug text-white/88">
-                      {item}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-8 flex flex-col items-start gap-3 sm:mt-10 sm:flex-row sm:items-center">
-              <Link to="/programs" className="btn-primary">
-                Explore programmes
+            <div className="mt-8 hidden gap-3 sm:flex sm:flex-row sm:items-center">
+              <Link to="/payments" className="btn-primary">
+                Enrol now
                 <ArrowRight size={16} strokeWidth={2} />
               </Link>
-              <Link to="/payments" className="btn-secondary">
-                Enrol now
+              <Link to="/programs" className="btn-secondary">
+                Explore programmes
                 <ArrowRight size={16} strokeWidth={2} />
               </Link>
             </div>
@@ -132,6 +108,19 @@ export default function WhatYouLearn() {
             {tracks.map((track) => (
               <TrackCard key={track.title} {...track} />
             ))}
+          </div>
+        </div>
+
+        <div className="mt-8 rounded-[18px] border border-white/10 bg-[rgb(255_255_255_/_0.06)] p-4 shadow-[0_16px_40px_rgb(0_0_0_/_0.16)] sm:hidden">
+          <div className="flex flex-col gap-3">
+            <Link to="/payments" className="btn-primary w-full justify-center">
+              Enrol now
+              <ArrowRight size={16} strokeWidth={2} />
+            </Link>
+            <Link to="/programs" className="btn-secondary w-full justify-center">
+              Explore programmes
+              <ArrowRight size={16} strokeWidth={2} />
+            </Link>
           </div>
         </div>
       </div>

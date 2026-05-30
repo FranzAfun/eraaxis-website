@@ -261,21 +261,6 @@
     );
   }
 
-  .gallery-preview-section {
-    background:
-      radial-gradient(
-        ellipse 55% 40% at 50% 0%,
-        color-mix(in srgb, var(--color-accent) 14%, transparent) 0%,
-        transparent 72%
-      ),
-      linear-gradient(
-        180deg,
-        var(--color-background-dark) 0%,
-        var(--color-primary-deep) 58%,
-        #110f1f 100%
-      );
-  }
-
   /*
     Viewport clips overflow and applies edge-fade mask.
     The mask uses the section background colours so the fade blends cleanly.
@@ -630,15 +615,6 @@
       background: rgb(255 255 255 / 0.08);
       box-shadow: 0 20px 44px rgb(0 0 0 / 0.38);
     }
-  }
-
-  /* Insights section background orb — top-right position differentiates from impact orb */
-  .insights-orb-bg {
-    background: radial-gradient(
-      ellipse 55% 60% at 80% 0%,
-      color-mix(in srgb, var(--color-primary) 18%, transparent) 0%,
-      transparent 70%
-    );
   }
 
   /* Insights preview dark glass cards */

@@ -61,15 +61,12 @@ export default function InsightsPreview() {
       id="insights"
       ref={sectionRef}
       aria-label="Insights preview"
-      className="relative overflow-hidden bg-[var(--color-background-dark)] py-16 md:py-20 lg:py-24"
+      className="bg-[var(--color-background-dark)] pt-8 pb-16 md:pt-10 md:pb-20 lg:pt-12 lg:pb-24"
     >
-      {/* Background orb — top-right, distinct from ImpactMetrics orb */}
-      <div aria-hidden="true" className="insights-orb-bg pointer-events-none absolute inset-0" />
-
-      <div className="container relative z-10">
+      <div className="container">
         {/* Section header + CTA row */}
         <div
-          className={`mb-10 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between transition-all duration-700 ease-out ${
+          className={`mb-8 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between md:mb-10 transition-all duration-700 ease-out ${
             isVisible || reducedMotion
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-5"
@@ -90,7 +87,7 @@ export default function InsightsPreview() {
 
           <Link
             to="/insights"
-            className="btn-secondary group shrink-0 self-start sm:self-auto"
+            className="btn-secondary group hidden shrink-0 self-start sm:self-auto md:inline-flex"
           >
             View all insights
             <ArrowRight
@@ -112,6 +109,20 @@ export default function InsightsPreview() {
               index={i}
             />
           ))}
+        </div>
+
+        <div className="mt-8 flex md:hidden">
+          <Link
+            to="/insights"
+            className="btn-secondary group w-full justify-center"
+          >
+            View all insights
+            <ArrowRight
+              size={16}
+              strokeWidth={2}
+              className="transition-transform duration-300 group-hover:translate-x-2"
+            />
+          </Link>
         </div>
       </div>
     </section>

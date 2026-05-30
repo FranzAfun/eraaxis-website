@@ -47,7 +47,7 @@ export default function DevBoardFeature() {
               ))}
             </ul>
 
-            <Link to="/dev-board" className="btn-primary group">
+            <Link to="/dev-board" className="btn-primary group hidden sm:inline-flex">
               Explore the Dev Board
               <ArrowRight
                 size={17}
@@ -68,6 +68,17 @@ export default function DevBoardFeature() {
             />
           </div>
 
+        </div>
+
+        <div className="mt-8 flex sm:hidden">
+          <Link to="/dev-board" className="btn-primary group w-full justify-center">
+            Explore the Dev Board
+            <ArrowRight
+              size={17}
+              strokeWidth={2}
+              className="transition-transform duration-300 group-hover:translate-x-2"
+            />
+          </Link>
         </div>
       </div>
     </section>

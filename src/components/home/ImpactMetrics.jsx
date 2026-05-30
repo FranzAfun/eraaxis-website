@@ -117,7 +117,7 @@ export default function ImpactMetrics() {
       <div className="container relative z-10">
         {/* Section header */}
         <div
-          className={`mb-14 text-center transition-all duration-700 ease-out ${
+          className={`mb-12 max-w-2xl transition-all duration-700 ease-out md:mb-14 ${
             isVisible || reducedMotion
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-5"
@@ -129,7 +129,7 @@ export default function ImpactMetrics() {
           <h2 className="mb-4 text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl lg:text-[2.5rem]">
             Measurable outcomes across schools&nbsp;and communities.
           </h2>
-          <p className="mx-auto max-w-[520px] text-base leading-relaxed text-white/60 sm:text-[17px]">
+          <p className="max-w-[520px] text-base leading-relaxed text-white/60 sm:text-[17px]">
             Every number reflects a real learner, a real school, and a real
             project built through practical STEM education.
           </p>
