@@ -1,10 +1,16 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, X } from "lucide-react";
 import { galleryItems } from "../data/gallery";
 
-function GalleryGridCard({ src, alt }) {
+function GalleryGridCard({ src, alt, index, onOpen }) {
   return (
-    <article className="group relative overflow-hidden rounded-[18px] border border-[rgb(17_17_17_/_0.06)] bg-[var(--color-surface)] shadow-[0_10px_30px_rgb(17_17_17_/_0.08)]">
+    <button
+      type="button"
+      onClick={() => onOpen(index)}
+      className="group relative block w-full overflow-hidden rounded-[18px] border border-[rgb(17_17_17_/_0.06)] bg-[var(--color-surface)] text-left shadow-[0_10px_30px_rgb(17_17_17_/_0.08)] transition-transform duration-300 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2"
+      aria-label={`Open gallery image ${index + 1}`}
+    >
       <img
         src={src}
         alt={alt}
@@ -13,11 +19,73 @@ function GalleryGridCard({ src, alt }) {
         className="aspect-[4/3] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
       />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_35%,rgb(5_5_12_/_0.14)_100%)] opacity-0 transition-opacity duration-400 group-hover:opacity-100" />
-    </article>
+    </button>
   );
 }
 
 export default function Gallery() {
+  const [activeIndex, setActiveIndex] = useState(null);
+  const activeItem = activeIndex === null ? null : galleryItems[activeIndex];
+
+  useEffect(() => {
+    if (activeIndex === null) return undefined;
+
+    function handleKeyDown(event) {
+      if (event.key === "Escape") {
+        setActiveIndex(null);
+      }
+
+      if (event.key === "ArrowLeft") {
+        setActiveIndex((current) =>
+          current === null
+            ? 0
+            : current === 0
+              ? galleryItems.length - 1
+              : current - 1
+        );
+      }
+
+      if (event.key === "ArrowRight") {
+        setActiveIndex((current) =>
+          current === null ? 0 : (current + 1) % galleryItems.length
+        );
+      }
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [activeIndex]);
+
+  function openLightbox(index) {
+    setActiveIndex(index);
+  }
+
+  function closeLightbox() {
+    setActiveIndex(null);
+  }
+
+  function showPrevious() {
+    setActiveIndex((current) =>
+      current === null
+        ? 0
+        : current === 0
+          ? galleryItems.length - 1
+          : current - 1
+    );
+  }
+
+  function showNext() {
+    setActiveIndex((current) =>
+      current === null ? 0 : (current + 1) % galleryItems.length
+    );
+  }
+
   return (
     <>
       <section className="relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-16 pt-36 text-white md:pb-24 md:pt-44">
@@ -89,12 +157,99 @@ export default function Gallery() {
           </div>
 
           <div className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4">
-            {galleryItems.map((item) => (
-              <GalleryGridCard key={item.id} {...item} />
+            {galleryItems.map((item, index) => (
+              <GalleryGridCard
+                key={item.id}
+                {...item}
+                index={index}
+                onOpen={openLightbox}
+              />
             ))}
           </div>
         </div>
       </section>
+
+      {activeItem ? (
+        <div
+          className="fixed inset-0 z-[120] flex items-center justify-center bg-[rgb(4_4_10_/_0.92)] p-4 sm:p-6"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Gallery image ${activeIndex + 1} of ${galleryItems.length}`}
+          onClick={closeLightbox}
+        >
+          <button
+            type="button"
+            onClick={closeLightbox}
+            className="absolute right-4 top-4 inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/12 bg-white/8 text-white transition-colors duration-200 hover:bg-white/16 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 sm:right-6 sm:top-6"
+            aria-label="Close image preview"
+          >
+            <X size={20} strokeWidth={2.25} />
+          </button>
+
+          <button
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              showPrevious();
+            }}
+            className="absolute left-6 top-1/2 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/12 bg-white/8 text-white transition-colors duration-200 hover:bg-white/16 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 sm:inline-flex"
+            aria-label="Previous image"
+          >
+            <ArrowLeft size={20} strokeWidth={2.25} />
+          </button>
+
+          <button
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              showNext();
+            }}
+            className="absolute right-6 top-1/2 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/12 bg-white/8 text-white transition-colors duration-200 hover:bg-white/16 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 sm:inline-flex"
+            aria-label="Next image"
+          >
+            <ArrowRight size={20} strokeWidth={2.25} />
+          </button>
+
+          <div
+            className="relative flex max-h-full w-full max-w-6xl flex-col items-center justify-center gap-4"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="hidden self-center rounded-full border border-white/10 bg-white/8 px-3 py-1 text-xs font-semibold tracking-[0.18em] text-white/76 backdrop-blur-md sm:block sm:text-sm">
+              {activeIndex + 1} / {galleryItems.length}
+            </div>
+
+            <img
+              src={activeItem.src}
+              alt={activeItem.alt}
+              className="max-h-[78vh] w-auto max-w-full rounded-[20px] object-contain shadow-[0_24px_80px_rgb(0_0_0_/_0.45)]"
+            />
+
+            <div className="flex w-full max-w-md items-center justify-between gap-3 rounded-full border border-white/10 bg-white/8 px-3 py-2 backdrop-blur-md sm:hidden">
+              <button
+                type="button"
+                onClick={showPrevious}
+                className="inline-flex h-11 min-w-[3rem] items-center justify-center rounded-full border border-white/12 bg-white/8 px-4 text-white transition-colors duration-200 hover:bg-white/16 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                aria-label="Previous image"
+              >
+                <ArrowLeft size={20} strokeWidth={2.25} />
+              </button>
+
+              <div className="text-center text-sm font-semibold tracking-[0.16em] text-white/78">
+                {activeIndex + 1} / {galleryItems.length}
+              </div>
+
+              <button
+                type="button"
+                onClick={showNext}
+                className="inline-flex h-11 min-w-[3rem] items-center justify-center rounded-full border border-white/12 bg-white/8 px-4 text-white transition-colors duration-200 hover:bg-white/16 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                aria-label="Next image"
+              >
+                <ArrowRight size={20} strokeWidth={2.25} />
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </>
   );
 }
