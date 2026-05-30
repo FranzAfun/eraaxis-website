@@ -63,7 +63,7 @@ export const PAYMENT_CATEGORIES = [
   {
     slug: "programme-enrolment",
     title: "Programme Enrolment",
-    description: "Pay monthly or pay for a full programme upfront.",
+    description: "Choose monthly enrolment or full programme enrolment upfront.",
     route: "/payments/programme-enrolment",
     referencePrefix: "ERA-PROG",
     items: [
@@ -147,9 +147,9 @@ export const PAYMENT_CATEGORIES = [
   },
   {
     slug: "institutional-group",
-    title: "Institutional / Group Payments",
+    title: "Institutional / Group Enrolment",
     description:
-      "For schools, communities, NGOs, CSR sponsors, and partners paying for multiple learners.",
+      "For schools, communities, NGOs, CSR sponsors, and partners supporting multiple learners.",
     route: "/contact#enquiry",
     referencePrefix: "ERA-INST",
     isContactOnly: true,

@@ -5,6 +5,7 @@ import {
   calculatePaymentBreakdown,
   formatGhs,
 } from "../data/payments";
+import BackLinkButton from "../components/navigation/BackLinkButton";
 
 const category = getPaymentCategoryBySlug("student-chapter");
 const item = category.items[0];
@@ -51,13 +52,13 @@ export default function StudentChapterPayment() {
         />
 
         <div className="container relative z-10">
-          <Link
-            to="/payments"
+          <BackLinkButton
+            fallbackTo="/payments"
             className="mb-8 flex w-fit items-center gap-1.5 text-xs font-medium text-white/40 transition-colors hover:text-white/70"
           >
             <ArrowLeft size={12} strokeWidth={2.5} aria-hidden="true" />
-            Back to payment options
-          </Link>
+            Back
+          </BackLinkButton>
 
           <div className="max-w-3xl">
             <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
@@ -264,7 +265,7 @@ export default function StudentChapterPayment() {
                     to="/payments"
                     className="btn-outline w-full justify-center"
                   >
-                    Back to payment options
+                    Back to enrolment &amp; dues
                   </Link>
                 </div>
               </div>

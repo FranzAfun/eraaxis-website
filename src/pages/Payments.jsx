@@ -12,10 +12,10 @@ const paymentOptions = [
     title: "Programme Enrolment",
     amount: "From GHS 200/month",
     description:
-      "Pay for an ERA AXIS learning programme. Monthly or full upfront.",
+      "Choose an ERA AXIS learning programme. Monthly or full upfront.",
     bullets: [
       "4 programmes across school, youth, and professional tracks",
-      "Monthly or full programme payment options",
+      "Monthly or full programme enrolment options",
       "Full pricing and checkout totals shown at the next step",
     ],
     cta: "Choose programme",
@@ -32,7 +32,7 @@ const paymentOptions = [
       "GHS 15 first month dues",
       "Monthly dues continue after first month",
     ],
-    cta: "Start chapter payment",
+    cta: "Start chapter enrolment",
     to: "/payments/student-chapter",
     Icon: Users,
   },
@@ -50,14 +50,14 @@ const paymentOptions = [
     Icon: CalendarDays,
   },
   {
-    title: "Institutional / Group Payments",
+    title: "Institutional / Group Enrolment",
     amount: "Custom quote",
     description:
-      "For schools, communities, NGOs, CSR sponsors, and partners paying for multiple learners.",
+      "For schools, communities, NGOs, CSR sponsors, and partners supporting multiple learners.",
     bullets: [
       "Group learner support",
       "School/community arrangements",
-      "Custom payment guidance",
+      "Custom enrolment guidance",
     ],
     cta: "Request quote",
     to: "/contact#enquiry",
@@ -83,7 +83,7 @@ function OptionCard({ option }) {
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
           <p className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-[var(--color-primary)]">
-            Payment option
+            Enrolment option
           </p>
           <h2 className="text-2xl font-black tracking-tight text-[var(--color-text-primary)]">
             {option.title}
@@ -156,14 +156,14 @@ export default function Payments() {
         <div className="container relative z-10">
           <div className="max-w-3xl">
             <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
-              ERA AXIS PAYMENTS
+              ERA AXIS ENROLMENT
             </p>
             <h1 className="mb-5 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-[4rem]">
-              Payments &amp; Dues
+              Enrolment &amp; Dues
             </h1>
             <p className="max-w-2xl text-base leading-relaxed text-white/72 sm:text-lg">
-              Pay for programme enrolment, dues, student chapter access, or
-              request institutional/group payment support.
+              Start programme enrolment, pay dues, join the Student Chapter, or
+              request institutional or group support.
             </p>
 
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
@@ -171,7 +171,7 @@ export default function Payments() {
                 href="#payment-options"
                 className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-white px-5 text-sm font-semibold text-[var(--color-primary)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/90"
               >
-                Choose payment option
+                Choose enrolment option
                 <ArrowRight size={16} strokeWidth={2} />
               </a>
               <Link
@@ -198,10 +198,10 @@ export default function Payments() {
             </span>
             <div>
               <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
-                Payment options
+                Enrolment &amp; dues
               </p>
               <h2 className="mb-4 text-3xl font-black tracking-tight text-[var(--color-text-primary)] sm:text-4xl">
-                Start with the payment path that fits.
+                Start with the enrolment path that fits.
               </h2>
               <p className="text-sm leading-relaxed text-[var(--color-text-secondary)] sm:text-base">
                 Choose a category now. Final totals and confirmation steps will
@@ -225,7 +225,7 @@ export default function Payments() {
             Need help choosing?
           </h2>
           <p className="mx-auto mb-8 max-w-xl text-sm leading-relaxed text-white/80 sm:text-base">
-            Contact ERA AXIS and we will guide you to the right payment path.
+            Contact ERA AXIS and we will guide you to the right enrolment path.
           </p>
           <Link
             to="/contact#enquiry"

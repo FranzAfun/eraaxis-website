@@ -49,13 +49,13 @@ export const faqGroups = [
         id: "faq-monthly-dues",
         question: "How do monthly dues work?",
         answer:
-          "Monthly dues support active membership and community access. Members can pay dues through the Enrolment & Dues page once the payment flow is active.",
+          "Monthly dues support active membership and community access. Members can pay dues through the Enrolment & Dues page based on the dues option that fits their membership status.",
       },
       {
         id: "faq-receipt",
         question: "Will I receive a receipt?",
         answer:
-          "Yes. After payment integration is active, receipts and confirmation details will be sent using the contact information provided during enrolment or dues payment.",
+          "Yes. Receipts and confirmation details are shared using the contact information provided during enrolment or dues payment.",
       },
       {
         id: "faq-after-payment",

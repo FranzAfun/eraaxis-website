@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Check, FileText, Info, Lock } from "lucide-react";
 import {
   getPaymentCategoryBySlug,
@@ -7,6 +7,7 @@ import {
   calculateFullProgrammeBase,
   formatGhs,
 } from "../data/payments";
+import BackLinkButton from "../components/navigation/BackLinkButton";
 
 const category = getPaymentCategoryBySlug("programme-enrolment");
 
@@ -37,19 +38,9 @@ const optionalTag = (
 );
 
 export default function ProgrammeEnrolmentPayment() {
-  const location = useLocation();
   const [selectedProgrammeSlug, setSelectedProgrammeSlug] =
     useState("junior-stem");
   const [paymentOption, setPaymentOption] = useState("monthly");
-  const returnTo =
-    typeof location.state?.returnTo === "string" &&
-    location.state.returnTo.startsWith("/")
-      ? location.state.returnTo
-      : "/payments";
-  const returnLabel =
-    typeof location.state?.returnLabel === "string"
-      ? location.state.returnLabel
-      : "Back to payment options";
 
   const selectedProgramme =
     category.items.find((programme) => programme.slug === selectedProgrammeSlug) ||
@@ -85,17 +76,17 @@ export default function ProgrammeEnrolmentPayment() {
         />
 
         <div className="container relative z-10">
-          <Link
-            to={returnTo}
+          <BackLinkButton
+            fallbackTo="/payments"
             className="mb-8 flex w-fit items-center gap-1.5 text-xs font-medium text-white/40 transition-colors hover:text-white/70"
           >
             <ArrowLeft size={12} strokeWidth={2.5} aria-hidden="true" />
-            {returnLabel}
-          </Link>
+            Back
+          </BackLinkButton>
 
           <div className="max-w-3xl">
             <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
-              Programme Payment
+              Programme Enrolment
             </p>
             <h1 className="mb-5 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-[4rem]">
               Choose your programme and payment option.
@@ -357,7 +348,7 @@ export default function ProgrammeEnrolmentPayment() {
                     to="/payments"
                     className="btn-outline w-full justify-center"
                   >
-                    Back to payment options
+                    Back to enrolment &amp; dues
                   </Link>
                 </div>
               </div>

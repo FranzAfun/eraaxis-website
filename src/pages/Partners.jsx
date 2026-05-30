@@ -317,8 +317,8 @@ export default function Partners() {
             for schools, youth groups, and communities.
           </p>
           <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link to="/contact" className={ctaPrimaryClass}>
-              Contact ERA <ArrowRight size={16} />
+            <Link to="/contact#enquiry" className={ctaPrimaryClass}>
+              Start Partnership Conversation <ArrowRight size={16} />
             </Link>
             <Link to="/programs" className={ctaSecondaryClass}>
               Explore Programmes <ArrowRight size={16} />
