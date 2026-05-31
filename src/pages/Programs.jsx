@@ -5,6 +5,7 @@ import schoolStemImg from "../assets/images/programmes/school-stem-programs.webp
 import outOfSchoolImg from "../assets/images/programmes/out-of-school-youth.webp";
 import onlineLearningImg from "../assets/images/programmes/online-learning.webp";
 import eraDigitalImg from "../assets/images/programmes/era-digital-skill.webp";
+import programmesHeroImg from "../assets/images/programmes/programmes-hero.webp";
 
 const programmes = [
   {
@@ -162,33 +163,50 @@ export default function Programs() {
           className="absolute -bottom-24 right-4 h-96 w-96 rounded-full bg-[var(--color-accent)]/10 blur-3xl"
         />
         <div className="container relative z-10">
-          <div className="max-w-2xl">
-            <p className="mb-5 inline-flex w-fit rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
-              Programmes
-            </p>
-            <h1 className="mb-5 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-[4rem]">
-              Learning pathways for every stage of growth.
-            </h1>
-            <p className="mb-8 text-base leading-relaxed text-white/72 sm:text-lg">
-              From school-based STEM learning to digital skills for working
-              adults, ERA AXIS provides practical programmes that help learners
-              build real solutions.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <a
-                href="#pathways"
-                className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-white px-5 text-sm font-semibold text-[var(--color-primary)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/90"
-              >
-                Explore pathways
-                <ArrowDown size={16} strokeWidth={2} />
-              </a>
-              <Link
-                to="/partners"
-                className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[var(--radius-sm)] border border-white/25 bg-white/[0.08] px-5 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:text-[var(--color-primary)]"
-              >
-                Partner with ERA
-                <ArrowRight size={16} strokeWidth={2} />
-              </Link>
+          <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
+            <div className="flex flex-col justify-center">
+              <p className="mb-5 inline-flex w-fit self-start rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
+                Programmes
+              </p>
+              <h1 className="mb-5 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-[4rem]">
+                Learning pathways for every stage of growth.
+              </h1>
+              <p className="mb-8 max-w-2xl text-base leading-relaxed text-white/72 sm:text-lg">
+                From school-based STEM learning to digital skills for working
+                adults, ERA AXIS provides practical programmes that help learners
+                build real solutions.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <a
+                  href="#pathways"
+                  className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-white px-5 text-sm font-semibold text-[var(--color-primary)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/90"
+                >
+                  Explore pathways
+                  <ArrowDown size={16} strokeWidth={2} />
+                </a>
+                <Link
+                  to="/partners"
+                  className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[var(--radius-sm)] border border-white/25 bg-white/[0.08] px-5 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:text-[var(--color-primary)]"
+                >
+                  Partner with ERA
+                  <ArrowRight size={16} strokeWidth={2} />
+                </Link>
+              </div>
+            </div>
+
+            <div className="relative hidden lg:block">
+              <div className="relative overflow-hidden rounded-[var(--radius-lg)] border border-white/10 shadow-2xl shadow-black/20">
+                <img
+                  src={programmesHeroImg}
+                  alt="ERA AXIS learners participating in a practical programme session"
+                  className="aspect-[4/3] w-full object-cover"
+                />
+                <div className="absolute bottom-4 left-4">
+                  <span className="inline-block rounded-full bg-black/50 px-3 py-1 text-xs font-semibold text-white backdrop-blur-sm">
+                    Practical learning pathways
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </div>

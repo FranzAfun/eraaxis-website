@@ -6,6 +6,7 @@ import {
   formatGhs,
 } from "../data/payments";
 import BackLinkButton from "../components/navigation/BackLinkButton";
+import studentChapterHeroImg from "../assets/images/programmes/student-chapter-hero.webp";
 
 const category = getPaymentCategoryBySlug("student-chapter");
 const item = category.items[0];
@@ -61,18 +62,35 @@ export default function StudentChapterPayment() {
             Back
           </BackLinkButton>
 
-          <div className="max-w-3xl">
-            <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
-              Student Chapter
-            </p>
-            <h1 className="mb-5 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-[4rem]">
-              Join the ERA AXIS Student Chapter.
-            </h1>
-            <p className="max-w-2xl text-base leading-relaxed text-white/65 sm:text-lg">
-              Complete your first payment to access the Student Chapter
-              community, monthly practical sessions, and collaborative build
-              opportunities.
-            </p>
+          <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
+            <div className="flex flex-col justify-center">
+              <p className="mb-5 inline-flex w-fit self-start rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
+                Student Chapter
+              </p>
+              <h1 className="mb-5 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-[4rem]">
+                Join the ERA AXIS Student Chapter.
+              </h1>
+              <p className="max-w-2xl text-base leading-relaxed text-white/65 sm:text-lg">
+                Complete your first payment to access the Student Chapter
+                community, monthly practical sessions, and collaborative build
+                opportunities.
+              </p>
+            </div>
+
+            <div className="relative hidden lg:block">
+              <div className="relative overflow-hidden rounded-[var(--radius-lg)] border border-white/10 shadow-2xl shadow-black/20">
+                <img
+                  src={studentChapterHeroImg}
+                  alt="ERA AXIS Student Chapter learners in a practical session"
+                  className="aspect-[4/3] w-full object-cover"
+                />
+                <div className="absolute bottom-4 left-4">
+                  <span className="inline-block rounded-full bg-black/50 px-3 py-1 text-xs font-semibold text-white backdrop-blur-sm">
+                    Practical student learning
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>

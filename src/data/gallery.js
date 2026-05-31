@@ -1,21 +1,21 @@
 import image001 from "../assets/gallery/001.webp";
-import image002 from "../assets/gallery/002.webp";
-import image003 from "../assets/gallery/003.webp";
-import image004 from "../assets/gallery/004.webp";
-import image005 from "../assets/gallery/005.webp";
-import image006 from "../assets/gallery/006.webp";
-import image007 from "../assets/gallery/007.webp";
-import image008 from "../assets/gallery/008.webp";
-import image009 from "../assets/gallery/009.webp";
-import image010 from "../assets/gallery/010.webp";
-import image011 from "../assets/gallery/011.webp";
-import image012 from "../assets/gallery/012.webp";
-import image013 from "../assets/gallery/013.webp";
-import image014 from "../assets/gallery/014.webp";
-import image015 from "../assets/gallery/015.webp";
-import image016 from "../assets/gallery/016.webp";
-import image017 from "../assets/gallery/017.webp";
-import image018 from "../assets/gallery/018.webp";
+import image021 from "../assets/gallery/021.webp";
+import image022 from "../assets/gallery/022.webp";
+import image023 from "../assets/gallery/023.webp";
+import image063 from "../assets/gallery/063.webp";
+import image026 from "../assets/gallery/026.webp";
+import image027 from "../assets/gallery/027.webp";
+import image028 from "../assets/gallery/028.webp";
+import image029 from "../assets/gallery/029.webp";
+import image030 from "../assets/gallery/030.webp";
+import image031 from "../assets/gallery/031.webp";
+import image032 from "../assets/gallery/032.webp";
+import image033 from "../assets/gallery/033.webp";
+import image034 from "../assets/gallery/034.webp";
+import image035 from "../assets/gallery/035.webp";
+import image036 from "../assets/gallery/036.webp";
+import image037 from "../assets/gallery/037.webp";
+import image038 from "../assets/gallery/038.webp";
 
 // Static gallery metadata is intentionally minimal. Backend gallery uploads
 // will later provide moment, date, category, and descriptions.
@@ -29,136 +29,136 @@ export const galleryItems = [
     momentDate: null,
   },
   {
-    id: "gallery-002",
-    src: image002,
+    id: "gallery-021",
+    src: image021,
     alt: "ERA AXIS practical learning activity",
     category: null,
     moment: null,
     momentDate: null,
   },
   {
-    id: "gallery-003",
-    src: image003,
+    id: "gallery-022",
+    src: image022,
     alt: "ERA AXIS practical learning activity",
     category: null,
     moment: null,
     momentDate: null,
   },
   {
-    id: "gallery-004",
-    src: image004,
+    id: "gallery-023",
+    src: image023,
     alt: "ERA AXIS practical learning activity",
     category: null,
     moment: null,
     momentDate: null,
   },
   {
-    id: "gallery-005",
-    src: image005,
+    id: "gallery-063",
+    src: image063,
     alt: "ERA AXIS practical learning activity",
     category: null,
     moment: null,
     momentDate: null,
   },
   {
-    id: "gallery-006",
-    src: image006,
+    id: "gallery-026",
+    src: image026,
     alt: "ERA AXIS practical learning activity",
     category: null,
     moment: null,
     momentDate: null,
   },
   {
-    id: "gallery-007",
-    src: image007,
+    id: "gallery-027",
+    src: image027,
     alt: "ERA AXIS practical learning activity",
     category: null,
     moment: null,
     momentDate: null,
   },
   {
-    id: "gallery-008",
-    src: image008,
+    id: "gallery-028",
+    src: image028,
     alt: "ERA AXIS practical learning activity",
     category: null,
     moment: null,
     momentDate: null,
   },
   {
-    id: "gallery-009",
-    src: image009,
+    id: "gallery-029",
+    src: image029,
     alt: "ERA AXIS practical learning activity",
     category: null,
     moment: null,
     momentDate: null,
   },
   {
-    id: "gallery-010",
-    src: image010,
+    id: "gallery-030",
+    src: image030,
     alt: "ERA AXIS practical learning activity",
     category: null,
     moment: null,
     momentDate: null,
   },
   {
-    id: "gallery-011",
-    src: image011,
+    id: "gallery-031",
+    src: image031,
     alt: "ERA AXIS practical learning activity",
     category: null,
     moment: null,
     momentDate: null,
   },
   {
-    id: "gallery-012",
-    src: image012,
+    id: "gallery-032",
+    src: image032,
     alt: "ERA AXIS practical learning activity",
     category: null,
     moment: null,
     momentDate: null,
   },
   {
-    id: "gallery-013",
-    src: image013,
+    id: "gallery-033",
+    src: image033,
     alt: "ERA AXIS practical learning activity",
     category: null,
     moment: null,
     momentDate: null,
   },
   {
-    id: "gallery-014",
-    src: image014,
+    id: "gallery-034",
+    src: image034,
     alt: "ERA AXIS practical learning activity",
     category: null,
     moment: null,
     momentDate: null,
   },
   {
-    id: "gallery-015",
-    src: image015,
+    id: "gallery-035",
+    src: image035,
     alt: "ERA AXIS practical learning activity",
     category: null,
     moment: null,
     momentDate: null,
   },
   {
-    id: "gallery-016",
-    src: image016,
+    id: "gallery-036",
+    src: image036,
     alt: "ERA AXIS practical learning activity",
     category: null,
     moment: null,
     momentDate: null,
   },
   {
-    id: "gallery-017",
-    src: image017,
+    id: "gallery-037",
+    src: image037,
     alt: "ERA AXIS practical learning activity",
     category: null,
     moment: null,
     momentDate: null,
   },
   {
-    id: "gallery-018",
-    src: image018,
+    id: "gallery-038",
+    src: image038,
     alt: "ERA AXIS practical learning activity",
     category: null,
     moment: null,

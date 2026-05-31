@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { galleryPreviewItems } from "../../data/gallery";
@@ -35,28 +35,68 @@ function GalleryThumbnail({ item, isActive, onClick }) {
 export default function GalleryPreview() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [progressPercent, setProgressPercent] = useState(0);
+  const animationFrameRef = useRef(null);
+  const lastFrameTimeRef = useRef(null);
+  const progressMsRef = useRef(0);
 
   useEffect(() => {
-    if (paused) return undefined;
+    if (paused) {
+      lastFrameTimeRef.current = null;
+      return undefined;
+    }
 
-    const timer = window.setInterval(() => {
-      setActiveIndex((current) => (current + 1) % featuredItems.length);
-    }, AUTOPLAY_MS);
+    const tick = (timestamp) => {
+      if (lastFrameTimeRef.current == null) {
+        lastFrameTimeRef.current = timestamp;
+      }
 
-    return () => window.clearInterval(timer);
+      const delta = timestamp - lastFrameTimeRef.current;
+      lastFrameTimeRef.current = timestamp;
+
+      let nextProgress = progressMsRef.current + delta;
+
+      if (nextProgress >= AUTOPLAY_MS) {
+        nextProgress = 0;
+        setActiveIndex((current) => (current + 1) % featuredItems.length);
+      }
+
+      progressMsRef.current = nextProgress;
+      setProgressPercent((nextProgress / AUTOPLAY_MS) * 100);
+      animationFrameRef.current = window.requestAnimationFrame(tick);
+    };
+
+    animationFrameRef.current = window.requestAnimationFrame(tick);
+
+    return () => {
+      if (animationFrameRef.current != null) {
+        window.cancelAnimationFrame(animationFrameRef.current);
+      }
+      animationFrameRef.current = null;
+      lastFrameTimeRef.current = null;
+    };
   }, [paused]);
 
+  function resetProgress() {
+    progressMsRef.current = 0;
+    lastFrameTimeRef.current = null;
+    setProgressPercent(0);
+  }
+
   function goTo(index) {
+    resetProgress();
     setActiveIndex(index);
   }
 
   function goPrev() {
+    resetProgress();
     setActiveIndex((current) =>
       current === 0 ? featuredItems.length - 1 : current - 1
     );
   }
 
   function goNext() {
+    resetProgress();
     setActiveIndex((current) => (current + 1) % featuredItems.length);
   }
 
@@ -169,12 +209,8 @@ export default function GalleryPreview() {
 
             <div className="gallery-stage-progress-track">
               <div
-                key={`${activeIndex}-${paused ? "paused" : "playing"}`}
-                className={[
-                  "gallery-stage-progress-bar",
-                  paused ? "is-paused" : "",
-                ].join(" ")}
-                style={{ animationDuration: `${AUTOPLAY_MS}ms` }}
+                className="gallery-stage-progress-bar"
+                style={{ transform: `scaleX(${progressPercent / 100})` }}
               />
             </div>
           </div>

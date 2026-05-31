@@ -453,11 +453,6 @@
       color-mix(in srgb, var(--color-accent) 55%, white) 100%
     );
     transform-origin: left center;
-    animation: galleryProgressFill linear both;
-  }
-
-  .gallery-stage-progress-bar.is-paused {
-    animation-play-state: paused;
   }
 
   .gallery-thumb-grid {
