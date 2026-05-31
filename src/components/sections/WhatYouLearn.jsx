@@ -93,11 +93,11 @@ export default function WhatYouLearn() {
             </p>
 
             <div className="mt-8 hidden gap-3 sm:flex sm:flex-row sm:items-center">
-              <Link to="/payments" className="btn-primary">
+              <Link to="/payments" className="btn-primary cta-mobile-btn">
                 Enrol now
                 <ArrowRight size={16} strokeWidth={2} />
               </Link>
-              <Link to="/programs" className="btn-secondary">
+              <Link to="/programs" className="btn-secondary cta-mobile-btn">
                 Explore programmes
                 <ArrowRight size={16} strokeWidth={2} />
               </Link>
@@ -113,11 +113,11 @@ export default function WhatYouLearn() {
 
         <div className="mt-8 rounded-[18px] border border-white/10 bg-[rgb(255_255_255_/_0.06)] p-4 shadow-[0_16px_40px_rgb(0_0_0_/_0.16)] sm:hidden">
           <div className="flex flex-col gap-3">
-            <Link to="/payments" className="btn-primary w-full justify-center">
+            <Link to="/payments" className="btn-primary cta-mobile-btn">
               Enrol now
               <ArrowRight size={16} strokeWidth={2} />
             </Link>
-            <Link to="/programs" className="btn-secondary w-full justify-center">
+            <Link to="/programs" className="btn-secondary cta-mobile-btn">
               Explore programmes
               <ArrowRight size={16} strokeWidth={2} />
             </Link>

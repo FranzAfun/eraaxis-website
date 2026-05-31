@@ -54,7 +54,7 @@ export default function Hero() {
           <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-4">
             <Link
               to="/programs"
-              className="btn-primary group flex h-14 w-full max-w-[320px] items-center justify-center rounded-xl px-7 text-sm font-semibold sm:w-[230px] sm:max-w-none md:w-[250px] md:text-base"
+              className="btn-primary cta-mobile-btn group flex h-14 max-w-[320px] items-center justify-center rounded-xl px-7 text-sm font-semibold sm:w-[230px] sm:max-w-none md:w-[250px] md:text-base"
             >
               Explore Programmes
               <ArrowRight
@@ -65,7 +65,7 @@ export default function Hero() {
             </Link>
             <Link
               to="/partners"
-              className="btn-secondary group flex h-14 w-full max-w-[320px] items-center justify-center rounded-xl px-7 text-sm font-semibold sm:w-[230px] sm:max-w-none md:w-[250px] md:text-base"
+              className="btn-secondary cta-mobile-btn group flex h-14 max-w-[320px] items-center justify-center rounded-xl px-7 text-sm font-semibold sm:w-[230px] sm:max-w-none md:w-[250px] md:text-base"
             >
               Partner With ERA
               <ArrowRight

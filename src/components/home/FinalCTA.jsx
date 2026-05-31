@@ -62,14 +62,14 @@ export default function FinalCTA() {
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center sm:gap-4">
             <Link
               to="/programs"
-              className="final-cta-btn-primary flex h-12 w-full max-w-[300px] items-center justify-center gap-2 rounded-[var(--radius-sm)] px-7 text-sm font-semibold sm:w-[210px] sm:max-w-none"
+              className="final-cta-btn-primary cta-mobile-btn flex h-12 max-w-[300px] items-center justify-center gap-2 rounded-[var(--radius-sm)] px-7 text-sm font-semibold sm:w-[210px] sm:max-w-none"
             >
               Explore Programmes
               <ArrowRight size={16} strokeWidth={2} />
             </Link>
             <Link
               to="/partners"
-              className="final-cta-btn-secondary flex h-12 w-full max-w-[300px] items-center justify-center gap-2 rounded-[var(--radius-sm)] px-7 text-sm font-semibold sm:w-[210px] sm:max-w-none"
+              className="final-cta-btn-secondary cta-mobile-btn flex h-12 max-w-[300px] items-center justify-center gap-2 rounded-[var(--radius-sm)] px-7 text-sm font-semibold sm:w-[210px] sm:max-w-none"
             >
               Partner With ERA
               <ArrowRight size={16} strokeWidth={2} />

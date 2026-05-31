@@ -79,14 +79,14 @@ export default function About() {
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 to="/programs"
-                className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-white px-5 text-sm font-semibold text-[var(--color-primary)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/90"
+                className="cta-mobile-btn inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-white px-5 text-sm font-semibold text-[var(--color-primary)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/90"
               >
                 Explore Programmes
                 <ArrowRight size={16} strokeWidth={2} />
               </Link>
               <Link
                 to="/payments"
-                className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[var(--radius-sm)] border border-white/25 bg-white/[0.08] px-5 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:text-[var(--color-primary)]"
+                className="cta-mobile-btn inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[var(--radius-sm)] border border-white/25 bg-white/[0.08] px-5 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:text-[var(--color-primary)]"
               >
                 Enrol Now
                 <ArrowRight size={16} strokeWidth={2} />
@@ -308,14 +308,14 @@ export default function About() {
           <div className="flex flex-wrap justify-center gap-3">
             <Link
               to="/programs"
-              className="final-cta-btn-primary inline-flex items-center gap-2 rounded-[var(--radius-sm)] px-5 py-2.5 text-sm font-semibold"
+              className="final-cta-btn-primary cta-mobile-btn inline-flex items-center gap-2 rounded-[var(--radius-sm)] px-5 py-2.5 text-sm font-semibold"
             >
               Explore Programmes
               <ArrowRight size={15} strokeWidth={2.2} />
             </Link>
             <Link
               to="/payments"
-              className="final-cta-btn-secondary inline-flex items-center gap-2 rounded-[var(--radius-sm)] px-5 py-2.5 text-sm font-semibold"
+              className="final-cta-btn-secondary cta-mobile-btn inline-flex items-center gap-2 rounded-[var(--radius-sm)] px-5 py-2.5 text-sm font-semibold"
             >
               Enrol Now
               <ArrowRight size={15} strokeWidth={2.2} />

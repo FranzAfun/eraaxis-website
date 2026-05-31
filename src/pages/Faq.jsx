@@ -98,11 +98,11 @@ export default function Faq() {
             </p>
 
             <div className="flex flex-col gap-3 sm:flex-row">
-              <Link to="/payments" className="btn-primary">
+              <Link to="/payments" className="btn-primary cta-mobile-btn">
                 Start enrolment
                 <ArrowRight size={16} strokeWidth={2} />
               </Link>
-              <Link to="/contact#enquiry" className="btn-secondary">
+              <Link to="/contact#enquiry" className="btn-secondary cta-mobile-btn">
                 Contact ERA AXIS
                 <ArrowRight size={16} strokeWidth={2} />
               </Link>

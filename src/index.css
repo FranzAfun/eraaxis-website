@@ -774,6 +774,17 @@
       background-color 220ms ease;
   }
 
+  .cta-mobile-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  @media (min-width: 640px) {
+    .cta-mobile-btn {
+      width: auto;
+    }
+  }
+
   @media (hover: hover) {
     .hero-media-card:hover {
       transform: translateY(-0.35rem);

@@ -179,14 +179,14 @@ export default function Programs() {
               <div className="flex flex-wrap gap-3">
                 <a
                   href="#pathways"
-                  className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-white px-5 text-sm font-semibold text-[var(--color-primary)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/90"
+                  className="cta-mobile-btn inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-white px-5 text-sm font-semibold text-[var(--color-primary)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/90"
                 >
                   Explore pathways
                   <ArrowDown size={16} strokeWidth={2} />
                 </a>
                 <Link
                   to="/partners"
-                  className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[var(--radius-sm)] border border-white/25 bg-white/[0.08] px-5 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:text-[var(--color-primary)]"
+                  className="cta-mobile-btn inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[var(--radius-sm)] border border-white/25 bg-white/[0.08] px-5 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:text-[var(--color-primary)]"
                 >
                   Partner with ERA
                   <ArrowRight size={16} strokeWidth={2} />
@@ -272,14 +272,14 @@ export default function Programs() {
           <div className="flex flex-wrap justify-center gap-3">
             <Link
               to="/contact"
-              className="final-cta-btn-primary inline-flex items-center gap-2 rounded-[var(--radius-sm)] px-5 py-2.5 text-sm font-semibold"
+              className="final-cta-btn-primary cta-mobile-btn inline-flex items-center gap-2 rounded-[var(--radius-sm)] px-5 py-2.5 text-sm font-semibold"
             >
               Contact ERA
               <ArrowRight size={15} strokeWidth={2.2} />
             </Link>
             <Link
               to="/partners"
-              className="final-cta-btn-secondary inline-flex items-center gap-2 rounded-[var(--radius-sm)] px-5 py-2.5 text-sm font-semibold"
+              className="final-cta-btn-secondary cta-mobile-btn inline-flex items-center gap-2 rounded-[var(--radius-sm)] px-5 py-2.5 text-sm font-semibold"
             >
               Partner With ERA
               <ArrowRight size={15} strokeWidth={2.2} />

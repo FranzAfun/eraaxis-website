@@ -122,11 +122,11 @@ export default function GalleryPreview() {
           </div>
 
           <div className="hidden flex-col items-start gap-3 sm:flex-row sm:items-center lg:flex">
-            <Link to="/payments" className="btn-primary">
+            <Link to="/payments" className="btn-primary cta-mobile-btn">
               Enrol now
               <ArrowRight size={16} strokeWidth={2} />
             </Link>
-            <Link to="/gallery" className="btn-secondary">
+            <Link to="/gallery" className="btn-secondary cta-mobile-btn">
               View gallery
               <ArrowRight size={16} strokeWidth={2} />
             </Link>
@@ -228,11 +228,11 @@ export default function GalleryPreview() {
         </div>
 
         <div className="mt-6 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center lg:hidden">
-          <Link to="/payments" className="btn-primary w-full justify-center sm:w-auto">
+          <Link to="/payments" className="btn-primary cta-mobile-btn">
             Enrol now
             <ArrowRight size={16} strokeWidth={2} />
           </Link>
-          <Link to="/gallery" className="btn-secondary w-full justify-center sm:w-auto">
+          <Link to="/gallery" className="btn-secondary cta-mobile-btn">
             View gallery
             <ArrowRight size={16} strokeWidth={2} />
           </Link>

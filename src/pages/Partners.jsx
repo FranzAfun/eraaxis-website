@@ -60,9 +60,9 @@ const partnershipAreas = [
 ];
 
 const ctaPrimaryClass =
-  "final-cta-btn-primary inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[var(--radius-sm)] px-5 text-sm font-semibold";
+  "final-cta-btn-primary cta-mobile-btn inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[var(--radius-sm)] px-5 text-sm font-semibold";
 const ctaSecondaryClass =
-  "final-cta-btn-secondary inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[var(--radius-sm)] px-5 text-sm font-semibold";
+  "final-cta-btn-secondary cta-mobile-btn inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[var(--radius-sm)] px-5 text-sm font-semibold";
 
 export default function Partners() {
   return (
@@ -101,6 +101,17 @@ export default function Partners() {
                 accelerator programs, and organizations advancing innovation,
                 education, and youth development.
               </p>
+
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Link to="/contact#enquiry" className={ctaPrimaryClass}>
+                  Start partnership conversation
+                  <ArrowRight size={16} strokeWidth={2} />
+                </Link>
+                <Link to="/programs" className={ctaSecondaryClass}>
+                  Explore Programmes
+                  <ArrowRight size={16} strokeWidth={2} />
+                </Link>
+              </div>
             </div>
 
             {/* Right: image */}
