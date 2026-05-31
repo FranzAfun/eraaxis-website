@@ -121,12 +121,12 @@ export default function WhoItIsFor() {
           ))}
         </div>
 
-        <div className="mt-10 flex flex-col items-start gap-3 sm:mt-12 sm:flex-row sm:items-center">
-          <Link to="/payments" className="btn-primary">
+        <div className="mt-10 flex flex-col items-stretch gap-3 sm:mt-12 sm:flex-row sm:items-center">
+          <Link to="/payments" className="btn-primary w-full justify-center sm:w-auto">
             Enrol now
             <ArrowRight size={16} strokeWidth={2} />
           </Link>
-          <Link to="/programs" className="btn-outline">
+          <Link to="/programs" className="btn-outline w-full justify-center sm:w-auto">
             Explore programmes
             <ArrowRight size={16} strokeWidth={2} />
           </Link>

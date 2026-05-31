@@ -105,7 +105,7 @@ export default function Partners() {
 
             {/* Right: image */}
             <div className="relative hidden lg:block">
-              <div className="relative overflow-hidden rounded-[var(--radius-lg)] border border-white/10 shadow-2xl shadow-black/20">
+              <div className="hero-media-card">
                 <img
                   src={heroImg}
                   alt="ERA AXIS at the EdTech Fellowship ecosystem showcase"
@@ -113,7 +113,7 @@ export default function Partners() {
                 />
                 {/* Badge */}
                 <div className="absolute bottom-4 left-4">
-                  <span className="inline-block rounded-full bg-black/50 px-3 py-1 text-xs font-semibold text-white backdrop-blur-sm">
+                  <span className="hero-media-card-badge inline-block rounded-full bg-black/50 px-3 py-1 text-xs font-semibold text-white backdrop-blur-sm">
                     Mastercard Foundation EdTech Fellowship
                   </span>
                 </div>

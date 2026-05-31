@@ -248,14 +248,14 @@ export default function DevBoard() {
 
             {/* Right: board image (tablet and up only) */}
             <div className="hidden md:flex">
-              <div className="relative min-h-[320px] w-full overflow-hidden rounded-[var(--radius-lg)] border border-white/10 bg-white/[0.04] shadow-2xl shadow-black/20">
+              <div className="hero-media-card relative min-h-[320px] w-full bg-white/[0.04]">
                 <img
                   src={devBoardFrontImg}
                   alt="ERA Kids Development Board, front view"
                   className="absolute inset-0 h-full w-full object-cover object-center"
                 />
                 <div className="absolute bottom-4 left-4">
-                  <span className="inline-flex items-center rounded-full bg-white/90 px-3 py-1.5 text-xs font-semibold text-[var(--color-text-primary)] shadow-sm backdrop-blur-sm">
+                  <span className="hero-media-card-badge inline-flex items-center rounded-full bg-white/90 px-3 py-1.5 text-xs font-semibold text-[var(--color-text-primary)] shadow-sm backdrop-blur-sm">
                     Ghana-developed learning kit
                   </span>
                 </div>

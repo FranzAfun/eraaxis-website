@@ -98,7 +98,7 @@ export default function About() {
 
       <section className="bg-white py-16 md:py-20">
         <div className="container">
-          <div className="relative overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-border)] bg-[var(--color-surface-soft)] shadow-[var(--shadow-soft)]">
+          <div className="hero-media-card border-[var(--color-border)] bg-[var(--color-surface-soft)]">
             <img
               src={programmesHeroImg}
               alt="ERA AXIS learners in a practical STEM learning session"

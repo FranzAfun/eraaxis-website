@@ -195,14 +195,14 @@ export default function Programs() {
             </div>
 
             <div className="relative hidden lg:block">
-              <div className="relative overflow-hidden rounded-[var(--radius-lg)] border border-white/10 shadow-2xl shadow-black/20">
+              <div className="hero-media-card">
                 <img
                   src={programmesHeroImg}
                   alt="ERA AXIS learners participating in a practical programme session"
                   className="aspect-[4/3] w-full object-cover"
                 />
                 <div className="absolute bottom-4 left-4">
-                  <span className="inline-block rounded-full bg-black/50 px-3 py-1 text-xs font-semibold text-white backdrop-blur-sm">
+                  <span className="hero-media-card-badge inline-block rounded-full bg-black/50 px-3 py-1 text-xs font-semibold text-white backdrop-blur-sm">
                     Practical learning pathways
                   </span>
                 </div>
