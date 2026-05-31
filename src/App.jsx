@@ -5,6 +5,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import Home from "./pages/Home";
 
 const Programs = lazy(() => import("./pages/Programs"));
+const About = lazy(() => import("./pages/About"));
 const SchoolStem = lazy(() => import("./pages/SchoolStem"));
 const OutOfSchoolYouth = lazy(() => import("./pages/OutOfSchoolYouth"));
 const OnlineLearning = lazy(() => import("./pages/OnlineLearning"));
@@ -49,6 +50,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/programs" element={<Programs />} />
+            <Route path="/about" element={<About />} />
             <Route path="/programs/school-stem" element={<SchoolStem />} />
             <Route path="/programs/out-of-school-youth" element={<OutOfSchoolYouth />} />
             <Route path="/programs/online-learning" element={<OnlineLearning />} />

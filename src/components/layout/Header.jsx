@@ -8,6 +8,7 @@ const navLinks = [
   { label: "Dev Board", to: "/dev-board" },
   { label: "Partners", to: "/partners" },
   { label: "Insights", to: "/insights" },
+  { label: "About", to: "/about" },
   { label: "Contact", to: "/contact" },
 ];
 
