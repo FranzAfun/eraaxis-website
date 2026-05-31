@@ -147,6 +147,70 @@ export default function About() {
 
       <section className="bg-white py-16 md:py-20">
         <div className="container">
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,1.08fr)_minmax(280px,0.72fr)] lg:items-start">
+            <div>
+              <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
+                Our Story
+              </p>
+              <h2 className="mb-4 text-3xl font-black tracking-tight text-[var(--color-text-primary)] sm:text-4xl">
+                Built to make technology education practical and useful.
+              </h2>
+              <div className="space-y-4 text-base leading-relaxed text-[var(--color-text-secondary)] sm:text-lg">
+                <p>
+                  ERA AXIS was built to make technology education more
+                  practical, accessible, and useful for African learners. We
+                  focus on hands-on STEM, digital skills, and project-based
+                  learning so students, out-of-school youth, parents, and
+                  professionals can move from theory to building real
+                  solutions.
+                </p>
+                <p>
+                  Through programmes in electronics, robotics, coding, AI,
+                  digital skills, and product design, ERA AXIS helps learners
+                  gain confidence with technology and apply it to real-world
+                  problems.
+                </p>
+              </div>
+            </div>
+
+            <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface-soft)] p-6 shadow-[0_1px_4px_rgb(0_0_0/0.05)] sm:p-7">
+              <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
+                Journey so far
+              </p>
+              <div className="space-y-4">
+                <div className="border-b border-[var(--color-border)] pb-4">
+                  <p className="mb-1 text-sm font-bold text-[var(--color-text-primary)]">
+                    2020
+                  </p>
+                  <p className="text-sm leading-relaxed text-[var(--color-text-secondary)]">
+                    ERA AXIS started.
+                  </p>
+                </div>
+                <div className="border-b border-[var(--color-border)] pb-4">
+                  <p className="mb-1 text-sm font-bold text-[var(--color-text-primary)]">
+                    2024
+                  </p>
+                  <p className="text-sm leading-relaxed text-[var(--color-text-secondary)]">
+                    Incorporated.
+                  </p>
+                </div>
+                <div>
+                  <p className="mb-1 text-sm font-bold text-[var(--color-text-primary)]">
+                    Today
+                  </p>
+                  <p className="text-sm leading-relaxed text-[var(--color-text-secondary)]">
+                    Practical STEM and digital skills programmes for learners,
+                    youth, professionals, schools, and partners.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-[var(--color-surface-soft)] py-16 md:py-20">
+        <div className="container">
           <div className="mb-10 max-w-2xl">
             <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
               What we do
@@ -183,23 +247,51 @@ export default function About() {
         </div>
       </section>
 
-      <section className="bg-[var(--color-surface-soft)] py-16 md:py-20">
+      <section className="bg-white py-16 md:py-20">
         <div className="container">
-          <div className="mx-auto max-w-3xl rounded-[var(--radius-lg)] border border-[var(--color-primary)]/12 bg-white p-8 text-center shadow-[var(--shadow-soft)] md:p-10">
-            <span className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)]">
-              <Briefcase size={22} strokeWidth={2} />
-            </span>
+          <div className="mb-10 max-w-2xl">
             <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
-              Our mission
+              Mission &amp; Vision
             </p>
             <h2 className="mb-4 text-3xl font-black tracking-tight text-[var(--color-text-primary)] sm:text-4xl">
-              Expanding access to practical technology learning.
+              The direction guiding how ERA AXIS grows.
             </h2>
-            <p className="text-base leading-relaxed text-[var(--color-text-secondary)] sm:text-lg">
-              To make practical STEM and digital skills education accessible
-              across Africa by helping learners build real projects, solve real
-              problems, and grow with technology.
-            </p>
+          </div>
+
+          <div className="grid gap-5 lg:grid-cols-2">
+            <div className="card-interactive rounded-[var(--radius-md)] p-7 sm:p-8">
+              <span className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)]">
+                <Briefcase size={22} strokeWidth={2} />
+              </span>
+              <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
+                Our mission
+              </p>
+              <h3 className="mb-4 text-2xl font-black tracking-tight text-[var(--color-text-primary)] sm:text-[2rem]">
+                Expanding access to practical technology learning.
+              </h3>
+              <p className="text-base leading-relaxed text-[var(--color-text-secondary)] sm:text-lg">
+                To make practical STEM and digital skills education accessible
+                across Africa by helping learners build real projects, solve
+                real problems, and grow with technology.
+              </p>
+            </div>
+
+            <div className="card-interactive rounded-[var(--radius-md)] p-7 sm:p-8">
+              <span className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)]">
+                <Cpu size={22} strokeWidth={2} />
+              </span>
+              <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
+                Our vision
+              </p>
+              <h3 className="mb-4 text-2xl font-black tracking-tight text-[var(--color-text-primary)] sm:text-[2rem]">
+                A stronger future for practical learning in Africa.
+              </h3>
+              <p className="text-base leading-relaxed text-[var(--color-text-secondary)] sm:text-lg">
+                To become a leading practical STEM and digital skills platform
+                in Africa, helping more people learn by building, innovate with
+                confidence, and use technology to improve their communities.
+              </p>
+            </div>
           </div>
         </div>
       </section>
