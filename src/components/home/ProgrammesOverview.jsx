@@ -71,7 +71,7 @@ function ProgrammeCard({ image, title, text, to, cta }) {
 
 export default function ProgrammesOverview() {
   return (
-    <section className="bg-[var(--color-surface-soft)] py-20 md:py-24 lg:py-28">
+    <section className="premium-settle-in bg-[var(--color-surface-soft)] py-20 md:py-24 lg:py-28">
       <div className="container">
         {/* Section header */}
         <div className="mb-12 max-w-2xl">

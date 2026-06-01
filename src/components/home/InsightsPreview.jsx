@@ -9,10 +9,10 @@ function InsightCard({ type, title, excerpt, slug, isVisible, reducedMotion, ind
   return (
     <Link
       to={`/insights/${slug}`}
-      className={`insights-card group flex flex-col p-7 transition-all duration-700 ease-out hover:-translate-y-1 hover:duration-300 ${
+      className={`insights-card group flex flex-col p-7 transition-all duration-500 ease-out hover:-translate-y-1 hover:duration-300 ${
         isVisible || reducedMotion
           ? "opacity-100 translate-y-0"
-          : "opacity-0 translate-y-6"
+          : "opacity-0 translate-y-3"
       }`}
       style={{ transitionDelay: `${delay}ms` }}
     >
@@ -66,10 +66,10 @@ export default function InsightsPreview() {
       <div className="container">
         {/* Section header + CTA row */}
         <div
-          className={`mb-8 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between md:mb-10 transition-all duration-700 ease-out ${
+          className={`mb-8 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between md:mb-10 transition-all duration-500 ease-out ${
             isVisible || reducedMotion
               ? "opacity-100 translate-y-0"
-              : "opacity-0 translate-y-5"
+              : "opacity-0 translate-y-3"
           }`}
         >
           <div className="max-w-xl">

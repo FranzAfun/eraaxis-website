@@ -81,7 +81,7 @@ export default function WhoItIsFor() {
     <section
       id="everyone"
       aria-label="Who ERA AXIS is for"
-      className="relative overflow-hidden bg-[linear-gradient(180deg,#fcfbff_0%,var(--color-surface-soft)_100%)] py-20 md:py-24 lg:py-28"
+      className="premium-settle-in relative overflow-hidden bg-[linear-gradient(180deg,#fcfbff_0%,var(--color-surface-soft)_100%)] py-20 md:py-24 lg:py-28"
     >
       <div
         aria-hidden="true"

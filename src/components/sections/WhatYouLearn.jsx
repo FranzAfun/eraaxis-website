@@ -70,7 +70,7 @@ export default function WhatYouLearn() {
     <section
       id="learn"
       aria-label="What learners build with ERA AXIS"
-      className="relative overflow-hidden bg-[linear-gradient(135deg,var(--color-background-dark)_0%,var(--color-primary-deep)_55%,var(--color-primary)_100%)] py-20 md:py-24 lg:py-28"
+      className="premium-settle-in relative overflow-hidden bg-[linear-gradient(135deg,var(--color-background-dark)_0%,var(--color-primary-deep)_55%,var(--color-primary)_100%)] py-20 md:py-24 lg:py-28"
     >
       <div
         aria-hidden="true"

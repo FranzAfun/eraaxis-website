@@ -66,10 +66,10 @@ function MetricCard({ value, suffix, label, description, isVisible, reducedMotio
 
   return (
     <div
-      className={`impact-metric-card rounded-[var(--radius-md)] p-8 transition-all duration-700 ease-out hover:-translate-y-1 hover:duration-300 ${
+      className={`impact-metric-card rounded-[var(--radius-md)] p-8 transition-all duration-500 ease-out hover:-translate-y-1 hover:duration-300 ${
         isVisible || reducedMotion
           ? "opacity-100 translate-y-0"
-          : "opacity-0 translate-y-6"
+          : "opacity-0 translate-y-3"
       }`}
       style={{ transitionDelay: `${delay}ms` }}
     >
@@ -117,10 +117,10 @@ export default function ImpactMetrics() {
       <div className="container relative z-10">
         {/* Section header */}
         <div
-          className={`mb-12 max-w-2xl transition-all duration-700 ease-out md:mb-14 ${
+          className={`mb-12 max-w-2xl transition-all duration-500 ease-out md:mb-14 ${
             isVisible || reducedMotion
               ? "opacity-100 translate-y-0"
-              : "opacity-0 translate-y-5"
+              : "opacity-0 translate-y-3"
           }`}
         >
           <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)]">
