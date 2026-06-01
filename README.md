@@ -58,10 +58,6 @@ VITE_SOCIAL_TIKTOK_URL=
 VITE_SOCIAL_WHATSAPP_URL=
 ```
 
-Notes:
-- `VITE_` variables are public and are bundled into the client.
-- Do not place secrets in frontend env files.
-- `VITE_API_BASE_URL` and `VITE_SITE_URL` are reserved for future backend integration and canonical links.
 
 ## Deployment (Netlify)
 - Build command: `npm run build`
