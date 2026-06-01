@@ -24,14 +24,13 @@ const company = [
   { label: "Enrolment & Dues", to: "/payments" },
 ];
 
-// TODO: Replace temporary social hrefs with official ERA AXIS social URLs when confirmed.
 const socials = [
-  { label: "LinkedIn",  href: "#", img: linkedinImg  },
-  { label: "X",         href: "#", img: xImg         },
-  { label: "Instagram", href: "#", img: instagramImg },
-  { label: "TikTok",    href: "#", img: tiktokImg    },
-  { label: "WhatsApp",  href: "#", img: whatsappImg  },
-];
+  { label: "LinkedIn",  href: import.meta.env.VITE_SOCIAL_LINKEDIN_URL, img: linkedinImg  },
+  { label: "X",         href: import.meta.env.VITE_SOCIAL_X_URL, img: xImg         },
+  { label: "Instagram", href: import.meta.env.VITE_SOCIAL_INSTAGRAM_URL, img: instagramImg },
+  { label: "TikTok",    href: import.meta.env.VITE_SOCIAL_TIKTOK_URL, img: tiktokImg    },
+  { label: "WhatsApp",  href: import.meta.env.VITE_SOCIAL_WHATSAPP_URL, img: whatsappImg  },
+].filter((social) => typeof social.href === "string" && social.href.trim().length > 0);
 
 function FooterHeading({ children }) {
   return (

@@ -8,6 +8,7 @@ import {
   Wrench,
 } from "lucide-react";
 import programmesHeroImg from "../assets/images/programmes/programmes-hero.webp";
+import ImpactStories from "../components/home/ImpactStories";
 
 const whatWeDo = [
   {
@@ -295,6 +296,8 @@ export default function About() {
           </div>
         </div>
       </section>
+
+      <ImpactStories />
 
       <section className="final-cta-band relative overflow-hidden py-16 md:py-20">
         <div
