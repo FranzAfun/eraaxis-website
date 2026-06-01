@@ -30,7 +30,7 @@ const StudentChapterPayment = lazy(() => import("./pages/StudentChapterPayment")
 
 function AppShell() {
   const hideTimerRef = useRef(null);
-  const showFrameRef = useRef(null);
+  const showTimerRef = useRef(null);
   const pendingPathRef = useRef(null);
   const [transitionState, setTransitionState] = useState({
     visible: false,
@@ -45,9 +45,9 @@ function AppShell() {
       hideTimerRef.current = null;
     }
 
-    if (showFrameRef.current) {
-      cancelAnimationFrame(showFrameRef.current);
-      showFrameRef.current = null;
+    if (showTimerRef.current) {
+      clearTimeout(showTimerRef.current);
+      showTimerRef.current = null;
     }
   }, []);
 
@@ -56,14 +56,14 @@ function AppShell() {
       clearTimers();
       pendingPathRef.current = pathname;
 
-      showFrameRef.current = requestAnimationFrame(() => {
+      showTimerRef.current = setTimeout(() => {
         setTransitionState((current) => ({
           visible: true,
           exiting: false,
           tone: pathname.startsWith("/payments") ? "calm" : "brand",
           sequence: current.sequence + 1,
         }));
-      });
+      }, pathname.startsWith("/payments") ? 80 : 110);
     },
     [clearTimers]
   );
