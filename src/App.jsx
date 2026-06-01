@@ -22,6 +22,7 @@ const Gallery = lazy(() => import("./pages/Gallery"));
 const Faq = lazy(() => import("./pages/Faq"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Payments = lazy(() => import("./pages/Payments"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 const ProgrammeEnrolmentPayment = lazy(() =>
   import("./pages/ProgrammeEnrolmentPayment")
 );
@@ -136,6 +137,7 @@ function AppShell() {
             <Route path="/payments/programme-enrolment" element={<ProgrammeEnrolmentPayment />} />
             <Route path="/payments/monthly-dues" element={<MonthlyDuesPayment />} />
             <Route path="/payments/student-chapter" element={<StudentChapterPayment />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
       </SiteLayout>
