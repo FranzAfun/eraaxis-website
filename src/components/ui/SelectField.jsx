@@ -44,6 +44,7 @@ export default function SelectField({
   const wrapperRef = useRef(null);
   const triggerRef = useRef(null);
   const listRef = useRef(null);
+  const menuRef = useRef(null);
 
   const normalizedOptions = useMemo(
     () =>
@@ -98,7 +99,10 @@ export default function SelectField({
     if (!open) return undefined;
 
     function handlePointerDown(event) {
-      if (!wrapperRef.current?.contains(event.target)) {
+      if (
+        !wrapperRef.current?.contains(event.target) &&
+        !menuRef.current?.contains(event.target)
+      ) {
         setOpen(false);
       }
     }
@@ -264,10 +268,11 @@ export default function SelectField({
       </button>
 
       {open && menuPosition && createPortal(
-        <div
-          className={[
-            "fixed z-[70] overflow-hidden rounded-[var(--radius-md)] border border-[var(--color-border-soft)] bg-white shadow-[0_20px_60px_rgba(17,17,17,0.12)]",
-            menuClassName,
+          <div
+            ref={menuRef}
+            className={[
+              "fixed z-[70] overflow-hidden rounded-[var(--radius-md)] border border-[var(--color-border-soft)] bg-white shadow-[0_20px_60px_rgba(17,17,17,0.12)]",
+              menuClassName,
           ].join(" ")}
           style={{
             ...(menuPosition.top !== undefined
