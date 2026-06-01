@@ -2,7 +2,7 @@ export const PAYSTACK_FEE_RATE = 0.0195;
 export const MAINTENANCE_FEE_GHS = 2;
 export const PAYMENT_REFERENCE_FORMAT = "ERA-TYPE-YYYYMMDD-UNIQUEID";
 export const PAYMENT_REFERENCE_NOTE =
-  "Final payment references are generated securely by the backend when payment is initiated.";
+  "A final payment reference will be provided when your checkout is started.";
 
 export function formatGhs(amount) {
   return `GHS ${Number(amount).toFixed(2)}`;

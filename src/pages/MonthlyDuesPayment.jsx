@@ -25,7 +25,7 @@ const item = category.items[0];
 const HISTORY_ACCESS = [
   "Secure OTP login ensures your payment data is protected.",
   "Using your registered email automatically links this payment to your profile.",
-  "Digital receipts and complete transaction history will be available after integration.",
+  "Digital receipts and payment history will be available after confirmation.",
 ];
 
 const fieldCls =

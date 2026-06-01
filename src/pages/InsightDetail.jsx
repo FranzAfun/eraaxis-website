@@ -176,7 +176,7 @@ export default function InsightDetail() {
               insight.body.map((section, i) => renderSection(section, i))
             ) : (
               <p className="text-base text-[var(--color-text-muted)]">
-                Full article coming soon.
+                This article is being prepared and will be published here soon.
               </p>
             )}
           </div>
