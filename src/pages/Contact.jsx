@@ -8,6 +8,8 @@ import tiktokImg    from "../assets/social/tiktok.webp";
 import whatsappImg  from "../assets/social/whatsapp.webp";
 import { generalFaqs } from "../data/faqs";
 import SelectField from "../components/ui/SelectField";
+import SEO from "../components/SEO";
+import { getPageSeo } from "../data/seo";
 
 /* ── Static data ─────────────────────────────────────────────────────────── */
 
@@ -153,6 +155,7 @@ export default function Contact() {
 
   return (
     <>
+      <SEO {...getPageSeo("/contact")} />
       {/* ── Hero ───────────────────────────────────────────────────────── */}
       <section className="relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-16 pt-36 text-white md:pb-24 md:pt-44">
         <div

@@ -25,6 +25,8 @@ import {
 import devBoardFrontImg from "../assets/images/dev-board/dev-board-front.webp";
 import devBoardBackBlueImg from "../assets/images/dev-board/dev-board-back-blue.webp";
 import devBoardBackPurpleImg from "../assets/images/dev-board/dev-board-back-purple.webp";
+import SEO from "../components/SEO";
+import { getPageSeo } from "../data/seo";
 
 const infoItems = [
   { label: "Full name", value: "ERA Kids Development Board" },
@@ -196,6 +198,7 @@ const ctaSecondaryClass =
 export default function DevBoard() {
   return (
     <>
+      <SEO {...getPageSeo("/dev-board")} />
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <section className="relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-16 pt-36 text-white md:pb-24 md:pt-44">
         <div

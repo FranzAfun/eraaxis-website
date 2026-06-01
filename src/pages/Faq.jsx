@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, ArrowRight, ChevronDown } from "lucide-react";
 import { faqGroups } from "../data/faqs";
+import SEO from "../components/SEO";
+import { getPageSeo } from "../data/seo";
 
 function FaqItem({ item, isOpen, onToggle }) {
   return (
@@ -58,6 +60,7 @@ export default function Faq() {
 
   return (
     <>
+      <SEO {...getPageSeo("/faq")} />
       <section className="relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-16 pt-36 text-white md:pb-24 md:pt-44">
         <div
           aria-hidden="true"

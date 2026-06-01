@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 
 import schoolStemImg from "../assets/images/programmes/school-stem-programs.webp";
+import SEO from "../components/SEO";
+import { getPageSeo } from "../data/seo";
 
 const progressionStages = [
   {
@@ -107,6 +109,7 @@ const ctaSecondaryClass =
 export default function SchoolStem() {
   return (
     <>
+      <SEO {...getPageSeo("/programs/school-stem")} />
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <section className="relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-16 pt-36 text-white md:pb-24 md:pt-44">
         <div

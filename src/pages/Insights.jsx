@@ -10,6 +10,8 @@ import {
   Wrench,
 } from "lucide-react";
 import { insights } from "../data/insights";
+import SEO from "../components/SEO";
+import { getPageSeo } from "../data/seo";
 
 function formatDate(iso) {
   return new Date(iso).toLocaleDateString("en-GB", {
@@ -80,6 +82,7 @@ export default function Insights() {
 
   return (
     <>
+      <SEO {...getPageSeo("/insights")} />
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <section className="relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-16 pt-36 text-white md:pb-24 md:pt-44">
         <div

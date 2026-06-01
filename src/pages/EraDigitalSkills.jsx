@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 
 import eraDigitalImg from "../assets/images/programmes/era-digital-skill.webp";
+import SEO from "../components/SEO";
+import { getPageSeo } from "../data/seo";
 
 const learnerGains = [
   {
@@ -161,6 +163,7 @@ const ctaSecondaryClass =
 export default function EraDigitalSkills() {
   return (
     <>
+      <SEO {...getPageSeo("/programs/era-digital-skills")} />
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <section className="relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-16 pt-36 text-white md:pb-24 md:pt-44">
         <div

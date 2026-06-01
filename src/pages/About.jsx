@@ -9,6 +9,8 @@ import {
 } from "lucide-react";
 import programmesHeroImg from "../assets/images/programmes/programmes-hero.webp";
 import ImpactStories from "../components/home/ImpactStories";
+import SEO from "../components/SEO";
+import { getPageSeo } from "../data/seo";
 
 const whatWeDo = [
   {
@@ -45,6 +47,7 @@ const audiences = [
 export default function About() {
   return (
     <>
+      <SEO {...getPageSeo("/about")} />
       <section className="relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-16 pt-36 text-white md:pb-24 md:pt-44">
         <div
           aria-hidden="true"

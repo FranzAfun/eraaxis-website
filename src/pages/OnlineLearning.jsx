@@ -22,6 +22,8 @@ import {
 } from "lucide-react";
 
 import onlineLearningImg from "../assets/images/programmes/online-learning.webp";
+import SEO from "../components/SEO";
+import { getPageSeo } from "../data/seo";
 
 const learnerGains = [
   {
@@ -149,6 +151,7 @@ const ctaSecondaryClass =
 export default function OnlineLearning() {
   return (
     <>
+      <SEO {...getPageSeo("/programs/online-learning")} />
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <section className="relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-16 pt-36 text-white md:pb-24 md:pt-44">
         <div

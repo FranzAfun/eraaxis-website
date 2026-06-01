@@ -18,6 +18,8 @@ import {
 } from "../data/payments";
 import BackLinkButton from "../components/navigation/BackLinkButton";
 import SelectField from "../components/ui/SelectField";
+import SEO from "../components/SEO";
+import { getPageSeo } from "../data/seo";
 
 const category = getPaymentCategoryBySlug("monthly-dues");
 const item = category.items[0];
@@ -104,6 +106,7 @@ export default function MonthlyDuesPayment() {
 
   return (
     <>
+      <SEO {...getPageSeo("/payments/monthly-dues")} />
       <section className="relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-14 pt-32 text-white md:pb-18 md:pt-36">
         <div
           aria-hidden="true"

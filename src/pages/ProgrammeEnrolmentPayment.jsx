@@ -9,6 +9,8 @@ import {
 } from "../data/payments";
 import BackLinkButton from "../components/navigation/BackLinkButton";
 import SelectField from "../components/ui/SelectField";
+import SEO from "../components/SEO";
+import { getPageSeo } from "../data/seo";
 
 const category = getPaymentCategoryBySlug("programme-enrolment");
 
@@ -69,6 +71,7 @@ export default function ProgrammeEnrolmentPayment() {
 
   return (
     <>
+      <SEO {...getPageSeo("/payments/programme-enrolment")} />
       <section className="relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-14 pt-36 text-white md:pb-20 md:pt-44">
         <div
           aria-hidden="true"
