@@ -76,7 +76,3 @@ Notes:
 - Set Netlify environment variables
 - Confirm social links render as expected
 
-## Notes
-- Payment confirmation/callback routes are not implemented yet.
-- Add payment verification flows once the backend integration is ready.
-- The legacy reference HTML file is not required.
