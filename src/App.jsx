@@ -1,7 +1,11 @@
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import SiteLayout from "./layouts/SiteLayout";
 import ScrollToTop from "./components/ScrollToTop";
+import RouteTransitionOverlay, {
+  RouteLoadSignal,
+  RouteReadySignal,
+} from "./components/navigation/RouteTransitionOverlay";
 import Home from "./pages/Home";
 
 const Programs = lazy(() => import("./pages/Programs"));
@@ -24,29 +28,95 @@ const ProgrammeEnrolmentPayment = lazy(() =>
 const MonthlyDuesPayment = lazy(() => import("./pages/MonthlyDuesPayment"));
 const StudentChapterPayment = lazy(() => import("./pages/StudentChapterPayment"));
 
-function RouteFallback() {
-  return (
-    <div className="bg-[var(--color-background)] py-32">
-      <div className="container">
-        <div className="glass-surface-light mx-auto flex max-w-xl flex-col items-center gap-4 rounded-[var(--radius-lg)] px-8 py-12 text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--color-primary)]">
-            Loading
-          </p>
-          <p className="text-base leading-relaxed text-[var(--color-text-secondary)]">
-            Preparing the next ERA AXIS page.
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
+function AppShell() {
+  const hideTimerRef = useRef(null);
+  const showFrameRef = useRef(null);
+  const pendingPathRef = useRef(null);
+  const [transitionState, setTransitionState] = useState({
+    visible: false,
+    exiting: false,
+    tone: "brand",
+    sequence: 0,
+  });
 
-export default function App() {
+  const clearTimers = useCallback(() => {
+    if (hideTimerRef.current) {
+      clearTimeout(hideTimerRef.current);
+      hideTimerRef.current = null;
+    }
+
+    if (showFrameRef.current) {
+      cancelAnimationFrame(showFrameRef.current);
+      showFrameRef.current = null;
+    }
+  }, []);
+
+  const handlePendingStart = useCallback(
+    (pathname) => {
+      clearTimers();
+      pendingPathRef.current = pathname;
+
+      showFrameRef.current = requestAnimationFrame(() => {
+        setTransitionState((current) => ({
+          visible: true,
+          exiting: false,
+          tone: pathname.startsWith("/payments") ? "calm" : "brand",
+          sequence: current.sequence + 1,
+        }));
+      });
+    },
+    [clearTimers]
+  );
+
+  const handleRouteReady = useCallback(
+    (pathname) => {
+      if (pendingPathRef.current !== pathname) return;
+
+      clearTimers();
+
+      let shouldHide = false;
+
+      setTransitionState((current) => {
+        if (!current.visible) {
+          pendingPathRef.current = null;
+          return current;
+        }
+
+        shouldHide = true;
+        return {
+          ...current,
+          exiting: true,
+        };
+      });
+
+      if (!shouldHide) return;
+
+      hideTimerRef.current = setTimeout(() => {
+        pendingPathRef.current = null;
+        setTransitionState((current) => ({
+          ...current,
+          visible: false,
+          exiting: false,
+        }));
+      }, pathname.startsWith("/payments") ? 180 : 240);
+    },
+    [clearTimers]
+  );
+
+  useEffect(() => clearTimers, [clearTimers]);
+
   return (
-    <BrowserRouter>
+    <>
+      <RouteTransitionOverlay
+        visible={transitionState.visible}
+        exiting={transitionState.exiting}
+        tone={transitionState.tone}
+        sequence={transitionState.sequence}
+      />
       <ScrollToTop />
       <SiteLayout>
-        <Suspense fallback={<RouteFallback />}>
+        <Suspense fallback={<RouteLoadSignal onPendingStart={handlePendingStart} />}>
+          <RouteReadySignal onRouteReady={handleRouteReady} />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/programs" element={<Programs />} />
@@ -69,6 +139,14 @@ export default function App() {
           </Routes>
         </Suspense>
       </SiteLayout>
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppShell />
     </BrowserRouter>
   );
 }
