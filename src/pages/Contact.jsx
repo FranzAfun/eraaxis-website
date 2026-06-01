@@ -12,7 +12,7 @@ import SelectField from "../components/ui/SelectField";
 /* ── Static data ─────────────────────────────────────────────────────────── */
 
 const INQUIRY_TYPES = [
-  "Enrollment / Admissions",
+  "Enrolment / Admissions",
   "School or Institutional Partnership",
   "Sponsorship or Donation",
   "Media & Press",
@@ -319,8 +319,8 @@ export default function Contact() {
                       Send Message <ArrowRight size={16} />
                     </button>
                     <p className="mt-3 text-xs text-[var(--color-text-muted)]">
-                      Enquiries will be connected to the ERA AXIS team inbox
-                      when the backend is ready.
+                      The right ERA AXIS team member will follow up using the
+                      contact details you provide.
                     </p>
                   </div>
                 </form>

@@ -158,6 +158,7 @@ export default function SchoolStem() {
                 <Link
                   to="/payments/programme-enrolment"
                   state={{
+                    programmeSlug: "junior-stem",
                     returnTo: "/programs/school-stem",
                     returnLabel: "Back to School STEM",
                   }}
@@ -444,6 +445,7 @@ export default function SchoolStem() {
               <Link
                 to="/payments/programme-enrolment"
                 state={{
+                  programmeSlug: "junior-stem",
                   returnTo: "/programs/school-stem",
                   returnLabel: "Back to School STEM",
                 }}

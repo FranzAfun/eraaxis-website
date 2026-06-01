@@ -270,7 +270,8 @@ export default function Insights() {
               </button>
             </form>
             <p className="mt-4 text-xs text-[var(--color-text-muted)]">
-              Newsletter signup will be connected when the backend is ready.
+              You can subscribe with your email and ERA AXIS updates will be
+              shared with you through this address.
             </p>
           </div>
         </div>

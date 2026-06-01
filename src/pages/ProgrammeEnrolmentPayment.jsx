@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Check, FileText, Info, Lock } from "lucide-react";
 import {
   getPaymentCategoryBySlug,
@@ -39,10 +39,20 @@ const optionalTag = (
 );
 
 export default function ProgrammeEnrolmentPayment() {
-  const [selectedProgrammeSlug, setSelectedProgrammeSlug] =
-    useState("junior-stem");
+  const location = useLocation();
+  const requestedProgrammeSlug = location.state?.programmeSlug;
+  const [manualProgrammeSlug, setManualProgrammeSlug] = useState("");
   const [paymentOption, setPaymentOption] = useState("monthly");
   const [learnerType, setLearnerType] = useState("");
+  const selectedProgrammeSlug = category.items.some(
+    (programme) => programme.slug === manualProgrammeSlug
+  )
+    ? manualProgrammeSlug
+    : category.items.some(
+        (programme) => programme.slug === requestedProgrammeSlug
+      )
+      ? requestedProgrammeSlug
+      : "junior-stem";
 
   const selectedProgramme =
     category.items.find((programme) => programme.slug === selectedProgrammeSlug) ||
@@ -166,7 +176,7 @@ export default function ProgrammeEnrolmentPayment() {
                         name="programme"
                         value={selectedProgrammeSlug}
                         onChange={(event) =>
-                          setSelectedProgrammeSlug(event.target.value)
+                          setManualProgrammeSlug(event.target.value)
                         }
                         className={fieldCls}
                         options={category.items.map((programme) => ({

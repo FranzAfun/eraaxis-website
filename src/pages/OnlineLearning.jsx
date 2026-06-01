@@ -199,6 +199,7 @@ export default function OnlineLearning() {
                 <Link
                   to="/payments/programme-enrolment"
                   state={{
+                    programmeSlug: "online-learning",
                     returnTo: "/programs/online-learning",
                     returnLabel: "Back to Online Learning",
                   }}
@@ -511,6 +512,7 @@ export default function OnlineLearning() {
               <Link
                 to="/payments/programme-enrolment"
                 state={{
+                  programmeSlug: "online-learning",
                   returnTo: "/programs/online-learning",
                   returnLabel: "Back to Online Learning",
                 }}

@@ -212,6 +212,7 @@ export default function EraDigitalSkills() {
                 <Link
                   to="/payments/programme-enrolment"
                   state={{
+                    programmeSlug: "era-digital-skills",
                     returnTo: "/programs/era-digital-skills",
                     returnLabel: "Back to ERA Digital Skills",
                   }}
@@ -539,6 +540,7 @@ export default function EraDigitalSkills() {
               <Link
                 to="/payments/programme-enrolment"
                 state={{
+                  programmeSlug: "era-digital-skills",
                   returnTo: "/programs/era-digital-skills",
                   returnLabel: "Back to ERA Digital Skills",
                 }}

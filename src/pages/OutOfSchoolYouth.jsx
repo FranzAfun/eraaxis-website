@@ -186,6 +186,7 @@ export default function OutOfSchoolYouth() {
                 <Link
                   to="/payments/programme-enrolment"
                   state={{
+                    programmeSlug: "out-of-school-youth",
                     returnTo: "/programs/out-of-school-youth",
                     returnLabel: "Back to Out-of-School Youth",
                   }}
@@ -494,6 +495,7 @@ export default function OutOfSchoolYouth() {
               <Link
                 to="/payments/programme-enrolment"
                 state={{
+                  programmeSlug: "out-of-school-youth",
                   returnTo: "/programs/out-of-school-youth",
                   returnLabel: "Back to Out-of-School Youth",
                 }}

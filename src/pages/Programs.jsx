@@ -13,6 +13,7 @@ const programmes = [
     imageAlt: "Students engaged in a school STEM class",
     audience: "Basic 1 – SHS 3",
     title: "School STEM Programmes",
+    programmeSlug: "junior-stem",
     body: "Hands-on STEM education for Basic to SHS learners, aligned with classroom learning and built around practical projects.",
     cta: "Explore",
     to: "/programs/school-stem",
@@ -22,6 +23,7 @@ const programmes = [
     imageAlt: "Youth participating in innovation training",
     audience: "Ages 16 – 30",
     title: "Out-of-School Youth",
+    programmeSlug: "out-of-school-youth",
     body: "Practical innovation training for young people ready to gain employable skills and build community-focused solutions.",
     cta: "Explore",
     to: "/programs/out-of-school-youth",
@@ -31,6 +33,7 @@ const programmes = [
     imageAlt: "Learner studying an online programming course",
     audience: "Remote & self-paced learners",
     title: "Online Learning",
+    programmeSlug: "online-learning",
     body: "Flexible online training in programming, AI, electronics, PCB design, and digital technology tools.",
     cta: "Explore",
     to: "/programs/online-learning",
@@ -40,6 +43,7 @@ const programmes = [
     imageAlt: "Professional using digital productivity tools",
     audience: "Working adults & professionals",
     title: "ERA Digital Skills",
+    programmeSlug: "era-digital-skills",
     body: "A practical digital productivity and AI tools programme for workers, professionals, and business owners.",
     cta: "Explore",
     to: "/programs/era-digital-skills",
@@ -78,6 +82,7 @@ function ProgrammeCard({
   imageAlt,
   audience,
   title,
+  programmeSlug,
   body,
   cta,
   to,
@@ -110,7 +115,11 @@ function ProgrammeCard({
           </Link>
           <Link
             to="/payments/programme-enrolment"
-            state={{ returnTo: "/programs", returnLabel: "Back to programmes" }}
+            state={{
+              programmeSlug,
+              returnTo: "/programs",
+              returnLabel: "Back to programmes",
+            }}
             className="inline-flex min-h-[38px] items-center justify-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--color-primary)] px-3 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-primary-dark)]"
           >
             Enrol
