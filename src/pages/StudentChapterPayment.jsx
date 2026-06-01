@@ -7,6 +7,8 @@ import {
 } from "../data/payments";
 import BackLinkButton from "../components/navigation/BackLinkButton";
 import studentChapterHeroImg from "../assets/images/programmes/student-chapter-hero.webp";
+import SEO from "../components/SEO";
+import { getPageSeo } from "../data/seo";
 
 const category = getPaymentCategoryBySlug("student-chapter");
 const item = category.items[0];
@@ -35,6 +37,7 @@ const optionalTag = (
 export default function StudentChapterPayment() {
   return (
     <>
+      <SEO {...getPageSeo("/payments/student-chapter")} />
       <section className="relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-14 pt-36 text-white md:pb-20 md:pt-44">
         <div
           aria-hidden="true"

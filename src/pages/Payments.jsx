@@ -6,6 +6,8 @@ import {
   Landmark,
   Users,
 } from "lucide-react";
+import SEO from "../components/SEO";
+import { getPageSeo } from "../data/seo";
 
 const paymentOptions = [
   {
@@ -135,6 +137,7 @@ function OptionCard({ option }) {
 export default function Payments() {
   return (
     <>
+      <SEO {...getPageSeo("/payments")} />
       <section className="relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-16 pt-36 text-white md:pb-24 md:pt-44">
         <div
           aria-hidden="true"

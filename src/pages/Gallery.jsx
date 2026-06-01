@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, ArrowRight, X } from "lucide-react";
 import { galleryItems } from "../data/gallery";
+import SEO from "../components/SEO";
+import { getPageSeo } from "../data/seo";
 
 function GalleryGridCard({ src, alt, index, onOpen }) {
   return (
@@ -88,6 +90,7 @@ export default function Gallery() {
 
   return (
     <>
+      <SEO {...getPageSeo("/gallery")} />
       <section className="relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-16 pt-36 text-white md:pb-24 md:pt-44">
         <div
           aria-hidden="true"

@@ -8,10 +8,13 @@ import DevBoardFeature from "../components/home/DevBoardFeature";
 import ImpactMetrics from "../components/home/ImpactMetrics";
 import InsightsPreview from "../components/home/InsightsPreview";
 import FinalCTA from "../components/home/FinalCTA";
+import SEO from "../components/SEO";
+import { getPageSeo } from "../data/seo";
 
 export default function Home() {
   return (
     <>
+      <SEO {...getPageSeo("/")} />
       <Hero />
       <WhoItIsFor />
       <WhatYouLearn />

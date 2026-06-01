@@ -21,6 +21,8 @@ import {
 } from "lucide-react";
 
 import outOfSchoolImg from "../assets/images/programmes/out-of-school-youth.webp";
+import SEO from "../components/SEO";
+import { getPageSeo } from "../data/seo";
 
 const learnerGains = [
   {
@@ -136,6 +138,7 @@ const ctaSecondaryClass =
 export default function OutOfSchoolYouth() {
   return (
     <>
+      <SEO {...getPageSeo("/programs/out-of-school-youth")} />
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <section className="relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-16 pt-36 text-white md:pb-24 md:pt-44">
         <div

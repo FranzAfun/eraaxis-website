@@ -8,6 +8,8 @@ import galleryImg1 from "../assets/partners/mastercard-img1.webp";
 import galleryImg2 from "../assets/partners/mastercard-img3.webp";
 import galleryImg3 from "../assets/partners/mastercard-img4.webp";
 import galleryImg4 from "../assets/partners/unicef-startup-img.webp";
+import SEO from "../components/SEO";
+import { getPageSeo } from "../data/seo";
 
 const galleryItems = [
   {
@@ -67,6 +69,7 @@ const ctaSecondaryClass =
 export default function Partners() {
   return (
     <>
+      <SEO {...getPageSeo("/partners")} />
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <section className="relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-16 pt-36 text-white md:pb-24 md:pt-44">
         <div
