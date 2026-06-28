@@ -1,37 +1,14 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, BookOpen, Users, School, Zap } from "lucide-react";
 import partners from "../data/partners";
-import mastercardFoundationLogo from "../assets/partners/mastercard-foundation.webp";
 import mestAfricaLogo from "../assets/partners/mest-africa.webp";
-import heroImg from "../assets/partners/mastercard-img5.webp";
-import galleryImg1 from "../assets/partners/mastercard-img1.webp";
-import galleryImg2 from "../assets/partners/mastercard-img3.webp";
-import galleryImg3 from "../assets/partners/mastercard-img4.webp";
-import galleryImg4 from "../assets/partners/unicef-startup-img.webp";
+import heroImg from "../assets/partners/unicef-startup-img.webp";
 import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
 
 const galleryItems = [
   {
-    src: galleryImg1,
-    alt: "ERA AXIS at the Mastercard Foundation EdTech Fellowship showcase",
-    caption: "ERA AXIS at EdTech showcase",
-    tag: "Mastercard Foundation EdTech Fellowship",
-  },
-  {
-    src: galleryImg2,
-    alt: "Practical STEM demonstration at the Mastercard Foundation EdTech Fellowship",
-    caption: "Practical STEM demonstration",
-    tag: "Mastercard Foundation EdTech Fellowship",
-  },
-  {
-    src: galleryImg3,
-    alt: "ERA AXIS booth conversation at the Mastercard Foundation EdTech Fellowship",
-    caption: "ERA AXIS booth conversation",
-    tag: "Mastercard Foundation EdTech Fellowship",
-  },
-  {
-    src: galleryImg4,
+    src: heroImg,
     alt: "KOICA UNICEF Startup Lab recognition event",
     caption: "KOICA UNICEF Startup Lab",
     tag: "Recognition",
@@ -122,13 +99,13 @@ export default function Partners() {
               <div className="hero-media-card">
                 <img
                   src={heroImg}
-                  alt="ERA AXIS at the EdTech Fellowship ecosystem showcase"
+                  alt="KOICA UNICEF Startup Lab recognition event"
                   className="aspect-[4/3] w-full object-cover"
                 />
                 {/* Badge */}
                 <div className="absolute bottom-4 left-4">
                   <span className="hero-media-card-badge inline-block rounded-full bg-black/50 px-3 py-1 text-xs font-semibold text-white backdrop-blur-sm">
-                    Mastercard Foundation EdTech Fellowship
+                    KOICA UNICEF Startup Lab
                   </span>
                 </div>
               </div>
@@ -189,25 +166,14 @@ export default function Partners() {
 
               {/* Logo side */}
               <div className="flex flex-col justify-center gap-6">
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="flex items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white p-5">
-                    <img
-                      src={mastercardFoundationLogo}
-                      alt="Mastercard Foundation logo"
-                      loading="lazy"
-                      decoding="async"
-                      className="max-h-10 w-full object-contain object-center"
-                    />
-                  </div>
-                  <div className="flex items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white p-5">
-                    <img
-                      src={mestAfricaLogo}
-                      alt="MEST Africa logo"
-                      loading="lazy"
-                      decoding="async"
-                      className="max-h-10 w-full object-contain object-center"
-                    />
-                  </div>
+                <div className="flex items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white p-5 max-w-[11rem]">
+                  <img
+                    src={mestAfricaLogo}
+                    alt="MEST Africa logo"
+                    loading="lazy"
+                    decoding="async"
+                    className="max-h-10 w-full object-contain object-center"
+                  />
                 </div>
 
                 <div className="flex flex-wrap gap-2">
@@ -226,14 +192,14 @@ export default function Partners() {
               {/* Description side */}
               <div className="flex flex-col justify-center">
                 <h3 className="mb-4 text-xl font-black leading-tight tracking-tight text-[var(--color-text-primary)] sm:text-2xl">
-                  Mastercard Foundation EdTech Fellowship with MEST Africa
+                  MEST Africa EdTech Fellowship
                 </h3>
                 <p className="text-base leading-relaxed text-[var(--color-text-secondary)]">
-                  Mastercard Foundation and MEST Africa are supporting ERA AXIS
-                  through the EdTech Fellowship with mentorship, strategic
-                  support, and capacity building to help scale our practical STEM
-                  education model and reach over 8,000 learners across
-                  underserved communities in Africa.
+                  MEST Africa is supporting ERA AXIS through the EdTech
+                  Fellowship with mentorship, strategic support, and capacity
+                  building to help scale our practical STEM education model and
+                  reach over 8,000 learners across underserved communities in
+                  Africa.
                 </p>
               </div>
 
@@ -257,12 +223,12 @@ export default function Partners() {
             innovation, and youth development.
           </p>
 
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4">
             {galleryItems.map((item) => (
               <div
                 key={item.caption}
                 tabIndex={0}
-                className="group relative aspect-[3/2] cursor-default overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-border-soft)] shadow-[var(--shadow-soft)] outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2"
+                className="group relative aspect-[16/9] cursor-default overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-border-soft)] shadow-[var(--shadow-soft)] outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2"
               >
                 <img
                   src={item.src}
