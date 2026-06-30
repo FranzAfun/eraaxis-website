@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
@@ -9,9 +9,21 @@ import {
   Bell,
   Wrench,
 } from "lucide-react";
-import { insights } from "../data/insights";
+import { insights as STATIC_INSIGHTS } from "../data/insights";
 import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
+import { api } from "../services/api";
+
+const MEDIA_BASE = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/+$/, "");
+
+const CONTENT_TYPE_LABEL = {
+  article:          "Article",
+  news:             "News",
+  update:           "Update",
+  announcement:     "Announcement",
+  event_recap:      "Event Recap",
+  programme_story:  "Programme Story",
+};
 
 function formatDate(iso) {
   return new Date(iso).toLocaleDateString("en-GB", {
@@ -59,13 +71,41 @@ const ctaPrimaryClass =
 const ctaSecondaryClass =
   "final-cta-btn-secondary inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[var(--radius-sm)] px-5 text-sm font-semibold";
 
-const published = insights.filter((item) => item.status === "published");
-
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function Insights() {
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
+  const [apiInsights, setApiInsights] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    api.get("/insights")
+      .then((json) => {
+        if (!cancelled) setApiInsights(json?.data ?? []);
+      })
+      .catch(() => {
+        if (!cancelled) setApiInsights([]);
+      });
+    return () => { cancelled = true; };
+  }, []);
+
+  const published = (() => {
+    if (!apiInsights || apiInsights.length === 0) {
+      return STATIC_INSIGHTS.filter((item) => item.status === "published");
+    }
+    return apiInsights.map((item) => ({
+      slug:         item.slug,
+      title:        item.title,
+      excerpt:      item.excerpt,
+      type:         CONTENT_TYPE_LABEL[item.content_type] || "Insight",
+      author:       "ERA AXIS",
+      publishedAt:  item.published_at,
+      featuredImage: item.featured_image_url
+        ? `${MEDIA_BASE}${item.featured_image_url}`
+        : null,
+    }));
+  })();
 
   function handleSubscribe(e) {
     e.preventDefault();
