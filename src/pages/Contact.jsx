@@ -10,6 +10,7 @@ import { generalFaqs } from "../data/faqs";
 import SelectField from "../components/ui/SelectField";
 import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
+import { api } from "../services/api";
 
 /* ── Static data ─────────────────────────────────────────────────────────── */
 
@@ -117,9 +118,11 @@ function ContactFaqItem({ item, isOpen, onToggle }) {
 /* ── Component ───────────────────────────────────────────────────────────── */
 
 export default function Contact() {
-  const [form, setForm]           = useState(EMPTY_FORM);
-  const [errors, setErrors]       = useState({});
-  const [submitted, setSubmitted] = useState(false);
+  const [form, setForm]               = useState(EMPTY_FORM);
+  const [errors, setErrors]           = useState({});
+  const [submitted, setSubmitted]     = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
   const contactFaqs = generalFaqs.filter((item) =>
     [
       "faq-how-to-enrol",
@@ -144,13 +147,30 @@ export default function Contact() {
     return next;
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
-    setSubmitted(true);
-    setForm(EMPTY_FORM);
-    setErrors({});
+
+    setIsSubmitting(true);
+    setSubmitError("");
+
+    try {
+      await api.post("/contacts", {
+        full_name: form.name.trim(),
+        email:     form.email.trim(),
+        phone:     form.phone.trim() || undefined,
+        subject:   form.type || undefined,
+        message:   form.message.trim(),
+      });
+      setSubmitted(true);
+      setForm(EMPTY_FORM);
+      setErrors({});
+    } catch {
+      setSubmitError("Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -318,8 +338,18 @@ export default function Contact() {
                   </div>
 
                   <div>
-                    <button type="submit" className="btn-primary min-h-[44px] justify-center sm:px-8">
-                      Send Message <ArrowRight size={16} />
+                    {submitError && (
+                      <p className="mb-4 rounded-[var(--radius-sm)] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                        {submitError}
+                      </p>
+                    )}
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="btn-primary min-h-[44px] justify-center sm:px-8 disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                      {isSubmitting ? "Sending…" : "Send Message"}
+                      {!isSubmitting && <ArrowRight size={16} />}
                     </button>
                     <p className="mt-3 text-xs text-[var(--color-text-muted)]">
                       The right ERA AXIS team member will follow up using the
