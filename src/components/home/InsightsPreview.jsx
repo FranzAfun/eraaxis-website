@@ -1,7 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import { insights } from "../../data/insights";
+import { useBootstrap } from "../../hooks/useBootstrap";
+import { insights as STATIC_INSIGHTS } from "../../data/insights";
+
+const CONTENT_TYPE_LABEL = {
+  article: "Article",
+  news: "News",
+  update: "Update",
+  announcement: "Announcement",
+  event_recap: "Event Recap",
+  programme_story: "Programme Story",
+};
 
 function InsightCard({ type, title, excerpt, slug, isVisible, reducedMotion, index }) {
   const delay = reducedMotion ? 0 : index * 100;
@@ -34,11 +44,22 @@ function InsightCard({ type, title, excerpt, slug, isVisible, reducedMotion, ind
 }
 
 export default function InsightsPreview() {
+  const { featuredInsights } = useBootstrap();
   const sectionRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
   const reducedMotion =
     typeof window !== "undefined" &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const insights =
+    featuredInsights.length > 0
+      ? featuredInsights.map((item) => ({
+          slug: item.slug,
+          title: item.title,
+          excerpt: item.excerpt,
+          type: CONTENT_TYPE_LABEL[item.content_type] || "Insight",
+        }))
+      : STATIC_INSIGHTS;
 
   useEffect(() => {
     const el = sectionRef.current;
@@ -102,7 +123,7 @@ export default function InsightsPreview() {
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {insights.map((item, i) => (
             <InsightCard
-              key={item.title}
+              key={item.slug}
               {...item}
               isVisible={isVisible}
               reducedMotion={reducedMotion}
