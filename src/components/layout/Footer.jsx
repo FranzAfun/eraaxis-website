@@ -8,6 +8,7 @@ import instagramImg from "../../assets/social/instagram.webp";
 import tiktokImg    from "../../assets/social/tiktok.webp";
 import whatsappImg  from "../../assets/social/whatsapp.webp";
 import { useBootstrap } from "../../hooks/useBootstrap";
+import NewsletterForm from "../ui/NewsletterForm";
 
 const programmes = [
   { label: "School STEM",         to: "/programs/school-stem" },
@@ -94,6 +95,21 @@ export default function Footer() {
   return (
     <footer className="border-t border-white/[0.07] bg-[var(--color-background-dark)]">
       <div className="container py-14 md:py-16 lg:py-20">
+
+        {/* Newsletter row */}
+        <div className="mb-12 flex flex-col gap-4 border-b border-white/[0.07] pb-12 sm:flex-row sm:items-center sm:justify-between sm:gap-10">
+          <div className="shrink-0">
+            <p className="text-sm font-semibold text-white">
+              Get ERA AXIS updates in your inbox.
+            </p>
+            <p className="mt-1 text-xs text-white/45">
+              Insights, programme news, and learner stories.
+            </p>
+          </div>
+          <div className="w-full sm:max-w-sm">
+            <NewsletterForm source="footer" />
+          </div>
+        </div>
 
         {/* Main grid */}
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">

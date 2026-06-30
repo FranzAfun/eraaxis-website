@@ -13,6 +13,7 @@ import { insights as STATIC_INSIGHTS } from "../data/insights";
 import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
 import { api } from "../services/api";
+import NewsletterForm from "../components/ui/NewsletterForm";
 
 const MEDIA_BASE = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/+$/, "");
 
@@ -71,11 +72,7 @@ const ctaPrimaryClass =
 const ctaSecondaryClass =
   "final-cta-btn-secondary inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[var(--radius-sm)] px-5 text-sm font-semibold";
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 export default function Insights() {
-  const [email, setEmail] = useState("");
-  const [emailError, setEmailError] = useState("");
   const [apiInsights, setApiInsights] = useState(null);
 
   useEffect(() => {
@@ -106,19 +103,6 @@ export default function Insights() {
         : null,
     }));
   })();
-
-  function handleSubscribe(e) {
-    e.preventDefault();
-    if (!email.trim()) {
-      setEmailError("Email is required");
-      return;
-    }
-    if (!EMAIL_RE.test(email.trim())) {
-      setEmailError("Enter a valid email address");
-      return;
-    }
-    setEmailError("");
-  }
 
   return (
     <>
@@ -281,40 +265,9 @@ export default function Insights() {
               Receive featured insights, programme updates, and learner stories
               directly in your inbox.
             </p>
-            <form
-              noValidate
-              onSubmit={handleSubscribe}
-              className="flex flex-col gap-3 sm:flex-row sm:items-start"
-            >
-              <div className="flex flex-1 flex-col gap-1">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    if (emailError) setEmailError("");
-                  }}
-                  placeholder="Enter your email"
-                  className={`min-h-[44px] w-full rounded-[var(--radius-sm)] border px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] outline-none transition-colors focus:ring-2 ${
-                    emailError
-                      ? "border-red-400 focus:border-red-400 focus:ring-red-400/20"
-                      : "border-[var(--color-border)] bg-white focus:border-[var(--color-primary)] focus:ring-[var(--color-primary)]/20"
-                  }`}
-                />
-                {emailError && (
-                  <p className="text-left text-xs text-red-600">{emailError}</p>
-                )}
-              </div>
-              <button
-                type="submit"
-                className="btn-primary min-h-[44px] shrink-0 justify-center"
-              >
-                Subscribe
-              </button>
-            </form>
+            <NewsletterForm source="insights" />
             <p className="mt-4 text-xs text-[var(--color-text-muted)]">
-              You can subscribe with your email and ERA AXIS updates will be
-              shared with you through this address.
+              You can unsubscribe at any time.
             </p>
           </div>
         </div>

@@ -28,6 +28,7 @@ const ProgrammeEnrolmentPayment = lazy(() =>
 );
 const MonthlyDuesPayment = lazy(() => import("./pages/MonthlyDuesPayment"));
 const StudentChapterPayment = lazy(() => import("./pages/StudentChapterPayment"));
+const NewsletterUnsubscribe = lazy(() => import("./pages/NewsletterUnsubscribe"));
 
 function AppShell() {
   const hideTimerRef = useRef(null);
@@ -137,6 +138,7 @@ function AppShell() {
             <Route path="/payments/programme-enrolment" element={<ProgrammeEnrolmentPayment />} />
             <Route path="/payments/monthly-dues" element={<MonthlyDuesPayment />} />
             <Route path="/payments/student-chapter" element={<StudentChapterPayment />} />
+            <Route path="/newsletter/unsubscribe" element={<NewsletterUnsubscribe />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>

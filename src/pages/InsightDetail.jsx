@@ -1,6 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, ArrowRight, CalendarDays, UserRound } from "lucide-react";
 import { insights } from "../data/insights";
+import NewsletterForm from "../components/ui/NewsletterForm";
 
 function formatDate(iso) {
   return new Date(iso).toLocaleDateString("en-GB", {
@@ -211,6 +212,28 @@ export default function InsightDetail() {
           </div>
         </section>
       )}
+
+      {/* ── Newsletter strip ───────────────────────────────────────────────── */}
+      <section className="bg-[var(--color-surface-soft)] py-14 md:py-18">
+        <div className="container">
+          <div className="mx-auto max-w-xl text-center">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
+              Stay connected
+            </p>
+            <h2 className="mb-3 text-xl font-black leading-tight tracking-tight text-[var(--color-text-primary)] sm:text-2xl">
+              Get more insights from ERA AXIS.
+            </h2>
+            <p className="mb-6 text-sm leading-relaxed text-[var(--color-text-secondary)]">
+              Subscribe to receive new insights, programme stories, and learner
+              updates directly in your inbox.
+            </p>
+            <NewsletterForm source="article" />
+            <p className="mt-3 text-xs text-[var(--color-text-muted)]">
+              You can unsubscribe at any time.
+            </p>
+          </div>
+        </div>
+      </section>
 
       {/* ── Bottom CTA ─────────────────────────────────────────────────────── */}
       <section className="final-cta-band relative overflow-hidden py-20 md:py-28">
