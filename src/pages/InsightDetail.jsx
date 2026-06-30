@@ -1,9 +1,24 @@
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, ArrowRight, CalendarDays, UserRound } from "lucide-react";
-import { insights } from "../data/insights";
+import { insights as STATIC_INSIGHTS } from "../data/insights";
 import NewsletterForm from "../components/ui/NewsletterForm";
+import SEO from "../components/SEO";
+import { api } from "../services/api";
+
+const MEDIA_BASE = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/+$/, "");
+
+const CONTENT_TYPE_LABEL = {
+  article:         "Article",
+  news:            "News",
+  update:          "Update",
+  announcement:    "Announcement",
+  event_recap:     "Event Recap",
+  programme_story: "Programme Story",
+};
 
 function formatDate(iso) {
+  if (!iso) return "";
   return new Date(iso).toLocaleDateString("en-GB", {
     day: "numeric",
     month: "long",
@@ -68,9 +83,32 @@ const ctaSecondaryClass =
 
 export default function InsightDetail() {
   const { slug } = useParams();
-  const insight = insights.find((item) => item.slug === slug);
+  const [apiInsight, setApiInsight] = useState(undefined); // undefined = loading
 
-  /* ── Not found ─────────────────────────────────────────────────────────── */
+  useEffect(() => {
+    let cancelled = false;
+    setApiInsight(undefined);
+    api.get(`/insights/${slug}`)
+      .then((json) => { if (!cancelled) setApiInsight(json?.data ?? null); })
+      .catch(() => { if (!cancelled) setApiInsight(null); });
+    return () => { cancelled = true; };
+  }, [slug]);
+
+  /* ── Loading ─────────────────────────────────────────────────────────────── */
+  if (apiInsight === undefined) {
+    return (
+      <section className="bg-[var(--color-surface-soft)] py-24">
+        <div className="container text-center">
+          <p className="text-sm text-[var(--color-text-muted)]">Loading…</p>
+        </div>
+      </section>
+    );
+  }
+
+  /* ── Data resolution: API → static fallback → not found ─────────────────── */
+  const staticInsight = STATIC_INSIGHTS.find((item) => item.slug === slug);
+  const insight = apiInsight ?? (staticInsight ? { ...staticInsight, _isStatic: true } : null);
+
   if (!insight) {
     return (
       <section className="bg-[var(--color-surface-soft)] py-24">
@@ -96,10 +134,35 @@ export default function InsightDetail() {
     );
   }
 
-  const hasImages = insight.images && insight.images.length > 0;
+  /* ── Normalise fields across API and static shapes ───────────────────────── */
+  const title       = insight.title;
+  const excerpt     = insight.excerpt;
+  const publishedAt = insight.publishedAt ?? insight.published_at;
+  const author      = insight._isStatic ? insight.author : "ERA AXIS";
+  const typeLabel   = insight._isStatic
+    ? insight.type
+    : (CONTENT_TYPE_LABEL[insight.contentType] || "Insight");
+
+  // Featured image: API returns relative path, static returns null or imported asset
+  const featuredImageSrc = insight._isStatic
+    ? insight.featuredImage ?? null
+    : insight.featuredImageUrl
+      ? `${MEDIA_BASE}${insight.featuredImageUrl}`
+      : null;
+
+  // SEO
+  const seoTitle       = insight.seoTitle || title;
+  const seoDescription = insight.seoDescription || excerpt;
+
+  // Content
+  const cmsContent = !insight._isStatic ? insight.content : null;
+  const staticBody  = insight._isStatic ? insight.body : null;
+  const staticImages = insight._isStatic && insight.images?.length > 0 ? insight.images : [];
 
   return (
     <>
+      <SEO title={seoTitle} description={seoDescription} />
+
       {/* ── Article header ─────────────────────────────────────────────────── */}
       <section className="relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-14 pt-36 text-white md:pb-20 md:pt-44">
         <div
@@ -119,7 +182,6 @@ export default function InsightDetail() {
           className="absolute -bottom-24 right-4 h-96 w-96 rounded-full bg-[var(--color-accent)]/10 blur-3xl"
         />
         <div className="container relative z-10">
-          {/* Back link */}
           <Link
             to="/insights"
             className="mb-8 flex w-fit items-center gap-1.5 text-xs font-medium text-white/60 transition-colors hover:text-white"
@@ -130,37 +192,38 @@ export default function InsightDetail() {
 
           <div className="mx-auto max-w-3xl">
             <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
-              {insight.type}
+              {typeLabel}
             </p>
             <h1 className="mb-5 text-3xl font-black leading-[1.1] tracking-tight text-white sm:text-4xl md:text-5xl">
-              {insight.title}
+              {title}
             </h1>
             <p className="mb-7 text-lg leading-relaxed text-white/72">
-              {insight.excerpt}
+              {excerpt}
             </p>
 
-            {/* Meta row */}
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-white/10 pt-5">
               <span className="inline-flex items-center gap-2 text-sm text-white/55">
                 <UserRound size={14} strokeWidth={1.75} aria-hidden="true" />
-                {insight.author}
+                {author}
               </span>
-              <span className="inline-flex items-center gap-2 text-sm text-white/55">
-                <CalendarDays size={14} strokeWidth={1.75} aria-hidden="true" />
-                {formatDate(insight.publishedAt)}
-              </span>
+              {publishedAt && (
+                <span className="inline-flex items-center gap-2 text-sm text-white/55">
+                  <CalendarDays size={14} strokeWidth={1.75} aria-hidden="true" />
+                  {formatDate(publishedAt)}
+                </span>
+              )}
             </div>
           </div>
         </div>
       </section>
 
       {/* ── Featured image ─────────────────────────────────────────────────── */}
-      {insight.featuredImage && (
+      {featuredImageSrc && (
         <div className="bg-white">
           <div className="container pt-0">
             <img
-              src={insight.featuredImage}
-              alt={insight.title}
+              src={featuredImageSrc}
+              alt={title}
               className="w-full rounded-[var(--radius-lg)] object-cover shadow-[var(--shadow-soft)] md:max-h-[480px]"
               loading="eager"
               decoding="async"
@@ -173,8 +236,27 @@ export default function InsightDetail() {
       <section className="bg-white py-14 md:py-20">
         <div className="container">
           <div className="mx-auto max-w-2xl">
-            {insight.body && insight.body.length > 0 ? (
-              insight.body.map((section, i) => renderSection(section, i))
+            {cmsContent ? (
+              /* CMS TipTap HTML */
+              <div
+                className="text-base leading-relaxed text-[var(--color-text-secondary)]
+                  [&_h1]:mb-4 [&_h1]:mt-10 [&_h1]:text-2xl [&_h1]:font-black [&_h1]:leading-snug [&_h1]:tracking-tight [&_h1]:text-[var(--color-text-primary)] [&_h1]:first:mt-0
+                  [&_h2]:mb-4 [&_h2]:mt-10 [&_h2]:text-xl [&_h2]:font-black [&_h2]:leading-snug [&_h2]:tracking-tight [&_h2]:text-[var(--color-text-primary)] [&_h2]:first:mt-0
+                  [&_h3]:mb-3 [&_h3]:mt-8 [&_h3]:text-lg [&_h3]:font-bold [&_h3]:leading-snug [&_h3]:text-[var(--color-text-primary)] [&_h3]:first:mt-0
+                  [&_p]:mb-5 [&_p]:leading-relaxed
+                  [&_ul]:mb-5 [&_ul]:space-y-2 [&_ul]:pl-5 [&_ul]:list-disc
+                  [&_ol]:mb-5 [&_ol]:space-y-2 [&_ol]:pl-5 [&_ol]:list-decimal
+                  [&_li]:leading-relaxed
+                  [&_strong]:font-bold [&_strong]:text-[var(--color-text-primary)]
+                  [&_em]:italic
+                  [&_a]:text-[var(--color-primary)] [&_a]:underline [&_a]:underline-offset-2
+                  [&_blockquote]:border-l-4 [&_blockquote]:border-[var(--color-primary)]/30 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-[var(--color-text-muted)]
+                  [&_hr]:my-8 [&_hr]:border-[var(--color-border)]"
+                dangerouslySetInnerHTML={{ __html: cmsContent }}
+              />
+            ) : staticBody && staticBody.length > 0 ? (
+              /* Static body[] fallback */
+              staticBody.map((section, i) => renderSection(section, i))
             ) : (
               <p className="text-base text-[var(--color-text-muted)]">
                 This article is being prepared and will be published here soon.
@@ -184,15 +266,15 @@ export default function InsightDetail() {
         </div>
       </section>
 
-      {/* ── Image gallery ──────────────────────────────────────────────────── */}
-      {hasImages && (
+      {/* ── Image gallery (static fallback only) ───────────────────────────── */}
+      {staticImages.length > 0 && (
         <section className="bg-[var(--color-surface-soft)] py-14 md:py-20">
           <div className="container">
             <h2 className="mb-8 text-xl font-black tracking-tight text-[var(--color-text-primary)] sm:text-2xl">
               Gallery
             </h2>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {insight.images.map((img, i) => (
+              {staticImages.map((img, i) => (
                 <figure key={i} className="overflow-hidden rounded-[var(--radius-md)] border border-[var(--color-border-soft)]">
                   <img
                     src={img.src}
