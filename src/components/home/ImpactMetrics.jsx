@@ -1,29 +1,34 @@
 import { useEffect, useRef, useState } from "react";
+import { useBootstrap } from "../../hooks/useBootstrap";
 
-const METRICS = [
+const STATIC_METRICS = [
   {
-    value: 500,
+    key: "students",
+    fallback: 500,
     suffix: "+",
     label: "Learners Reached",
     description:
       "Students and youth trained through ERA AXIS school and community programmes.",
   },
   {
-    value: 5,
+    key: "schools",
+    fallback: 5,
     suffix: "",
     label: "Partner Schools",
     description:
       "Schools actively embedding hands-on STEM into everyday classroom learning.",
   },
   {
-    value: 100,
+    key: "projects",
+    fallback: 100,
     suffix: "+",
     label: "Student Projects",
     description:
       "Real projects built by learners across electronics, coding, and digital design.",
   },
   {
-    value: 13,
+    key: "partners",
+    fallback: 13,
     suffix: "",
     label: "Year-Levels Covered",
     description:
@@ -83,11 +88,17 @@ function MetricCard({ value, suffix, label, description, isVisible, reducedMotio
 }
 
 export default function ImpactMetrics() {
+  const { metrics } = useBootstrap();
   const sectionRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
   const reducedMotion =
     typeof window !== "undefined" &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const METRICS = STATIC_METRICS.map((m) => ({
+    ...m,
+    value: metrics?.[m.key] || m.fallback,
+  }));
 
   useEffect(() => {
     const el = sectionRef.current;

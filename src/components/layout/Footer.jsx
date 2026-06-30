@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { MapPin, Mail, Phone } from "lucide-react";
 import logo from "../../assets/brand/logo-white.webp";
@@ -6,6 +7,7 @@ import xImg         from "../../assets/social/x-logo.webp";
 import instagramImg from "../../assets/social/instagram.webp";
 import tiktokImg    from "../../assets/social/tiktok.webp";
 import whatsappImg  from "../../assets/social/whatsapp.webp";
+import { useBootstrap } from "../../hooks/useBootstrap";
 
 const programmes = [
   { label: "School STEM",         to: "/programs/school-stem" },
@@ -15,22 +17,20 @@ const programmes = [
 ];
 
 const company = [
-  { label: "About", to: "/about" },
-  { label: "Partners", to: "/partners" },
-  { label: "Gallery", to: "/gallery" },
-  { label: "FAQ", to: "/faq" },
-  { label: "Insights", to: "/insights" },
-  { label: "Contact",  to: "/contact" },
+  { label: "About",           to: "/about" },
+  { label: "Partners",        to: "/partners" },
+  { label: "Gallery",         to: "/gallery" },
+  { label: "FAQ",             to: "/faq" },
+  { label: "Insights",        to: "/insights" },
+  { label: "Contact",         to: "/contact" },
   { label: "Enrolment & Dues", to: "/payments" },
 ];
 
-const socials = [
-  { label: "LinkedIn",  href: import.meta.env.VITE_SOCIAL_LINKEDIN_URL, img: linkedinImg  },
-  { label: "X",         href: import.meta.env.VITE_SOCIAL_X_URL, img: xImg         },
-  { label: "Instagram", href: import.meta.env.VITE_SOCIAL_INSTAGRAM_URL, img: instagramImg },
-  { label: "TikTok",    href: import.meta.env.VITE_SOCIAL_TIKTOK_URL, img: tiktokImg    },
-  { label: "WhatsApp",  href: import.meta.env.VITE_SOCIAL_WHATSAPP_URL, img: whatsappImg  },
-].filter((social) => typeof social.href === "string" && social.href.trim().length > 0);
+// Static fallbacks — used when bootstrap values are absent
+const FALLBACK_ADDRESS = "ERA AXIS HQ – Essikado, Ghana";
+const FALLBACK_EMAIL   = "support@eraaxis.com";
+const FALLBACK_PHONE   = "+233 50 958 2497";
+const FALLBACK_ORG     = "ERA AXIS Limited";
 
 function FooterHeading({ children }) {
   return (
@@ -75,6 +75,22 @@ function SocialButton({ label, href, img }) {
 }
 
 export default function Footer() {
+  const { settings, socials: bootstrapSocials } = useBootstrap();
+
+  const address = settings?.address                                    || FALLBACK_ADDRESS;
+  const email   = settings?.contactEmail || settings?.supportEmail     || FALLBACK_EMAIL;
+  const phone   = settings?.phone                                      || FALLBACK_PHONE;
+  const orgName = settings?.organizationName                           || FALLBACK_ORG;
+  const phoneTel = phone.replace(/\s/g, "");
+
+  const socials = useMemo(() => [
+    { label: "LinkedIn",  href: bootstrapSocials?.linkedin  || import.meta.env.VITE_SOCIAL_LINKEDIN_URL,  img: linkedinImg  },
+    { label: "X",         href: bootstrapSocials?.x         || import.meta.env.VITE_SOCIAL_X_URL,         img: xImg         },
+    { label: "Instagram", href: bootstrapSocials?.instagram || import.meta.env.VITE_SOCIAL_INSTAGRAM_URL, img: instagramImg },
+    { label: "TikTok",    href: import.meta.env.VITE_SOCIAL_TIKTOK_URL,                                   img: tiktokImg    },
+    { label: "WhatsApp",  href: import.meta.env.VITE_SOCIAL_WHATSAPP_URL,                                 img: whatsappImg  },
+  ].filter((s) => typeof s.href === "string" && s.href.trim().length > 0), [bootstrapSocials]);
+
   return (
     <footer className="border-t border-white/[0.07] bg-[var(--color-background-dark)]">
       <div className="container py-14 md:py-16 lg:py-20">
@@ -135,7 +151,7 @@ export default function Footer() {
                   aria-hidden="true"
                 />
                 <span className="text-sm leading-snug text-white/55">
-                  ERA AXIS HQ – Essikado, Ghana
+                  {address}
                 </span>
               </li>
               <li className="flex items-center gap-2.5">
@@ -146,10 +162,10 @@ export default function Footer() {
                   aria-hidden="true"
                 />
                 <a
-                  href="mailto:support@eraaxis.com"
+                  href={`mailto:${email}`}
                   className="text-sm text-white/55 transition-colors duration-200 hover:text-[var(--color-accent)]"
                 >
-                  support@eraaxis.com
+                  {email}
                 </a>
               </li>
               <li className="flex items-center gap-2.5">
@@ -160,10 +176,10 @@ export default function Footer() {
                   aria-hidden="true"
                 />
                 <a
-                  href="tel:+233509582497"
+                  href={`tel:${phoneTel}`}
                   className="text-sm text-white/55 transition-colors duration-200 hover:text-[var(--color-accent)]"
                 >
-                  +233 50 958 2497
+                  {phone}
                 </a>
               </li>
             </ul>
@@ -180,7 +196,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-white/[0.07] pt-6 sm:flex-row">
           <p className="text-xs text-white/35">
-            © {new Date().getFullYear()} ERA AXIS Limited. All rights reserved.
+            © {new Date().getFullYear()} {orgName}. All rights reserved.
           </p>
           <p className="text-xs text-white/25">
             Practical learning. Real outcomes.

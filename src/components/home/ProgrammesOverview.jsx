@@ -1,12 +1,15 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
+import { useBootstrap } from "../../hooks/useBootstrap";
 
 import schoolStemImg from "../../assets/images/programmes/school-stem-programs.webp";
 import outOfSchoolImg from "../../assets/images/programmes/out-of-school-youth.webp";
 import onlineLearningImg from "../../assets/images/programmes/online-learning.webp";
 import eraDigitalImg from "../../assets/images/programmes/era-digital-skill.webp";
 
-const programmes = [
+const BASE_URL = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
+
+const STATIC_PROGRAMMES = [
   {
     image: schoolStemImg,
     title: "School STEM Programmes",
@@ -37,6 +40,13 @@ const programmes = [
   },
 ];
 
+const CATEGORY_CTA = {
+  school_stem: "Explore School STEM",
+  out_of_school_youth: "Explore Youth Programme",
+  online_learning: "Explore Online Learning",
+  digital_skills: "Explore Digital Skills",
+};
+
 function ProgrammeCard({ image, title, text, to, cta }) {
   return (
     <Link
@@ -45,11 +55,15 @@ function ProgrammeCard({ image, title, text, to, cta }) {
     >
       {/* Image */}
       <div className="aspect-[16/9] overflow-hidden">
-        <img
-          src={image}
-          alt={title}
-          className="h-full w-full object-cover brightness-75 transition-transform duration-500 group-hover:scale-105"
-        />
+        {image ? (
+          <img
+            src={image}
+            alt={title}
+            className="h-full w-full object-cover brightness-75 transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div className="h-full w-full bg-[var(--color-surface-soft)]" />
+        )}
       </div>
 
       {/* Content */}
@@ -70,6 +84,19 @@ function ProgrammeCard({ image, title, text, to, cta }) {
 }
 
 export default function ProgrammesOverview() {
+  const { featuredProgrammes } = useBootstrap();
+
+  const programmes =
+    featuredProgrammes.length > 0
+      ? featuredProgrammes.map((p) => ({
+          image: p.thumbnail_url ? `${BASE_URL}${p.thumbnail_url}` : null,
+          title: p.name,
+          text: p.description,
+          to: `/programs/${p.slug}`,
+          cta: CATEGORY_CTA[p.category] || "Explore Programme",
+        }))
+      : STATIC_PROGRAMMES;
+
   return (
     <section className="premium-settle-in bg-[var(--color-surface-soft)] py-20 md:py-24 lg:py-28">
       <div className="container">
