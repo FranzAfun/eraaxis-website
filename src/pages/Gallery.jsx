@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, ArrowRight, X } from "lucide-react";
-import { galleryItems } from "../data/gallery";
+import { galleryItems as STATIC_GALLERY } from "../data/gallery";
 import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
+import { api } from "../services/api";
+
+const MEDIA_BASE = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/+$/, "");
 
 function GalleryGridCard({ src, alt, index, onOpen }) {
   return (
@@ -26,8 +29,34 @@ function GalleryGridCard({ src, alt, index, onOpen }) {
 }
 
 export default function Gallery() {
+  const [apiItems, setApiItems] = useState(null);
   const [activeIndex, setActiveIndex] = useState(null);
-  const activeItem = activeIndex === null ? null : galleryItems[activeIndex];
+
+  useEffect(() => {
+    let cancelled = false;
+    api.get("/gallery")
+      .then((json) => {
+        if (!cancelled) setApiItems(json?.data ?? []);
+      })
+      .catch(() => {
+        if (!cancelled) setApiItems([]);
+      });
+    return () => { cancelled = true; };
+  }, []);
+
+  const items = (() => {
+    if (!apiItems || apiItems.length === 0) return STATIC_GALLERY;
+    const mapped = apiItems
+      .filter((item) => item.image_url)
+      .map((item) => ({
+        id:  item.id,
+        src: `${MEDIA_BASE}${item.image_url}`,
+        alt: item.alt_text || item.title || "ERA AXIS gallery image",
+      }));
+    return mapped.length > 0 ? mapped : STATIC_GALLERY;
+  })();
+
+  const activeItem = activeIndex === null ? null : items[activeIndex];
 
   useEffect(() => {
     if (activeIndex === null) return undefined;
@@ -42,14 +71,14 @@ export default function Gallery() {
           current === null
             ? 0
             : current === 0
-              ? galleryItems.length - 1
+              ? items.length - 1
               : current - 1
         );
       }
 
       if (event.key === "ArrowRight") {
         setActiveIndex((current) =>
-          current === null ? 0 : (current + 1) % galleryItems.length
+          current === null ? 0 : (current + 1) % items.length
         );
       }
     }
@@ -62,7 +91,7 @@ export default function Gallery() {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [activeIndex]);
+  }, [activeIndex, items.length]);
 
   function openLightbox(index) {
     setActiveIndex(index);
@@ -77,14 +106,14 @@ export default function Gallery() {
       current === null
         ? 0
         : current === 0
-          ? galleryItems.length - 1
+          ? items.length - 1
           : current - 1
     );
   }
 
   function showNext() {
     setActiveIndex((current) =>
-      current === null ? 0 : (current + 1) % galleryItems.length
+      current === null ? 0 : (current + 1) % items.length
     );
   }
 
@@ -160,7 +189,7 @@ export default function Gallery() {
           </div>
 
           <div className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4">
-            {galleryItems.map((item, index) => (
+            {items.map((item, index) => (
               <GalleryGridCard
                 key={item.id}
                 {...item}
@@ -177,7 +206,7 @@ export default function Gallery() {
           className="fixed inset-0 z-[120] flex items-center justify-center bg-[rgb(4_4_10_/_0.92)] p-4 sm:p-6"
           role="dialog"
           aria-modal="true"
-          aria-label={`Gallery image ${activeIndex + 1} of ${galleryItems.length}`}
+          aria-label={`Gallery image ${activeIndex + 1} of ${items.length}`}
           onClick={closeLightbox}
         >
           <button
@@ -218,7 +247,7 @@ export default function Gallery() {
             onClick={(event) => event.stopPropagation()}
           >
             <div className="hidden self-center rounded-full border border-white/10 bg-white/8 px-3 py-1 text-xs font-semibold tracking-[0.18em] text-white/76 backdrop-blur-md sm:block sm:text-sm">
-              {activeIndex + 1} / {galleryItems.length}
+              {activeIndex + 1} / {items.length}
             </div>
 
             <img
@@ -238,7 +267,7 @@ export default function Gallery() {
               </button>
 
               <div className="text-center text-sm font-semibold tracking-[0.16em] text-white/78">
-                {activeIndex + 1} / {galleryItems.length}
+                {activeIndex + 1} / {items.length}
               </div>
 
               <button
