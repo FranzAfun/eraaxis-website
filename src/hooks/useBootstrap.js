@@ -13,6 +13,7 @@ const EMPTY = {
   featuredProgrammes: [],
   featuredInsights: [],
   partners: [],
+  gallery: [],
 };
 
 export function useBootstrap() {
@@ -65,5 +66,6 @@ export function useBootstrap() {
     featuredProgrammes: data.featuredProgrammes ?? [],
     featuredInsights: data.featuredInsights ?? [],
     partners: data.partners ?? [],
+    gallery: data.gallery ?? [],
   };
 }
