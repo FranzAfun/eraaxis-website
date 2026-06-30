@@ -1,8 +1,25 @@
 import { useState } from "react";
-import partners from "../../data/partners";
+import { useBootstrap } from "../../hooks/useBootstrap";
+import STATIC_PARTNERS from "../../data/partners";
+
+const BASE_URL = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
 
 export default function PartnersStrip() {
+  const { partners: bootstrapPartners } = useBootstrap();
   const [paused, setPaused] = useState(false);
+
+  const partners =
+    bootstrapPartners.length > 0
+      ? bootstrapPartners
+          .filter((p) => p.logo_url)
+          .map((p) => ({
+            name: p.name,
+            logo: `${BASE_URL}${p.logo_url}`,
+            alt: `${p.name} logo`,
+          }))
+      : STATIC_PARTNERS;
+
+  const displayPartners = partners.length > 0 ? partners : STATIC_PARTNERS;
 
   return (
     <section className="pt-0 pb-20 md:pb-24 lg:pb-28 overflow-hidden partners-section">
@@ -31,7 +48,7 @@ export default function PartnersStrip() {
               className="marquee-group"
               aria-hidden={setIdx === 1 ? "true" : undefined}
             >
-              {partners.map((partner) => (
+              {displayPartners.map((partner) => (
                 <div key={partner.name} className="partner-card">
                   <img
                     src={partner.logo}
