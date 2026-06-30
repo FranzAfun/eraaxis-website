@@ -1,10 +1,14 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, BookOpen, Users, School, Zap } from "lucide-react";
-import partners from "../data/partners";
+import STATIC_PARTNERS from "../data/partners";
 import mestAfricaLogo from "../assets/partners/mest-africa.webp";
 import heroImg from "../assets/partners/unicef-startup-img.webp";
 import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
+import { api } from "../services/api";
+
+const MEDIA_BASE = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/+$/, "");
 
 const galleryItems = [
   {
@@ -44,6 +48,33 @@ const ctaSecondaryClass =
   "final-cta-btn-secondary cta-mobile-btn inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[var(--radius-sm)] px-5 text-sm font-semibold";
 
 export default function Partners() {
+  const [apiPartners, setApiPartners] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    api.get("/partners")
+      .then((json) => {
+        if (!cancelled) setApiPartners(json?.data ?? []);
+      })
+      .catch(() => {
+        if (!cancelled) setApiPartners([]);
+      });
+    return () => { cancelled = true; };
+  }, []);
+
+  const partners = (() => {
+    if (!apiPartners || apiPartners.length === 0) return STATIC_PARTNERS;
+    return apiPartners
+      .filter((p) => p.logo_url)
+      .map((p) => ({
+        name: p.name,
+        logo: `${MEDIA_BASE}${p.logo_url}`,
+        alt:  `${p.name} logo`,
+      }));
+  })();
+
+  const displayPartners = partners.length > 0 ? partners : STATIC_PARTNERS;
+
   return (
     <>
       <SEO {...getPageSeo("/partners")} />
@@ -130,7 +161,7 @@ export default function Partners() {
           </p>
 
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-            {partners.map((partner) => (
+            {displayPartners.map((partner) => (
               <div
                 key={partner.name}
                 className="card-interactive flex flex-col items-center justify-center gap-3 p-5"
