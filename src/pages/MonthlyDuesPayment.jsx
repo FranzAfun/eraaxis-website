@@ -76,6 +76,11 @@ export default function MonthlyDuesPayment() {
   const [selectedMonths, setSelectedMonths] = useState("1");
   const manualFormInnerRef = useRef(null);
   const [manualFormHeight, setManualFormHeight] = useState(0);
+  const [fullName, setFullName]         = useState("");
+  const [email, setEmail]               = useState("");
+  const [phone, setPhone]               = useState("");
+  const [submitting, setSubmitting]     = useState(false);
+  const [formError, setFormError]       = useState("");
   const baseTotal = item.baseAmount * Number(selectedMonths);
   const breakdown = calculatePaymentBreakdown(baseTotal);
   const duesPeriodOptions = [
@@ -84,6 +89,46 @@ export default function MonthlyDuesPayment() {
     { value: "6", label: "Half Year" },
     { value: "12", label: "1 Year" },
   ];
+
+  async function handleFirstTimeSubmit() {
+    setFormError("");
+    if (!fullName.trim()) { setFormError("Full name is required."); return; }
+    if (!email.trim())    { setFormError("Email address is required."); return; }
+    if (!phone.trim())    { setFormError("Phone number is required."); return; }
+    setSubmitting(true);
+    try {
+      const programmesRes = await fetch("/api/website/programmes");
+      const programmesData = await programmesRes.json();
+      const prog = programmesData.data?.find((p) => p.payment_model === "dues");
+      if (!prog) throw new Error("Monthly Dues programme not found. Please try again.");
+
+      const enrolRes = await fetch("/api/website/enrolments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          programme_id: prog.id,
+          full_name:    fullName.trim(),
+          email:        email.trim(),
+          phone:        phone.trim(),
+        }),
+      });
+      const enrolData = await enrolRes.json();
+      if (!enrolData.success) throw new Error(enrolData.error || "Enrolment failed.");
+
+      const payRes = await fetch("/api/website/payments/initialize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ enrolment_id: enrolData.data.id, months_paid: Number(selectedMonths) }),
+      });
+      const payData = await payRes.json();
+      if (!payData.success) throw new Error(payData.error || "Payment initialisation failed.");
+
+      window.location.href = payData.data.authorizationUrl;
+    } catch (err) {
+      setFormError(err.message || "Something went wrong. Please try again.");
+      setSubmitting(false);
+    }
+  }
 
   useEffect(() => {
     const updateManualFormHeight = () => {
@@ -280,6 +325,8 @@ export default function MonthlyDuesPayment() {
                         type="text"
                         placeholder="Genny Amadapah"
                         className={fieldCls}
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
                       />
                     </div>
 
@@ -289,6 +336,8 @@ export default function MonthlyDuesPayment() {
                         type="email"
                         placeholder="genny@example.com"
                         className={fieldCls}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                       />
                     </div>
 
@@ -298,6 +347,8 @@ export default function MonthlyDuesPayment() {
                         type="tel"
                         placeholder="+233 xx xxx xxxx"
                         className={fieldCls}
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
                       />
                     </div>
 
@@ -377,12 +428,16 @@ export default function MonthlyDuesPayment() {
                 </div>
 
                 <div className="space-y-3">
+                  {formError && (
+                    <p className="text-sm text-red-600">{formError}</p>
+                  )}
                   <button
                     type="button"
-                    disabled
-                    className="btn-primary w-full cursor-not-allowed justify-center opacity-50"
+                    onClick={handleFirstTimeSubmit}
+                    disabled={submitting || !showManualForm}
+                    className={`btn-primary w-full justify-center${submitting || !showManualForm ? " cursor-not-allowed opacity-50" : ""}`}
                   >
-                    Continue to checkout
+                    {submitting ? "Processing…" : "Continue to checkout"}
                     <ArrowRight size={15} strokeWidth={2.25} aria-hidden="true" />
                   </button>
                   <Link
