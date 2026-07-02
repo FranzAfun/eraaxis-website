@@ -190,6 +190,23 @@
   }
 }
 
+/* Sequential "chase" glow — dots light up one after another, Arduino-LED style */
+@keyframes chaseDotGlow {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.7);
+    box-shadow: 0 0 0 rgb(201 163 255 / 0);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+    box-shadow:
+      0 0 0.9rem rgb(201 163 255 / 0.55),
+      0 0 1.6rem rgb(201 163 255 / 0.25);
+  }
+}
+
 /* ── Reusable component classes ────────────────────────────────────────── */
 @layer components {
 

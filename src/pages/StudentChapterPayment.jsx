@@ -10,6 +10,8 @@ import BackLinkButton from "../components/navigation/BackLinkButton";
 import studentChapterHeroImg from "../assets/images/programmes/student-chapter-hero.webp";
 import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
+import { EMAIL_RE } from "../utils/validateEmail";
+import { suggestEmailCorrection } from "../utils/emailTypoCheck";
 
 const category = getPaymentCategoryBySlug("student-chapter");
 const item = category.items[0];
@@ -36,8 +38,11 @@ const optionalTag = (
 );
 
 export default function StudentChapterPayment() {
-  const [fullName, setFullName]         = useState("");
+  const [firstName, setFirstName]       = useState("");
+  const [lastName, setLastName]         = useState("");
+  const [otherNames, setOtherNames]     = useState("");
   const [email, setEmail]               = useState("");
+  const [emailSuggestion, setEmailSuggestion] = useState("");
   const [phone, setPhone]               = useState("");
   const [institution, setInstitution]   = useState("");
   const [yearLevel, setYearLevel]       = useState("");
@@ -47,8 +52,10 @@ export default function StudentChapterPayment() {
 
   async function handleSubmit() {
     setFormError("");
-    if (!fullName.trim())    { setFormError("Full name is required."); return; }
+    if (!firstName.trim())   { setFormError("First name is required."); return; }
+    if (!lastName.trim())    { setFormError("Last name is required."); return; }
     if (!email.trim())       { setFormError("Email address is required."); return; }
+    if (!EMAIL_RE.test(email.trim())) { setFormError("Please enter a valid email address."); return; }
     if (!phone.trim())       { setFormError("Phone number is required."); return; }
     if (!institution.trim()) { setFormError("Institution / School / Community is required."); return; }
     setSubmitting(true);
@@ -63,7 +70,9 @@ export default function StudentChapterPayment() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           programme_id: prog.id,
-          full_name:    fullName.trim(),
+          first_name:   firstName.trim(),
+          last_name:    lastName.trim(),
+          other_names:  otherNames.trim() || undefined,
           email:        email.trim(),
           phone:        phone.trim(),
           institution:  institution.trim(),
@@ -184,13 +193,36 @@ export default function StudentChapterPayment() {
                 <div className="space-y-5">
                   <div className="grid gap-5 sm:grid-cols-2">
                     <div>
-                      <label className={labelCls}>Full name</label>
+                      <label className={labelCls}>First name</label>
                       <input
                         type="text"
-                        placeholder="Genny Amadapah"
+                        placeholder="Genny"
                         className={fieldCls}
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label className={labelCls}>Last name</label>
+                      <input
+                        type="text"
+                        placeholder="Amadapah"
+                        className={fieldCls}
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid gap-5 sm:grid-cols-2">
+                    <div>
+                      <label className={labelCls}>Other names {optionalTag}</label>
+                      <input
+                        type="text"
+                        placeholder="Middle name(s), if any"
+                        className={fieldCls}
+                        value={otherNames}
+                        onChange={(e) => setOtherNames(e.target.value)}
                       />
                     </div>
                     <div>
@@ -200,8 +232,22 @@ export default function StudentChapterPayment() {
                         placeholder="genny@example.com"
                         className={fieldCls}
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        onChange={(e) => { setEmail(e.target.value); setEmailSuggestion(""); }}
+                        onBlur={() => setEmailSuggestion(suggestEmailCorrection(email) || "")}
                       />
+                      {emailSuggestion && (
+                        <p className="mt-1.5 text-xs text-[var(--color-text-muted)]">
+                          Did you mean{" "}
+                          <button
+                            type="button"
+                            onClick={() => { setEmail(emailSuggestion); setEmailSuggestion(""); }}
+                            className="font-semibold text-[var(--color-primary)] underline"
+                          >
+                            {emailSuggestion}
+                          </button>
+                          ?
+                        </p>
+                      )}
                     </div>
                   </div>
 
