@@ -1,25 +1,12 @@
 import { useState } from "react";
-import { useBootstrap } from "../../hooks/useBootstrap";
 import STATIC_PARTNERS from "../../data/partners";
 
-const BASE_URL = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
-
+// Deliberately static, not wired to the admin-managed partners API — this is
+// a decorative homepage strip. The dedicated Partners page is the one place
+// admin-edited partner data actually appears.
 export default function PartnersStrip() {
-  const { partners: bootstrapPartners } = useBootstrap();
   const [paused, setPaused] = useState(false);
-
-  const partners =
-    bootstrapPartners.length > 0
-      ? bootstrapPartners
-          .filter((p) => p.logo_url)
-          .map((p) => ({
-            name: p.name,
-            logo: `${BASE_URL}${p.logo_url}`,
-            alt: `${p.name} logo`,
-          }))
-      : STATIC_PARTNERS;
-
-  const displayPartners = partners.length > 0 ? partners : STATIC_PARTNERS;
+  const displayPartners = STATIC_PARTNERS;
 
   return (
     <section className="pt-0 pb-20 md:pb-24 lg:pb-28 overflow-hidden partners-section">
@@ -48,17 +35,36 @@ export default function PartnersStrip() {
               className="marquee-group"
               aria-hidden={setIdx === 1 ? "true" : undefined}
             >
-              {displayPartners.map((partner) => (
-                <div key={partner.name} className="partner-card">
-                  <img
-                    src={partner.logo}
-                    alt={partner.alt}
-                    loading="lazy"
-                    decoding="async"
-                    className="partner-logo"
-                  />
-                </div>
-              ))}
+              {displayPartners.map((partner) =>
+                partner.websiteUrl ? (
+                  <a
+                    key={partner.name}
+                    href={partner.websiteUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="partner-card"
+                    aria-label={`Visit ${partner.name} website`}
+                  >
+                    <img
+                      src={partner.logo}
+                      alt={partner.alt}
+                      loading="lazy"
+                      decoding="async"
+                      className="partner-logo"
+                    />
+                  </a>
+                ) : (
+                  <div key={partner.name} className="partner-card">
+                    <img
+                      src={partner.logo}
+                      alt={partner.alt}
+                      loading="lazy"
+                      decoding="async"
+                      className="partner-logo"
+                    />
+                  </div>
+                )
+              )}
             </div>
           ))}
         </div>

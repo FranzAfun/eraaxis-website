@@ -64,13 +64,19 @@ export default function Partners() {
 
   const partners = (() => {
     if (!apiPartners || apiPartners.length === 0) return STATIC_PARTNERS;
-    return apiPartners
-      .filter((p) => p.logo_url)
-      .map((p) => ({
+    return apiPartners.map((p) => {
+      // No logo uploaded via the CMS yet — fall back to the bundled local
+      // asset for known partners (matched by name) rather than hiding them.
+      const staticMatch = STATIC_PARTNERS.find(
+        (s) => s.name.toLowerCase() === p.name.toLowerCase()
+      );
+      return {
         name: p.name,
-        logo: `${MEDIA_BASE}${p.logo_url}`,
-        alt:  `${p.name} logo`,
-      }));
+        logo: p.logo_url ? `${MEDIA_BASE}${p.logo_url}` : (staticMatch?.logo ?? null),
+        alt: `${p.name} logo`,
+        websiteUrl: p.website_url || null,
+      };
+    });
   })();
 
   const displayPartners = partners.length > 0 ? partners : STATIC_PARTNERS;
@@ -161,23 +167,45 @@ export default function Partners() {
           </p>
 
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-            {displayPartners.map((partner) => (
-              <div
-                key={partner.name}
-                className="card-interactive flex flex-col items-center justify-center gap-3 p-5"
-              >
-                <img
-                  src={partner.logo}
-                  alt={partner.alt}
-                  loading="lazy"
-                  decoding="async"
-                  className="max-h-12 w-full object-contain object-center"
-                />
-                <p className="text-center text-xs font-medium text-[var(--color-text-muted)]">
-                  {partner.name}
-                </p>
-              </div>
-            ))}
+            {displayPartners.map((partner) => {
+              const CardTag = partner.websiteUrl ? "a" : "div";
+              const cardProps = partner.websiteUrl
+                ? {
+                    href: partner.websiteUrl,
+                    target: "_blank",
+                    rel: "noopener noreferrer",
+                    "aria-label": `Visit ${partner.name} website`,
+                  }
+                : {};
+              return (
+                <CardTag
+                  key={partner.name}
+                  className="card-interactive flex flex-col items-center justify-center gap-3 p-5"
+                  {...cardProps}
+                >
+                  {partner.logo ? (
+                    <img
+                      src={partner.logo}
+                      alt={partner.alt}
+                      loading="lazy"
+                      decoding="async"
+                      className="max-h-12 w-full object-contain object-center"
+                    />
+                  ) : (
+                    <div className="flex h-12 w-full items-center justify-center rounded-md bg-[var(--color-surface-soft)] text-sm font-semibold text-[var(--color-text-muted)]">
+                      {partner.name
+                        .split(" ")
+                        .map((w) => w[0])
+                        .slice(0, 3)
+                        .join("")}
+                    </div>
+                  )}
+                  <p className="text-center text-xs font-medium text-[var(--color-text-muted)]">
+                    {partner.name}
+                  </p>
+                </CardTag>
+              );
+            })}
           </div>
         </div>
       </section>
