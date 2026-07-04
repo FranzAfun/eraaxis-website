@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { useBootstrap } from "../../hooks/useBootstrap";
 import { galleryPreviewItems } from "../../data/gallery";
+import { resolveMediaUrl } from "../../utils/resolveMediaUrl";
 
 const AUTOPLAY_MS = 4800;
 const BASE_URL = (import.meta.env.VITE_API_URL || "").replace(/\/+$/, "");
@@ -12,7 +13,7 @@ function normaliseItems(raw) {
     .filter((item) => item.image_url)
     .map((item) => ({
       id: item.id,
-      src: `${BASE_URL}${item.image_url}`,
+      src: resolveMediaUrl(item.image_url),
       alt: item.alt_text || item.title || "ERA AXIS gallery image",
     }));
 }
