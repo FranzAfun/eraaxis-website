@@ -5,8 +5,7 @@ import { galleryItems as STATIC_GALLERY } from "../data/gallery";
 import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
 import { api } from "../services/api";
-
-const MEDIA_BASE = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/+$/, "");
+import { resolveMediaUrl } from "../utils/resolveMediaUrl";
 
 function GalleryGridCard({ src, alt, index, onOpen }) {
   return (
@@ -50,7 +49,7 @@ export default function Gallery() {
       .filter((item) => item.image_url)
       .map((item) => ({
         id:  item.id,
-        src: `${MEDIA_BASE}${item.image_url}`,
+        src: resolveMediaUrl(item.image_url),
         alt: item.alt_text || item.title || "ERA AXIS gallery image",
       }));
     return mapped.length > 0 ? mapped : STATIC_GALLERY;

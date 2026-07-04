@@ -1,13 +1,22 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { useBootstrap } from "../../hooks/useBootstrap";
+import { resolveMediaUrl } from "../../utils/resolveMediaUrl";
 
 import schoolStemImg from "../../assets/images/programmes/school-stem-programs.webp";
 import outOfSchoolImg from "../../assets/images/programmes/out-of-school-youth.webp";
 import onlineLearningImg from "../../assets/images/programmes/online-learning.webp";
 import eraDigitalImg from "../../assets/images/programmes/era-digital-skill.webp";
 
-const BASE_URL = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
+// Real programmes have no admin-managed thumbnail today (images/pricing are
+// migration-only) — fall back to the same bundled local asset per category
+// that the /programs page uses, rather than a bare gray placeholder.
+const CATEGORY_IMAGE = {
+  school_stem:         schoolStemImg,
+  out_of_school_youth: outOfSchoolImg,
+  online_learning:     onlineLearningImg,
+  digital_skills:      eraDigitalImg,
+};
 
 const STATIC_PROGRAMMES = [
   {
@@ -89,7 +98,7 @@ export default function ProgrammesOverview() {
   const programmes =
     featuredProgrammes.length > 0
       ? featuredProgrammes.map((p) => ({
-          image: p.thumbnail_url ? `${BASE_URL}${p.thumbnail_url}` : null,
+          image: resolveMediaUrl(p.thumbnail_url) || CATEGORY_IMAGE[p.category] || schoolStemImg,
           title: p.name,
           text: p.description,
           to: `/programs/${p.slug}`,

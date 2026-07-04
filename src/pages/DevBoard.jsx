@@ -242,8 +242,8 @@ export default function DevBoard() {
                   Explore Programmes
                   <ArrowRight size={16} strokeWidth={2} />
                 </Link>
-                <Link to="/contact" className={heroSecondaryClass}>
-                  Contact ERA
+                <Link to="/payments" className={heroSecondaryClass}>
+                  Enrol Now
                   <ArrowRight size={16} strokeWidth={2} />
                 </Link>
               </div>

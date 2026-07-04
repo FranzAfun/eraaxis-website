@@ -215,7 +215,7 @@ export default function Footer() {
             © {new Date().getFullYear()} {orgName}. All rights reserved.
           </p>
           <p className="text-xs text-white/25">
-            Practical learning. Real outcomes.
+            Website by <a  rel="noopener noreferrer" className="text-[var(--color-accent)] ">ERA Technologies</a>.
           </p>
         </div>
 

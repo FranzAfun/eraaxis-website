@@ -7,8 +7,7 @@ import heroImg from "../assets/partners/unicef-startup-img.webp";
 import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
 import { api } from "../services/api";
-
-const MEDIA_BASE = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/+$/, "");
+import { resolveMediaUrl } from "../utils/resolveMediaUrl";
 
 const galleryItems = [
   {
@@ -72,7 +71,7 @@ export default function Partners() {
       );
       return {
         name: p.name,
-        logo: p.logo_url ? `${MEDIA_BASE}${p.logo_url}` : (staticMatch?.logo ?? null),
+        logo: resolveMediaUrl(p.logo_url) ?? staticMatch?.logo ?? null,
         alt: `${p.name} logo`,
         websiteUrl: p.website_url || null,
       };

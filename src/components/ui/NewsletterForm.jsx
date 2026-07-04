@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { api } from "../../services/api";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -55,9 +55,12 @@ export default function NewsletterForm({ source }) {
 
   if (submitted) {
     return (
-      <p className="text-sm font-semibold text-[var(--color-primary)]">
-        You&apos;re subscribed! ERA AXIS updates will arrive in your inbox.
-      </p>
+      <div className="flex items-center gap-2.5 rounded-[var(--radius-sm)] border border-emerald-500/30 bg-emerald-500/10 px-4 py-3">
+        <CheckCircle2 size={18} className="shrink-0 text-emerald-500" />
+        <p className="text-sm font-semibold text-emerald-600">
+          You&apos;re subscribed! ERA AXIS updates will arrive in your inbox.
+        </p>
+      </div>
     );
   }
 

@@ -14,8 +14,7 @@ import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
 import { api } from "../services/api";
 import NewsletterForm from "../components/ui/NewsletterForm";
-
-const MEDIA_BASE = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/+$/, "");
+import { resolveMediaUrl } from "../utils/resolveMediaUrl";
 
 const CONTENT_TYPE_LABEL = {
   article:          "Article",
@@ -98,9 +97,7 @@ export default function Insights() {
       type:         CONTENT_TYPE_LABEL[item.content_type] || "Insight",
       author:       "ERA AXIS",
       publishedAt:  item.published_at,
-      featuredImage: item.featured_image_url
-        ? `${MEDIA_BASE}${item.featured_image_url}`
-        : null,
+      featuredImage: resolveMediaUrl(item.featured_image_url),
     }));
   })();
 

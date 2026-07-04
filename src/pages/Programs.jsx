@@ -10,8 +10,7 @@ import programmesHeroImg from "../assets/images/programmes/programmes-hero.webp"
 import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
 import { api } from "../services/api";
-
-const MEDIA_BASE = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/+$/, "");
+import { resolveMediaUrl } from "../utils/resolveMediaUrl";
 
 const CATEGORY_IMAGE = {
   school_stem:        schoolStemImg,
@@ -187,18 +186,21 @@ export default function Programs() {
 
   const programmes = (() => {
     if (!apiProgrammes || apiProgrammes.length === 0) return STATIC_PROGRAMMES;
-    return apiProgrammes.map((p) => ({
-      image: p.thumbnail_url
-        ? `${MEDIA_BASE}${p.thumbnail_url}`
-        : (CATEGORY_IMAGE[p.category] || schoolStemImg),
-      imageAlt: p.name,
-      audience: CATEGORY_AUDIENCE[p.category] || "",
-      title: p.name,
-      programmeSlug: p.slug,
-      body: p.description,
-      cta: "Explore",
-      to: `/programs/${p.slug}`,
-    }));
+    // website_programmes also holds billing-only categories (student_chapter,
+    // monthly_dues) used by the payment system — only real teaching
+    // programmes belong on this page.
+    return apiProgrammes
+      .filter((p) => Object.prototype.hasOwnProperty.call(CATEGORY_IMAGE, p.category))
+      .map((p) => ({
+        image: resolveMediaUrl(p.coverImageUrl) || CATEGORY_IMAGE[p.category] || schoolStemImg,
+        imageAlt: p.name,
+        audience: CATEGORY_AUDIENCE[p.category] || "",
+        title: p.name,
+        programmeSlug: p.slug,
+        body: p.description,
+        cta: "Explore",
+        to: `/programs/${p.slug}`,
+      }));
   })();
 
   return (

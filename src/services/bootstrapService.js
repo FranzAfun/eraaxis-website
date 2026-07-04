@@ -13,5 +13,8 @@ import { api } from "./api";
  * }
  */
 export async function fetchBootstrap() {
-  return api.get("/bootstrap");
+  // API responds with the { success, data } envelope — unwrap to the payload
+  // (the shape documented above), which is what useBootstrap consumers read.
+  const json = await api.get("/bootstrap");
+  return json?.data ?? null;
 }

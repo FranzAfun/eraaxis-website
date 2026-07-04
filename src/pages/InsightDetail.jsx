@@ -5,8 +5,7 @@ import { insights as STATIC_INSIGHTS } from "../data/insights";
 import NewsletterForm from "../components/ui/NewsletterForm";
 import SEO from "../components/SEO";
 import { api } from "../services/api";
-
-const MEDIA_BASE = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/+$/, "");
+import { resolveMediaUrl } from "../utils/resolveMediaUrl";
 
 const CONTENT_TYPE_LABEL = {
   article:         "Article",
@@ -143,12 +142,11 @@ export default function InsightDetail() {
     ? insight.type
     : (CONTENT_TYPE_LABEL[insight.contentType] || "Insight");
 
-  // Featured image: API returns relative path, static returns null or imported asset
+  // Featured image: API returns a relative S3 path or an absolute pasted URL,
+  // static returns null or an imported asset.
   const featuredImageSrc = insight._isStatic
     ? insight.featuredImage ?? null
-    : insight.featuredImageUrl
-      ? `${MEDIA_BASE}${insight.featuredImageUrl}`
-      : null;
+    : resolveMediaUrl(insight.featuredImageUrl);
 
   // SEO
   const seoTitle       = insight.seoTitle || title;
@@ -221,6 +219,12 @@ export default function InsightDetail() {
       {featuredImageSrc && (
         <div className="bg-white">
           <div className="container pt-0">
+            {/*
+              Deliberately a wide cinematic banner: fills the content width and
+              crops (object-cover) to a capped height on desktop. Portrait
+              sources get centre-cropped rather than shown full-height — a
+              full-width horizontal treatment is the chosen look for this page.
+            */}
             <img
               src={featuredImageSrc}
               alt={title}
@@ -239,7 +243,7 @@ export default function InsightDetail() {
             {cmsContent ? (
               /* CMS TipTap HTML */
               <div
-                className="text-base leading-relaxed text-[var(--color-text-secondary)]
+                className="flow-root text-base leading-relaxed text-[var(--color-text-secondary)]
                   [&_h1]:mb-4 [&_h1]:mt-10 [&_h1]:text-2xl [&_h1]:font-black [&_h1]:leading-snug [&_h1]:tracking-tight [&_h1]:text-[var(--color-text-primary)] [&_h1]:first:mt-0
                   [&_h2]:mb-4 [&_h2]:mt-10 [&_h2]:text-xl [&_h2]:font-black [&_h2]:leading-snug [&_h2]:tracking-tight [&_h2]:text-[var(--color-text-primary)] [&_h2]:first:mt-0
                   [&_h3]:mb-3 [&_h3]:mt-8 [&_h3]:text-lg [&_h3]:font-bold [&_h3]:leading-snug [&_h3]:text-[var(--color-text-primary)] [&_h3]:first:mt-0
@@ -251,7 +255,14 @@ export default function InsightDetail() {
                   [&_em]:italic
                   [&_a]:text-[var(--color-primary)] [&_a]:underline [&_a]:underline-offset-2
                   [&_blockquote]:border-l-4 [&_blockquote]:border-[var(--color-primary)]/30 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-[var(--color-text-muted)]
-                  [&_hr]:my-8 [&_hr]:border-[var(--color-border)]"
+                  [&_hr]:my-8 [&_hr]:border-[var(--color-border)]
+                  [&_figure]:my-8 [&_figure]:mx-auto [&_figure]:max-w-full [&_figure]:text-center
+                  [&_figure_img]:mx-auto [&_figure_img]:w-full [&_figure_img]:max-w-full [&_figure_img]:max-h-[420px] [&_figure_img]:rounded-[var(--radius-md)] [&_figure_img]:object-cover [&_figure_img]:shadow-[var(--shadow-soft)]
+                  [&_figcaption]:mt-2.5 [&_figcaption]:text-xs [&_figcaption]:italic [&_figcaption]:text-[var(--color-text-muted)] [&_figcaption:empty]:hidden
+                  [&_figure.figure-align-left]:float-left [&_figure.figure-align-left]:mr-6 [&_figure.figure-align-left]:mb-4 [&_figure.figure-align-left]:mt-1 [&_figure.figure-align-left]:w-[45%] [&_figure.figure-align-left]:text-left
+                  [&_figure.figure-align-left_img]:max-h-[280px]
+                  [&_figure.figure-align-wide]:w-screen [&_figure.figure-align-wide]:max-w-[900px] [&_figure.figure-align-wide]:ml-[calc(50%-50vw)] [&_figure.figure-align-wide]:mr-[calc(50%-50vw)]
+                  [&_img]:w-full [&_img]:max-w-full [&_img]:max-h-[420px] [&_img]:rounded-[var(--radius-md)]"
                 dangerouslySetInnerHTML={{ __html: cmsContent }}
               />
             ) : staticBody && staticBody.length > 0 ? (
