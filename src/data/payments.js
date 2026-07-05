@@ -131,14 +131,14 @@ export const PAYMENT_CATEGORIES = [
       {
         slug: "student-chapter-first-payment",
         title: "Student Chapter First Payment",
-        baseAmount: 75,
+        baseAmount: 125,
         breakdown: [
           {
-            label: "Registration",
-            amount: 60,
+            label: "Chapter Fee",
+            amount: 110,
           },
           {
-            label: "First month dues",
+            label: "First Month Dues",
             amount: 15,
           },
         ],

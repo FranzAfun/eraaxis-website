@@ -56,7 +56,11 @@ export default function ResumeProgrammePayment() {
         }
 
         setSummary(json.data);
-        setMonths(buildMonthOptions(json.data.durationMonths, json.data.monthsPaidTotal)[0].value);
+        setMonths(
+          json.data.category === "student_chapter"
+            ? String(json.data.renewalMonths || 3)
+            : buildMonthOptions(json.data.durationMonths, json.data.monthsPaidTotal)[0].value
+        );
         setStatus(json.data.hasDueObligation ? "owes" : "paid-up");
       } catch {
         if (!cancelled) setStatus("error");
@@ -85,8 +89,16 @@ export default function ResumeProgrammePayment() {
     }
   }
 
-  const monthOptions = summary ? buildMonthOptions(summary.durationMonths, summary.monthsPaidTotal) : [];
-  const breakdown = summary ? calculatePaymentBreakdown(summary.instalmentAmount * Number(months)) : null;
+  const isStudentChapter = summary?.category === "student_chapter";
+  const monthOptions = summary && !isStudentChapter
+    ? buildMonthOptions(summary.durationMonths, summary.monthsPaidTotal)
+    : [];
+  // Student Chapter renews in a fixed 3-month block at a flat per-cycle fee
+  // (totalBase, from the summary endpoint) — not a monthly rate multiplied
+  // by a chosen month count like every other programme type.
+  const breakdown = summary
+    ? calculatePaymentBreakdown(isStudentChapter ? summary.totalBase : summary.instalmentAmount * Number(months))
+    : null;
 
   return (
     <>
@@ -190,22 +202,39 @@ export default function ResumeProgrammePayment() {
                 Welcome back, {summary.fullName}.
               </h1>
               <p className="mb-8 text-base leading-relaxed text-white/68">
-                {summary.durationMonths
-                  ? `You've paid ${summary.monthsPaidTotal} of ${summary.durationMonths} months for ${summary.programmeName}.`
-                  : `Continue your payment for ${summary.programmeName}.`}
+                {isStudentChapter
+                  ? "Renew your Student Chapter membership for another 3 months."
+                  : summary.durationMonths
+                    ? `You've paid ${summary.monthsPaidTotal} of ${summary.durationMonths} months for ${summary.programmeName}.`
+                    : `Continue your payment for ${summary.programmeName}.`}
               </p>
 
               <div className="mb-6 space-y-4 rounded-[var(--radius-md)] border border-white/15 bg-white/[0.06] p-5 backdrop-blur-xl">
-                <div>
-                  <label className={labelCls}>Months to pay now</label>
-                  <SelectField
-                    name="months"
-                    value={months}
-                    onChange={(event) => setMonths(event.target.value)}
-                    className="min-h-[46px] w-full rounded-[var(--radius-sm)] border border-white/20 bg-white/[0.08] px-4 text-sm text-white"
-                    options={monthOptions}
-                  />
-                </div>
+                {isStudentChapter ? (
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="text-white/60">Chapter fee (3 months)</span>
+                      <span className="font-semibold text-white">{formatGhs(summary.chapterFee)}</span>
+                    </div>
+                    {summary.duesRequired && (
+                      <div className="flex items-center justify-between gap-4">
+                        <span className="text-white/60">Membership dues (not covered)</span>
+                        <span className="font-semibold text-white">{formatGhs(summary.duesFee)}</span>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div>
+                    <label className={labelCls}>Months to pay now</label>
+                    <SelectField
+                      name="months"
+                      value={months}
+                      onChange={(event) => setMonths(event.target.value)}
+                      className="min-h-[46px] w-full rounded-[var(--radius-sm)] border border-white/20 bg-white/[0.08] px-4 text-sm text-white"
+                      options={monthOptions}
+                    />
+                  </div>
+                )}
 
                 {breakdown && (
                   <div className="flex items-center justify-between gap-4 border-t border-white/15 pt-4 text-sm">

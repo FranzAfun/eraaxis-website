@@ -27,12 +27,12 @@ const paymentOptions = [
   },
   {
     title: "Student Chapter",
-    amount: "GHS 75 first payment",
+    amount: "GHS 125 first payment",
     description: "Join the ERA AXIS Student Chapter.",
     bullets: [
-      "GHS 60 registration",
+      "GHS 110 chapter fee",
       "GHS 15 first month dues",
-      "Monthly dues continue after first month",
+      "Then GHS 110 every 3 months",
     ],
     cta: "Start chapter enrolment",
     to: "/payments/student-chapter",
