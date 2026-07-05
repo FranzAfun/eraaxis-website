@@ -3,6 +3,8 @@
 ## Overview
 This is the official public frontend for ERA AXIS, Ghana's practical STEM and digital skills education platform. The website presents programmes, the ERA Dev Board, partnerships, insights, gallery updates, and enrolment/dues pathways.
 
+Programmes, partners, insights, and gallery content are managed through the **EDOS admin Website module** (a separate internal repo) and served from its API — this site is a backend-driven frontend for that content, not a fully static site. Enrolment, dues, and contact submissions post to the same backend, which sends confirmation/notification emails.
+
 ## Tech Stack
 - React
 - Vite
@@ -21,7 +23,7 @@ This is the official public frontend for ERA AXIS, Ghana's practical STEM and di
 - Insights listing and insight detail pages
 - Gallery page
 - FAQ page
-- Contact page with client-side enquiry form
+- Contact page with an enquiry form that submits to the backend API (confirmation email to the sender, notification email to the internal team)
 - Enrolment & Dues hub
 - Programme Enrolment, Monthly Dues, and Student Chapter payment foundations
 - Custom 404 page
@@ -49,7 +51,7 @@ npm run build
 ## Environment Variables
 Create a `.env` file (or copy `.env.example`) and define:
 ```
-VITE_API_BASE_URL=
+VITE_API_URL=
 VITE_SITE_URL=
 VITE_SOCIAL_LINKEDIN_URL=
 VITE_SOCIAL_X_URL=

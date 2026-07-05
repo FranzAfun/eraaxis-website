@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
   ArrowRight,
@@ -18,8 +18,11 @@ import {
 } from "../data/payments";
 import BackLinkButton from "../components/navigation/BackLinkButton";
 import SelectField from "../components/ui/SelectField";
+import ConfirmDialog from "../components/ui/ConfirmDialog";
 import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
+import { EMAIL_RE } from "../utils/validateEmail";
+import { suggestEmailCorrection } from "../utils/emailTypoCheck";
 
 const category = getPaymentCategoryBySlug("monthly-dues");
 const item = category.items[0];
@@ -35,6 +38,12 @@ const fieldCls =
 
 const labelCls =
   "mb-1.5 block text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--color-primary-deep)]";
+
+const optionalTag = (
+  <span className="ml-1 font-normal normal-case tracking-normal text-[var(--color-text-muted)]">
+    (optional)
+  </span>
+);
 
 function PaymentHistoryAccessCard({ className = "" }) {
   return (
@@ -76,6 +85,28 @@ export default function MonthlyDuesPayment() {
   const [selectedMonths, setSelectedMonths] = useState("1");
   const manualFormInnerRef = useRef(null);
   const [manualFormHeight, setManualFormHeight] = useState(0);
+  const [firstName, setFirstName]       = useState("");
+  const [lastName, setLastName]         = useState("");
+  const [otherNames, setOtherNames]     = useState("");
+  const [email, setEmail]               = useState("");
+  const [emailSuggestion, setEmailSuggestion] = useState("");
+  const [phone, setPhone]               = useState("");
+  const [submitting, setSubmitting]     = useState(false);
+  const [formError, setFormError]       = useState("");
+  const [loginStep, setLoginStep] = useState("email"); // "email" | "otp" | "history"
+  const [duesProgrammeId, setDuesProgrammeId] = useState(null);
+  const [returningEmail, setReturningEmail] = useState("");
+  const [otpCode, setOtpCode] = useState("");
+  const [loginSubmitting, setLoginSubmitting] = useState(false);
+  const [loginError, setLoginError] = useState("");
+  const [returningEnrolment, setReturningEnrolment] = useState(null);
+  const [paymentHistory, setPaymentHistory] = useState([]);
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const [historyMonths, setHistoryMonths] = useState("1");
+  const [showNavConfirm, setShowNavConfirm] = useState(false);
+  const isDirty = useRef(false);
+  const pendingNav = useRef(null);
+  const navigate = useNavigate();
   const baseTotal = item.baseAmount * Number(selectedMonths);
   const breakdown = calculatePaymentBreakdown(baseTotal);
   const duesPeriodOptions = [
@@ -84,6 +115,175 @@ export default function MonthlyDuesPayment() {
     { value: "6", label: "Half Year" },
     { value: "12", label: "1 Year" },
   ];
+
+  async function handleFirstTimeSubmit() {
+    setFormError("");
+    if (!firstName.trim()) { setFormError("First name is required."); return; }
+    if (!lastName.trim())  { setFormError("Last name is required."); return; }
+    if (!email.trim())    { setFormError("Email address is required."); return; }
+    if (!EMAIL_RE.test(email.trim())) { setFormError("Please enter a valid email address."); return; }
+    if (!phone.trim())    { setFormError("Phone number is required."); return; }
+    setSubmitting(true);
+    try {
+      const programmesRes = await fetch("/api/website/programmes");
+      const programmesData = await programmesRes.json();
+      const prog = programmesData.data?.find((p) => p.category === "monthly_dues");
+      if (!prog) throw new Error("Monthly Dues programme not found. Please try again.");
+
+      const enrolRes = await fetch("/api/website/enrolments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          programme_id: prog.id,
+          first_name:   firstName.trim(),
+          last_name:    lastName.trim(),
+          other_names:  otherNames.trim() || undefined,
+          email:        email.trim(),
+          phone:        phone.trim(),
+        }),
+      });
+      const enrolData = await enrolRes.json();
+      if (!enrolData.success) throw new Error(enrolData.error || "Enrolment failed.");
+
+      const payRes = await fetch("/api/website/payments/initialize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ enrolment_id: enrolData.data.id, months_paid: Number(selectedMonths) }),
+      });
+      const payData = await payRes.json();
+      if (!payData.success) throw new Error(payData.error || "Payment initialisation failed.");
+
+      isDirty.current = false;
+      window.location.href = payData.data.authorizationUrl;
+    } catch (err) {
+      setFormError(err.message || "Something went wrong. Please try again.");
+      setSubmitting(false);
+    }
+  }
+
+  async function handleRequestOtp() {
+    setLoginError("");
+    if (!returningEmail.trim()) { setLoginError("Email address is required."); return; }
+    if (!EMAIL_RE.test(returningEmail.trim())) { setLoginError("Please enter a valid email address."); return; }
+    setLoginSubmitting(true);
+    try {
+      let progId = duesProgrammeId;
+      if (!progId) {
+        const programmesRes = await fetch("/api/website/programmes");
+        const programmesData = await programmesRes.json();
+        const prog = programmesData.data?.find((p) => p.category === "monthly_dues");
+        if (!prog) throw new Error("Monthly Dues programme not found. Please try again.");
+        progId = prog.id;
+        setDuesProgrammeId(progId);
+      }
+
+      const res = await fetch("/api/website/enrolments/request-access", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: returningEmail.trim(), programme_id: progId }),
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error || "Could not send OTP.");
+
+      setLoginStep("otp");
+      setResendCooldown(120);
+    } catch (err) {
+      setLoginError(err.message || "Something went wrong. Please try again.");
+    } finally {
+      setLoginSubmitting(false);
+    }
+  }
+
+  async function handleVerifyOtp() {
+    setLoginError("");
+    if (!otpCode.trim()) { setLoginError("Enter the code from your email."); return; }
+    setLoginSubmitting(true);
+    try {
+      const res = await fetch("/api/website/enrolments/verify-access", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: returningEmail.trim(), programme_id: duesProgrammeId, otp: otpCode.trim() }),
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error || "Invalid or expired code.");
+
+      setReturningEnrolment(data.data);
+
+      const historyRes = await fetch(`/api/website/enrolments/${data.data.id}/payment-history`);
+      const historyData = await historyRes.json();
+      setPaymentHistory(historyData.success ? historyData.data : []);
+
+      setLoginStep("history");
+    } catch (err) {
+      setLoginError(err.message || "Something went wrong. Please try again.");
+    } finally {
+      setLoginSubmitting(false);
+    }
+  }
+
+  async function handlePayAgain() {
+    setLoginSubmitting(true);
+    setLoginError("");
+    try {
+      const payRes = await fetch("/api/website/payments/initialize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ enrolment_id: returningEnrolment.id, months_paid: Number(historyMonths) }),
+      });
+      const payData = await payRes.json();
+      if (!payData.success) throw new Error(payData.error || "Payment initialisation failed.");
+      isDirty.current = false;
+      window.location.href = payData.data.authorizationUrl;
+    } catch (err) {
+      setLoginError(err.message || "Something went wrong. Please try again.");
+      setLoginSubmitting(false);
+    }
+  }
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return undefined;
+    const timer = setInterval(() => {
+      setResendCooldown((current) => (current > 0 ? current - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [resendCooldown]);
+
+  // Track unsaved progress: a partially-filled first-time form, or a returning
+  // member who has requested/entered an OTP (losing that means re-requesting it).
+  useEffect(() => {
+    isDirty.current = Boolean(
+      firstName.trim() || lastName.trim() || otherNames.trim() || email.trim() || phone.trim() || loginStep !== "email"
+    );
+  }, [firstName, lastName, otherNames, email, phone, loginStep]);
+
+  // Protect against tab close / page refresh — browser forces its own native dialog here,
+  // custom UI is not possible for true page reloads (browser security restriction).
+  useEffect(() => {
+    function handleBeforeUnload(e) {
+      if (!isDirty.current) return;
+      e.preventDefault();
+    }
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, []);
+
+  // Intercept in-app navigation (header nav / back link are <a> tags via React Router).
+  // Capture phase runs before React Router's click handler, so we can suppress it.
+  useEffect(() => {
+    function handleAnchorClick(e) {
+      if (!isDirty.current) return;
+      const anchor = e.target.closest("a[href]");
+      if (!anchor) return;
+      const href = anchor.getAttribute("href");
+      if (!href || /^#|^(https?:)?\/\/|^mailto:|^tel:/.test(href)) return;
+      e.preventDefault();
+      e.stopPropagation();
+      pendingNav.current = href;
+      setShowNavConfirm(true);
+    }
+    document.addEventListener("click", handleAnchorClick, true);
+    return () => document.removeEventListener("click", handleAnchorClick, true);
+  }, []);
 
   useEffect(() => {
     const updateManualFormHeight = () => {
@@ -195,26 +395,138 @@ export default function MonthlyDuesPayment() {
                       </div>
                     </div>
 
-                    <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
-                      <div>
-                        <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--color-primary-deep)]">
-                          Email address or phone number
-                        </label>
-                        <input
-                          type="text"
-                          placeholder="genny@example.com"
-                          className="min-h-[46px] w-full rounded-[var(--radius-sm)] border border-[var(--color-primary)]/18 bg-white px-4 py-3 text-sm text-[var(--color-text-primary)] shadow-[inset_0_1px_0_rgb(255_255_255/0.7)] placeholder:text-[var(--color-text-secondary)] outline-none transition-[border-color,box-shadow,background-color] focus:border-[var(--color-primary)] focus:bg-white focus:ring-2 focus:ring-[var(--color-primary)]/10"
-                        />
+                    {loginStep === "email" && (
+                      <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+                        <div>
+                          <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--color-primary-deep)]">
+                            Email address
+                          </label>
+                          <input
+                            type="email"
+                            placeholder="genny@example.com"
+                            value={returningEmail}
+                            onChange={(e) => setReturningEmail(e.target.value)}
+                            className="min-h-[46px] w-full rounded-[var(--radius-sm)] border border-[var(--color-primary)]/18 bg-white px-4 py-3 text-sm text-[var(--color-text-primary)] shadow-[inset_0_1px_0_rgb(255_255_255/0.7)] placeholder:text-[var(--color-text-secondary)] outline-none transition-[border-color,box-shadow,background-color] focus:border-[var(--color-primary)] focus:bg-white focus:ring-2 focus:ring-[var(--color-primary)]/10"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={handleRequestOtp}
+                          disabled={loginSubmitting}
+                          className={`btn-outline min-h-[44px] justify-center sm:px-5${loginSubmitting ? " cursor-not-allowed opacity-50" : ""}`}
+                        >
+                          {loginSubmitting ? "Sending…" : "Continue with OTP"}
+                        </button>
                       </div>
-                      <button
-                        type="button"
-                        className="btn-outline min-h-[44px] justify-center sm:px-5"
-                      >
-                        Continue with OTP
-                      </button>
-                    </div>
+                    )}
+
+                    {loginStep === "otp" && (
+                      <div className="space-y-3">
+                        <p className="text-xs text-[var(--color-text-secondary)]">
+                          We sent a 6-digit code to <span className="font-semibold">{returningEmail}</span>.
+                        </p>
+                        <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+                          <div>
+                            <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--color-primary-deep)]">
+                              Enter code
+                            </label>
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              maxLength={6}
+                              placeholder="123456"
+                              value={otpCode}
+                              onChange={(e) => setOtpCode(e.target.value)}
+                              className="min-h-[46px] w-full rounded-[var(--radius-sm)] border border-[var(--color-primary)]/18 bg-white px-4 py-3 text-sm tracking-[0.3em] text-[var(--color-text-primary)] shadow-[inset_0_1px_0_rgb(255_255_255/0.7)] placeholder:tracking-normal placeholder:text-[var(--color-text-secondary)] outline-none transition-[border-color,box-shadow,background-color] focus:border-[var(--color-primary)] focus:bg-white focus:ring-2 focus:ring-[var(--color-primary)]/10"
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={handleVerifyOtp}
+                            disabled={loginSubmitting}
+                            className={`btn-primary min-h-[44px] justify-center sm:px-5${loginSubmitting ? " cursor-not-allowed opacity-50" : ""}`}
+                          >
+                            {loginSubmitting ? "Verifying…" : "Verify"}
+                          </button>
+                        </div>
+                        <div className="flex items-center gap-4 text-xs">
+                          <button
+                            type="button"
+                            onClick={handleRequestOtp}
+                            disabled={resendCooldown > 0 || loginSubmitting}
+                            className={`font-semibold text-[var(--color-primary)] underline ${resendCooldown > 0 || loginSubmitting ? "cursor-not-allowed opacity-50" : ""}`}
+                          >
+                            {resendCooldown > 0 ? `Resend code (${resendCooldown}s)` : "Resend code"}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => { setLoginStep("email"); setOtpCode(""); setLoginError(""); }}
+                            className="font-semibold text-[var(--color-text-secondary)] underline"
+                          >
+                            Change email
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {loginStep === "history" && returningEnrolment && (
+                      <div className="space-y-4">
+                        <p className="text-sm text-[var(--color-text-secondary)]">
+                          Welcome back, <span className="font-semibold text-[var(--color-text-primary)]">{returningEnrolment.fullName}</span>.
+                        </p>
+
+                        {paymentHistory.length > 0 ? (
+                          <ul className="divide-y divide-[var(--color-border)] overflow-hidden rounded-[var(--radius-sm)] border border-[var(--color-border)]">
+                            {paymentHistory.map((entry) => (
+                              <li key={entry.reference} className="flex items-center justify-between gap-3 px-4 py-3 text-sm">
+                                <div>
+                                  <p className="font-medium text-[var(--color-text-primary)]">
+                                    {new Date(entry.paidAt).toLocaleDateString()}
+                                  </p>
+                                  <p className="text-xs text-[var(--color-text-muted)]">
+                                    {entry.monthsPaid} month{entry.monthsPaid === 1 ? "" : "s"} · {entry.reference}
+                                  </p>
+                                </div>
+                                <span className="font-semibold text-[var(--color-text-primary)]">
+                                  {formatGhs(entry.amount)}
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <p className="text-sm text-[var(--color-text-muted)]">No previous payments found.</p>
+                        )}
+
+                        <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
+                          <div>
+                            <label className={labelCls}>Dues period to pay now</label>
+                            <SelectField
+                              name="historyMonths"
+                              value={historyMonths}
+                              onChange={(event) => setHistoryMonths(event.target.value)}
+                              className={fieldCls}
+                              options={duesPeriodOptions}
+                            />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={handlePayAgain}
+                            disabled={loginSubmitting}
+                            className={`btn-primary min-h-[44px] justify-center sm:px-5${loginSubmitting ? " cursor-not-allowed opacity-50" : ""}`}
+                          >
+                            {loginSubmitting ? "Processing…" : "Pay Now"}
+                            <ArrowRight size={15} strokeWidth={2.25} aria-hidden="true" />
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {loginError && (
+                      <p className="mt-2 text-sm text-red-600">{loginError}</p>
+                    )}
                   </div>
 
+                  {loginStep === "email" && (
                   <button
                     type="button"
                     onClick={() => setShowManualForm((current) => !current)}
@@ -233,6 +545,7 @@ export default function MonthlyDuesPayment() {
                       }`}
                     />
                   </button>
+                  )}
                 </div>
               </div>
 
@@ -275,11 +588,35 @@ export default function MonthlyDuesPayment() {
 
                   <div className="grid gap-x-6 gap-y-5 sm:grid-cols-2">
                     <div>
-                      <label className={labelCls}>Full name</label>
+                      <label className={labelCls}>First name</label>
                       <input
                         type="text"
-                        placeholder="Genny Amadapah"
+                        placeholder="Genny"
                         className={fieldCls}
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                      />
+                    </div>
+
+                    <div>
+                      <label className={labelCls}>Last name</label>
+                      <input
+                        type="text"
+                        placeholder="Amadapah"
+                        className={fieldCls}
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                      />
+                    </div>
+
+                    <div>
+                      <label className={labelCls}>Other names {optionalTag}</label>
+                      <input
+                        type="text"
+                        placeholder="Middle name(s), if any"
+                        className={fieldCls}
+                        value={otherNames}
+                        onChange={(e) => setOtherNames(e.target.value)}
                       />
                     </div>
 
@@ -289,7 +626,23 @@ export default function MonthlyDuesPayment() {
                         type="email"
                         placeholder="genny@example.com"
                         className={fieldCls}
+                        value={email}
+                        onChange={(e) => { setEmail(e.target.value); setEmailSuggestion(""); }}
+                        onBlur={() => setEmailSuggestion(suggestEmailCorrection(email) || "")}
                       />
+                      {emailSuggestion && (
+                        <p className="mt-1.5 text-xs text-[var(--color-text-muted)]">
+                          Did you mean{" "}
+                          <button
+                            type="button"
+                            onClick={() => { setEmail(emailSuggestion); setEmailSuggestion(""); }}
+                            className="font-semibold text-[var(--color-primary)] underline"
+                          >
+                            {emailSuggestion}
+                          </button>
+                          ?
+                        </p>
+                      )}
                     </div>
 
                     <div>
@@ -298,6 +651,8 @@ export default function MonthlyDuesPayment() {
                         type="tel"
                         placeholder="+233 xx xxx xxxx"
                         className={fieldCls}
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
                       />
                     </div>
 
@@ -377,12 +732,16 @@ export default function MonthlyDuesPayment() {
                 </div>
 
                 <div className="space-y-3">
+                  {formError && (
+                    <p className="text-sm text-red-600">{formError}</p>
+                  )}
                   <button
                     type="button"
-                    disabled
-                    className="btn-primary w-full cursor-not-allowed justify-center opacity-50"
+                    onClick={handleFirstTimeSubmit}
+                    disabled={submitting || !showManualForm}
+                    className={`btn-primary w-full justify-center${submitting || !showManualForm ? " cursor-not-allowed opacity-50" : ""}`}
                   >
-                    Continue to checkout
+                    {submitting ? "Processing…" : "Continue to checkout"}
                     <ArrowRight size={15} strokeWidth={2.25} aria-hidden="true" />
                   </button>
                   <Link
@@ -404,6 +763,24 @@ export default function MonthlyDuesPayment() {
           </div>
         </div>
       </section>
+
+      <ConfirmDialog
+        open={showNavConfirm}
+        title="Leave without saving?"
+        message="You have unsaved progress here. If you leave now it will be lost."
+        confirmLabel="Leave"
+        cancelLabel="Stay on page"
+        onConfirm={() => {
+          isDirty.current = false;
+          setShowNavConfirm(false);
+          navigate(pendingNav.current);
+          pendingNav.current = null;
+        }}
+        onCancel={() => {
+          setShowNavConfirm(false);
+          pendingNav.current = null;
+        }}
+      />
     </>
   );
 }

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, ArrowDown, Hammer, Cpu, FolderOpen, TrendingUp } from "lucide-react";
 
@@ -8,8 +9,24 @@ import eraDigitalImg from "../assets/images/programmes/era-digital-skill.webp";
 import programmesHeroImg from "../assets/images/programmes/programmes-hero.webp";
 import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
+import { api } from "../services/api";
+import { resolveMediaUrl } from "../utils/resolveMediaUrl";
 
-const programmes = [
+const CATEGORY_IMAGE = {
+  school_stem:        schoolStemImg,
+  out_of_school_youth: outOfSchoolImg,
+  online_learning:    onlineLearningImg,
+  digital_skills:     eraDigitalImg,
+};
+
+const CATEGORY_AUDIENCE = {
+  school_stem:         "Basic 1 – SHS 3",
+  out_of_school_youth: "Ages 16 – 30",
+  online_learning:     "Remote & self-paced learners",
+  digital_skills:      "Working adults & professionals",
+};
+
+const STATIC_PROGRAMMES = [
   {
     image: schoolStemImg,
     imageAlt: "Students engaged in a school STEM class",
@@ -153,6 +170,39 @@ function LearningStep({ Icon, step, title, body }) {
 }
 
 export default function Programs() {
+  const [apiProgrammes, setApiProgrammes] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    api.get("/programmes")
+      .then((json) => {
+        if (!cancelled) setApiProgrammes(json?.data ?? []);
+      })
+      .catch(() => {
+        if (!cancelled) setApiProgrammes([]);
+      });
+    return () => { cancelled = true; };
+  }, []);
+
+  const programmes = (() => {
+    if (!apiProgrammes || apiProgrammes.length === 0) return STATIC_PROGRAMMES;
+    // website_programmes also holds billing-only categories (student_chapter,
+    // monthly_dues) used by the payment system — only real teaching
+    // programmes belong on this page.
+    return apiProgrammes
+      .filter((p) => Object.prototype.hasOwnProperty.call(CATEGORY_IMAGE, p.category))
+      .map((p) => ({
+        image: resolveMediaUrl(p.coverImageUrl) || CATEGORY_IMAGE[p.category] || schoolStemImg,
+        imageAlt: p.name,
+        audience: CATEGORY_AUDIENCE[p.category] || "",
+        title: p.name,
+        programmeSlug: p.slug,
+        body: p.description,
+        cta: "Explore",
+        to: `/programs/${p.slug}`,
+      }));
+  })();
+
   return (
     <>
       <SEO {...getPageSeo("/programs")} />

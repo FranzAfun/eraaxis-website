@@ -11,6 +11,8 @@ import BackLinkButton from "../components/navigation/BackLinkButton";
 import SelectField from "../components/ui/SelectField";
 import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
+import { EMAIL_RE } from "../utils/validateEmail";
+import { suggestEmailCorrection } from "../utils/emailTypoCheck";
 
 const category = getPaymentCategoryBySlug("programme-enrolment");
 
@@ -46,6 +48,18 @@ export default function ProgrammeEnrolmentPayment() {
   const [manualProgrammeSlug, setManualProgrammeSlug] = useState("");
   const [paymentOption, setPaymentOption] = useState("monthly");
   const [learnerType, setLearnerType] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [otherNames, setOtherNames] = useState("");
+  const [email, setEmail] = useState("");
+  const [emailSuggestion, setEmailSuggestion] = useState("");
+  const [phone, setPhone] = useState("");
+  const [institution, setInstitution] = useState("");
+  const [learningGoal, setLearningGoal] = useState("");
+  const [previousExperience, setPreviousExperience] = useState("");
+  const [notes, setNotes] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState("");
   const selectedProgrammeSlug = category.items.some(
     (programme) => programme.slug === manualProgrammeSlug
   )
@@ -59,6 +73,72 @@ export default function ProgrammeEnrolmentPayment() {
   const selectedProgramme =
     category.items.find((programme) => programme.slug === selectedProgrammeSlug) ||
     category.items[0];
+
+  // Maps frontend static slugs to backend DB slugs (where they differ)
+  const SLUG_TO_BACKEND = {
+    "junior-stem": "school-stem",
+  };
+
+  const requiresInstitution = selectedProgrammeSlug === "junior-stem";
+
+  async function handleSubmit() {
+    setFormError("");
+    if (!firstName.trim()) { setFormError("First name is required."); return; }
+    if (!lastName.trim())  { setFormError("Last name is required."); return; }
+    if (!email.trim())    { setFormError("Email address is required."); return; }
+    if (!EMAIL_RE.test(email.trim())) { setFormError("Please enter a valid email address."); return; }
+    if (!phone.trim())    { setFormError("Phone number is required."); return; }
+    if (requiresInstitution && !institution.trim()) {
+      setFormError("Institution is required for the Junior STEM programme.");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const programmesRes = await fetch("/api/website/programmes");
+      const programmesData = await programmesRes.json();
+      const backendSlug = SLUG_TO_BACKEND[selectedProgrammeSlug] || selectedProgrammeSlug;
+      const prog = programmesData.data?.find((p) => p.slug === backendSlug);
+      if (!prog) throw new Error("Programme not found. Please try again.");
+
+      const enrolRes = await fetch("/api/website/enrolments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          programme_id:        prog.id,
+          first_name:          firstName.trim(),
+          last_name:           lastName.trim(),
+          other_names:         otherNames.trim() || undefined,
+          email:               email.trim(),
+          phone:               phone.trim(),
+          institution:         institution.trim() || undefined,
+          learner_type:        learnerType || undefined,
+          learning_goal:       learningGoal.trim() || undefined,
+          previous_experience: previousExperience.trim() || undefined,
+          notes:               notes.trim() || undefined,
+          payment_option:      paymentOption,
+        }),
+      });
+      const enrolData = await enrolRes.json();
+      if (!enrolData.success) throw new Error(enrolData.error || "Enrolment failed.");
+
+      const months = isFullPayment ? (selectedProgramme.fullPaymentMonths ?? 3) : 1;
+      const payRes = await fetch("/api/website/payments/initialize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ enrolment_id: enrolData.data.id, months_paid: months }),
+      });
+      const payData = await payRes.json();
+      if (!payData.success) throw new Error(payData.error || "Payment initialisation failed.");
+
+      // Full-page navigation via window.location inside an event handler,
+      // not a render-time mutation — the rule can't distinguish the two here.
+      // eslint-disable-next-line react-hooks/immutability
+      window.location.href = payData.data.authorizationUrl;
+    } catch (err) {
+      setFormError(err.message || "Something went wrong. Please try again.");
+      setSubmitting(false);
+    }
+  }
 
   const isFullPayment = paymentOption === "full";
   const baseAmount = isFullPayment
@@ -147,11 +227,36 @@ export default function ProgrammeEnrolmentPayment() {
                 <div className="space-y-5">
                   <div className="grid gap-5 sm:grid-cols-2">
                     <div>
-                      <label className={labelCls}>Full name</label>
+                      <label className={labelCls}>First name</label>
                       <input
                         type="text"
-                        placeholder="Genny Amadapah"
+                        placeholder="Genny"
                         className={fieldCls}
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label className={labelCls}>Last name</label>
+                      <input
+                        type="text"
+                        placeholder="Amadapah"
+                        className={fieldCls}
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid gap-5 sm:grid-cols-2">
+                    <div>
+                      <label className={labelCls}>Other names {optionalTag}</label>
+                      <input
+                        type="text"
+                        placeholder="Middle name(s), if any"
+                        className={fieldCls}
+                        value={otherNames}
+                        onChange={(e) => setOtherNames(e.target.value)}
                       />
                     </div>
                     <div>
@@ -160,7 +265,23 @@ export default function ProgrammeEnrolmentPayment() {
                         type="email"
                         placeholder="e.g. genny@example.com"
                         className={fieldCls}
+                        value={email}
+                        onChange={(e) => { setEmail(e.target.value); setEmailSuggestion(""); }}
+                        onBlur={() => setEmailSuggestion(suggestEmailCorrection(email) || "")}
                       />
+                      {emailSuggestion && (
+                        <p className="mt-1.5 text-xs text-[var(--color-text-muted)]">
+                          Did you mean{" "}
+                          <button
+                            type="button"
+                            onClick={() => { setEmail(emailSuggestion); setEmailSuggestion(""); }}
+                            className="font-semibold text-[var(--color-primary)] underline"
+                          >
+                            {emailSuggestion}
+                          </button>
+                          ?
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -171,6 +292,8 @@ export default function ProgrammeEnrolmentPayment() {
                         type="tel"
                         placeholder="+233 XX XXX XXXX"
                         className={fieldCls}
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
                       />
                     </div>
                     <div>
@@ -206,12 +329,19 @@ export default function ProgrammeEnrolmentPayment() {
                     </div>
                     <div>
                       <label className={labelCls}>
-                        Institution / organisation {optionalTag}
+                        Institution / organisation{" "}
+                        {requiresInstitution ? (
+                          <span className="ml-1 font-normal normal-case tracking-normal text-red-500">*</span>
+                        ) : (
+                          optionalTag
+                        )}
                       </label>
                       <input
                         type="text"
                         placeholder="School, company, or organisation"
                         className={fieldCls}
+                        value={institution}
+                        onChange={(e) => setInstitution(e.target.value)}
                       />
                     </div>
                   </div>
@@ -237,6 +367,8 @@ export default function ProgrammeEnrolmentPayment() {
                         type="text"
                         placeholder="What do you want to achieve?"
                         className={fieldCls}
+                        value={learningGoal}
+                        onChange={(e) => setLearningGoal(e.target.value)}
                       />
                     </div>
                   </div>
@@ -250,6 +382,8 @@ export default function ProgrammeEnrolmentPayment() {
                         type="text"
                         placeholder="Beginner, some experience, or advanced"
                         className={fieldCls}
+                        value={previousExperience}
+                        onChange={(e) => setPreviousExperience(e.target.value)}
                       />
                     </div>
                   </div>
@@ -260,6 +394,8 @@ export default function ProgrammeEnrolmentPayment() {
                       rows={3}
                       placeholder="Anything ERA AXIS should know before enrolment..."
                       className={`${fieldCls} min-h-20 resize-none`}
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
                     />
                   </div>
                 </div>
@@ -333,12 +469,16 @@ export default function ProgrammeEnrolmentPayment() {
                 </div>
 
                 <div className="space-y-3">
+                  {formError && (
+                    <p className="text-sm text-red-600">{formError}</p>
+                  )}
                   <button
                     type="button"
-                    disabled
-                    className="btn-primary w-full cursor-not-allowed justify-center opacity-50"
+                    onClick={handleSubmit}
+                    disabled={submitting}
+                    className={`btn-primary w-full justify-center${submitting ? " cursor-not-allowed opacity-60" : ""}`}
                   >
-                    Continue to checkout
+                    {submitting ? "Processing…" : "Continue to checkout"}
                     <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
                   </button>
                   <Link

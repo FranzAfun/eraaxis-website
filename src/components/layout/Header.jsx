@@ -4,15 +4,16 @@ import { ChevronDown, Menu, X } from "lucide-react";
 import logo from "../../assets/brand/logo.webp";
 
 const navLinks = [
+  { label: "Home", to: "/" },
   { label: "Programs", to: "/programs" },
   { label: "Dev Board", to: "/dev-board" },
   { label: "Partners", to: "/partners" },
   { label: "Insights", to: "/insights" },
-  { label: "About", to: "/about" },
   { label: "Contact", to: "/contact" },
 ];
 
 const moreLinks = [
+  { label: "About", to: "/about" },
   { label: "Gallery", to: "/gallery" },
   { label: "FAQ", to: "/faq" },
   { label: "Dues", to: "/payments/monthly-dues" },
@@ -22,6 +23,7 @@ function NavItem({ to, label, onClick }) {
   return (
     <NavLink
       to={to}
+      end={to === "/"}
       onClick={onClick}
       className={({ isActive }) =>
         [
@@ -41,6 +43,7 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const moreIsActive =
+    location.pathname === "/about" ||
     location.pathname === "/gallery" ||
     location.pathname === "/faq" ||
     location.pathname === "/payments/monthly-dues";

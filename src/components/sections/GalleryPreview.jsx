@@ -1,10 +1,22 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { useBootstrap } from "../../hooks/useBootstrap";
 import { galleryPreviewItems } from "../../data/gallery";
+import { resolveMediaUrl } from "../../utils/resolveMediaUrl";
 
 const AUTOPLAY_MS = 4800;
-const featuredItems = galleryPreviewItems.slice(0, 6);
+const BASE_URL = (import.meta.env.VITE_API_URL || "").replace(/\/+$/, "");
+
+function normaliseItems(raw) {
+  return raw
+    .filter((item) => item.image_url)
+    .map((item) => ({
+      id: item.id,
+      src: resolveMediaUrl(item.image_url),
+      alt: item.alt_text || item.title || "ERA AXIS gallery image",
+    }));
+}
 
 function GalleryThumbnail({ item, isActive, onClick }) {
   return (
@@ -33,12 +45,39 @@ function GalleryThumbnail({ item, isActive, onClick }) {
 }
 
 export default function GalleryPreview() {
+  const { gallery: bootstrapGallery } = useBootstrap();
+  const [fetchedItems, setFetchedItems] = useState(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [progressPercent, setProgressPercent] = useState(0);
   const animationFrameRef = useRef(null);
   const lastFrameTimeRef = useRef(null);
   const progressMsRef = useRef(0);
+
+  // Fetch from API only when bootstrap has no gallery items
+  useEffect(() => {
+    if (bootstrapGallery.length > 0) return;
+
+    let cancelled = false;
+    fetch(`${BASE_URL}/gallery`)
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((json) => {
+        if (!cancelled) setFetchedItems(json?.data ?? []);
+      })
+      .catch(() => {
+        if (!cancelled) setFetchedItems([]);
+      });
+
+    return () => { cancelled = true; };
+  }, [bootstrapGallery.length]);
+
+  const resolvedItems = (() => {
+    if (bootstrapGallery.length > 0) return normaliseItems(bootstrapGallery);
+    if (fetchedItems !== null && fetchedItems.length > 0) return normaliseItems(fetchedItems);
+    return null; // still loading or empty — fall through to static
+  })();
+
+  const featuredItems = (resolvedItems ?? galleryPreviewItems).slice(0, 6);
 
   useEffect(() => {
     if (paused) {
@@ -75,7 +114,7 @@ export default function GalleryPreview() {
       animationFrameRef.current = null;
       lastFrameTimeRef.current = null;
     };
-  }, [paused]);
+  }, [paused, featuredItems.length]);
 
   function resetProgress() {
     progressMsRef.current = 0;

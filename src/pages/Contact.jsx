@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, MapPin, Mail, Phone, ChevronDown } from "lucide-react";
 import linkedinImg  from "../assets/social/linkedin.webp";
@@ -10,6 +10,8 @@ import { generalFaqs } from "../data/faqs";
 import SelectField from "../components/ui/SelectField";
 import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
+import { api } from "../services/api";
+import { useBootstrap } from "../hooks/useBootstrap";
 
 /* ── Static data ─────────────────────────────────────────────────────────── */
 
@@ -24,34 +26,10 @@ const INQUIRY_TYPES = [
 const EMPTY_FORM = { name: "", phone: "", email: "", type: "", message: "" };
 const EMAIL_RE   = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const contactItems = [
-  {
-    Icon: MapPin,
-    label: "Visit us",
-    value: "ERA AXIS HQ – Essikado, Ghana",
-    href: null,
-  },
-  {
-    Icon: Mail,
-    label: "Email us",
-    value: "support@eraaxis.com",
-    href: "mailto:support@eraaxis.com",
-  },
-  {
-    Icon: Phone,
-    label: "Call us",
-    value: "+233 50 958 2497",
-    href: "tel:+233509582497",
-  },
-];
-
-const socials = [
-  { label: "LinkedIn",  href: "https://www.linkedin.com/company/era-axis",                                             img: linkedinImg  },
-  { label: "X",         href: "https://x.com/ERRAAXIS?t=EphVMATn3dQAMr4lE3su1Q&s=09",                                 img: xImg         },
-  { label: "Instagram", href: "https://www.instagram.com/era_axis?igsh=OTNsems5YWJjeDZh",                              img: instagramImg },
-  { label: "TikTok",    href: "https://www.tiktok.com/@eraaxis?_t=ZM-8ztLE4T5YDs&_r=1",                               img: tiktokImg    },
-  { label: "WhatsApp",  href: "https://whatsapp.com/channel/0029Va9foNM002T9PHdytX1h",                                 img: whatsappImg  },
-];
+// Static fallbacks — used when bootstrap values are absent (matches Footer.jsx)
+const FALLBACK_ADDRESS = "ERA AXIS HQ – Essikado, Ghana";
+const FALLBACK_EMAIL   = "support@eraaxis.com";
+const FALLBACK_PHONE   = "+233 50 958 2497";
 
 const ctaPrimaryClass =
   "final-cta-btn-primary inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[var(--radius-sm)] px-5 text-sm font-semibold";
@@ -117,9 +95,12 @@ function ContactFaqItem({ item, isOpen, onToggle }) {
 /* ── Component ───────────────────────────────────────────────────────────── */
 
 export default function Contact() {
-  const [form, setForm]           = useState(EMPTY_FORM);
-  const [errors, setErrors]       = useState({});
-  const [submitted, setSubmitted] = useState(false);
+  const { settings, socials: bootstrapSocials } = useBootstrap();
+  const [form, setForm]               = useState(EMPTY_FORM);
+  const [errors, setErrors]           = useState({});
+  const [submitted, setSubmitted]     = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
   const contactFaqs = generalFaqs.filter((item) =>
     [
       "faq-how-to-enrol",
@@ -128,6 +109,25 @@ export default function Contact() {
     ].includes(item.id)
   );
   const [openFaqId, setOpenFaqId] = useState(contactFaqs[0]?.id ?? null);
+
+  const address = settings?.address                                || FALLBACK_ADDRESS;
+  const email   = settings?.contactEmail || settings?.supportEmail || FALLBACK_EMAIL;
+  const phone   = settings?.phone                                  || FALLBACK_PHONE;
+  const phoneTel = phone.replace(/\s/g, "");
+
+  const contactItems = useMemo(() => [
+    { Icon: MapPin, label: "Visit us",  value: address, href: null },
+    { Icon: Mail,   label: "Email us",  value: email,   href: `mailto:${email}` },
+    { Icon: Phone,  label: "Call us",   value: phone,   href: `tel:${phoneTel}` },
+  ], [address, email, phone, phoneTel]);
+
+  const socials = useMemo(() => [
+    { label: "LinkedIn",  href: bootstrapSocials?.linkedin  || import.meta.env.VITE_SOCIAL_LINKEDIN_URL,  img: linkedinImg  },
+    { label: "X",         href: bootstrapSocials?.x         || import.meta.env.VITE_SOCIAL_X_URL,         img: xImg         },
+    { label: "Instagram", href: bootstrapSocials?.instagram || import.meta.env.VITE_SOCIAL_INSTAGRAM_URL, img: instagramImg },
+    { label: "TikTok",    href: import.meta.env.VITE_SOCIAL_TIKTOK_URL,                                   img: tiktokImg    },
+    { label: "WhatsApp",  href: import.meta.env.VITE_SOCIAL_WHATSAPP_URL,                                 img: whatsappImg  },
+  ].filter((s) => typeof s.href === "string" && s.href.trim().length > 0), [bootstrapSocials]);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -144,13 +144,30 @@ export default function Contact() {
     return next;
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
-    setSubmitted(true);
-    setForm(EMPTY_FORM);
-    setErrors({});
+
+    setIsSubmitting(true);
+    setSubmitError("");
+
+    try {
+      await api.post("/contacts", {
+        full_name: form.name.trim(),
+        email:     form.email.trim(),
+        phone:     form.phone.trim() || undefined,
+        subject:   form.type || undefined,
+        message:   form.message.trim(),
+      });
+      setSubmitted(true);
+      setForm(EMPTY_FORM);
+      setErrors({});
+    } catch {
+      setSubmitError("Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -318,8 +335,18 @@ export default function Contact() {
                   </div>
 
                   <div>
-                    <button type="submit" className="btn-primary min-h-[44px] justify-center sm:px-8">
-                      Send Message <ArrowRight size={16} />
+                    {submitError && (
+                      <p className="mb-4 rounded-[var(--radius-sm)] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                        {submitError}
+                      </p>
+                    )}
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="btn-primary min-h-[44px] justify-center sm:px-8 disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                      {isSubmitting ? "Sending…" : "Send Message"}
+                      {!isSubmitting && <ArrowRight size={16} />}
                     </button>
                     <p className="mt-3 text-xs text-[var(--color-text-muted)]">
                       The right ERA AXIS team member will follow up using the

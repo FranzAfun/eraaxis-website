@@ -1,8 +1,12 @@
 import { useState } from "react";
-import partners from "../../data/partners";
+import STATIC_PARTNERS from "../../data/partners";
 
+// Deliberately static, not wired to the admin-managed partners API — this is
+// a decorative homepage strip. The dedicated Partners page is the one place
+// admin-edited partner data actually appears.
 export default function PartnersStrip() {
   const [paused, setPaused] = useState(false);
+  const displayPartners = STATIC_PARTNERS;
 
   return (
     <section className="pt-0 pb-20 md:pb-24 lg:pb-28 overflow-hidden partners-section">
@@ -31,17 +35,36 @@ export default function PartnersStrip() {
               className="marquee-group"
               aria-hidden={setIdx === 1 ? "true" : undefined}
             >
-              {partners.map((partner) => (
-                <div key={partner.name} className="partner-card">
-                  <img
-                    src={partner.logo}
-                    alt={partner.alt}
-                    loading="lazy"
-                    decoding="async"
-                    className="partner-logo"
-                  />
-                </div>
-              ))}
+              {displayPartners.map((partner) =>
+                partner.websiteUrl ? (
+                  <a
+                    key={partner.name}
+                    href={partner.websiteUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="partner-card"
+                    aria-label={`Visit ${partner.name} website`}
+                  >
+                    <img
+                      src={partner.logo}
+                      alt={partner.alt}
+                      loading="lazy"
+                      decoding="async"
+                      className="partner-logo"
+                    />
+                  </a>
+                ) : (
+                  <div key={partner.name} className="partner-card">
+                    <img
+                      src={partner.logo}
+                      alt={partner.alt}
+                      loading="lazy"
+                      decoding="async"
+                      className="partner-logo"
+                    />
+                  </div>
+                )
+              )}
             </div>
           ))}
         </div>

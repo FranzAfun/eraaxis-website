@@ -122,6 +122,24 @@ export const pageSeo = {
     description:
       "Pay monthly ERA AXIS dues, manage your dues period, and continue with a secure member payment experience.",
   },
+  "/payments/confirmation": {
+    pathname: "/payments/confirmation",
+    title: "Payment Confirmation | ERA AXIS",
+    description:
+      "Confirm your ERA AXIS payment status and view your receipt summary.",
+  },
+  "/payments/resume": {
+    pathname: "/payments/resume",
+    title: "Continue Your Payment | ERA AXIS",
+    description:
+      "Continue your ERA AXIS programme instalment payment securely via Paystack.",
+  },
+  "/privacy": {
+    pathname: "/privacy",
+    title: "Privacy & Cookie Policy | ERA AXIS",
+    description:
+      "How ERA AXIS handles cookies, local storage, and information collected through this website.",
+  },
 };
 
 export function getPageSeo(pathname) {

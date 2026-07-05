@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react";
 import heroBg from "../../assets/images/hero/hero-main.webp";
 
 const stats = [
-  { value: "500+", label: "Learners" },
+  { value: "1000+", label: "Learners" },
   { value: "STEM", label: "Programmes" },
   { value: "Community", label: "Impact" },
 ];

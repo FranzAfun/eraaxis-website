@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Check, FileText, Info, Lock } from "lucide-react";
 import {
@@ -9,6 +10,8 @@ import BackLinkButton from "../components/navigation/BackLinkButton";
 import studentChapterHeroImg from "../assets/images/programmes/student-chapter-hero.webp";
 import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
+import { EMAIL_RE } from "../utils/validateEmail";
+import { suggestEmailCorrection } from "../utils/emailTypoCheck";
 
 const category = getPaymentCategoryBySlug("student-chapter");
 const item = category.items[0];
@@ -35,6 +38,66 @@ const optionalTag = (
 );
 
 export default function StudentChapterPayment() {
+  const [firstName, setFirstName]       = useState("");
+  const [lastName, setLastName]         = useState("");
+  const [otherNames, setOtherNames]     = useState("");
+  const [email, setEmail]               = useState("");
+  const [emailSuggestion, setEmailSuggestion] = useState("");
+  const [phone, setPhone]               = useState("");
+  const [institution, setInstitution]   = useState("");
+  const [yearLevel, setYearLevel]       = useState("");
+  const [notes, setNotes]               = useState("");
+  const [submitting, setSubmitting]     = useState(false);
+  const [formError, setFormError]       = useState("");
+
+  async function handleSubmit() {
+    setFormError("");
+    if (!firstName.trim())   { setFormError("First name is required."); return; }
+    if (!lastName.trim())    { setFormError("Last name is required."); return; }
+    if (!email.trim())       { setFormError("Email address is required."); return; }
+    if (!EMAIL_RE.test(email.trim())) { setFormError("Please enter a valid email address."); return; }
+    if (!phone.trim())       { setFormError("Phone number is required."); return; }
+    if (!institution.trim()) { setFormError("Institution / School / Community is required."); return; }
+    setSubmitting(true);
+    try {
+      const programmesRes = await fetch("/api/website/programmes");
+      const programmesData = await programmesRes.json();
+      const prog = programmesData.data?.find((p) => p.category === "student_chapter");
+      if (!prog) throw new Error("Student Chapter programme not found. Please try again.");
+
+      const enrolRes = await fetch("/api/website/enrolments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          programme_id: prog.id,
+          first_name:   firstName.trim(),
+          last_name:    lastName.trim(),
+          other_names:  otherNames.trim() || undefined,
+          email:        email.trim(),
+          phone:        phone.trim(),
+          institution:  institution.trim(),
+          year_level:   yearLevel.trim() || undefined,
+          notes:        notes.trim() || undefined,
+        }),
+      });
+      const enrolData = await enrolRes.json();
+      if (!enrolData.success) throw new Error(enrolData.error || "Enrolment failed.");
+
+      const payRes = await fetch("/api/website/payments/initialize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ enrolment_id: enrolData.data.id, months_paid: 1 }),
+      });
+      const payData = await payRes.json();
+      if (!payData.success) throw new Error(payData.error || "Payment initialisation failed.");
+
+      window.location.href = payData.data.authorizationUrl;
+    } catch (err) {
+      setFormError(err.message || "Something went wrong. Please try again.");
+      setSubmitting(false);
+    }
+  }
+
   return (
     <>
       <SEO {...getPageSeo("/payments/student-chapter")} />
@@ -130,11 +193,36 @@ export default function StudentChapterPayment() {
                 <div className="space-y-5">
                   <div className="grid gap-5 sm:grid-cols-2">
                     <div>
-                      <label className={labelCls}>Full name</label>
+                      <label className={labelCls}>First name</label>
                       <input
                         type="text"
-                        placeholder="Genny Amadapah"
+                        placeholder="Genny"
                         className={fieldCls}
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label className={labelCls}>Last name</label>
+                      <input
+                        type="text"
+                        placeholder="Amadapah"
+                        className={fieldCls}
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid gap-5 sm:grid-cols-2">
+                    <div>
+                      <label className={labelCls}>Other names {optionalTag}</label>
+                      <input
+                        type="text"
+                        placeholder="Middle name(s), if any"
+                        className={fieldCls}
+                        value={otherNames}
+                        onChange={(e) => setOtherNames(e.target.value)}
                       />
                     </div>
                     <div>
@@ -143,7 +231,23 @@ export default function StudentChapterPayment() {
                         type="email"
                         placeholder="genny@example.com"
                         className={fieldCls}
+                        value={email}
+                        onChange={(e) => { setEmail(e.target.value); setEmailSuggestion(""); }}
+                        onBlur={() => setEmailSuggestion(suggestEmailCorrection(email) || "")}
                       />
+                      {emailSuggestion && (
+                        <p className="mt-1.5 text-xs text-[var(--color-text-muted)]">
+                          Did you mean{" "}
+                          <button
+                            type="button"
+                            onClick={() => { setEmail(emailSuggestion); setEmailSuggestion(""); }}
+                            className="font-semibold text-[var(--color-primary)] underline"
+                          >
+                            {emailSuggestion}
+                          </button>
+                          ?
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -154,6 +258,8 @@ export default function StudentChapterPayment() {
                         type="tel"
                         placeholder="+233 XX XXX XXXX"
                         className={fieldCls}
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
                       />
                     </div>
                     <div>
@@ -164,6 +270,8 @@ export default function StudentChapterPayment() {
                         type="text"
                         placeholder="Your school or community"
                         className={fieldCls}
+                        value={institution}
+                        onChange={(e) => setInstitution(e.target.value)}
                       />
                     </div>
                   </div>
@@ -177,6 +285,8 @@ export default function StudentChapterPayment() {
                         type="text"
                         placeholder="e.g. Year 2, Level 200, SHS 3"
                         className={fieldCls}
+                        value={yearLevel}
+                        onChange={(e) => setYearLevel(e.target.value)}
                       />
                     </div>
                   </div>
@@ -187,6 +297,8 @@ export default function StudentChapterPayment() {
                       rows={3}
                       placeholder="Anything you want ERA AXIS to know before joining..."
                       className={`${fieldCls} min-h-20 resize-none`}
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
                     />
                   </div>
                 </div>
@@ -254,12 +366,16 @@ export default function StudentChapterPayment() {
                 </div>
 
                 <div className="space-y-3">
+                  {formError && (
+                    <p className="text-sm text-red-600">{formError}</p>
+                  )}
                   <button
                     type="button"
-                    disabled
-                    className="btn-primary w-full cursor-not-allowed justify-center opacity-50"
+                    onClick={handleSubmit}
+                    disabled={submitting}
+                    className={`btn-primary w-full justify-center${submitting ? " cursor-not-allowed opacity-60" : ""}`}
                   >
-                    Continue to checkout
+                    {submitting ? "Processing…" : "Continue to checkout"}
                     <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
                   </button>
                   <Link

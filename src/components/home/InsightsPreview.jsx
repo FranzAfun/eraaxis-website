@@ -1,44 +1,78 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import { insights } from "../../data/insights";
+import { useBootstrap } from "../../hooks/useBootstrap";
+import { insights as STATIC_INSIGHTS } from "../../data/insights";
+import { resolveMediaUrl } from "../../utils/resolveMediaUrl";
 
-function InsightCard({ type, title, excerpt, slug, isVisible, reducedMotion, index }) {
+const CONTENT_TYPE_LABEL = {
+  article: "Article",
+  news: "News",
+  update: "Update",
+  announcement: "Announcement",
+  event_recap: "Event Recap",
+  programme_story: "Programme Story",
+};
+
+function InsightCard({ type, title, excerpt, slug, image, isVisible, reducedMotion, index }) {
   const delay = reducedMotion ? 0 : index * 100;
 
   return (
     <Link
       to={`/insights/${slug}`}
-      className={`insights-card group flex flex-col p-7 transition-all duration-500 ease-out hover:-translate-y-1 hover:duration-300 ${
+      className={`insights-card group flex flex-col transition-all duration-500 ease-out hover:-translate-y-1 hover:duration-300 ${
         isVisible || reducedMotion
           ? "opacity-100 translate-y-0"
           : "opacity-0 translate-y-3"
       }`}
       style={{ transitionDelay: `${delay}ms` }}
     >
-      <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)]">
-        {type}
-      </p>
-      <h3 className="mb-3 text-base font-bold leading-snug text-white">
-        {title}
-      </h3>
-      <p className="mb-6 flex-1 text-sm leading-relaxed text-white/55">
-        {excerpt}
-      </p>
-      <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--color-accent)] transition-[gap] duration-200 group-hover:gap-2.5">
-        Read insight
-        <ArrowRight size={15} strokeWidth={2} />
-      </span>
+      {image && (
+        <img
+          src={image}
+          alt={title}
+          loading="lazy"
+          decoding="async"
+          className="h-40 w-full object-cover"
+        />
+      )}
+      <div className="flex flex-1 flex-col p-7">
+        <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)]">
+          {type}
+        </p>
+        <h3 className="mb-3 text-base font-bold leading-snug text-white">
+          {title}
+        </h3>
+        <p className="mb-6 flex-1 text-sm leading-relaxed text-white/55">
+          {excerpt}
+        </p>
+        <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--color-accent)] transition-[gap] duration-200 group-hover:gap-2.5">
+          Read insight
+          <ArrowRight size={15} strokeWidth={2} />
+        </span>
+      </div>
     </Link>
   );
 }
 
 export default function InsightsPreview() {
+  const { featuredInsights } = useBootstrap();
   const sectionRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
   const reducedMotion =
     typeof window !== "undefined" &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const insights =
+    featuredInsights.length > 0
+      ? featuredInsights.map((item) => ({
+          slug: item.slug,
+          title: item.title,
+          excerpt: item.excerpt,
+          type: CONTENT_TYPE_LABEL[item.content_type] || "Insight",
+          image: resolveMediaUrl(item.featured_image_url),
+        }))
+      : STATIC_INSIGHTS;
 
   useEffect(() => {
     const el = sectionRef.current;
@@ -102,7 +136,7 @@ export default function InsightsPreview() {
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {insights.map((item, i) => (
             <InsightCard
-              key={item.title}
+              key={item.slug}
               {...item}
               isVisible={isVisible}
               reducedMotion={reducedMotion}
