@@ -148,9 +148,9 @@ export default function ImpactMetrics() {
 
         {/* Metrics grid */}
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {METRICS.map((metric, i) => (
+          {METRICS.map(({ key, ...metric }, i) => (
             <MetricCard
-              key={metric.label}
+              key={key}
               {...metric}
               isVisible={isVisible}
               reducedMotion={reducedMotion}

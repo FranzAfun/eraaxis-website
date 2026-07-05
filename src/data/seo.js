@@ -134,6 +134,12 @@ export const pageSeo = {
     description:
       "Continue your ERA AXIS programme instalment payment securely via Paystack.",
   },
+  "/privacy": {
+    pathname: "/privacy",
+    title: "Privacy & Cookie Policy | ERA AXIS",
+    description:
+      "How ERA AXIS handles cookies, local storage, and information collected through this website.",
+  },
 };
 
 export function getPageSeo(pathname) {

@@ -213,6 +213,10 @@ export default function Footer() {
         <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-white/[0.07] pt-6 sm:flex-row">
           <p className="text-xs text-white/35">
             © {new Date().getFullYear()} {orgName}. All rights reserved.
+            {" · "}
+            <Link to="/privacy" className="transition-colors duration-200 hover:text-[var(--color-accent)]">
+              Privacy &amp; Cookie Policy
+            </Link>
           </p>
           <p className="text-xs text-white/25">
             Website by <a  rel="noopener noreferrer" className="text-[var(--color-accent)] ">ERA Technologies</a>.

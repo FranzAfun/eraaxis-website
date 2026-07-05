@@ -130,6 +130,9 @@ export default function ProgrammeEnrolmentPayment() {
       const payData = await payRes.json();
       if (!payData.success) throw new Error(payData.error || "Payment initialisation failed.");
 
+      // Full-page navigation via window.location inside an event handler,
+      // not a render-time mutation — the rule can't distinguish the two here.
+      // eslint-disable-next-line react-hooks/immutability
       window.location.href = payData.data.authorizationUrl;
     } catch (err) {
       setFormError(err.message || "Something went wrong. Please try again.");

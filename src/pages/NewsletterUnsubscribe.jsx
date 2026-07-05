@@ -9,13 +9,12 @@ export default function NewsletterUnsubscribe() {
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
 
-  const [status, setStatus] = useState("loading"); // "loading" | "success" | "error" | "no-token"
+  // "no-token" is knowable synchronously from the URL, so it's the initial
+  // state itself rather than something set from inside the effect below.
+  const [status, setStatus] = useState(token ? "loading" : "no-token"); // "loading" | "success" | "error" | "no-token"
 
   useEffect(() => {
-    if (!token) {
-      setStatus("no-token");
-      return;
-    }
+    if (!token) return;
 
     fetch(`${BASE_URL}/newsletter/unsubscribe/${encodeURIComponent(token)}`)
       .then((res) => {

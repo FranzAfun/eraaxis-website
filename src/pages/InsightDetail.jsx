@@ -82,16 +82,20 @@ const ctaSecondaryClass =
 
 export default function InsightDetail() {
   const { slug } = useParams();
-  const [apiInsight, setApiInsight] = useState(undefined); // undefined = loading
+  // Keyed by slug so a slug change is detected by comparing against the
+  // fetch result's own slug, instead of resetting state synchronously inside
+  // the effect body (which triggers a redundant extra render).
+  const [fetched, setFetched] = useState({ slug: null, insight: undefined });
 
   useEffect(() => {
     let cancelled = false;
-    setApiInsight(undefined);
     api.get(`/insights/${slug}`)
-      .then((json) => { if (!cancelled) setApiInsight(json?.data ?? null); })
-      .catch(() => { if (!cancelled) setApiInsight(null); });
+      .then((json) => { if (!cancelled) setFetched({ slug, insight: json?.data ?? null }); })
+      .catch(() => { if (!cancelled) setFetched({ slug, insight: null }); });
     return () => { cancelled = true; };
   }, [slug]);
+
+  const apiInsight = fetched.slug === slug ? fetched.insight : undefined;
 
   /* ── Loading ─────────────────────────────────────────────────────────────── */
   if (apiInsight === undefined) {
