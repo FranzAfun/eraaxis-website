@@ -4,6 +4,7 @@ import { ArrowRight, Lock } from "lucide-react";
 import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
 import { formatGhs, calculatePaymentBreakdown } from "../data/payments";
+import { api } from "../services/api";
 import SelectField from "../components/ui/SelectField";
 
 const labelCls =
@@ -40,17 +41,9 @@ export default function ResumeProgrammePayment() {
 
     async function run() {
       try {
-        const res = await fetch(`/api/website/enrolments/${enrolmentId}/summary`);
+        const json = await api.get(`/enrolments/${enrolmentId}/summary`);
         if (cancelled) return;
-
-        if (res.status === 404) {
-          setStatus("not-found");
-          return;
-        }
-
-        const json = await res.json().catch(() => null);
-        if (cancelled) return;
-        if (!res.ok || !json?.success) {
+        if (!json?.success) {
           setStatus("error");
           return;
         }
@@ -62,8 +55,9 @@ export default function ResumeProgrammePayment() {
             : buildMonthOptions(json.data.durationMonths, json.data.monthsPaidTotal)[0].value
         );
         setStatus(json.data.hasDueObligation ? "owes" : "paid-up");
-      } catch {
-        if (!cancelled) setStatus("error");
+      } catch (err) {
+        if (cancelled) return;
+        setStatus(err?.status === 404 ? "not-found" : "error");
       }
     }
 
@@ -75,12 +69,10 @@ export default function ResumeProgrammePayment() {
     setPayError("");
     setSubmitting(true);
     try {
-      const payRes = await fetch("/api/website/payments/initialize", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ enrolment_id: enrolmentId, months_paid: Number(months) }),
+      const payData = await api.post("/payments/initialize", {
+        enrolment_id: enrolmentId,
+        months_paid: Number(months),
       });
-      const payData = await payRes.json();
       if (!payData.success) throw new Error(payData.error || "Payment initialisation failed.");
       window.location.href = payData.data.authorizationUrl;
     } catch (err) {

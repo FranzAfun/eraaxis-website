@@ -6,6 +6,7 @@ import {
   calculatePaymentBreakdown,
   formatGhs,
 } from "../data/payments";
+import { api } from "../services/api";
 import BackLinkButton from "../components/navigation/BackLinkButton";
 import studentChapterHeroImg from "../assets/images/programmes/student-chapter-hero.webp";
 import SEO from "../components/SEO";
@@ -60,35 +61,27 @@ export default function StudentChapterPayment() {
     if (!institution.trim()) { setFormError("Institution / School / Community is required."); return; }
     setSubmitting(true);
     try {
-      const programmesRes = await fetch("/api/website/programmes");
-      const programmesData = await programmesRes.json();
+      const programmesData = await api.get("/programmes");
       const prog = programmesData.data?.find((p) => p.category === "student_chapter");
       if (!prog) throw new Error("Student Chapter programme not found. Please try again.");
 
-      const enrolRes = await fetch("/api/website/enrolments", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          programme_id: prog.id,
-          first_name:   firstName.trim(),
-          last_name:    lastName.trim(),
-          other_names:  otherNames.trim() || undefined,
-          email:        email.trim(),
-          phone:        phone.trim(),
-          institution:  institution.trim(),
-          year_level:   yearLevel.trim() || undefined,
-          notes:        notes.trim() || undefined,
-        }),
+      const enrolData = await api.post("/enrolments", {
+        programme_id: prog.id,
+        first_name:   firstName.trim(),
+        last_name:    lastName.trim(),
+        other_names:  otherNames.trim() || undefined,
+        email:        email.trim(),
+        phone:        phone.trim(),
+        institution:  institution.trim(),
+        year_level:   yearLevel.trim() || undefined,
+        notes:        notes.trim() || undefined,
       });
-      const enrolData = await enrolRes.json();
       if (!enrolData.success) throw new Error(enrolData.error || "Enrolment failed.");
 
-      const payRes = await fetch("/api/website/payments/initialize", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ enrolment_id: enrolData.data.id, months_paid: 1 }),
+      const payData = await api.post("/payments/initialize", {
+        enrolment_id: enrolData.data.id,
+        months_paid: 1,
       });
-      const payData = await payRes.json();
       if (!payData.success) throw new Error(payData.error || "Payment initialisation failed.");
 
       window.location.href = payData.data.authorizationUrl;

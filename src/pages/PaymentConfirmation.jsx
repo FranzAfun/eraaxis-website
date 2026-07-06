@@ -4,6 +4,7 @@ import { ArrowRight } from "lucide-react";
 import SEO from "../components/SEO";
 import { formatGhs } from "../data/payments";
 import { getPageSeo } from "../data/seo";
+import { api } from "../services/api";
 
 const MAX_ATTEMPTS = 5;
 const DELAY_MS = 3000;
@@ -34,38 +35,33 @@ export default function PaymentConfirmation() {
 
     async function fetchReceipt(ref, attempt) {
       try {
-        const res = await fetch(`/api/website/payments/${encodeURIComponent(ref)}/receipt`);
+        const json = await api.get(`/payments/${encodeURIComponent(ref)}/receipt`);
         if (cancelled) return;
-
-        if (res.status === 404) {
+        if (!json?.success) {
+          setStatus("error");
+          return;
+        }
+        setReceipt(json.data);
+        setStatus("success");
+      } catch (err) {
+        if (cancelled) return;
+        if (err?.status === 404) {
           setStatus("pending");
           if (attempt >= MAX_ATTEMPTS) return;
           await new Promise((r) => setTimeout(r, DELAY_MS));
           if (!cancelled) return fetchReceipt(ref, attempt + 1);
           return;
         }
-
-        const json = await res.json().catch(() => null);
-        if (cancelled) return;
-        if (!res.ok || !json?.success) {
-          setStatus("error");
-          return;
-        }
-        setReceipt(json.data);
-        setStatus("success");
-      } catch {
-        if (!cancelled) setStatus("error");
+        setStatus("error");
       }
     }
 
     async function run() {
       try {
-        const verifyRes = await fetch(`/api/website/payments/verify/${encodeURIComponent(reference)}`);
-        if (cancelled) return;
-        const verifyJson = await verifyRes.json().catch(() => null);
+        const verifyJson = await api.get(`/payments/verify/${encodeURIComponent(reference)}`);
         if (cancelled) return;
 
-        if (!verifyRes.ok || !verifyJson?.success) {
+        if (!verifyJson?.success) {
           setStatus("error");
           return;
         }
