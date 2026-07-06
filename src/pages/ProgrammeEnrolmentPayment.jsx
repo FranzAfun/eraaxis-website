@@ -7,6 +7,7 @@ import {
   calculateFullProgrammeBase,
   formatGhs,
 } from "../data/payments";
+import { api } from "../services/api";
 import BackLinkButton from "../components/navigation/BackLinkButton";
 import SelectField from "../components/ui/SelectField";
 import SEO from "../components/SEO";
@@ -94,40 +95,32 @@ export default function ProgrammeEnrolmentPayment() {
     }
     setSubmitting(true);
     try {
-      const programmesRes = await fetch("/api/website/programmes");
-      const programmesData = await programmesRes.json();
+      const programmesData = await api.get("/programmes");
       const backendSlug = SLUG_TO_BACKEND[selectedProgrammeSlug] || selectedProgrammeSlug;
       const prog = programmesData.data?.find((p) => p.slug === backendSlug);
       if (!prog) throw new Error("Programme not found. Please try again.");
 
-      const enrolRes = await fetch("/api/website/enrolments", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          programme_id:        prog.id,
-          first_name:          firstName.trim(),
-          last_name:           lastName.trim(),
-          other_names:         otherNames.trim() || undefined,
-          email:               email.trim(),
-          phone:               phone.trim(),
-          institution:         institution.trim() || undefined,
-          learner_type:        learnerType || undefined,
-          learning_goal:       learningGoal.trim() || undefined,
-          previous_experience: previousExperience.trim() || undefined,
-          notes:               notes.trim() || undefined,
-          payment_option:      paymentOption,
-        }),
+      const enrolData = await api.post("/enrolments", {
+        programme_id:        prog.id,
+        first_name:          firstName.trim(),
+        last_name:           lastName.trim(),
+        other_names:         otherNames.trim() || undefined,
+        email:               email.trim(),
+        phone:               phone.trim(),
+        institution:         institution.trim() || undefined,
+        learner_type:        learnerType || undefined,
+        learning_goal:       learningGoal.trim() || undefined,
+        previous_experience: previousExperience.trim() || undefined,
+        notes:               notes.trim() || undefined,
+        payment_option:      paymentOption,
       });
-      const enrolData = await enrolRes.json();
       if (!enrolData.success) throw new Error(enrolData.error || "Enrolment failed.");
 
       const months = isFullPayment ? (selectedProgramme.fullPaymentMonths ?? 3) : 1;
-      const payRes = await fetch("/api/website/payments/initialize", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ enrolment_id: enrolData.data.id, months_paid: months }),
+      const payData = await api.post("/payments/initialize", {
+        enrolment_id: enrolData.data.id,
+        months_paid: months,
       });
-      const payData = await payRes.json();
       if (!payData.success) throw new Error(payData.error || "Payment initialisation failed.");
 
       // Full-page navigation via window.location inside an event handler,

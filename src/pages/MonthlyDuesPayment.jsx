@@ -16,6 +16,7 @@ import {
   calculatePaymentBreakdown,
   formatGhs,
 } from "../data/payments";
+import { api } from "../services/api";
 import BackLinkButton from "../components/navigation/BackLinkButton";
 import SelectField from "../components/ui/SelectField";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
@@ -125,32 +126,24 @@ export default function MonthlyDuesPayment() {
     if (!phone.trim())    { setFormError("Phone number is required."); return; }
     setSubmitting(true);
     try {
-      const programmesRes = await fetch("/api/website/programmes");
-      const programmesData = await programmesRes.json();
+      const programmesData = await api.get("/programmes");
       const prog = programmesData.data?.find((p) => p.category === "monthly_dues");
       if (!prog) throw new Error("Monthly Dues programme not found. Please try again.");
 
-      const enrolRes = await fetch("/api/website/enrolments", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          programme_id: prog.id,
-          first_name:   firstName.trim(),
-          last_name:    lastName.trim(),
-          other_names:  otherNames.trim() || undefined,
-          email:        email.trim(),
-          phone:        phone.trim(),
-        }),
+      const enrolData = await api.post("/enrolments", {
+        programme_id: prog.id,
+        first_name:   firstName.trim(),
+        last_name:    lastName.trim(),
+        other_names:  otherNames.trim() || undefined,
+        email:        email.trim(),
+        phone:        phone.trim(),
       });
-      const enrolData = await enrolRes.json();
       if (!enrolData.success) throw new Error(enrolData.error || "Enrolment failed.");
 
-      const payRes = await fetch("/api/website/payments/initialize", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ enrolment_id: enrolData.data.id, months_paid: Number(selectedMonths) }),
+      const payData = await api.post("/payments/initialize", {
+        enrolment_id: enrolData.data.id,
+        months_paid: Number(selectedMonths),
       });
-      const payData = await payRes.json();
       if (!payData.success) throw new Error(payData.error || "Payment initialisation failed.");
 
       isDirty.current = false;
@@ -169,20 +162,17 @@ export default function MonthlyDuesPayment() {
     try {
       let progId = duesProgrammeId;
       if (!progId) {
-        const programmesRes = await fetch("/api/website/programmes");
-        const programmesData = await programmesRes.json();
+        const programmesData = await api.get("/programmes");
         const prog = programmesData.data?.find((p) => p.category === "monthly_dues");
         if (!prog) throw new Error("Monthly Dues programme not found. Please try again.");
         progId = prog.id;
         setDuesProgrammeId(progId);
       }
 
-      const res = await fetch("/api/website/enrolments/request-access", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: returningEmail.trim(), programme_id: progId }),
+      const data = await api.post("/enrolments/request-access", {
+        email: returningEmail.trim(),
+        programme_id: progId,
       });
-      const data = await res.json();
       if (!data.success) throw new Error(data.error || "Could not send OTP.");
 
       setLoginStep("otp");
@@ -199,18 +189,16 @@ export default function MonthlyDuesPayment() {
     if (!otpCode.trim()) { setLoginError("Enter the code from your email."); return; }
     setLoginSubmitting(true);
     try {
-      const res = await fetch("/api/website/enrolments/verify-access", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: returningEmail.trim(), programme_id: duesProgrammeId, otp: otpCode.trim() }),
+      const data = await api.post("/enrolments/verify-access", {
+        email: returningEmail.trim(),
+        programme_id: duesProgrammeId,
+        otp: otpCode.trim(),
       });
-      const data = await res.json();
       if (!data.success) throw new Error(data.error || "Invalid or expired code.");
 
       setReturningEnrolment(data.data);
 
-      const historyRes = await fetch(`/api/website/enrolments/${data.data.id}/payment-history`);
-      const historyData = await historyRes.json();
+      const historyData = await api.get(`/enrolments/${data.data.id}/payment-history`);
       setPaymentHistory(historyData.success ? historyData.data : []);
 
       setLoginStep("history");
@@ -225,12 +213,10 @@ export default function MonthlyDuesPayment() {
     setLoginSubmitting(true);
     setLoginError("");
     try {
-      const payRes = await fetch("/api/website/payments/initialize", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ enrolment_id: returningEnrolment.id, months_paid: Number(historyMonths) }),
+      const payData = await api.post("/payments/initialize", {
+        enrolment_id: returningEnrolment.id,
+        months_paid: Number(historyMonths),
       });
-      const payData = await payRes.json();
       if (!payData.success) throw new Error(payData.error || "Payment initialisation failed.");
       isDirty.current = false;
       window.location.href = payData.data.authorizationUrl;
