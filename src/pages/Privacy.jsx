@@ -71,10 +71,10 @@ export default function Privacy() {
           <SectionHeading>Payments</SectionHeading>
           <Paragraph>
             When you make a payment (enrolment, dues, or Student Chapter
-            fees), you&apos;re redirected to Paystack&apos;s secure checkout
-            to complete the transaction. Paystack is a separate service with
+            fees), you&apos;re redirected to Speso&apos;s secure checkout
+            to complete the transaction. Speso is a separate service with
             its own cookies and privacy practices, which are outside ERA
-            AXIS&apos;s control — please refer to Paystack&apos;s own privacy
+            AXIS&apos;s control — please refer to Speso&apos;s own privacy
             policy for details on how they handle payment data.
           </Paragraph>
 
