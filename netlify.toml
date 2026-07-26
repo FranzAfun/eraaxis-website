@@ -30,6 +30,13 @@
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
 
+# Permanently consolidate Netlify's default domain into the public domain.
+[[redirects]]
+  from = "https://eraaxis-website.netlify.app/*"
+  to = "https://eraaxis.com/:splat"
+  status = 301
+  force = true
+
 # SPA fallback
 [[redirects]]
   from = "/*"
