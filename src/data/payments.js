@@ -1,4 +1,8 @@
-export const PAYSTACK_FEE_RATE = 0.0195;
+export const DEFAULT_SPESO_FEE_CONFIG = {
+  businessRate: 0.3,
+  providerRate: 1.3,
+  cap: 30,
+};
 export const MAINTENANCE_FEE_GHS = 2;
 export const PAYMENT_REFERENCE_FORMAT = "ERA-TYPE-YYYYMMDD-UNIQUEID";
 export const PAYMENT_REFERENCE_NOTE =
@@ -8,23 +12,42 @@ export function formatGhs(amount) {
   return `GHS ${Number(amount).toFixed(2)}`;
 }
 
-export function calculateCustomerTotal(baseAmount) {
-  const customerPays =
-    (Number(baseAmount) + MAINTENANCE_FEE_GHS) / (1 - PAYSTACK_FEE_RATE);
-
-  return Number(customerPays.toFixed(2));
+function roundMoney(value) {
+  return Math.round((Number(value) + Number.EPSILON) * 100) / 100;
 }
 
-export function calculatePaymentBreakdown(baseAmount) {
+export function calculateCustomerTotal(
+  baseAmount,
+  feeConfig = DEFAULT_SPESO_FEE_CONFIG
+) {
+  const subtotal = Number(baseAmount) + MAINTENANCE_FEE_GHS;
+  const businessFee = roundMoney(
+    subtotal * (Number(feeConfig.businessRate) / 100)
+  );
+  const providerFee = roundMoney(
+    (subtotal + businessFee) * (Number(feeConfig.providerRate) / 100)
+  );
+  const spesoFee = roundMoney(
+    Math.min(businessFee + providerFee, Number(feeConfig.cap))
+  );
+  const customerPays = roundMoney(subtotal + spesoFee);
+
+  return customerPays;
+}
+
+export function calculatePaymentBreakdown(
+  baseAmount,
+  feeConfig = DEFAULT_SPESO_FEE_CONFIG
+) {
   const normalizedBaseAmount = Number(baseAmount);
   const subtotal = normalizedBaseAmount + MAINTENANCE_FEE_GHS;
-  const customerTotal = calculateCustomerTotal(normalizedBaseAmount);
-  const paystackFee = customerTotal - subtotal;
+  const customerTotal = calculateCustomerTotal(normalizedBaseAmount, feeConfig);
+  const spesoFee = customerTotal - subtotal;
 
   return {
     baseAmount: Number(normalizedBaseAmount.toFixed(2)),
     maintenanceFee: Number(MAINTENANCE_FEE_GHS.toFixed(2)),
-    paystackFee: Number(paystackFee.toFixed(2)),
+    spesoFee: Number(spesoFee.toFixed(2)),
     customerTotal,
   };
 }
@@ -48,7 +71,7 @@ export const PAYMENT_METHODS = [
     id: "card",
     label: "Card Payment",
     shortLabel: "Card",
-    description: "Pay securely with a debit or credit card through Paystack.",
+    description: "Pay securely with a debit or credit card through Speso.",
   },
   {
     id: "bank_or_contact",

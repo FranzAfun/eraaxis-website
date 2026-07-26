@@ -6,8 +6,9 @@ import { formatGhs } from "../data/payments";
 import { getPageSeo } from "../data/seo";
 import { api } from "../services/api";
 
-const MAX_ATTEMPTS = 5;
+const MAX_ATTEMPTS = 40;
 const DELAY_MS = 3000;
+const TERMINAL_FAILURES = new Set(["failed", "expired"]);
 
 function formatPaidAt(value) {
   if (!value) return "";
@@ -22,7 +23,11 @@ function formatPaidAt(value) {
 
 export default function PaymentConfirmation() {
   const [searchParams] = useSearchParams();
-  const reference = searchParams.get("reference") || searchParams.get("trxref");
+  const reference =
+    searchParams.get("reference") ||
+    searchParams.get("order_id") ||
+    searchParams.get("trxref") ||
+    window.sessionStorage.getItem("eraaxis_payment_reference");
 
   // loading | pending | success | failed | error
   const [status, setStatus] = useState(() => (reference ? "loading" : "error"));
@@ -32,51 +37,54 @@ export default function PaymentConfirmation() {
     if (!reference) return;
 
     let cancelled = false;
+    let timer;
+    let attempts = 0;
 
-    async function fetchReceipt(ref, attempt) {
-      try {
-        const json = await api.get(`/payments/${encodeURIComponent(ref)}/receipt`);
-        if (cancelled) return;
-        if (!json?.success) {
-          setStatus("error");
-          return;
-        }
-        setReceipt(json.data);
-        setStatus("success");
-      } catch (err) {
-        if (cancelled) return;
-        if (err?.status === 404) {
-          setStatus("pending");
-          if (attempt >= MAX_ATTEMPTS) return;
-          await new Promise((r) => setTimeout(r, DELAY_MS));
-          if (!cancelled) return fetchReceipt(ref, attempt + 1);
-          return;
-        }
-        setStatus("error");
-      }
-    }
+    async function verify() {
+      attempts += 1;
 
-    async function run() {
       try {
         const verifyJson = await api.get(`/payments/verify/${encodeURIComponent(reference)}`);
         if (cancelled) return;
 
-        if (!verifyJson?.success) {
-          setStatus("error");
+        const paymentStatus = verifyJson.data?.status || "pending";
+
+        if (paymentStatus === "success") {
+          const receiptJson = await api.get(
+            `/payments/${encodeURIComponent(reference)}/receipt`
+          );
+          if (cancelled) return;
+
+          setReceipt(receiptJson.data);
+          setStatus("success");
+          window.sessionStorage.removeItem("eraaxis_payment_reference");
           return;
         }
-        if (verifyJson.data.status !== "success") {
+
+        if (TERMINAL_FAILURES.has(paymentStatus)) {
           setStatus("failed");
           return;
         }
-        await fetchReceipt(reference, 1);
+
+        setStatus("pending");
+        if (attempts < MAX_ATTEMPTS) {
+          timer = window.setTimeout(verify, DELAY_MS);
+        }
       } catch {
-        if (!cancelled) setStatus("error");
+        if (cancelled) return;
+
+        setStatus(attempts < MAX_ATTEMPTS ? "pending" : "error");
+        if (attempts < MAX_ATTEMPTS) {
+          timer = window.setTimeout(verify, DELAY_MS);
+        }
       }
     }
 
-    run();
-    return () => { cancelled = true; };
+    verify();
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
   }, [reference]);
 
   return (
@@ -187,7 +195,7 @@ export default function PaymentConfirmation() {
               </h1>
               <p className="mb-8 text-base leading-relaxed text-white/68">
                 {status === "failed"
-                  ? "Paystack reported that this payment was not successful. No charge should have been made. Please try again."
+                  ? "Speso reported that this payment was not successful. No charge should have been made. Please try again."
                   : "We couldn't confirm this payment. If money was deducted from your account, please contact us with your reference number."}
               </p>
               <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">

@@ -132,7 +132,7 @@ export const pageSeo = {
     pathname: "/payments/resume",
     title: "Continue Your Payment | ERA AXIS",
     description:
-      "Continue your ERA AXIS programme instalment payment securely via Paystack.",
+      "Continue your ERA AXIS programme instalment payment securely via Speso.",
   },
   "/privacy": {
     pathname: "/privacy",

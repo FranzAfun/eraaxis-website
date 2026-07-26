@@ -24,6 +24,7 @@ import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
 import { EMAIL_RE } from "../utils/validateEmail";
 import { suggestEmailCorrection } from "../utils/emailTypoCheck";
+import useSpesoFees from "../hooks/useSpesoFees";
 
 const category = getPaymentCategoryBySlug("monthly-dues");
 const item = category.items[0];
@@ -82,6 +83,7 @@ function PaymentHistoryAccessCard({ className = "" }) {
 }
 
 export default function MonthlyDuesPayment() {
+  const { feeConfig } = useSpesoFees();
   const [showManualForm, setShowManualForm] = useState(false);
   const [selectedMonths, setSelectedMonths] = useState("1");
   const manualFormInnerRef = useRef(null);
@@ -108,8 +110,10 @@ export default function MonthlyDuesPayment() {
   const isDirty = useRef(false);
   const pendingNav = useRef(null);
   const navigate = useNavigate();
-  const baseTotal = item.baseAmount * Number(selectedMonths);
-  const breakdown = calculatePaymentBreakdown(baseTotal);
+  const checkoutMonths =
+    loginStep === "history" ? historyMonths : selectedMonths;
+  const baseTotal = item.baseAmount * Number(checkoutMonths);
+  const breakdown = calculatePaymentBreakdown(baseTotal, feeConfig);
   const duesPeriodOptions = [
     { value: "1", label: "1 Month (Current)" },
     { value: "3", label: "Quarter" },
@@ -147,6 +151,7 @@ export default function MonthlyDuesPayment() {
       if (!payData.success) throw new Error(payData.error || "Payment initialisation failed.");
 
       isDirty.current = false;
+      window.sessionStorage.setItem("eraaxis_payment_reference", payData.data.reference);
       window.location.href = payData.data.authorizationUrl;
     } catch (err) {
       setFormError(err.message || "Something went wrong. Please try again.");
@@ -219,6 +224,7 @@ export default function MonthlyDuesPayment() {
       });
       if (!payData.success) throw new Error(payData.error || "Payment initialisation failed.");
       isDirty.current = false;
+      window.sessionStorage.setItem("eraaxis_payment_reference", payData.data.reference);
       window.location.href = payData.data.authorizationUrl;
     } catch (err) {
       setLoginError(err.message || "Something went wrong. Please try again.");
@@ -679,7 +685,7 @@ export default function MonthlyDuesPayment() {
                       Selected months
                     </span>
                     <span className="font-semibold text-[var(--color-text-primary)]">
-                      x {Number(selectedMonths)}
+                      x {Number(checkoutMonths)}
                     </span>
                   </div>
                   <div className="flex items-center justify-between gap-4 border-b border-[var(--color-border)] pb-4 text-sm">
@@ -700,10 +706,10 @@ export default function MonthlyDuesPayment() {
                   </div>
                   <div className="flex items-center justify-between gap-4 text-sm">
                     <span className="text-[var(--color-text-secondary)]">
-                      Paystack processing fee
+                      Speso processing fee
                     </span>
                     <span className="font-semibold text-[var(--color-text-primary)]">
-                      {formatGhs(breakdown.paystackFee)}
+                      {formatGhs(breakdown.spesoFee)}
                     </span>
                   </div>
                 </div>
@@ -741,7 +747,7 @@ export default function MonthlyDuesPayment() {
 
               <p className="flex items-center justify-center gap-2 text-center text-xs text-[var(--color-text-muted)]">
                 <Lock size={14} strokeWidth={2} aria-hidden="true" />
-                Secured by Paystack
+                Secured by Speso
               </p>
             </div>
 

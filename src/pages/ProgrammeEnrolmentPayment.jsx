@@ -14,6 +14,7 @@ import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
 import { EMAIL_RE } from "../utils/validateEmail";
 import { suggestEmailCorrection } from "../utils/emailTypoCheck";
+import useSpesoFees from "../hooks/useSpesoFees";
 
 const category = getPaymentCategoryBySlug("programme-enrolment");
 
@@ -44,6 +45,7 @@ const optionalTag = (
 );
 
 export default function ProgrammeEnrolmentPayment() {
+  const { feeConfig, feesLoading, feesError } = useSpesoFees();
   const location = useLocation();
   const requestedProgrammeSlug = location.state?.programmeSlug;
   const [manualProgrammeSlug, setManualProgrammeSlug] = useState("");
@@ -123,6 +125,10 @@ export default function ProgrammeEnrolmentPayment() {
       });
       if (!payData.success) throw new Error(payData.error || "Payment initialisation failed.");
 
+      window.sessionStorage.setItem(
+        "eraaxis_payment_reference",
+        payData.data.reference
+      );
       // Full-page navigation via window.location inside an event handler,
       // not a render-time mutation — the rule can't distinguish the two here.
       // eslint-disable-next-line react-hooks/immutability
@@ -140,7 +146,7 @@ export default function ProgrammeEnrolmentPayment() {
         selectedProgramme.fullPaymentMonths
       )
     : selectedProgramme.monthlyAmount;
-  const breakdown = calculatePaymentBreakdown(baseAmount);
+  const breakdown = calculatePaymentBreakdown(baseAmount, feeConfig);
 
   return (
     <>
@@ -444,10 +450,10 @@ export default function ProgrammeEnrolmentPayment() {
                   </div>
                   <div className="flex items-center justify-between gap-4 text-sm">
                     <span className="text-[var(--color-text-secondary)]">
-                      Paystack processing fee
+                      Speso processing fee
                     </span>
                     <span className="font-semibold text-[var(--color-text-primary)]">
-                      {formatGhs(breakdown.paystackFee)}
+                      {formatGhs(breakdown.spesoFee)}
                     </span>
                   </div>
                 </div>
@@ -462,16 +468,22 @@ export default function ProgrammeEnrolmentPayment() {
                 </div>
 
                 <div className="space-y-3">
-                  {formError && (
-                    <p className="text-sm text-red-600">{formError}</p>
+                  {(formError || feesError) && (
+                    <p className="text-sm text-red-600">
+                      {formError || feesError}
+                    </p>
                   )}
                   <button
                     type="button"
                     onClick={handleSubmit}
-                    disabled={submitting}
-                    className={`btn-primary w-full justify-center${submitting ? " cursor-not-allowed opacity-60" : ""}`}
+                    disabled={submitting || feesLoading}
+                    className={`btn-primary w-full justify-center${submitting || feesLoading ? " cursor-not-allowed opacity-60" : ""}`}
                   >
-                    {submitting ? "Processing…" : "Continue to checkout"}
+                    {feesLoading
+                      ? "Loading current fees…"
+                      : submitting
+                        ? "Processing…"
+                        : "Continue to checkout"}
                     <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
                   </button>
                   <Link
@@ -485,7 +497,7 @@ export default function ProgrammeEnrolmentPayment() {
 
               <p className="flex items-center justify-center gap-2 text-center text-xs text-[var(--color-text-muted)]">
                 <Lock size={14} strokeWidth={2} aria-hidden="true" />
-                Payments are processed securely via Paystack.
+                Payments are processed securely via Speso.
               </p>
             </div>
 
