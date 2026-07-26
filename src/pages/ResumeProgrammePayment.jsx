@@ -6,6 +6,7 @@ import { getPageSeo } from "../data/seo";
 import { formatGhs, calculatePaymentBreakdown } from "../data/payments";
 import { api } from "../services/api";
 import SelectField from "../components/ui/SelectField";
+import useSpesoFees from "../hooks/useSpesoFees";
 
 const labelCls =
   "mb-1.5 block text-[10px] font-bold uppercase tracking-[0.08em] text-white/70";
@@ -28,6 +29,7 @@ function buildMonthOptions(durationMonths, monthsPaidTotal) {
 
 export default function ResumeProgrammePayment() {
   const { enrolmentId } = useParams();
+  const { feeConfig } = useSpesoFees();
 
   // loading | not-found | paid-up | owes | error
   const [status, setStatus] = useState("loading");
@@ -74,6 +76,7 @@ export default function ResumeProgrammePayment() {
         months_paid: Number(months),
       });
       if (!payData.success) throw new Error(payData.error || "Payment initialisation failed.");
+      window.sessionStorage.setItem("eraaxis_payment_reference", payData.data.reference);
       window.location.href = payData.data.authorizationUrl;
     } catch (err) {
       setPayError(err.message || "Something went wrong. Please try again.");
@@ -89,7 +92,10 @@ export default function ResumeProgrammePayment() {
   // (totalBase, from the summary endpoint) — not a monthly rate multiplied
   // by a chosen month count like every other programme type.
   const breakdown = summary
-    ? calculatePaymentBreakdown(isStudentChapter ? summary.totalBase : summary.instalmentAmount * Number(months))
+    ? calculatePaymentBreakdown(
+        isStudentChapter ? summary.totalBase : summary.instalmentAmount * Number(months),
+        feeConfig
+      )
     : null;
 
   return (
@@ -250,7 +256,7 @@ export default function ResumeProgrammePayment() {
 
               <p className="mt-4 flex items-center justify-center gap-2 text-center text-xs text-white/50">
                 <Lock size={13} strokeWidth={2} aria-hidden="true" />
-                Payments are processed securely via Paystack.
+                Payments are processed securely via Speso.
               </p>
             </div>
           )}

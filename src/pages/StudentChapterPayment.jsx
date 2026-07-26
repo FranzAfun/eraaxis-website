@@ -13,10 +13,10 @@ import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
 import { EMAIL_RE } from "../utils/validateEmail";
 import { suggestEmailCorrection } from "../utils/emailTypoCheck";
+import useSpesoFees from "../hooks/useSpesoFees";
 
 const category = getPaymentCategoryBySlug("student-chapter");
 const item = category.items[0];
-const breakdown = calculatePaymentBreakdown(item.baseAmount);
 
 const BENEFITS = [
   "Student Chapter community access",
@@ -39,6 +39,8 @@ const optionalTag = (
 );
 
 export default function StudentChapterPayment() {
+  const { feeConfig } = useSpesoFees();
+  const breakdown = calculatePaymentBreakdown(item.baseAmount, feeConfig);
   const [firstName, setFirstName]       = useState("");
   const [lastName, setLastName]         = useState("");
   const [otherNames, setOtherNames]     = useState("");
@@ -84,6 +86,7 @@ export default function StudentChapterPayment() {
       });
       if (!payData.success) throw new Error(payData.error || "Payment initialisation failed.");
 
+      window.sessionStorage.setItem("eraaxis_payment_reference", payData.data.reference);
       window.location.href = payData.data.authorizationUrl;
     } catch (err) {
       setFormError(err.message || "Something went wrong. Please try again.");
@@ -341,10 +344,10 @@ export default function StudentChapterPayment() {
                   </div>
                   <div className="flex items-center justify-between gap-4 text-sm">
                     <span className="text-[var(--color-text-secondary)]">
-                      Paystack processing fee
+                      Speso processing fee
                     </span>
                     <span className="font-semibold text-[var(--color-text-primary)]">
-                      {formatGhs(breakdown.paystackFee)}
+                      {formatGhs(breakdown.spesoFee)}
                     </span>
                   </div>
                 </div>
@@ -382,7 +385,7 @@ export default function StudentChapterPayment() {
 
               <p className="flex items-center justify-center gap-2 text-center text-xs text-[var(--color-text-muted)]">
                 <Lock size={14} strokeWidth={2} aria-hidden="true" />
-                Secured by Paystack
+                Secured by Speso
               </p>
             </div>
 
