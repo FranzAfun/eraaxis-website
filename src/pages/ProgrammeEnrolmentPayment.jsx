@@ -7,7 +7,7 @@ import {
   calculateFullProgrammeBase,
   formatGhs,
 } from "../data/payments";
-import { api } from "../services/api";
+import { api, ApiError, envelopeError, toUserMessage } from "../services/api";
 import BackLinkButton from "../components/navigation/BackLinkButton";
 import SelectField from "../components/ui/SelectField";
 import SEO from "../components/SEO";
@@ -100,7 +100,7 @@ export default function ProgrammeEnrolmentPayment() {
       const programmesData = await api.get("/programmes");
       const backendSlug = SLUG_TO_BACKEND[selectedProgrammeSlug] || selectedProgrammeSlug;
       const prog = programmesData.data?.find((p) => p.slug === backendSlug);
-      if (!prog) throw new Error("Programme not found. Please try again.");
+      if (!prog) throw new ApiError("This programme isn't available right now. Please try again shortly.");
 
       const enrolData = await api.post("/enrolments", {
         programme_id:        prog.id,
@@ -116,14 +116,14 @@ export default function ProgrammeEnrolmentPayment() {
         notes:               notes.trim() || undefined,
         payment_option:      paymentOption,
       });
-      if (!enrolData.success) throw new Error(enrolData.error || "Enrolment failed.");
+      if (!enrolData.success) throw envelopeError(enrolData, "We couldn't complete your enrolment. Please try again.");
 
       const months = isFullPayment ? (selectedProgramme.fullPaymentMonths ?? 3) : 1;
       const payData = await api.post("/payments/initialize", {
         enrolment_id: enrolData.data.id,
         months_paid: months,
       });
-      if (!payData.success) throw new Error(payData.error || "Payment initialisation failed.");
+      if (!payData.success) throw envelopeError(payData, "We couldn't start your payment. Please try again.");
 
       window.sessionStorage.setItem(
         "eraaxis_payment_reference",
@@ -134,7 +134,7 @@ export default function ProgrammeEnrolmentPayment() {
       // eslint-disable-next-line react-hooks/immutability
       window.location.href = payData.data.authorizationUrl;
     } catch (err) {
-      setFormError(err.message || "Something went wrong. Please try again.");
+      setFormError(toUserMessage(err, "We couldn't start your payment. Please try again."));
       setSubmitting(false);
     }
   }
@@ -469,7 +469,10 @@ export default function ProgrammeEnrolmentPayment() {
 
                 <div className="space-y-3">
                   {(formError || feesError) && (
-                    <p className="text-sm text-red-600">
+                    <p
+                      role="alert"
+                      className="max-w-full break-words rounded-[var(--radius-sm)] border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm leading-relaxed text-red-700"
+                    >
                       {formError || feesError}
                     </p>
                   )}

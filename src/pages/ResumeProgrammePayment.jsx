@@ -4,7 +4,7 @@ import { ArrowRight, Lock } from "lucide-react";
 import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
 import { formatGhs, calculatePaymentBreakdown } from "../data/payments";
-import { api } from "../services/api";
+import { api, envelopeError, toUserMessage } from "../services/api";
 import SelectField from "../components/ui/SelectField";
 import useSpesoFees from "../hooks/useSpesoFees";
 
@@ -75,11 +75,11 @@ export default function ResumeProgrammePayment() {
         enrolment_id: enrolmentId,
         months_paid: Number(months),
       });
-      if (!payData.success) throw new Error(payData.error || "Payment initialisation failed.");
+      if (!payData.success) throw envelopeError(payData, "We couldn't start your payment. Please try again.");
       window.sessionStorage.setItem("eraaxis_payment_reference", payData.data.reference);
       window.location.href = payData.data.authorizationUrl;
     } catch (err) {
-      setPayError(err.message || "Something went wrong. Please try again.");
+      setPayError(toUserMessage(err, "We couldn't start your payment. Please try again."));
       setSubmitting(false);
     }
   }
@@ -242,7 +242,14 @@ export default function ResumeProgrammePayment() {
                 )}
               </div>
 
-              {payError && <p className="mb-4 text-sm text-red-300">{payError}</p>}
+              {payError && (
+                <p
+                  role="alert"
+                  className="mb-4 max-w-full break-words rounded-[var(--radius-sm)] border border-red-400/30 bg-red-500/10 px-3.5 py-2.5 text-sm leading-relaxed text-red-200"
+                >
+                  {payError}
+                </p>
+              )}
 
               <button
                 type="button"

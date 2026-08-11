@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchBootstrap } from "../services/bootstrapService";
+import { toUserMessage } from "../services/api";
 
 // Module-level cache — survives re-renders and component remounts within a session.
 let cache = null;
@@ -46,7 +47,7 @@ export function useBootstrap() {
       })
       .catch((err) => {
         if (!cancelled)
-          setState({ data: null, loading: false, error: err.message });
+          setState({ data: null, loading: false, error: toUserMessage(err) });
       });
 
     return () => {

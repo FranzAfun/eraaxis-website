@@ -16,7 +16,7 @@ import {
   calculatePaymentBreakdown,
   formatGhs,
 } from "../data/payments";
-import { api } from "../services/api";
+import { api, ApiError, envelopeError, toUserMessage } from "../services/api";
 import BackLinkButton from "../components/navigation/BackLinkButton";
 import SelectField from "../components/ui/SelectField";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
@@ -28,6 +28,14 @@ import useSpesoFees from "../hooks/useSpesoFees";
 
 const category = getPaymentCategoryBySlug("monthly-dues");
 const item = category.items[0];
+
+// Returning-member login is the one place a 404 is an ordinary outcome rather
+// than a fault: the address simply has no paid dues registration behind it. The
+// recovery is to correct the email or switch to the first-time form, so it gets
+// wording of its own instead of the client's generic "not found".
+const NO_PAID_DUES_MESSAGE =
+  "We couldn't find a paid monthly dues registration for this email. " +
+  "Check the email you previously used, or choose First-time dues payment if you haven't registered yet.";
 
 const HISTORY_ACCESS = [
   "Secure OTP login ensures your payment data is protected.",
@@ -132,7 +140,7 @@ export default function MonthlyDuesPayment() {
     try {
       const programmesData = await api.get("/programmes");
       const prog = programmesData.data?.find((p) => p.category === "monthly_dues");
-      if (!prog) throw new Error("Monthly Dues programme not found. Please try again.");
+      if (!prog) throw new ApiError("Monthly dues aren't available right now. Please try again shortly.");
 
       const enrolData = await api.post("/enrolments", {
         programme_id: prog.id,
@@ -142,19 +150,19 @@ export default function MonthlyDuesPayment() {
         email:        email.trim(),
         phone:        phone.trim(),
       });
-      if (!enrolData.success) throw new Error(enrolData.error || "Enrolment failed.");
+      if (!enrolData.success) throw envelopeError(enrolData, "We couldn't complete your registration. Please try again.");
 
       const payData = await api.post("/payments/initialize", {
         enrolment_id: enrolData.data.id,
         months_paid: Number(selectedMonths),
       });
-      if (!payData.success) throw new Error(payData.error || "Payment initialisation failed.");
+      if (!payData.success) throw envelopeError(payData, "We couldn't start your payment. Please try again.");
 
       isDirty.current = false;
       window.sessionStorage.setItem("eraaxis_payment_reference", payData.data.reference);
       window.location.href = payData.data.authorizationUrl;
     } catch (err) {
-      setFormError(err.message || "Something went wrong. Please try again.");
+      setFormError(toUserMessage(err, "We couldn't start your payment. Please try again."));
       setSubmitting(false);
     }
   }
@@ -169,7 +177,7 @@ export default function MonthlyDuesPayment() {
       if (!progId) {
         const programmesData = await api.get("/programmes");
         const prog = programmesData.data?.find((p) => p.category === "monthly_dues");
-        if (!prog) throw new Error("Monthly Dues programme not found. Please try again.");
+        if (!prog) throw new ApiError("Monthly dues aren't available right now. Please try again shortly.");
         progId = prog.id;
         setDuesProgrammeId(progId);
       }
@@ -178,12 +186,22 @@ export default function MonthlyDuesPayment() {
         email: returningEmail.trim(),
         programme_id: progId,
       });
-      if (!data.success) throw new Error(data.error || "Could not send OTP.");
+      if (!data.success) throw envelopeError(data, "We couldn't send your code. Please try again.");
 
       setLoginStep("otp");
       setResendCooldown(120);
     } catch (err) {
-      setLoginError(err.message || "Something went wrong. Please try again.");
+      // The entered email is left in place either way so it can be corrected.
+      const noPaidDues =
+        err instanceof ApiError &&
+        err.status === 404 &&
+        err.path === "/enrolments/request-access";
+
+      setLoginError(
+        noPaidDues
+          ? NO_PAID_DUES_MESSAGE
+          : toUserMessage(err, "We couldn't send your code. Please try again.")
+      );
     } finally {
       setLoginSubmitting(false);
     }
@@ -199,7 +217,7 @@ export default function MonthlyDuesPayment() {
         programme_id: duesProgrammeId,
         otp: otpCode.trim(),
       });
-      if (!data.success) throw new Error(data.error || "Invalid or expired code.");
+      if (!data.success) throw envelopeError(data, "That code didn't work. Please try again.");
 
       setReturningEnrolment(data.data);
 
@@ -208,7 +226,15 @@ export default function MonthlyDuesPayment() {
 
       setLoginStep("history");
     } catch (err) {
-      setLoginError(err.message || "Something went wrong. Please try again.");
+      // Every 400 from verify-access means the same thing to the member: the
+      // code they typed is not the live one. Say so, and point at the recovery.
+      const badCode = err instanceof ApiError && err.status === 400;
+
+      setLoginError(
+        badCode
+          ? "That code didn't work. It may have expired — check the most recent email from us, or request a new code."
+          : toUserMessage(err, "We couldn't verify your code. Please try again.")
+      );
     } finally {
       setLoginSubmitting(false);
     }
@@ -222,12 +248,12 @@ export default function MonthlyDuesPayment() {
         enrolment_id: returningEnrolment.id,
         months_paid: Number(historyMonths),
       });
-      if (!payData.success) throw new Error(payData.error || "Payment initialisation failed.");
+      if (!payData.success) throw envelopeError(payData, "We couldn't start your payment. Please try again.");
       isDirty.current = false;
       window.sessionStorage.setItem("eraaxis_payment_reference", payData.data.reference);
       window.location.href = payData.data.authorizationUrl;
     } catch (err) {
-      setLoginError(err.message || "Something went wrong. Please try again.");
+      setLoginError(toUserMessage(err, "We couldn't start your payment. Please try again."));
       setLoginSubmitting(false);
     }
   }
@@ -514,16 +540,24 @@ export default function MonthlyDuesPayment() {
                     )}
 
                     {loginError && (
-                      <p className="mt-2 text-sm text-red-600">{loginError}</p>
+                      <p
+                        role="alert"
+                        className="mt-3 max-w-full break-words rounded-[var(--radius-sm)] border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm leading-relaxed text-red-700"
+                      >
+                        {loginError}
+                      </p>
                     )}
                   </div>
 
+                  {/* shrink-0 + whitespace-nowrap: an error message in the left
+                      column must never squeeze this action into a wrapped,
+                      three-line button. */}
                   {loginStep === "email" && (
                   <button
                     type="button"
                     onClick={() => setShowManualForm((current) => !current)}
                     aria-expanded={showManualForm}
-                    className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-[var(--color-primary)] px-5 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-[var(--color-primary-dark)]"
+                    className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[var(--radius-sm)] bg-[var(--color-primary)] px-5 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-[var(--color-primary-dark)]"
                   >
                     {showManualForm
                       ? "Hide first-time form"
@@ -725,7 +759,12 @@ export default function MonthlyDuesPayment() {
 
                 <div className="space-y-3">
                   {formError && (
-                    <p className="text-sm text-red-600">{formError}</p>
+                    <p
+                      role="alert"
+                      className="max-w-full break-words rounded-[var(--radius-sm)] border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm leading-relaxed text-red-700"
+                    >
+                      {formError}
+                    </p>
                   )}
                   <button
                     type="button"
