@@ -29,7 +29,7 @@ const EMAIL_RE   = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // Static fallbacks — used when bootstrap values are absent (matches Footer.jsx)
 const FALLBACK_ADDRESS = "ERA AXIS HQ – Essikado, Ghana";
 const FALLBACK_EMAIL   = "support@eraaxis.com";
-const FALLBACK_PHONE   = "+233 50 958 2497";
+const FALLBACK_PHONE   = "+233 59 353 5925";
 
 const ctaPrimaryClass =
   "final-cta-btn-primary inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[var(--radius-sm)] px-5 text-sm font-semibold";

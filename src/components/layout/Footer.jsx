@@ -30,7 +30,7 @@ const company = [
 // Static fallbacks — used when bootstrap values are absent
 const FALLBACK_ADDRESS = "ERA AXIS HQ – Essikado, Ghana";
 const FALLBACK_EMAIL   = "support@eraaxis.com";
-const FALLBACK_PHONE   = "+233 50 958 2497";
+const FALLBACK_PHONE   = "+233 59 353 5925";
 const FALLBACK_ORG     = "ERA AXIS Limited";
 
 function FooterHeading({ children }) {

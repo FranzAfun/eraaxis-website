@@ -50,7 +50,7 @@ export default function Privacy() {
       <section className="bg-[var(--color-background)] py-16 md:py-20">
         <div className="container max-w-3xl">
           <Paragraph>
-            Last updated: {new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}.
+            Last updated: <time dateTime="2026-07-26">26 July 2026</time>.
           </Paragraph>
 
           <SectionHeading>Cookies and local storage</SectionHeading>
