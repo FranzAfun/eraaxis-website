@@ -2,6 +2,11 @@
 
 ## Current: import/data-preview checkpoint
 
+Latest user acceptance: all EDOS import UI checks passed. Independent evaluation
+remains incomplete. Next is EDOS plan slice04 private assets/sample renderer,
+with fresh Canva/screenshot/Print PDF handoff. Authorized signature paths are
+recorded privately by location in EDOS DESIGN_HANDOFF.md; no image bytes in Git.
+
 Contract certificates.v1.2 matches EDOS exactly. Compatible EDOS implementation
 commit d21b7c7 includes import backend, tests and integrated frontend. Website
 runtime is unchanged; public verification/retrieval implementation remains pending.
