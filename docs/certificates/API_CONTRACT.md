@@ -1,6 +1,6 @@
 # Certificate API contract
 
-Contract: `certificates.v1.1` (2026-09-06). EDOS owns this file; the website keeps
+Contract: `certificates.v1.2` (2026-09-06). EDOS owns this file; the website keeps
 an identical copy. This defines the first implementation, not deployed endpoints.
 Changes to required fields, meanings or access rules require a new contract
 version and matching fixtures before consumers change. Additive optional fields
@@ -135,6 +135,50 @@ The following batch paths are relative to `/api/lms/certificate-batches`:
 | POST `/:id/issue` | CERT_ISSUE | `{ revision, reviewHash }` -> 202 accepted work, below |
 | GET `/:id/results` | CERT_VIEW | Paginated row outcomes and aggregate progress |
 | POST `/:id/pause`, `/:id/resume` | CERT_ISSUE | `{ revision, reason }` -> persisted control state |
+
+### Implemented import contract (v1.2)
+
+`GET /:id` returns `{id,name,programme,track,revision,state,cohort,sourceNamespace,
+recipientCount,rows,nextCursor}`. Here `cohort` is the display label string.
+Recipient rows contain `id` plus the seven roster fields below; `eligible` is the
+literal string `true` or `false`. This is a saved-data preview, not a certificate PDF.
+The PDF preview endpoint in the table above is still pending the design handoff.
+
+Multipart import-preview requires `file`, integer `revision`, and `sourceNamespace`
+(1–100 lowercase letters/digits/dot/colon/dash/underscore, starting with a letter
+or digit). A namespace identifies a stable external roster source across batches
+and courses; it is fixed on the batch's first successful import.
+
+Preview response: `{previewToken,revision,sourceNamespace,expiresAt,
+counts:{total,valid,invalid,review},rows,nextCursor}`. Each row contains `rowId`,
+`rowNumber` (header is line1), `values` (seven source fields), `errors`, `warnings`,
+`candidates:[{id,name}]` and `action` (`new`, `update`, `reuse`, `review`, `invalid`).
+Errors/warnings contain `{code,field,message}`. Candidate names/IDs are private
+staff data. `valid` counts rows without errors; warnings still need review.
+
+`GET /:id/import-preview/:token?cursor=0&limit=50` pages this same saved preview.
+`GET /:id/import-preview/:token/errors` returns formula-escaped CSV.
+`GET /:id/roster?format=csv|xlsx` requires CERT_VIEW and downloads current stable
+IDs. Detail/preview cursor is an offset integer; limit1–100, default50.
+
+Commit requires an explicit decision for EVERY preview row, with no duplicates:
+`{rowId,include:boolean,identity?:"new",matchLearnerId?:uuid,
+assistedDelivery?:boolean}`. Identity choices are mutually exclusive; a known
+stable source ID cannot be rematched. Possible matches require an explicit
+candidate match or distinct-new-person confirmation. Missing email requires
+`assistedDelivery:true` if included. Other error rows must be corrected or excluded.
+At least one valid row must be included. Excluded and absent rows do not delete
+previous batch recipients; import is an upsert, not a replacement operation.
+
+Commit result: `{id,revision,counts:{included,excluded,created,updated,reused},
+recipientCount}`. Learner details update; this batch's input snapshot updates.
+Other batches retain their snapshots. One-course-per-cohort constraints and
+identity mappings are checked again under transaction locks. Audit failure rolls
+back the entire import. No import endpoint can issue a certificate or send mail.
+Two concurrent file parsers maximum per API process,15s timeout,256MiB V8 heap
+each; parsing runs in worker threads. These are bounded initial settings, not a
+production capacity certification. Expired preview rows require a retention job
+before production; token expiry already prevents access after30 minutes.
 
 Staff mutation requests carry `Idempotency-Key` (UUID) and an integer `revision`
 when editing existing batches/certificates. Deduplication scope is actor + route

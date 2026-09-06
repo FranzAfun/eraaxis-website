@@ -1,5 +1,26 @@
 # Certificate public pages progress
 
+## Current: import/data-preview checkpoint
+
+Contract certificates.v1.2 matches EDOS exactly. Compatible EDOS implementation
+commit d21b7c7 includes import backend, tests and integrated frontend. Website
+runtime is unchanged; public verification/retrieval implementation remains pending.
+Preparation screen accepted by user; focused form layouts deferred. EDOS supports
+CSV/XLSX templates, validation decisions, transactional upsert and draft recipient
+data preview. Existing synthetic CAD rehearsal:8rows/3valid/5invalid;3saved;
+reupload1updated/2reused; repeat3reused with no duplicate recipients.
+47 focused tests and EDOS lint/build pass, including1,200-row XLSX import.
+Full authenticated browser/API import and independent final visual verdict remain
+verification gaps (review retries interrupted by limits/infrastructure).
+Canva inspection now works:1536x1024 coordinate canvas; actual text/image geometry
+recorded in EDOS DESIGN_HANDOFF.md. Need latest screenshot, Print PDF, exact font
+styles/files and private authorized signature files before final shared renderer.
+No final certificate PDF, real emails, production migration or deployment.
+
+Planning-chat summary: Import/data-preview milestone ready for review, source
+contract synchronized. Public runtime and full two-app delivery rehearsal pending.
+
+
 ## Current: EDOS preparation review checkpoint
 
 - Branch/upstream: `feat/certificate-public-pages` / `origin/feat/certificate-public-pages`.
