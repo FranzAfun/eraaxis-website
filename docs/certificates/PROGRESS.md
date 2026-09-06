@@ -1,5 +1,24 @@
 # Certificate public pages progress
 
+## Current: EDOS preparation review checkpoint
+
+- Branch/upstream: `feat/certificate-public-pages` / `origin/feat/certificate-public-pages`.
+- Contract remains `certificates.v1.1`; website runtime is unchanged.
+- Compatible EDOS implementation: `c2f0efdb5dfef0dac4b7b20637021ac6e3bee99f`
+  (backend preparation, action editor, guarded LMS navigation and draft setup UI).
+- EDOS checks: 35/35 tests; lint/build pass. Synthetic component browser flows
+  cover cohort -> course -> draft and permission saving. Mobile selector overflow fixed.
+- User visual acceptance of the usable preparation screen remains pending.
+  Full authenticated browser/API flow is unverified; real PostgreSQL tests are separate.
+- Next: EDOS import/preview milestone, then public verification/retrieval consumers
+  and full two-app rehearsal. Final certificate layout requires current Canva link,
+  approved screenshot and measured assets; authorized signatures still outstanding.
+- No website deployment, production migrations or real mail performed.
+
+Planning-chat handoff: Both feature branches have upstreams; EDOS first usable
+preparation screen is ready for user review after own checks. Public contract
+unchanged; public runtime pages and two-app integration remain pending.
+
 ## Current handoff (supersedes historical notes below)
 
 Branch/upstream: feat/certificate-public-pages / origin/feat/certificate-public-pages.
