@@ -1,7 +1,13 @@
 # Certificate public pages progress
 
 Updated: 2026-09-06. Branch: `feat/certificate-public-pages`.
-Latest checkpoint: `git log -1 --oneline` (updated in the checkpoint itself).
+Latest commit: `d7e8fa93a16ac30114ff323c6b964f808a7934a4`.
+Current handoff: user accepted the EDOS switch review and authorized verified
+commits/pushes to both feature branches with upstreams. Previous pending-review
+notes below are historical; no further standalone switch review is needed.
+Next meaningful milestone is the first usable EDOS LMS Certificates screen.
+No main merge, dev changes, deployment or real mail authorized.
+Latest commit for this handoff is available via `git log -1 --oneline` after commit.
 
 - Canonical plan 0.4: `C:/Projects/www/edos/docs/certificates/IMPLEMENTATION_PLAN.md`
   on EDOS `feat/lms-certificates`; EDOS owns the API and implementation plan.
@@ -21,8 +27,17 @@ Latest checkpoint: `git log -1 --oneline` (updated in the checkpoint itself).
 - Next: consume frozen public fixtures after EDOS access preparation; implement
   verification and retrieval as separate visually reviewed slices, with unavailable
   API handling, direct-route refresh and noindex. No personal sitemap entries.
-- Counterpart feature commit will be recorded once EDOS commits its checkpoint.
+- Compatible counterpart: EDOS `feat/lms-certificates` at
+  `1b094a2dc55189ee68307f0c0659225c7d23737e`, contract `certificates.v1`.
+  EDOS's 17 focused tests pass including identical contract copies. These are
+  contract/auth tests with synthetic adapters, not complete two-app integration.
+- EDOS's first LMS switch visual preview awaits feedback at
+  http://127.0.0.1:5186/ (no login; synthetic data only). Startup from EDOS root:
+  `node tmp/certificates-preview.mjs`. Select Synthetic Admin, inspect LMS Access,
+  toggle with confirmation and review its help text/mobile spacing. UI edits
+  remain uncommitted. No website visual slice is ready yet.
 
 Planning-chat handoff: Website feature branch created from current main and
-baseline checks pass. Contract v1 is synchronized; public screens await their
+baseline checks pass. Contract v1 is synchronized with EDOS access preparation;
+EDOS's first switch preview awaits feedback. Public screens await their own
 implementation/visual checkpoints. No production changes or real emails.
