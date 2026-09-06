@@ -1,6 +1,6 @@
 # Certificate API contract
 
-Contract: `certificates.v1` (2026-09-06). EDOS owns this file; the website keeps
+Contract: `certificates.v1.1` (2026-09-06). EDOS owns this file; the website keeps
 an identical copy. This defines the first implementation, not deployed endpoints.
 Changes to required fields, meanings or access rules require a new contract
 version and matching fixtures before consumers change. Additive optional fields
@@ -79,16 +79,52 @@ No public directory, name lookup or email-wide record search.
 ## Staff access and preparation
 
 `GET /api/lms/certificate-access` requires LMS + `CERT_VIEW`, and returns
-`{ contractVersion: "certificates.v1", permissions: ["CERT_VIEW"] }` with only
+`{ contractVersion: "certificates.v1.1", permissions: ["CERT_VIEW"] }` with only
 the current user's explicitly granted certificate actions. This is access
 discovery, not evidence that issuance or other future endpoints are ready.
+
+### Preparation extension (v1.1)
+
+Public verification/retrieval fields and semantics are unchanged from v1.
+This revision freezes the first usable staff preparation flow before consumers:
+
+- `GET /api/lms/cohorts`: paginated `{id,reference,programme,label,createdAt}`.
+- `POST /api/lms/cohorts`: `{reference,programme,label}` -> 201 same core fields.
+  Reference is trimmed/lowercased and unique; it identifies the shared intake.
+- `GET /api/lms/offerings?cohortId=<uuid>`: paginated `{id,cohortId,track}`.
+- `POST /api/lms/offerings`: `{cohortId,track}` -> 201 same fields.
+  A course name is unique (case/outer-space insensitive) within its cohort.
+- `GET /api/lms/certificate-batches`: paginated
+  `{id,name,programme,track,revision,state,createdAt,offeringId,cohort,issueDate,recipientCount}`.
+- List pagination uses UUID `cursor`, ascending ID, default limit50, max100;
+  nextCursor null means the last page. Only documented query parameters accepted.
+- These POSTs require CERT_PREPARE, boolean LMS access and Idempotency-Key UUID.
+  GETs require CERT_VIEW and LMS. Writes recheck grants inside the transaction.
+  Same normalized payload/key reuses the saved response without another audit;
+  changed payload/key conflict returns 409 IDEMPOTENCY_CONFLICT. New duplicate
+  cohort/course returns 409 PREPARATION_CONFLICT. Missing selected record returns
+  404 COHORT_NOT_FOUND / OFFERING_NOT_FOUND. Missing schema gives 503
+  CERTIFICATE_SETUP_REQUIRED with safe guidance, not an empty success result.
+- New drafts do not require a template or authorized signatures. Final asset
+  attachment and approval remain separate later operations; no Issue endpoint is
+  exposed by the preparation implementation. Two signature slots are constrained
+  to versions for slot1/slot2 with signatory name/title and explicit synthetic status.
+  Real authorization requires non-synthetic private assets, hash and authorization
+  reference. No signature images, names or positions are fabricated.
+- Admin action editor uses existing `PATCH /api/users/:id` with
+  `{permissions:[...],expectedPermissions:[...]}`. Preserve non-certificate grants.
+  A stale expectedPermissions array returns 409 PERMISSIONS_CHANGED. Current
+  active level0 is locked/rechecked within the write transaction. Server-only
+  FEATURE_FLAG_UPDATED / PERMISSIONS_CHANGED events replace client-produced events.
+  Deploy matching EDOS frontend/backend together: old clients must stop posting
+  these protected audit actions (now rejected), including duplicate USER_CREATED.
 
 The following batch paths are relative to `/api/lms/certificate-batches`:
 
 | Method/path | Permission | Request / successful data |
 | --- | --- | --- |
 | GET `/` | CERT_VIEW | Paginated batch summaries |
-| POST `/` | CERT_PREPARE | `{ offeringId, templateVersionId, signatureVersionIds, issueDate, programme, track }` -> 201 batch |
+| POST `/` | CERT_PREPARE | `{ offeringId, name, issueDate?, programme, track }` -> 201 `{id,name,revision,state:"draft"}`; final assets attached later |
 | GET `/:id` | CERT_VIEW | Batch, `revision`, `reviewHash`, state, counts, approval |
 | PATCH `/:id` | CERT_PREPARE | Revision + changed draft fields -> new revision, clears approval |
 | GET `/:id/template?format=csv\|xlsx` | CERT_PREPARE | Binary roster template |

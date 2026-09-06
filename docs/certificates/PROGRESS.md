@@ -1,5 +1,21 @@
 # Certificate public pages progress
 
+## Current handoff (supersedes historical notes below)
+
+Branch/upstream: feat/certificate-public-pages / origin/feat/certificate-public-pages.
+First push: `67f1ebdf1eaaa54859c09606ac5733b2a2d1df18`.
+Contract now `certificates.v1.1`: public fields unchanged; freezes staff cohort,
+course and draft-batch setup before UI consumers. Identical EDOS-owned copy.
+Compatible EDOS preparation commit: `0226f97030056f6824397823d2bedecf0e7ae25d`
+(includes access audit `0aa6072`). EDOS tests: 34/34, including contract parity and isolated
+PostgreSQL integrity/concurrency. Only local migration112 applied in EDOS.
+Website runtime code remains unchanged; baseline lint/build/SEO passed.
+Current milestone: EDOS's first usable LMS preparation screen, not another switch
+review. Website verification/retrieval/binary client and two-app runtime rehearsal
+remain pending. No production migration, deployment or real mail.
+
+## Historical checkpoints
+
 Updated: 2026-09-06. Branch: `feat/certificate-public-pages`.
 Latest commit: `d7e8fa93a16ac30114ff323c6b964f808a7934a4`.
 Current handoff: user accepted the EDOS switch review and authorized verified
