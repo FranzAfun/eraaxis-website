@@ -1,5 +1,31 @@
 # Certificate public pages progress
 
+## Seal returned to fixed artwork - 2026-09-07
+
+At the user's direction, EDOS renderer `eraaxis-certificate-5` removes every
+generated seal addition. `EST. 2021` and any physical-stamp texture are deferred
+to revised approved Canva fixed artwork. The accepted `DD MON YYYY` date and
+centered one-line QR caption remain; clean-seal template v4 is attached to the
+synthetic CAD batch at revision 9. Website runtime is unchanged.
+
+## Corrected seal and QR checkpoint - 2026-09-07
+
+Following user review, EDOS renderer `eraaxis-certificate-4` removes the rejected
+rough seal overlay, arcs `EST. 2021` through individually placed glyphs, and puts
+the verification wording on one centered 7.25-point line below the QR. Corrected
+development template v3 is attached to the synthetic CAD batch at revision 8.
+Normal and long DRAFT samples passed local visual inspection; user acceptance is
+pending and website runtime remains unchanged.
+
+## Seal and date review checkpoint - 2026-09-07
+
+EDOS renderer `eraaxis-certificate-3` now displays the stored ISO issue date as
+`DD MON YYYY`, adds fixed `EST. 2021` copy in the central seal's upper band, and
+adds a restrained deterministic pressed-ink edge. The versioned development
+template is attached to the synthetic CAD batch at revision 7; normal and long
+DRAFT samples passed local clipping/overlap inspection. User visual acceptance
+is pending. Website runtime is unchanged, and nothing was deployed or issued.
+
 ## Outfit renderer review checkpoint - 2026-09-07
 
 The user explicitly approved Outfit Regular/Bold under SIL OFL 1.1 as the Garet

@@ -218,7 +218,11 @@ returns the original record; changing them returns 409 `IDEMPOTENCY_CONFLICT`.
 
 The renderer uses the Print-export 3:2 grid, Playfair Display Bold Italic for the
 recipient name, Outfit Regular/Bold for other variable copy, proportional signature
-containment and a unique QR pointing to the agreed HTTPS verification route. It
+containment and a unique QR pointing to the agreed HTTPS verification route. Stored
+issue dates remain ISO `YYYY-MM-DD`, but certificate output renders them as
+unambiguous `DD MON YYYY` text (for example, `07 SEP 2026`). Renderer version 5
+centers the one-line verification caption beneath the QR. The seal is wholly part
+of the approved fixed artwork; the renderer adds no founding year or texture. It
 fits ordinary text down to approved minima, then at most two lines; overflow or
 unsupported glyphs blocks preview/issuance instead of clipping or substituting.
 This slice does not create certificates, approvals, jobs, delivery, public runtime
