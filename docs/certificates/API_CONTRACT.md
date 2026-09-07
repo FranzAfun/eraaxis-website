@@ -1,6 +1,6 @@
 # Certificate API contract
 
-Contract: `certificates.v1.3` (2026-09-06). EDOS owns this file; the website keeps
+Contract: `certificates.v1.4` (2026-09-07). EDOS owns this file; the website keeps
 an identical copy. This defines the first implementation, not deployed endpoints.
 Changes to required fields, meanings or access rules require a new contract
 version and matching fixtures before consumers change. Additive optional fields
@@ -79,7 +79,7 @@ No public directory, name lookup or email-wide record search.
 ## Staff access and preparation
 
 `GET /api/lms/certificate-access` requires LMS + `CERT_VIEW`, and returns
-`{ contractVersion: "certificates.v1.3", permissions: ["CERT_VIEW"] }` with only
+`{ contractVersion: "certificates.v1.4", permissions: ["CERT_VIEW"] }` with only
 the current user's explicitly granted certificate actions. This is access
 discovery, not evidence that issuance or other future endpoints are ready.
 
@@ -176,7 +176,7 @@ Other batches retain their snapshots. One-course-per-cohort constraints and
 identity mappings are checked again under transaction locks. Audit failure rolls
 back the entire import. No import endpoint can issue a certificate or send mail.
 
-### Implemented design asset and draft-preview contract (v1.3)
+### Implemented design asset and draft-preview contract (v1.4)
 
 Certificate artwork, fonts and signatures use a dedicated private object prefix;
 they never use public/static directories, website media or the generic file proxy.
@@ -191,7 +191,7 @@ returns the original record; changing them returns 409 `IDEMPOTENCY_CONFLICT`.
 - `POST /api/lms/certificate-assets`: multipart `file`, `kind`, `name`, `version`,
   `authorizationReference`, plus `fontFamily`/`fontStyle` for fonts. `kind` is
   `fixed_artwork` (exact 1536x1024 PNG) or `font` (TTF/OTF, maximum 20 MiB).
-  Claimed family/style must match the font's internal metadata; approved Canva
+  Claimed family/style must match the font's internal metadata; approved template
   faces also require their exact internal weight and italic posture. Renamed,
   synthetic or non-embeddable faces are rejected.
   Successful data contains only safe metadata: `{id,kind,name,version,contentType,
@@ -202,7 +202,7 @@ returns the original record; changing them returns 409 `IDEMPOTENCY_CONFLICT`.
   `{id,slot,version,signatoryName,signatoryTitle,authorizedAt}`.
 - `POST /api/lms/certificate-templates`: JSON `{name,version,
   authorizationReference,assets}`. `assets` maps `fixed_artwork`,
-  `playfair_bold_italic`, `garet_regular` and `garet_bold` to approved asset UUIDs.
+  `playfair_bold_italic`, `outfit_regular` and `outfit_bold` to approved asset UUIDs.
   Exact family/style checks reject substitutions. The server owns measured layout,
   colors and renderer version; successful data is `{id,name,version,
   rendererVersion,approvedAt}`.
@@ -217,7 +217,7 @@ returns the original record; changing them returns 409 `IDEMPOTENCY_CONFLICT`.
   return a safe 422 error. Revision mismatch returns 409 `REVISION_CONFLICT`.
 
 The renderer uses the Print-export 3:2 grid, Playfair Display Bold Italic for the
-recipient name, Garet Regular/Bold for other variable copy, proportional signature
+recipient name, Outfit Regular/Bold for other variable copy, proportional signature
 containment and a unique QR pointing to the agreed HTTPS verification route. It
 fits ordinary text down to approved minima, then at most two lines; overflow or
 unsupported glyphs blocks preview/issuance instead of clipping or substituting.

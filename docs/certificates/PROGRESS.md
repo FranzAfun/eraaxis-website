@@ -1,26 +1,35 @@
 # Certificate public pages progress
 
-## Supplied font gate - 2026-09-07
+## Outfit renderer review checkpoint - 2026-09-07
+
+The user explicitly approved Outfit Regular/Bold under SIL OFL 1.1 as the Garet
+replacement. EDOS uploaded Playfair Display Bold Italic and both Outfit faces to
+the authorized development bucket, created and attached the Outfit template with
+both authorized signatures, set the synthetic test date to `2026-09-07`, and
+generated normal/long DRAFT PDFs. Local rendered-page inspection found no clipping
+or overlap. Final acceptance remains the user's visual comparison against Canva;
+website runtime is unchanged.
+
+## Superseded Garet font gate - 2026-09-07
 
 EDOS verified that the supplied Playfair Display Bold and Bold Italic files match,
 but the files named Garet Regular/Bold are internally Garet Book weight 300 and
 Garet Heavy weight 850. No licence files were supplied. No font upload, template
-attachment or normal/long review PDF occurred; exact licensed Garet Regular and
-Garet Bold remain required. Plus Jakarta Sans and Outfit are not substitutes.
+attachment or normal/long review PDF occurred at that checkpoint. The later
+user-approved Outfit decision above supersedes the Garet requirement.
 
 EDOS also implements revision-checked, idempotent editing of draft batch name,
 printed programme/course wording and issue date without recreating the batch or
-changing its destination, recipients or assets. The synthetic CAD batch was left
-without an invented date for the user to complete through that editor.
+changing its destination, recipients or assets. At that checkpoint the synthetic
+CAD batch was left without an invented date; it now uses the explicit local-test
+date recorded above.
 
 ## Renderer font gate and later EDOS import UX - 2026-09-07
 
-EDOS has verified the current Canva/PDF typography inventory. The complete design
-requires licensed Playfair Display Bold, Playfair Display Bold Italic, Garet
-Regular and Garet Bold files; no substitutions or embedded PDF subsets are
-acceptable. Responsive preview UI evaluation is not certificate approval. Normal
-and long-name/programme PDFs using the full fonts still require visual comparison
-with the approved design before renderer acceptance.
+EDOS verified the original Canva/PDF typography inventory as Playfair Display and
+Garet. The later explicit Outfit approval supersedes Garet for rendered variable
+copy. Responsive preview UI evaluation is not certificate approval; the new
+normal and long-name/programme PDFs still require user visual comparison.
 
 The deferred EDOS usability milestone is a focused contact-import-style flow:
 select cohort/course once, use that table's template, upload, review and save;
@@ -28,23 +37,21 @@ shared values use dropdowns, IDs are automatic and sheet columns remain
 learner-specific. Creation, import and review must use separate focused routes,
 not one crowded page. Renderer acceptance remains first.
 
-## Current: EDOS slice 04 contract synchronized; font handoff pending
+## Current: EDOS slice 04 contract synchronized; visual approval pending
 
-Contract `certificates.v1.3` matches EDOS exactly. Website runtime remains unchanged.
+Contract `certificates.v1.4` matches EDOS exactly. Website runtime remains unchanged.
 EDOS now implements private versioned artwork/font/signature handling, approved
 template attachment, the shared DRAFT/future-final renderer and its staff batch
 preview UI. Migration114 was applied only to localhost; 54 focused EDOS tests plus
-lint/build pass. Reviewed artwork and both authorized signatures exist only in the
-authorized development S3 bucket; no font or template was uploaded. No public
+lint/build pass. Reviewed artwork, authorized signatures and the approved Outfit
+template assets exist only in the authorized development S3 bucket. No public
 verification/retrieval page, production migration, deployment, issue or email
 occurred.
 
 Fresh Canva and Print PDF inspection confirmed the approved 3:2 geometry, colors,
-font roles, artwork and signatures. Exact full Playfair Display Bold Italic, Garet
-Regular and Garet Bold files remain absent; embedded PDF fonts are incomplete
-subsets. EDOS therefore fails closed and has not produced normal/long acceptance
-PDFs. Next is the font handoff and private synthetic asset setup, then normal/long
-DRAFT visual review before website public runtime work.
+artwork and signatures. The full Playfair Display Bold Italic and Outfit
+Regular/Bold files are privately integrated, and EDOS produced normal/long DRAFT
+PDFs. Next is user visual review before website public runtime work.
 
 ## Current: import/data-preview checkpoint
 
