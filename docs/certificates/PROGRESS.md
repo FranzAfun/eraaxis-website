@@ -1,5 +1,36 @@
 # Certificate public pages progress
 
+## Renderer font gate and later EDOS import UX - 2026-09-07
+
+EDOS has verified the current Canva/PDF typography inventory. The complete design
+requires licensed Playfair Display Bold, Playfair Display Bold Italic, Garet
+Regular and Garet Bold files; no substitutions or embedded PDF subsets are
+acceptable. Responsive preview UI evaluation is not certificate approval. Normal
+and long-name/programme PDFs using the full fonts still require visual comparison
+with the approved design before renderer acceptance.
+
+The deferred EDOS usability milestone is a focused contact-import-style flow:
+select cohort/course once, use that table's template, upload, review and save;
+shared values use dropdowns, IDs are automatic and sheet columns remain
+learner-specific. Creation, import and review must use separate focused routes,
+not one crowded page. Renderer acceptance remains first.
+
+## Current: EDOS slice 04 contract synchronized; font handoff pending
+
+Contract `certificates.v1.3` matches EDOS exactly. Website runtime remains unchanged.
+EDOS now implements private versioned artwork/font/signature handling, approved
+template attachment, the shared DRAFT/future-final renderer and its staff batch
+preview UI. Migration114 was applied only to localhost; 52 focused EDOS tests plus
+lint/build pass. No public verification/retrieval page, production migration,
+deployment, S3 call, issue or email occurred.
+
+Fresh Canva and Print PDF inspection confirmed the approved 3:2 geometry, colors,
+font roles, artwork and signatures. Exact full Playfair Display Bold Italic, Garet
+Regular and Garet Bold files remain absent; embedded PDF fonts are incomplete
+subsets. EDOS therefore fails closed and has not produced normal/long acceptance
+PDFs. Next is the font handoff and private synthetic asset setup, then normal/long
+DRAFT visual review before website public runtime work.
+
 ## Current: import/data-preview checkpoint
 
 Latest user acceptance: all EDOS import UI checks passed. Independent evaluation

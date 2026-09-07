@@ -1,6 +1,6 @@
 # Certificate API contract
 
-Contract: `certificates.v1.2` (2026-09-06). EDOS owns this file; the website keeps
+Contract: `certificates.v1.3` (2026-09-06). EDOS owns this file; the website keeps
 an identical copy. This defines the first implementation, not deployed endpoints.
 Changes to required fields, meanings or access rules require a new contract
 version and matching fixtures before consumers change. Additive optional fields
@@ -79,7 +79,7 @@ No public directory, name lookup or email-wide record search.
 ## Staff access and preparation
 
 `GET /api/lms/certificate-access` requires LMS + `CERT_VIEW`, and returns
-`{ contractVersion: "certificates.v1.1", permissions: ["CERT_VIEW"] }` with only
+`{ contractVersion: "certificates.v1.3", permissions: ["CERT_VIEW"] }` with only
 the current user's explicitly granted certificate actions. This is access
 discovery, not evidence that issuance or other future endpoints are ready.
 
@@ -175,6 +175,52 @@ recipientCount}`. Learner details update; this batch's input snapshot updates.
 Other batches retain their snapshots. One-course-per-cohort constraints and
 identity mappings are checked again under transaction locks. Audit failure rolls
 back the entire import. No import endpoint can issue a certificate or send mail.
+
+### Implemented design asset and draft-preview contract (v1.3)
+
+Certificate artwork, fonts and signatures use a dedicated private object prefix;
+they never use public/static directories, website media or the generic file proxy.
+Every stored object has an immutable version, SHA-256 digest and private/no-store
+metadata. Reads verify the stored bytes against the recorded digest before render.
+Asset bytes, private keys and signature images are never returned in JSON or logs.
+
+Asset writes require LMS + `CERT_MANAGE_ASSETS`, current-account rechecks and an
+`Idempotency-Key` UUID. A retry with the same normalized fields and file hash
+returns the original record; changing them returns 409 `IDEMPOTENCY_CONFLICT`.
+
+- `POST /api/lms/certificate-assets`: multipart `file`, `kind`, `name`, `version`,
+  `authorizationReference`, plus `fontFamily`/`fontStyle` for fonts. `kind` is
+  `fixed_artwork` (exact 1536x1024 PNG) or `font` (TTF/OTF, maximum 20 MiB).
+  Successful data contains only safe metadata: `{id,kind,name,version,contentType,
+  byteSize,width,height,fontFamily,fontStyle,approvedAt}`.
+- `POST /api/lms/certificate-signatures`: multipart transparent PNG plus `slot`
+  (1 or 2), `version`, `signatoryName`, `signatoryTitle` and
+  `authorizationReference`. Original PNG bytes are preserved; successful data is
+  `{id,slot,version,signatoryName,signatoryTitle,authorizedAt}`.
+- `POST /api/lms/certificate-templates`: JSON `{name,version,
+  authorizationReference,assets}`. `assets` maps `fixed_artwork`,
+  `playfair_bold_italic`, `garet_regular` and `garet_bold` to approved asset UUIDs.
+  Exact family/style checks reject substitutions. The server owns measured layout,
+  colors and renderer version; successful data is `{id,name,version,
+  rendererVersion,approvedAt}`.
+- `PATCH /api/lms/certificate-batches/:id/design`: `CERT_PREPARE` plus
+  `{revision,templateId,signature1Id,signature2Id}`. It accepts only an approved,
+  active template and authorized non-synthetic signatures in their correct slots,
+  increments the draft revision and returns `{id,revision,state}`.
+- `GET /api/lms/certificate-batches/:id/preview?rowId=<uuid>&revision=<n>`:
+  `CERT_VIEW`; returns a private/no-store `application/pdf` DRAFT using the same
+  renderer reserved for final generation. Missing issue date/template/fonts/both
+  signatures returns 422 `CERTIFICATE_ASSETS_REQUIRED`; digest or glyph failures
+  return a safe 422 error. Revision mismatch returns 409 `REVISION_CONFLICT`.
+
+The renderer uses the Print-export 3:2 grid, Playfair Display Bold Italic for the
+recipient name, Garet Regular/Bold for other variable copy, proportional signature
+containment and a unique QR pointing to the agreed HTTPS verification route. It
+fits ordinary text down to approved minima, then at most two lines; overflow or
+unsupported glyphs blocks preview/issuance instead of clipping or substituting.
+This slice does not create certificates, approvals, jobs, delivery, public runtime
+pages or production assets. Full licensed font files and the reviewed private asset
+versions remain required before a template can be accepted for real issuance.
 Two concurrent file parsers maximum per API process,15s timeout,256MiB V8 heap
 each; parsing runs in worker threads. These are bounded initial settings, not a
 production capacity certification. Expired preview rows require a retention job
