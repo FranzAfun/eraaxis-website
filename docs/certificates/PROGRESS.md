@@ -1,5 +1,27 @@
 # Certificate public pages progress
 
+## EDOS focused preparation routes - authenticated QA complete
+
+The first EDOS usability-refinement slice now separates certificate overview,
+new-draft, batch-detail, edit-detail, and import tasks into focused protected
+routes without changing the accepted import protocol. EDOS lint/build and 24
+certificate tests pass, and independent source evaluation passed after
+reconnect, navigation-guard, and full-view-state corrections. Authenticated local
+browser QA then covered the focused views at 1440px and 390px, import validation,
+Back/Forward discard guards, and offline/reconnect preservation without saving
+batch or recipient changes. This website runtime remains unchanged.
+
+## Generated seal approved and integrated - 2026-09-07
+
+The user approved the generated stamped SVG as the master seal with preserved
+proportions and black curved `EST. 2021` wording. EDOS commit `161ce0d` contains
+the clean and stamped SVG/transparent PNG exports. Development artwork asset
+`60711204-527c-49be-bd86-4be384e7714b` and template v5
+`5453f943-0e53-4343-9d32-9c811a9010c5` are attached to the synthetic CAD batch
+at revision 10. Normal- and long-name DRAFT PDFs passed visual review. No
+production deployment, real issuance, public verification record, or email is
+authorized; website runtime remains unchanged.
+
 ## Seal returned to fixed artwork - 2026-09-07
 
 At the user's direction, EDOS renderer `eraaxis-certificate-5` removes every
