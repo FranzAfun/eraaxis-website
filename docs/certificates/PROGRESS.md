@@ -1,5 +1,18 @@
 # Certificate public pages progress
 
+## Supplied font gate - 2026-09-07
+
+EDOS verified that the supplied Playfair Display Bold and Bold Italic files match,
+but the files named Garet Regular/Bold are internally Garet Book weight 300 and
+Garet Heavy weight 850. No licence files were supplied. No font upload, template
+attachment or normal/long review PDF occurred; exact licensed Garet Regular and
+Garet Bold remain required. Plus Jakarta Sans and Outfit are not substitutes.
+
+EDOS also implements revision-checked, idempotent editing of draft batch name,
+printed programme/course wording and issue date without recreating the batch or
+changing its destination, recipients or assets. The synthetic CAD batch was left
+without an invented date for the user to complete through that editor.
+
 ## Renderer font gate and later EDOS import UX - 2026-09-07
 
 EDOS has verified the current Canva/PDF typography inventory. The complete design
@@ -20,9 +33,11 @@ not one crowded page. Renderer acceptance remains first.
 Contract `certificates.v1.3` matches EDOS exactly. Website runtime remains unchanged.
 EDOS now implements private versioned artwork/font/signature handling, approved
 template attachment, the shared DRAFT/future-final renderer and its staff batch
-preview UI. Migration114 was applied only to localhost; 52 focused EDOS tests plus
-lint/build pass. No public verification/retrieval page, production migration,
-deployment, S3 call, issue or email occurred.
+preview UI. Migration114 was applied only to localhost; 54 focused EDOS tests plus
+lint/build pass. Reviewed artwork and both authorized signatures exist only in the
+authorized development S3 bucket; no font or template was uploaded. No public
+verification/retrieval page, production migration, deployment, issue or email
+occurred.
 
 Fresh Canva and Print PDF inspection confirmed the approved 3:2 geometry, colors,
 font roles, artwork and signatures. Exact full Playfair Display Bold Italic, Garet

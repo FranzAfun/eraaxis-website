@@ -126,7 +126,7 @@ The following batch paths are relative to `/api/lms/certificate-batches`:
 | GET `/` | CERT_VIEW | Paginated batch summaries |
 | POST `/` | CERT_PREPARE | `{ offeringId, name, issueDate?, programme, track }` -> 201 `{id,name,revision,state:"draft"}`; final assets attached later |
 | GET `/:id` | CERT_VIEW | Batch, `revision`, `reviewHash`, state, counts, approval |
-| PATCH `/:id` | CERT_PREPARE | Revision + changed draft fields -> new revision, clears approval |
+| PATCH `/:id` | CERT_PREPARE | `{revision,name,programme,track,issueDate}` -> updated draft details and new revision |
 | GET `/:id/template?format=csv\|xlsx` | CERT_PREPARE | Binary roster template |
 | POST `/:id/import-preview` | CERT_PREPARE | Multipart `file`, `revision` -> preview token, counts, paginated rows/errors |
 | POST `/:id/import-commit` | CERT_PREPARE | `{ revision, previewToken, decisions }` -> committed revision and counts |
@@ -139,7 +139,7 @@ The following batch paths are relative to `/api/lms/certificate-batches`:
 ### Implemented import contract (v1.2)
 
 `GET /:id` returns `{id,name,programme,track,revision,state,cohort,sourceNamespace,
-recipientCount,rows,nextCursor}`. Here `cohort` is the display label string.
+issueDate,recipientCount,rows,nextCursor}`. Here `cohort` is the display label string.
 Recipient rows contain `id` plus the seven roster fields below; `eligible` is the
 literal string `true` or `false`. This is a saved-data preview, not a certificate PDF.
 The PDF preview endpoint in the table above is still pending the design handoff.
@@ -191,6 +191,9 @@ returns the original record; changing them returns 409 `IDEMPOTENCY_CONFLICT`.
 - `POST /api/lms/certificate-assets`: multipart `file`, `kind`, `name`, `version`,
   `authorizationReference`, plus `fontFamily`/`fontStyle` for fonts. `kind` is
   `fixed_artwork` (exact 1536x1024 PNG) or `font` (TTF/OTF, maximum 20 MiB).
+  Claimed family/style must match the font's internal metadata; approved Canva
+  faces also require their exact internal weight and italic posture. Renamed,
+  synthetic or non-embeddable faces are rejected.
   Successful data contains only safe metadata: `{id,kind,name,version,contentType,
   byteSize,width,height,fontFamily,fontStyle,approvedAt}`.
 - `POST /api/lms/certificate-signatures`: multipart transparent PNG plus `slot`
@@ -221,6 +224,20 @@ unsupported glyphs blocks preview/issuance instead of clipping or substituting.
 This slice does not create certificates, approvals, jobs, delivery, public runtime
 pages or production assets. Full licensed font files and the reviewed private asset
 versions remain required before a template can be accepted for real issuance.
+
+`PATCH /api/lms/certificate-batches/:id` requires `CERT_PREPARE`, a UUID
+`Idempotency-Key`, and `{revision,name,programme,track,issueDate}`. Name is the
+internal batch name (maximum 160 characters); programme and track are printed
+wording (maximum 240 characters each). All are trimmed and non-empty. Issue date
+is required for this edit and must be a real `YYYY-MM-DD` date. The server locks
+and rechecks the current active account and batch in one transaction, accepts
+only `draft`, increments revision exactly once, and audits
+`CERT_BATCH_DETAILS_UPDATED`. It does not change `offeringId`, cohort/course
+destination, design assets, signatures or recipient rows. Success data is
+`{id,name,programme,track,issueDate,revision,state:"draft"}`. Same key and
+normalized payload returns that original response without another update/audit;
+changed payload returns 409 `IDEMPOTENCY_CONFLICT`, stale revision returns 409
+`REVISION_CONFLICT`, and a non-draft batch returns 409 `BATCH_NOT_DRAFT`.
 Two concurrent file parsers maximum per API process,15s timeout,256MiB V8 heap
 each; parsing runs in worker threads. These are bounded initial settings, not a
 production capacity certification. Expired preview rows require a retention job
@@ -301,7 +318,7 @@ template/signature/font hashes are immutable across retries and later edits.
 | 401 | AUTH_REQUIRED, ACCOUNT_UNAVAILABLE, DOWNLOAD_ACCESS_REQUIRED |
 | 403 | LMS_ACCESS_DISABLED, CERT_PERMISSION_REQUIRED, ADMIN_REQUIRED |
 | 404 | CERTIFICATE_NOT_FOUND, BATCH_NOT_FOUND |
-| 409 | REVISION_CONFLICT, IDEMPOTENCY_CONFLICT, APPROVAL_REQUIRED, COHORT_COURSE_CONFLICT, CERTIFICATE_UNAVAILABLE |
+| 409 | REVISION_CONFLICT, IDEMPOTENCY_CONFLICT, BATCH_NOT_DRAFT, APPROVAL_REQUIRED, COHORT_COURSE_CONFLICT, CERTIFICATE_UNAVAILABLE |
 | 413 | IMPORT_TOO_LARGE |
 | 422 | IMPORT_INVALID, IDENTITY_REVIEW_REQUIRED, ASSET_NOT_APPROVED |
 | 429 | RATE_LIMITED |
