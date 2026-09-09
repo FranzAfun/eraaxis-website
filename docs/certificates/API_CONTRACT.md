@@ -98,8 +98,10 @@ Public verification/retrieval fields and semantics are unchanged from v1.
 This revision freezes the first usable staff preparation flow before consumers:
 
 - `GET /api/lms/cohorts`: paginated `{id,reference,programme,label,createdAt}`.
-- `POST /api/lms/cohorts`: `{reference,programme,label}` -> 201 same core fields.
-  Reference is trimmed/lowercased and unique; it identifies the shared intake.
+- `POST /api/lms/cohorts`: `{programme,label}` -> 201 same core fields. `reference`
+  is derived server-side from `label` (lowercased, diacritics stripped, non-alphanumerics
+  collapsed to `-`) with a numeric suffix on collision, and is not accepted from the
+  client. It is a machine key; staff never type or see it.
 - `GET /api/lms/offerings?cohortId=<uuid>`: paginated `{id,cohortId,track}`.
 - `POST /api/lms/offerings`: `{cohortId,track}` -> 201 same fields.
   A course name is unique (case/outer-space insensitive) within its cohort.
@@ -153,10 +155,11 @@ Recipient rows contain `id` plus the seven roster fields below; `eligible` is th
 literal string `true` or `false`. This is a saved-data preview, not a certificate PDF.
 The PDF preview endpoint in the table above is still pending the design handoff.
 
-Multipart import-preview requires `file`, integer `revision`, and `sourceNamespace`
-(1–100 lowercase letters/digits/dot/colon/dash/underscore, starting with a letter
-or digit). A namespace identifies a stable external roster source across batches
-and courses; it is fixed on the batch's first successful import.
+Multipart import-preview requires `file` and integer `revision`. The source
+namespace is no longer supplied by the client: it is derived as `cohort:<cohortId>`
+so that re-uploads match learners within the cohort they belong to, and a batch that
+already recorded a namespace keeps it. Asking staff to retype a stable machine key
+only invited typos that silently duplicated learners.
 
 Preview response: `{previewToken,revision,sourceNamespace,expiresAt,
 counts:{total,valid,invalid,review},rows,nextCursor}`. Each row contains `rowId`,
