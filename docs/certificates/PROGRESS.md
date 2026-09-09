@@ -1,5 +1,46 @@
 # Certificate public pages progress
 
+## Verification page refinements after design review
+
+Two reviews of the verified state were accepted and applied.
+
+The valid-state heading is now "Certificate verified", and the recipient's name
+leads the card directly beneath it at display size rather than sitting as one row
+among the details, so the answer the visitor came for is the first thing they read.
+The name is no longer repeated in the details table. "Check that these details
+match the certificate you were shown." was added, and is deliberately scoped to the
+valid state only — for a revoked or superseded award, matching details is not the
+point being made, and those states keep their own distinct headings and bodies.
+
+The certificate ID gains a copy button with a two-second "Copied" confirmation and
+an `aria-live` announcement. `navigator.clipboard` is undefined outside a secure
+context, which includes the plain-HTTP LAN address used for phone testing, so it
+falls back to a throwaway textarea rather than leaving the button silently dead
+there. The ID row is stacked at every width because the two-column layout leaves
+its value about 330px, which a 32-character ID and its button cannot share without
+wrapping awkwardly; the ID itself uses `break-all` so it wraps inside a narrow
+phone column instead of forcing the card to scroll sideways.
+
+Two review points were declined rather than applied, and the reviewers agreed:
+
+- No logo was added inside the card. The site header and its ERA AXIS logo already
+  sit above this page, which is the intended brand anchor; a second logo inside the
+  card would duplicate it. Note that the brand has two variants, `logo.webp` for
+  light backgrounds (used by the header) and `logo-white.webp` for dark ones (used
+  by the footer), so any future in-card mark must use the white variant.
+- No public "View/Download certificate" action was added. Retrieval is deliberately
+  gated behind email, a one-time code and a short-lived scoped grant, so a public ID
+  alone cannot pull a named person's document; a public download would also hand out
+  clean forgery source material. There is no stored PDF to serve yet either. This
+  belongs to the private retrieval milestone, not to public verification.
+
+Verified at 1440x900 and 390x844: the ID and copy button sit inline on desktop and
+stack on mobile with no horizontal overflow, the name wraps cleanly across two
+lines, copying reports "Copied" and reverts after two seconds, and the revoked,
+superseded and not-found states keep their own wording without the compare line.
+Lint and build pass.
+
+
 ## LAN exposure for phone testing
 
 The dev server now sets `host: true` alongside its pinned strict port 5174, so a
