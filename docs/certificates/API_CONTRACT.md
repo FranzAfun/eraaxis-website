@@ -181,12 +181,20 @@ discovery, not evidence that issuance or other future endpoints are ready.
 Public verification/retrieval fields and semantics are unchanged from v1.
 This revision freezes the first usable staff preparation flow before consumers:
 
-- `GET /api/lms/cohorts`: paginated `{id,reference,programme,label,createdAt}`.
-- `POST /api/lms/cohorts`: `{programme,label}` -> 201 same core fields. `reference`
+- `GET /api/lms/cohorts`: paginated
+  `{id,reference,programme,label,createdAt,attendanceThresholdPercent,`
+  `attendanceMinimumSessions,courseCount,learnerCount}`. `courseCount` and
+  `learnerCount` let the cohorts screen say what a cohort holds without a request
+  per row, and are what make an empty cohort visible as empty. Both attendance
+  fields are null when the cohort does not apply attendance to eligibility.
+- `POST /api/lms/cohorts`: `{programme,label,attendanceThresholdPercent?,`
+  `attendanceMinimumSessions?}` -> 201 same core fields. `reference`
   is derived server-side from `label` (lowercased, diacritics stripped, non-alphanumerics
   collapsed to `-`) with a numeric suffix on collision, and is not accepted from the
   client. It is a machine key; staff never type or see it.
-- `PATCH /api/lms/cohorts/:id`: `{programme,label}` -> 200 same fields. The derived
+- `PATCH /api/lms/cohorts/:id`: `{programme,label,attendanceThresholdPercent?,`
+  `attendanceMinimumSessions?}` -> 200 same fields. Omitting either attendance
+  field clears it, which is how a cohort stops applying attendance. The derived
   `reference` is never rewritten: it already appears on exports and preview rows,
   and changing it would make older downloads disagree with the system.
 - `DELETE /api/lms/cohorts/:id`: 200 `{id}`. Refuses with 409 `COHORT_IN_USE` while
