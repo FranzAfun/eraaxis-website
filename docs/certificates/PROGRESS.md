@@ -1,5 +1,42 @@
 # Certificate public pages progress
 
+## Public certificate verification page - implemented
+
+`/certificates/verify/:publicId` is live in this repository and reads the real
+EDOS endpoint `GET /api/website/certificates/:publicId`. It renders five states:
+verified, revoked, superseded, not found, and unavailable.
+
+Each status gets its own heading and explanation rather than one "verified" badge
+with a qualifier, because they are different answers to "can I rely on this?".
+Two safety properties drive the copy:
+
+- A lookup that fails for any reason other than a 404 renders **unavailable**,
+  never "invalid", and says so explicitly: an outage must never tell someone their
+  genuine certificate is fake. A **Try again** action re-runs the lookup in place.
+- The not-found copy does not accuse. A mistyped or truncated ID reaches the same
+  state as a fabricated one, so it asks the visitor to re-check the ID or rescan.
+
+Malformed IDs are rejected client-side by the same 32-lowercase-hex rule the API
+uses, so an obviously broken link never becomes a request. The page carries
+`noindex, nofollow, noarchive` through a new `noindex` prop on the shared `SEO`
+component, which removes the tag again on the way out so ordinary pages stay
+indexable. It is deliberately absent from the sitemap and from the prerender pass
+(the prerender still writes 18 routes), and no personal data is prerendered.
+
+The dev server is now pinned to port 5174 with `strictPort`, because a certificate
+QR code encodes exactly one URL and Vite's silent port fallback was making locally
+generated QR codes point at a port nothing was serving.
+
+Verified in a local browser against real seeded records: verified, revoked,
+superseded and not-found each render their own state; the `robots` tag is present
+on all of them and absent on the home page; blocking the API produces the
+unavailable state with its reassurance text, and **Try again** recovers to the
+verified state without a page reload. Lint and build pass in this repository.
+
+Not built yet: private retrieval (`/certificates/retrieve`, request-access,
+verify-access, download). Certificate issuance does not exist in EDOS either, so
+the records this page reads are local synthetic awards marked `synthetic = true`.
+
 ## EDOS focused preparation routes - authenticated QA complete
 
 The first EDOS usability-refinement slice now separates certificate overview,

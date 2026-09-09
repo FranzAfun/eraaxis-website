@@ -76,6 +76,15 @@ Website routes: `/certificates/verify/:publicId` and `/certificates/retrieve`.
 Retrieval may prefill `?certificate=<publicId>` only; no email or grant in the URL.
 No public directory, name lookup or email-wide record search.
 
+The base that EDOS prints and QR-encodes is environment-driven, never a baked-in
+domain: `CERTIFICATE_VERIFICATION_BASE_URL`, defaulting to
+`<WEBSITE_URL>/certificates/verify`. A local checkout therefore resolves to
+`http://localhost:5174/certificates/verify` and verifies against the local public
+site. The renderer requires the caller to supply this base and rejects plaintext
+HTTP unless the host is loopback, so an issued certificate can never carry an
+unverifiable or non-HTTPS link. The website must keep `/certificates/verify/:publicId`
+mounted at whatever base the two repositories are configured to share.
+
 ## Staff access and preparation
 
 `GET /api/lms/certificate-access` requires LMS + `CERT_VIEW`, and returns
