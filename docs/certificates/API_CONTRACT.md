@@ -275,10 +275,13 @@ when editing existing batches/certificates. Deduplication scope is actor + route
 409 `IDEMPOTENCY_CONFLICT`. Revision mismatches return 409 `REVISION_CONFLICT`.
 Clients must reload/review, never silently retry with the latest revision.
 
-Import columns: `source_record_id`, `learner_id` (optional), `full_name`, `email`,
-`phone` (optional), `eligible`, `evidence_reference` (optional). `eligible` uses
-`true`/`false`; blank email is retained as a visible assisted-delivery decision,
-not dropped. Source IDs are stable within an explicitly recorded source namespace;
+The blank template has three columns: `full_name`, `email`, `phone`. Only
+`full_name` is required. An upload may additionally carry `source_record_id`,
+`learner_id`, `eligible` and `evidence_reference`, because a downloaded roster
+contains them and must round trip; any other header is rejected. Absent optional
+columns default to empty, and absent `eligible` defaults to `true` until the
+attendance mechanism supplies real eligibility. `eligible` uses `true`/`false`;
+blank email is retained as a visible assisted-delivery decision, not dropped. Source IDs are stable within an explicitly recorded source namespace;
 new manual rows get stable IDs for re-upload. Preview decisions are keyed to
 preview row ID: include/exclude, explicit existing learner match or reviewed new
 identity. Server stores/validates decisions, never trusts client validation results.
