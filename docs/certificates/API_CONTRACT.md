@@ -174,7 +174,18 @@ only invited typos that silently duplicated learners.
 Preview response: `{previewToken,revision,sourceNamespace,expiresAt,
 counts:{total,valid,invalid,review},rows,nextCursor}`. Each row contains `rowId`,
 `rowNumber` (header is line1), `values` (seven source fields), `errors`, `warnings`,
-`candidates:[{id,name}]` and `action` (`new`, `update`, `reuse`, `review`, `invalid`).
+`candidates:[{id,name}]`, `matchedVia` (`email`, `phone` or null), `duplicateOfRow`
+and `action` (`new`, `update`, `reuse`, `duplicate`, `review`, `invalid`).
+An exact email or phone match against exactly one existing learner links that
+learner directly, instead of raising a review, and is reported as
+`MATCHED_EXISTING_LEARNER`. Phones compare on their last nine digits so local and
+international spellings of one number match. A contact held by more than one
+learner stays ambiguous and falls back to review, and a row asserting an unknown
+external `source_record_id` never auto-links. A second row reaching a learner
+already claimed earlier in the file is `duplicate` with a `DUPLICATE_IN_FILE`
+warning: excluded by default, includable deliberately, and the commit still
+refuses two included rows resolving to one learner. Preview `counts` add `added`,
+`matched` and `duplicate`.
 Errors/warnings contain `{code,field,message}`. Candidate names/IDs are private
 staff data. `valid` counts rows without errors; warnings still need review.
 
