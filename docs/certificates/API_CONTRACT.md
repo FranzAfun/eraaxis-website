@@ -280,7 +280,12 @@ The blank template has three columns: `full_name`, `email`, `phone`. Only
 `learner_id`, `eligible` and `evidence_reference`, because a downloaded roster
 contains them and must round trip; any other header is rejected. Absent optional
 columns default to empty, and absent `eligible` defaults to `true` until the
-attendance mechanism supplies real eligibility. `eligible` uses `true`/`false`;
+attendance mechanism supplies real eligibility. Headers are matched on letters and
+digits only, so case, spaces and punctuation are equivalent and common spellings
+(`Full name`, `Email Address`, `Phone Number`) resolve to the canonical columns; a
+form platform's own columns such as `Timestamp` and any unrecognised column are
+ignored. Two columns resolving to the same field, or no column resolving to
+`full_name`, are rejected. `eligible` uses `true`/`false`;
 blank email is retained as a visible assisted-delivery decision, not dropped. Source IDs are stable within an explicitly recorded source namespace;
 new manual rows get stable IDs for re-upload. Preview decisions are keyed to
 preview row ID: include/exclude, explicit existing learner match or reviewed new
