@@ -32,6 +32,7 @@ const StudentChapterPayment = lazy(() => import("./pages/StudentChapterPayment")
 const PaymentConfirmation = lazy(() => import("./pages/PaymentConfirmation"));
 const NewsletterUnsubscribe = lazy(() => import("./pages/NewsletterUnsubscribe"));
 const CertificateVerify = lazy(() => import("./pages/CertificateVerify"));
+const AttendanceSignIn = lazy(() => import("./pages/AttendanceSignIn"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 
 function AppShell() {
@@ -145,6 +146,7 @@ function AppShell() {
             <Route path="/payments/student-chapter" element={<StudentChapterPayment />} />
             <Route path="/payments/confirmation" element={<PaymentConfirmation />} />
             <Route path="/certificates/verify/:publicId" element={<CertificateVerify />} />
+            <Route path="/attendance/:token" element={<AttendanceSignIn />} />
             <Route path="/newsletter/unsubscribe" element={<NewsletterUnsubscribe />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="*" element={<NotFound />} />

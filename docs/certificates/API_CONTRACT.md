@@ -45,6 +45,90 @@ successor identity is returned. Unknown, draft and malformed IDs share 404
 `CERTIFICATE_NOT_FOUND`. Network failures/5xx mean unavailable, never invalid.
 Rate limits return 429 `RATE_LIMITED` with `Retry-After` seconds.
 
+## Public attendance link
+
+Versioned separately as `attendance.v1`. It does not move
+`certificates.v1.4`: attendance changes nothing about the certificate surface, and
+`contractVersion` must keep meaning what it means today.
+
+Website route: `/attendance/:token`. The token is 32 lowercase hex characters, the
+same shape as a certificate public ID and for the same reason — the link is pasted
+into a meeting chat, so holding one must not help anyone reach another session's.
+EDOS builds the full link from `ATTENDANCE_LINK_BASE_URL`, defaulting to
+`<WEBSITE_URL>/attendance`, so the two repositories stay in step exactly as they do
+for verification. Unknown and malformed tokens share one 404
+`ATTENDANCE_SESSION_NOT_FOUND`; a lookup failure is 503 `ATTENDANCE_UNAVAILABLE`,
+never a 404.
+
+`GET /api/website/attendance/:token` returns 200 with the session's public face:
+
+```json
+{"success":true,"data":{"state":"open","title":"Session 1: Version control","objective":"Set up Git and push a first commit.","programme":"Synthetic Programme","track":"Synthetic Track","sessionDate":"2026-09-13","opensAt":"2026-09-13T09:00:00.000Z","closesAt":"2026-09-13T11:00:00.000Z","googleClientId":"synthetic.apps.googleusercontent.com"},"error":null}
+```
+
+These nine fields are the complete public projection. No roster, learner, email,
+attendance count, internal ID or link token is returned. `state` is `not_started`,
+`open` or `closed`, decided against the window on every request. `googleClientId`
+is non-null **only when `state` is `open`**: withholding it is what prevents a
+learner outside the window from ever being asked to authenticate, so the client
+must render no sign-in affordance without it. It is always the client the server
+will verify against, so a button can never be rendered for a client whose tokens
+this endpoint would reject.
+
+`POST /api/website/attendance/:token`, body `{ "credential": "<Google ID token>" }`.
+The credential is the ID token from Google Identity Services; scopes are only
+`openid email profile`. Success is 200:
+
+```json
+{"success":true,"data":{"state":"present","learnerName":"Synthetic Learner","title":"Session 1: Version control","sessionDate":"2026-09-13","programme":"Synthetic Programme","track":"Synthetic Track"},"error":null}
+```
+
+`state` is `present` on the first sign-in and `already_present` on any later one.
+Clicking the link again inside the window is idempotent and is **not** an error: it
+returns `success: true` with `already_present`, and writes no second row. Clients
+must render it as reassurance, not failure.
+
+The window is re-checked on POST, because the page may have been open since before
+the session started: outside it, 409 `ATTENDANCE_NOT_STARTED` or
+`ATTENDANCE_CLOSED`, whose `data` carries the same public projection so the page
+can re-render its state without a second request. Google is verified locally
+against Google's published JWKS — RS256, audience, issuer, expiry and
+`email_verified` all required. A rejected token is 401 `GOOGLE_TOKEN_INVALID` or
+`GOOGLE_EMAIL_UNVERIFIED`; Google being unreachable or the client ID being unset is
+503 `GOOGLE_SIGN_IN_UNAVAILABLE`, which must never be shown as a rejected learner.
+
+Identity is matched on the verified email against learners enrolled on that
+course. An address the roster does not hold is 403 `ATTENDANCE_NOT_RECOGNISED`,
+refused on the spot and naming the address back, so the learner can raise it while
+the class is still running rather than discovering weeks later that they were never
+counted. An address that IS registered but on a different course in the same cohort
+is 403 `ATTENDANCE_WRONG_COURSE`, naming the course the learner actually belongs to
+and stating that signing in here would not count toward their certificate. A learner
+takes exactly one course per cohort — `lms_enrolments` enforces it with
+UNIQUE (learner_id, cohort_id) and the roster import refuses a second — so this is
+always a wrong link rather than a second enrolment, and it must never be recorded. An address two learners share is 409 `ATTENDANCE_EMAIL_AMBIGUOUS` and
+identifies neither, exactly as the register import behaves. Nothing on this
+endpoint ever creates a learner. Rate limits return 429 `RATE_LIMITED`.
+
+Staff side, `CERT_PREPARE`, idempotency-keyed and audited like the rest of
+preparation. Sessions carry `title`, `objective`, `opensAt` and `closesAt`; both
+bounds or neither, closing after opening, spanning at most 7 days.
+`POST /api/lms/sessions/:id/attendance-link` returns
+`{ "id": "<session id>", "attendanceUrl": "<full link>", "rotated": false }`.
+Asking again returns the same link, so a facilitator who lost the message does not
+invalidate the one already shared; `{ "rotate": true }` mints a new one and kills
+the old, which is how a link posted in the wrong place is revoked. Only the
+assembled URL is ever returned, never the raw token. A session that already has a
+link cannot have its title, objective or window removed by an edit
+(422 `SESSION_LINK_REQUIRES_DETAILS`); generating one without them is refused with
+422 `SESSION_DETAILS_REQUIRED` or `SESSION_WINDOW_REQUIRED`.
+
+The eligibility rule lives on the cohort, not the batch:
+`attendanceThresholdPercent` (1-100) and `attendanceMinimumSessions`, both nullable
+on `lms_cohorts`, where null on both means attendance is not applied. Batches
+inherit it. The agreed rule is 60% of sessions held, rounded in the learner's
+favour, with a floor of at least 3 sessions attended.
+
 ## Private retrieval
 
 1. `POST /:publicId/request-access`, body `{ "email": "synthetic@example.invalid" }`.
@@ -365,14 +449,14 @@ template/signature/font hashes are immutable across retries and later edits.
 | HTTP | Codes |
 | --- | --- |
 | 400 | INVALID_REQUEST, ACCESS_CODE_INVALID |
-| 401 | AUTH_REQUIRED, ACCOUNT_UNAVAILABLE, DOWNLOAD_ACCESS_REQUIRED |
-| 403 | LMS_ACCESS_DISABLED, CERT_PERMISSION_REQUIRED, ADMIN_REQUIRED |
-| 404 | CERTIFICATE_NOT_FOUND, BATCH_NOT_FOUND |
-| 409 | REVISION_CONFLICT, IDEMPOTENCY_CONFLICT, BATCH_NOT_DRAFT, APPROVAL_REQUIRED, COHORT_COURSE_CONFLICT, CERTIFICATE_UNAVAILABLE |
+| 401 | AUTH_REQUIRED, ACCOUNT_UNAVAILABLE, DOWNLOAD_ACCESS_REQUIRED, GOOGLE_TOKEN_INVALID, GOOGLE_EMAIL_UNVERIFIED |
+| 403 | LMS_ACCESS_DISABLED, CERT_PERMISSION_REQUIRED, ADMIN_REQUIRED, ATTENDANCE_NOT_RECOGNISED, ATTENDANCE_WRONG_COURSE |
+| 404 | CERTIFICATE_NOT_FOUND, BATCH_NOT_FOUND, ATTENDANCE_SESSION_NOT_FOUND, SESSION_NOT_FOUND |
+| 409 | REVISION_CONFLICT, IDEMPOTENCY_CONFLICT, BATCH_NOT_DRAFT, APPROVAL_REQUIRED, COHORT_COURSE_CONFLICT, CERTIFICATE_UNAVAILABLE, ATTENDANCE_NOT_STARTED, ATTENDANCE_CLOSED, ATTENDANCE_EMAIL_AMBIGUOUS, ATTENDANCE_CONFLICT |
 | 413 | IMPORT_TOO_LARGE |
-| 422 | IMPORT_INVALID, IDENTITY_REVIEW_REQUIRED, ASSET_NOT_APPROVED |
+| 422 | IMPORT_INVALID, IDENTITY_REVIEW_REQUIRED, ASSET_NOT_APPROVED, SESSION_DETAILS_REQUIRED, SESSION_WINDOW_REQUIRED, SESSION_WINDOW_INCOMPLETE, SESSION_WINDOW_INVALID, SESSION_WINDOW_TOO_LONG, SESSION_LINK_REQUIRES_DETAILS, NO_SESSIONS |
 | 429 | RATE_LIMITED |
-| 503 | CERTIFICATE_SERVICE_UNAVAILABLE, PDF_UNAVAILABLE |
+| 503 | CERTIFICATE_SERVICE_UNAVAILABLE, PDF_UNAVAILABLE, ATTENDANCE_UNAVAILABLE, ATTENDANCE_SERVICE_UNAVAILABLE, GOOGLE_SIGN_IN_UNAVAILABLE |
 
 Pending before real issuance: public full-name/retention policy, approver grants,
 completion evidence, approved measured artwork/font/signature handoff, provider
