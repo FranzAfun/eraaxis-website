@@ -102,9 +102,19 @@ This revision freezes the first usable staff preparation flow before consumers:
   is derived server-side from `label` (lowercased, diacritics stripped, non-alphanumerics
   collapsed to `-`) with a numeric suffix on collision, and is not accepted from the
   client. It is a machine key; staff never type or see it.
+- `PATCH /api/lms/cohorts/:id`: `{programme,label}` -> 200 same fields. The derived
+  `reference` is never rewritten: it already appears on exports and preview rows,
+  and changing it would make older downloads disagree with the system.
+- `DELETE /api/lms/cohorts/:id`: 200 `{id}`. Refuses with 409 `COHORT_IN_USE` while
+  the cohort still has courses; deletes never cascade.
 - `GET /api/lms/offerings?cohortId=<uuid>`: paginated `{id,cohortId,track}`.
 - `POST /api/lms/offerings`: `{cohortId,track}` -> 201 same fields.
   A course name is unique (case/outer-space insensitive) within its cohort.
+- `PATCH /api/lms/offerings/:id`: `{track}` -> 200 same fields.
+- `DELETE /api/lms/offerings/:id`: 200 `{id}`. Refuses with 409 `OFFERING_IN_USE`
+  while the course still has batches.
+- PATCH and DELETE require CERT_PREPARE, LMS access and an Idempotency-Key UUID on
+  the same terms as the POSTs, and are audited as `CERT_*_UPDATED` / `CERT_*_DELETED`.
 - `GET /api/lms/certificate-batches`: paginated
   `{id,name,programme,track,revision,state,createdAt,offeringId,cohort,issueDate,recipientCount}`.
 - List pagination uses UUID `cursor`, ascending ID, default limit50, max100;
