@@ -191,7 +191,12 @@ This revision freezes the first usable staff preparation flow before consumers:
   and changing it would make older downloads disagree with the system.
 - `DELETE /api/lms/cohorts/:id`: 200 `{id}`. Refuses with 409 `COHORT_IN_USE` while
   the cohort still has courses; deletes never cascade.
-- `GET /api/lms/offerings?cohortId=<uuid>`: paginated `{id,cohortId,track}`.
+- `GET /api/lms/offerings?cohortId=<uuid>`: paginated
+  `{id,cohortId,track,learnerCount,withoutEmailCount}`. The two counts exist so a
+  facilitator can be warned before generating an attendance link that would refuse
+  everyone: `learnerCount` 0 means nobody is enrolled on the course, and
+  `withoutEmailCount` counts enrolled learners with no email, who cannot be matched
+  to a Google account and so can never sign in by link.
 - `POST /api/lms/offerings`: `{cohortId,track}` -> 201 same fields.
   A course name is unique (case/outer-space insensitive) within its cohort.
 - `PATCH /api/lms/offerings/:id`: `{track}` -> 200 same fields.
