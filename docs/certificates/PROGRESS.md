@@ -1,5 +1,23 @@
 # Certificate public pages progress
 
+## LAN exposure for phone testing
+
+The dev server now sets `host: true` alongside its pinned strict port 5174, so a
+phone on the same network can open the site and scan a certificate QR end to end.
+
+`VITE_API_URL` changed from the absolute `http://localhost:5000/api/website` to the
+relative `/api/website`. A phone resolves `localhost` to itself, so the absolute URL
+could never work off-machine; the relative path goes through the Vite dev proxy on
+whatever origin the device used, which also makes the request same-origin and takes
+CORS out of the path. The proxy target stays `localhost:5000` because the proxy runs
+on the development machine. Netlify supplies the absolute production API URL, which
+overrides this, so production is unaffected.
+
+Verified over the LAN address: the page renders, the proxied API call returns the
+record, and `noindex` is present. Lint and build pass. A real phone-width render has
+not been confirmed from this environment.
+
+
 ## Public certificate verification page - implemented
 
 `/certificates/verify/:publicId` is live in this repository and reads the real
