@@ -115,6 +115,11 @@ This revision freezes the first usable staff preparation flow before consumers:
   while the course still has batches.
 - PATCH and DELETE require CERT_PREPARE, LMS access and an Idempotency-Key UUID on
   the same terms as the POSTs, and are audited as `CERT_*_UPDATED` / `CERT_*_DELETED`.
+- `DELETE /api/lms/certificate-batches/:id`: 200 `{id}`. Draft only; 409
+  `BATCH_NOT_DRAFT` otherwise, and 409 `BATCH_HAS_AWARDS` once certificates have
+  been issued from it. Removes the batch's own recipient rows and import previews
+  and nothing else: learners and enrolments survive, because those people did
+  enrol whether or not this batch does.
 - `GET /api/lms/certificate-batches`: paginated
   `{id,name,programme,track,revision,state,createdAt,offeringId,cohort,issueDate,recipientCount}`.
 - List pagination uses UUID `cursor`, ascending ID, default limit50, max100;
