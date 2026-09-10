@@ -317,13 +317,22 @@ course, and one course can finish weeks before another in the same intake.
 
 `POST /api/lms/offerings/:id/close` requires `CERT_PREPARE` and an
 `Idempotency-Key`, and returns
-`{id,cohortId,track,closedAt,sessionsHeldAtClose}`. `sessionsHeldAtClose` is the
-frozen denominator, written at the moment of closing and stored rather than
+`{id,cohortId,track,closedAt,sessionsHeldAtClose,eligibility}`. `sessionsHeldAtClose`
+is the frozen denominator, written at the moment of closing and stored rather than
 recounted, so deleting a session afterwards cannot change who was eligible. Closing
 an already-closed course is 409 `OFFERING_ALREADY_CLOSED`.
 
+**Closing writes the final eligibility.** Where the cohort has an attendance rule,
+each learner's result from the same computation as the eligibility endpoint is
+stored on their enrolment (`eligible`, and an `evidence_reference` such as
+"Attendance at close: 1 of 1 session, 1 needed") and on their row in every draft
+batch for the course, whose revision then moves. `eligibility` is
+`{ applied, eligible, notEligible }`; `applied` is false, and nothing is rewritten,
+for a cohort without a rule, whose recorded eligibility stands.
+
 `POST /api/lms/cohorts/:id/close` closes the cohort and every course still open
-under it, in one transaction, and returns the cohort plus `coursesClosed`. A course
+under it, in one transaction, and returns the cohort plus `coursesClosed` and
+`eligibility`, summed over the courses it closed. A course
 already closed keeps its own earlier `closedAt`. Already closed is 409
 `COHORT_ALREADY_CLOSED`; adding a course to a closed cohort is 409 `COHORT_CLOSED`.
 
@@ -488,7 +497,10 @@ The following batch paths are relative to `/api/lms/certificate-batches`:
 ### Implemented import contract (v1.2)
 
 `GET /:id` returns `{id,name,programme,track,revision,state,cohort,sourceNamespace,
-issueDate,recipientCount,rows,nextCursor}`. Here `cohort` is the display label string.
+issueDate,recipientCount,eligibleCount,courseClosed,attendanceApplies,rows,nextCursor}`.
+Here `cohort` is the display label string. `eligibleCount` is how many rows are
+eligible; until an attendance-rule course closes (`attendanceApplies` and not
+`courseClosed`) that count is provisional.
 Recipient rows contain `id` plus the seven roster fields below; `eligible` is the
 literal string `true` or `false`. This is a saved-data preview, not a certificate PDF.
 The PDF preview endpoint in the table above is still pending the design handoff.
@@ -620,8 +632,9 @@ The blank template has three columns: `full_name`, `email`, `phone`. Only
 `full_name` is required. An upload may additionally carry `source_record_id`,
 `learner_id`, `eligible` and `evidence_reference`, because a downloaded roster
 contains them and must round trip; any other header is rejected. Absent optional
-columns default to empty, and absent `eligible` defaults to `true` until the
-attendance mechanism supplies real eligibility. Headers are matched on letters and
+columns default to empty, and absent `eligible` defaults to `true`: provisional
+where the cohort certifies on attendance, because closing the course overwrites it
+with the attendance result, and final where it does not. Headers are matched on letters and
 digits only, so case, spaces and punctuation are equivalent and common spellings
 (`Full name`, `Email Address`, `Phone Number`) resolve to the canonical columns; a
 form platform's own columns such as `Timestamp` and any unrecognised column are
@@ -653,6 +666,14 @@ learners. No withdrawal exception. Same track reuses the existing enrolment.
 `POST /api/lms/certificate-batches/:id/approve` requires `CERT_APPROVE` and an
 `Idempotency-Key`, with body `{ revision }`. It returns
 `{ id, state: "approved", approval: { id, revision, contentHash, recipientCount, approvedAt } }`.
+
+**Only eligible recipients are approved, issued and sent anything.** A row counts
+when it is included and its `eligible` is `true`; `recipientCount`, the content
+hash, the issuance's `totalRecipients`, the worker's expansion, the run report and
+resend all use that same condition. Where the cohort has an attendance rule, approval
+is refused with 409 `COURSE_NOT_CLOSED` until the course is closed, since nobody has
+passed or failed before then; a batch where nobody is eligible is refused with 422
+`NO_ELIGIBLE_RECIPIENTS`.
 
 **Approval is what freezes a batch.** Every path that could change one — details,
 design assets, recipient import, deletion — already refuses anything that is not a
@@ -937,9 +958,9 @@ pacing defaults are trusted in production.
 | 401 | AUTH_REQUIRED, ACCOUNT_UNAVAILABLE, DOWNLOAD_ACCESS_REQUIRED, GOOGLE_TOKEN_INVALID, GOOGLE_EMAIL_UNVERIFIED |
 | 403 | LMS_ACCESS_DISABLED, CERT_PERMISSION_REQUIRED, ADMIN_REQUIRED, ATTENDANCE_NOT_RECOGNISED, ATTENDANCE_WRONG_COURSE |
 | 404 | CERTIFICATE_NOT_FOUND, BATCH_NOT_FOUND, ATTENDANCE_SESSION_NOT_FOUND, SESSION_NOT_FOUND |
-| 409 | REVISION_CONFLICT, IDEMPOTENCY_CONFLICT, BATCH_NOT_DRAFT, BATCH_NOT_APPROVED, APPROVAL_REQUIRED, ISSUANCE_CONFLICT, COHORT_COURSE_CONFLICT, CERTIFICATE_UNAVAILABLE, ATTENDANCE_NOT_STARTED, ATTENDANCE_CLOSED, ATTENDANCE_COURSE_CLOSED, ATTENDANCE_EMAIL_AMBIGUOUS, ATTENDANCE_CONFLICT, OFFERING_CLOSED, OFFERING_ALREADY_CLOSED, COHORT_CLOSED, COHORT_ALREADY_CLOSED |
+| 409 | REVISION_CONFLICT, IDEMPOTENCY_CONFLICT, BATCH_NOT_DRAFT, BATCH_NOT_APPROVED, APPROVAL_REQUIRED, ISSUANCE_CONFLICT, COHORT_COURSE_CONFLICT, CERTIFICATE_UNAVAILABLE, ATTENDANCE_NOT_STARTED, ATTENDANCE_CLOSED, ATTENDANCE_COURSE_CLOSED, ATTENDANCE_EMAIL_AMBIGUOUS, ATTENDANCE_CONFLICT, OFFERING_CLOSED, OFFERING_ALREADY_CLOSED, COHORT_CLOSED, COHORT_ALREADY_CLOSED, COURSE_NOT_CLOSED |
 | 413 | IMPORT_TOO_LARGE |
-| 422 | IMPORT_INVALID, IDENTITY_REVIEW_REQUIRED, ASSET_NOT_APPROVED, SESSION_DETAILS_REQUIRED, SESSION_WINDOW_REQUIRED, SESSION_WINDOW_INCOMPLETE, SESSION_WINDOW_INVALID, SESSION_WINDOW_TOO_LONG, SESSION_LINK_REQUIRES_DETAILS, NO_SESSIONS |
+| 422 | IMPORT_INVALID, IDENTITY_REVIEW_REQUIRED, ASSET_NOT_APPROVED, SESSION_DETAILS_REQUIRED, SESSION_WINDOW_REQUIRED, SESSION_WINDOW_INCOMPLETE, SESSION_WINDOW_INVALID, SESSION_WINDOW_TOO_LONG, SESSION_LINK_REQUIRES_DETAILS, NO_SESSIONS, NO_ELIGIBLE_RECIPIENTS |
 | 429 | RATE_LIMITED |
 | 503 | CERTIFICATE_SERVICE_UNAVAILABLE, PDF_UNAVAILABLE, ISSUANCE_UNAVAILABLE, ATTENDANCE_UNAVAILABLE, ATTENDANCE_SERVICE_UNAVAILABLE, GOOGLE_SIGN_IN_UNAVAILABLE |
 
