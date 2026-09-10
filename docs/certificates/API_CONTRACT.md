@@ -124,10 +124,48 @@ link cannot have its title, objective or window removed by an edit
 422 `SESSION_DETAILS_REQUIRED` or `SESSION_WINDOW_REQUIRED`.
 
 The eligibility rule lives on the cohort, not the batch:
-`attendanceThresholdPercent` (1-100) and `attendanceMinimumSessions`, both nullable
-on `lms_cohorts`, where null on both means attendance is not applied. Batches
-inherit it. The agreed rule is 60% of sessions held, rounded in the learner's
-favour, with a floor of at least 3 sessions attended.
+`attendanceThresholdPercent` (1-100), nullable on `lms_cohorts`, where null means
+attendance is not applied. Batches inherit it. The agreed rule is **70% of sessions
+held, rounded in the learner's favour**. `attendanceMinimumSessions` still exists on
+the table and is still validated by the API, but nothing sets it and eligibility
+must ignore it: a floor was dropped because a learner who clears the percentage and
+is silently ineligible, with nothing on screen explaining why, is worse than no
+floor. Treat it as reserved.
+
+## Closing a course or cohort
+
+Closing a course is what makes its eligibility final. Until then, "70% of sessions
+held" has a denominator that grows every week, so nobody has passed or failed yet.
+
+**Certification is gated on the course, not the cohort.** A batch is prepared per
+course, and one course can finish weeks before another in the same intake.
+
+`POST /api/lms/offerings/:id/close` requires `CERT_PREPARE` and an
+`Idempotency-Key`, and returns
+`{id,cohortId,track,closedAt,sessionsHeldAtClose}`. `sessionsHeldAtClose` is the
+frozen denominator, written at the moment of closing and stored rather than
+recounted, so deleting a session afterwards cannot change who was eligible. Closing
+an already-closed course is 409 `OFFERING_ALREADY_CLOSED`.
+
+`POST /api/lms/cohorts/:id/close` closes the cohort and every course still open
+under it, in one transaction, and returns the cohort plus `coursesClosed`. A course
+already closed keeps its own earlier `closedAt`. Already closed is 409
+`COHORT_ALREADY_CLOSED`; adding a course to a closed cohort is 409 `COHORT_CLOSED`.
+
+**Closing is irreversible and there is no reopen endpoint.** Closed cohorts are
+archived: still listed and readable, marked closed, filtered out of the default
+view. Closing is not deleting — a closed course keeps its batches and certificates
+until someone deliberately deletes it, and deletion still refuses while dependent
+work exists.
+
+A closed course refuses everything that would move its answer, all with 409
+`OFFERING_CLOSED`: creating or editing a session, issuing or rotating an attendance
+link, importing an attendance register, and committing a recipient import.
+
+Its attendance links report `state: "course_closed"`, which outranks the window,
+and `POST` returns 409 `ATTENDANCE_COURSE_CLOSED`. This is deliberately distinct
+from `ATTENDANCE_CLOSED`: a closed session leaves room to expect another link, and
+a closed course does not.
 
 ## Private retrieval
 
@@ -183,10 +221,11 @@ This revision freezes the first usable staff preparation flow before consumers:
 
 - `GET /api/lms/cohorts`: paginated
   `{id,reference,programme,label,createdAt,attendanceThresholdPercent,`
-  `attendanceMinimumSessions,courseCount,learnerCount}`. `courseCount` and
-  `learnerCount` let the cohorts screen say what a cohort holds without a request
-  per row, and are what make an empty cohort visible as empty. Both attendance
-  fields are null when the cohort does not apply attendance to eligibility.
+  `attendanceMinimumSessions,closedAt,courseCount,openCourseCount,learnerCount}`.
+  The counts let the cohorts screen say what a cohort holds without a request per
+  row, and are what make an empty cohort visible as empty. `closedAt` is null until
+  the cohort is closed and is what the archive view filters on.
+  `attendanceThresholdPercent` is null when the cohort does not apply attendance.
 - `POST /api/lms/cohorts`: `{programme,label,attendanceThresholdPercent?,`
   `attendanceMinimumSessions?}` -> 201 same core fields. `reference`
   is derived server-side from `label` (lowercased, diacritics stripped, non-alphanumerics
@@ -200,11 +239,13 @@ This revision freezes the first usable staff preparation flow before consumers:
 - `DELETE /api/lms/cohorts/:id`: 200 `{id}`. Refuses with 409 `COHORT_IN_USE` while
   the cohort still has courses; deletes never cascade.
 - `GET /api/lms/offerings?cohortId=<uuid>`: paginated
-  `{id,cohortId,track,learnerCount,withoutEmailCount}`. The two counts exist so a
-  facilitator can be warned before generating an attendance link that would refuse
-  everyone: `learnerCount` 0 means nobody is enrolled on the course, and
-  `withoutEmailCount` counts enrolled learners with no email, who cannot be matched
-  to a Google account and so can never sign in by link.
+  `{id,cohortId,track,closedAt,sessionsHeldAtClose,sessionCount,learnerCount,`
+  `withoutEmailCount}`. The counts exist so a facilitator can be warned before
+  generating an attendance link that would refuse everyone: `learnerCount` 0 means
+  nobody is enrolled on the course, and `withoutEmailCount` counts enrolled learners
+  with no email, who cannot be matched to a Google account and so can never sign in
+  by link. Once `closedAt` is set, `sessionsHeldAtClose` is the number eligibility is
+  measured against and `sessionCount` is only informational.
 - `POST /api/lms/offerings`: `{cohortId,track}` -> 201 same fields.
   A course name is unique (case/outer-space insensitive) within its cohort.
 - `PATCH /api/lms/offerings/:id`: `{track}` -> 200 same fields.
@@ -465,7 +506,7 @@ template/signature/font hashes are immutable across retries and later edits.
 | 401 | AUTH_REQUIRED, ACCOUNT_UNAVAILABLE, DOWNLOAD_ACCESS_REQUIRED, GOOGLE_TOKEN_INVALID, GOOGLE_EMAIL_UNVERIFIED |
 | 403 | LMS_ACCESS_DISABLED, CERT_PERMISSION_REQUIRED, ADMIN_REQUIRED, ATTENDANCE_NOT_RECOGNISED, ATTENDANCE_WRONG_COURSE |
 | 404 | CERTIFICATE_NOT_FOUND, BATCH_NOT_FOUND, ATTENDANCE_SESSION_NOT_FOUND, SESSION_NOT_FOUND |
-| 409 | REVISION_CONFLICT, IDEMPOTENCY_CONFLICT, BATCH_NOT_DRAFT, APPROVAL_REQUIRED, COHORT_COURSE_CONFLICT, CERTIFICATE_UNAVAILABLE, ATTENDANCE_NOT_STARTED, ATTENDANCE_CLOSED, ATTENDANCE_EMAIL_AMBIGUOUS, ATTENDANCE_CONFLICT |
+| 409 | REVISION_CONFLICT, IDEMPOTENCY_CONFLICT, BATCH_NOT_DRAFT, APPROVAL_REQUIRED, COHORT_COURSE_CONFLICT, CERTIFICATE_UNAVAILABLE, ATTENDANCE_NOT_STARTED, ATTENDANCE_CLOSED, ATTENDANCE_COURSE_CLOSED, ATTENDANCE_EMAIL_AMBIGUOUS, ATTENDANCE_CONFLICT, OFFERING_CLOSED, OFFERING_ALREADY_CLOSED, COHORT_CLOSED, COHORT_ALREADY_CLOSED |
 | 413 | IMPORT_TOO_LARGE |
 | 422 | IMPORT_INVALID, IDENTITY_REVIEW_REQUIRED, ASSET_NOT_APPROVED, SESSION_DETAILS_REQUIRED, SESSION_WINDOW_REQUIRED, SESSION_WINDOW_INCOMPLETE, SESSION_WINDOW_INVALID, SESSION_WINDOW_TOO_LONG, SESSION_LINK_REQUIRES_DETAILS, NO_SESSIONS |
 | 429 | RATE_LIMITED |

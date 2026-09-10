@@ -10,6 +10,9 @@ export const SESSION_STATE = Object.freeze({
   NOT_STARTED: "not_started",
   OPEN: "open",
   CLOSED: "closed",
+  // The course itself has ended, which outranks the window. "This session is
+  // closed" would suggest another is coming; this says none is.
+  COURSE_CLOSED: "course_closed",
 });
 
 // What came of a sign-in. `present` and `already_present` are both successes:
@@ -86,7 +89,7 @@ export async function signInToSession(token, credential) {
     }
     // The window moved under an open page. The refusal carries the session's
     // current public state, so the page can re-render without asking again.
-    if (code === "ATTENDANCE_NOT_STARTED" || code === "ATTENDANCE_CLOSED") {
+    if (code === "ATTENDANCE_NOT_STARTED" || code === "ATTENDANCE_CLOSED" || code === "ATTENDANCE_COURSE_CLOSED") {
       return { outcome: SIGN_IN_OUTCOME.WINDOW_CLOSED, session: error.payload?.data || null };
     }
     throw error;

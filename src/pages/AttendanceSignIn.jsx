@@ -334,6 +334,7 @@ export default function AttendanceSignIn() {
                 {!marked && windowMoved && shown?.state === SESSION_STATE.CLOSED && (
                   <Closed session={shown} />
                 )}
+                {!marked && windowMoved && shown?.state === SESSION_STATE.COURSE_CLOSED && <CourseClosed />}
 
                 {!marked && !windowMoved && session?.state === SESSION_STATE.NOT_STARTED && (
                   <NotStarted session={session} onRetry={retry} />
@@ -341,6 +342,7 @@ export default function AttendanceSignIn() {
                 {!marked && !windowMoved && session?.state === SESSION_STATE.CLOSED && (
                   <Closed session={session} />
                 )}
+                {!marked && !windowMoved && session?.state === SESSION_STATE.COURSE_CLOSED && <CourseClosed />}
 
                 {!marked && !windowMoved && session?.state === SESSION_STATE.OPEN && (
                   <>
@@ -440,6 +442,28 @@ function Closed({ session }) {
         Sign-in closed at {formatMoment(session.closesAt)} and attendance is no
         longer being taken for this session. If you were in the class and
         weren&apos;t marked present, tell your facilitator so it can be corrected.
+      </p>
+      <Link to="/contact" className={secondaryAction}>
+        Contact ERA AXIS <ArrowRight size={16} />
+      </Link>
+    </>
+  );
+}
+
+// The course is over, so no later link is coming for it. That is deliberately a
+// different message from a session having closed, which leaves room to hope.
+function CourseClosed() {
+  return (
+    <>
+      <p className={`${badge} text-white/70`}>
+        <CircleSlash aria-hidden="true" size={14} />
+        Course ended
+      </p>
+      <h1 className={heading}>This course has ended.</h1>
+      <p className={`mb-8 ${body}`}>
+        Attendance is closed for all of its sessions, and the register is final. If
+        you attended and think you were missed, speak to your facilitator — they can
+        still tell you where you stand.
       </p>
       <Link to="/contact" className={secondaryAction}>
         Contact ERA AXIS <ArrowRight size={16} />
