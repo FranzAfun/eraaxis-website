@@ -356,6 +356,16 @@ a closed course does not.
    Clients inspect status/content type, handle JSON errors separately, and revoke
    browser object URLs after use. No general file proxy or public static path.
 
+Malformed input is the one thing answered plainly, on all three: a certificate ID
+that is not 32 hex characters, an address that is not an address, or a grant that
+is not 43 base64url characters. Format is public knowledge and a person who
+mistyped deserves to be told, while existence is never disclosed. `request-access`
+and `verify-access` return 400 `INVALID_REQUEST` and `ACCESS_CODE_INVALID`
+respectively; `download` returns 401 `DOWNLOAD_ACCESS_REQUIRED` without a lookup.
+A fault in the service itself answers 503 `RETRIEVAL_UNAVAILABLE` on
+`verify-access` and `download`, and the ordinary 202 on `request-access`, because
+a 500 there would report that something existed to go wrong with.
+
 Website routes: `/certificates/verify/:publicId` and `/certificates/retrieve`.
 Retrieval may prefill `?certificate=<publicId>` only; no email or grant in the URL.
 No public directory, name lookup or email-wide record search.
