@@ -146,7 +146,7 @@ offering switches that cannot take effect.
 | `CERT_PREPARE` | Create draft batches, import and review the registration list, run sessions and issue attendance links. |
 | `CERT_APPROVE` | Freeze a prepared batch for issuing. |
 | `CERT_ISSUE` | Generate and send every certificate in an approved batch. |
-| `CERT_RESEND` | Send an already-issued certificate again. |
+| `CERT_RESEND` | From the run report, retry a delivery that failed or send an issued certificate again. |
 | `CERT_REVOKE` | Withdraw an issued certificate. |
 | `CERT_MANAGE_ASSETS` | Upload and authorise certificate artwork and signature images. |
 
@@ -163,8 +163,8 @@ rendered.
 Granting both to a coordinator is a granting decision; keeping them apart means a
 second approver can be required later without a migration.
 
-Not yet wired to any endpoint: `CERT_APPROVE`, `CERT_ISSUE`, `CERT_RESEND`,
-`CERT_REVOKE`. `CERT_MANAGE_ASSETS` has endpoints but no screen — assets are loaded
+Not yet wired to any endpoint: `CERT_REVOKE`, deferred until after the current
+course. `CERT_MANAGE_ASSETS` has endpoints but no screen — assets are loaded
 outside the app. The permissions panel says so on each, because an administrator
 needs to know a grant currently does nothing.
 
@@ -763,8 +763,9 @@ and `updatedAt`. Counts must specify their category; generated and email-accepte
 counts overlap and must not be summed. Poll at 5 seconds initially, back off to
 30 seconds, stop when settled or page hidden. No fabricated metrics on failure.
 
-Certificate paths under `/api/lms/certificates`: GET `/`, `/:id`, `/:id/download`
-require CERT_VIEW. POST `/:id/resend` requires CERT_RESEND; `/:id/revoke` requires
+Certificate paths under `/api/lms/certificates` (planned, not built): GET `/`,
+`/:id`, `/:id/download` require CERT_VIEW. Resend is implemented per run instead —
+see "Resend" above. `/:id/revoke` requires
 CERT_REVOKE; `/:id/reissue` requires CERT_PREPARE and CERT_ISSUE and starts a new
 approval-bound correction workflow. Bodies include `revision` and `reason`;
 reissue additionally carries corrected draft fields. It never bypasses approval.
@@ -779,6 +780,38 @@ delayed retries and persistent global/per-batch pause. Supervisor hard limits an
 pause thresholds require measured headroom. Ambiguous SMTP acceptance becomes
 `email_unknown`, not automatic retry or claimed confirmed delivery. PDFs and
 template/signature/font hashes are immutable across retries and later edits.
+
+### Resend (implemented)
+
+`POST /api/lms/certificate-batches/:id/resend` requires `CERT_RESEND`, an
+`Idempotency-Key` and body `{ "rowIds": ["..."], "includeDelivered": false }` —
+between 1 and 500 recipients from the batch's most recent run. It returns **202**:
+
+```json
+{"success":true,"data":{"batchId":"...","issuanceId":"...","resent":1,"retried":1,"skipped":[{"rowId":"...","learnerName":"Synthetic Learner","reason":"May already have arrived; confirm to send again."}],"statusUrl":"/api/lms/certificate-batches/.../results"},"error":null}
+```
+
+- A certificate that could not be generated is **retried** from the render; one
+  whose email failed is **resent**. Both reset the existing jobs rather than adding
+  new ones — a run holds one render and one email job per person, and that
+  uniqueness is what stops a person being sent two certificates by accident — and
+  re-open a finished run, which settles and announces itself again when the work is
+  done.
+- An email the mail server accepted, or never confirmed, may already be in the
+  learner's inbox, so it is sent again only when `includeDelivered` is `true`; the
+  run page asks for it behind an explicit warning. Until the retrieval page exists,
+  this is also how a learner who lost their certificate gets it again — always to
+  the address on the approved batch.
+- Skipped with a reason, never silently: not part of the run, no email address,
+  already being worked on, no live certificate. 409 `NOTHING_TO_RESEND` when nothing
+  selected can go; 404 `ISSUANCE_NOT_FOUND` for a batch that was never issued.
+- A resent email goes through the worker like any other, so the hourly quota still
+  applies.
+
+An email whose certificate can never be generated is given up as failed rather than
+waited for; waiting on it kept the whole run open forever, so it never settled and
+nobody was told. `progress.failed` counts **people**: that given-up email is the
+same person's failure, not a second one.
 
 ## The issuance worker (implemented; not yet rehearsed at scale)
 
