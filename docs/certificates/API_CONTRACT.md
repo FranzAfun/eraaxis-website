@@ -755,6 +755,24 @@ value that silently fell back to a default could empty a mail quota in minutes:
 | `CERT_WORKER_EMAIL_MIN_GAP_MS` | 2000 | Minimum gap between sends, measured from the last send |
 | `CERT_WORKER_DB_POOL` | 2 | Small on purpose: the worker must not starve the API of connections |
 | `CERT_WORKER_MAX_PDF_BYTES` | 5 MiB | A render larger than this is refused rather than stored |
+| `CERT_WORKER_EMAIL_HOURLY_QUOTA` | 200 | Hard cap on sends per rolling hour |
+
+**A gap between sends is not a quota, and this distinction matters.** At the 2s
+default the worker would offer 1,800 messages an hour, far above what a shared
+mailbox provider allows — and exceeding a provider limit throttles or suspends
+**the whole domain's mail**, not just this batch. The quota is counted from
+`certificate_jobs` over a rolling hour rather than from a variable, because an
+in-memory counter resets on restart, which is exactly the moment somebody would
+blow through the limit. Sends recorded as `unknown` count too: the server may well
+have delivered them, so they consumed quota either way. When the quota is reached,
+**rendering continues and only sending waits**, and the check happens before
+claiming so a job is never taken out of the queue only to be put back.
+
+The default of 200 is deliberately conservative and **must be set from the
+provider's own published limit before a real send**. ERA AXIS mail runs on
+Namecheap Private Email (`mail.privateemail.com`), whose limits are plan-dependent
+and are not recorded here because they change; confirm the current figure against
+the live plan rather than trusting a number in this document.
 
 One job at a time, expansion before rendering before email, so a batch produces
 certificates before it tries to send them. A long render heartbeats its lease;
