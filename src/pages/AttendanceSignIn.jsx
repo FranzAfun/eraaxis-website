@@ -43,19 +43,25 @@ function loadGoogleIdentity() {
   if (gsiPromise) return gsiPromise;
 
   gsiPromise = new Promise((resolve, reject) => {
-    const existing = document.querySelector(`script[src="${GSI_SRC}"]`);
-    const script = existing || document.createElement("script");
+    // Only this function adds the script, and a load in progress is shared through
+    // gsiPromise, so an element found here is left over from a failed attempt. It
+    // has already fired its events and would never fire them again, which left a
+    // retry waiting forever; start from a fresh element instead.
+    document.querySelector(`script[src="${GSI_SRC}"]`)?.remove();
+    const script = document.createElement("script");
+    const fail = () => {
+      script.remove();
+      reject(new Error("Google sign-in did not load."));
+    };
     script.addEventListener("load", () => {
       if (window.google?.accounts?.id) resolve(window.google);
-      else reject(new Error("Google sign-in did not load."));
+      else fail();
     });
-    script.addEventListener("error", () => reject(new Error("Google sign-in did not load.")));
-    if (!existing) {
-      script.src = GSI_SRC;
-      script.async = true;
-      script.defer = true;
-      document.head.appendChild(script);
-    }
+    script.addEventListener("error", fail);
+    script.src = GSI_SRC;
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
   }).catch((error) => {
     // A failed load must not be cached as permanent: the learner may simply
     // have lost signal for a moment, and Try again has to mean something.
