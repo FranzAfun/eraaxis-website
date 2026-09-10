@@ -694,8 +694,22 @@ by a partial unique index — two live issuances would each believe they owned t
 roster, and the second would send everyone a duplicate.
 
 `GET /api/lms/certificate-batches/:id/results` requires `CERT_VIEW` and returns the
-most recent issuance with `progress`: `total`, `expanded`, `generated`,
-`emailAccepted`, `pending`, `inFlight`, `failed`, `emailUnknown`. **These are
+most recent issuance with `progress` — `total`, `expanded`, `generated`,
+`emailAccepted`, `pending`, `inFlight`, `failed`, `emailUnknown` — and
+`recipients[]`, one row per person on the approved batch carrying their name,
+email, certificate `publicId` once it exists, and a single-word `outcome`: `sent`,
+`unconfirmed`, `failed`, `no email address`, `generated` or `waiting`. A run is
+only really reportable per person: "12 failed" is not something a facilitator can
+act on, but "these two addresses bounced" is. `publicId` appears only once the PDF
+is stored, so its presence doubles as proof the certificate exists rather than
+being promised.
+
+Staff route: `/lms/certificates/:batchId/results`. It polls at 5 seconds, backs off
+by half each time to a 30-second ceiling, stops entirely once the run has settled,
+and stops while the browser tab is hidden — a settled run polled forever would be a
+room of open staff tabs asking the API for an answer that cannot change. Each poll
+is scheduled after the previous reply rather than on a fixed interval, so a slow
+API is never handed a second overlapping request. **These are
 reported by category and must not be summed** — a recipient can be both generated
 and emailed, so adding those two reports more work done than exists. `null`
 issuance means nothing has been issued for that batch yet.
