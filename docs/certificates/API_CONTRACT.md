@@ -132,6 +132,45 @@ must ignore it: a floor was dropped because a learner who clears the percentage 
 is silently ineligible, with nothing on screen explaining why, is worse than no
 floor. Treat it as reserved.
 
+## Eligibility
+
+`GET /api/lms/offerings/:id/eligibility` requires `CERT_VIEW` and returns who has
+attended enough of the course to be eligible. **This is the single computation.**
+The reports facilitators read and the jobs that issue certificates must both come
+through it: two implementations that disagree about whether someone earned a
+certificate is worse than one that is wrong.
+
+```json
+{"success":true,"data":{"offeringId":"...","track":"Synthetic Track","cohortId":"...","cohortLabel":"Synthetic cohort","programme":"Synthetic Programme","closedAt":null,"final":false,"sessionsHeld":5,"thresholdPercent":70,"attendanceApplies":true,"summary":{"learners":4,"eligible":3,"notEligible":1,"withoutEmail":1},"learners":[{"id":"...","learnerName":"Synthetic Learner","email":"synthetic@example.invalid","canSignIn":true,"attended":4,"excused":0,"sessionsHeld":5,"effectiveHeld":5,"percentage":80,"thresholdPercent":70,"requiredSessions":3,"eligible":true,"applies":true}]},"error":null}
+```
+
+The rule, all of it:
+
+- The denominator is `sessions_held_at_close` once the course has closed and the
+  live session count before then. `final` says which, and it is false while a course
+  is running because every figure still moves.
+- The threshold is the **cohort's** `attendanceThresholdPercent`, so changing it
+  changes every answer under that cohort with no other edit.
+- **Rounded in the learner's favour**: `requiredSessions` is
+  `max(1, floor(effectiveHeld * threshold / 100))`. At 70% of 3 sessions that is 2,
+  not 3, because a learner cannot attend a fraction of a class. The floor of 1 stops
+  a one-session course from requiring nothing at all.
+- **An excused absence comes out of the denominator** rather than counting as a
+  presence: `effectiveHeld = sessionsHeld - excused`. Counting it as attendance
+  would overstate what happened; leaving it in would make the forgiveness pointless.
+  `attended`, `excused` and `sessionsHeld` are all reported so the raw figures stay
+  visible.
+- `percentage` is **null**, never 0, when nothing has been held or everything was
+  excused: "no sessions have run" is a different statement from "attended none of
+  them", and a report showing 0% before a course starts reads as everyone failing.
+- `eligible` is **null**, never false, when the cohort has no threshold. Attendance
+  is not what decides that cohort, and reading null as ineligible would fail
+  everyone in a programme that never took a register. `attendanceApplies` says so
+  at the top level.
+- `canSignIn` is false for a learner with no email. They can never be matched to a
+  Google account, so a facilitator reading a low figure needs to know that is why
+  before chasing them.
+
 ## Closing a course or cohort
 
 Closing a course is what makes its eligibility final. Until then, "70% of sessions
