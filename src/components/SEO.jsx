@@ -40,6 +40,7 @@ export default function SEO({
   type = "website",
   image = DEFAULT_IMAGE,
   pathname,
+  noindex = false,
 }) {
   const location = useLocation();
 
@@ -102,6 +103,18 @@ export default function SEO({
     const canonicalLink = getOrCreateCanonical();
     canonicalLink.setAttribute("href", canonicalUrl);
 
+    // Pages that render someone's personal record must never be indexed or
+    // cached by a search engine. The tag is removed again on the way out so a
+    // client-side navigation to a normal page stays indexable.
+    const robotsMeta = document.head.querySelector('meta[name="robots"]');
+    if (noindex) {
+      const ensuredRobotsMeta =
+        robotsMeta || getOrCreateMeta('meta[name="robots"]', { name: "robots" });
+      ensuredRobotsMeta.setAttribute("content", "noindex, nofollow, noarchive");
+    } else {
+      robotsMeta?.remove();
+    }
+
     const ogImageMeta = document.head.querySelector('meta[property="og:image"]');
     const twitterImageMeta = document.head.querySelector(
       'meta[name="twitter:image"]'
@@ -125,7 +138,7 @@ export default function SEO({
       ogImageMeta?.remove();
       twitterImageMeta?.remove();
     }
-  }, [description, image, location.pathname, pathname, title, type]);
+  }, [description, image, location.pathname, noindex, pathname, title, type]);
 
   return null;
 }
