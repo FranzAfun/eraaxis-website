@@ -807,6 +807,35 @@ taken over. Pause is a column on the issuance rather than a runtime flag, so it
 survives a restart — which is exactly when it matters. Failures back off
 exponentially with jitter.
 
+### Finishing: who gets told
+
+**Issuing is a background job and the operator may close EDOS entirely.** The
+request returns 202 immediately and the worker runs in its own process, so nothing
+depends on a browser tab staying open — which matters, because 500 certificates at
+the 200/hour quota is about two and a half hours.
+
+When an issuance reaches a terminal state, `settleIssuance` queues a `notify` job
+**on the transition**, guarded by a unique index so several jobs finishing in the
+same instant cannot produce several emails about one batch. The notification is a
+job rather than a direct send at the end of the run: if the mail server is briefly
+down, a direct send would be lost and nobody would ever learn the batch completed.
+
+- **The person who started it** gets the counts — recipients, generated, emails
+  accepted, anything failed or unconfirmed — and a deep link to the run's record.
+  It reports what happened rather than declaring success: a run where four emails
+  could not be delivered is finished but not fine.
+- **Administrators** (`authority_level = 0`) get a one-line operational note: how
+  many certificates were in the run, the outcome, and how many need review.
+  **No certificate detail at all** — not the batch name, not the programme, not the
+  requester, and certainly not a recipient. An operational alert is not a reason to
+  circulate a roster to people who were never granted `CERT_VIEW`. This is asserted
+  by a test that fails if any identifying string reaches an administrator.
+
+A failing administrator mailbox is caught and logged rather than failing the job,
+because a retry would email the operator their own summary a second time over
+somebody else's bounce. The `notify` job is excluded from the outstanding-work
+count, or an issuance could never settle.
+
 **Not done: the load rehearsal.** The plan requires 1,200 synthetic recipients
 under representative traffic, with measured API latency and worker RSS, before the
 pacing defaults are trusted in production.
