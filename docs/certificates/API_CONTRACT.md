@@ -663,9 +663,50 @@ Block issue until asset authorization is resolved.
 
 ## Durable issuance and lifecycle
 
-Issue commits a frozen issuance intent, unique batch-expansion job and audit in
-one short transaction. It never renders, contacts SMTP/S3, or loops over the
-whole roster. Retrying the same approved issue returns the same accepted intent.
+### Issue and progress (implemented; the worker is not)
+
+`POST /api/lms/certificate-batches/:id/issue` requires `CERT_ISSUE`, an
+`Idempotency-Key` and body `{ revision }`. It commits the issuance intent, **one**
+expansion job and the audit entry in one short transaction and returns **202**:
+
+```json
+{"success":true,"data":{"batchId":"...","issuanceId":"...","state":"queued","totalRecipients":42,"statusUrl":"/api/lms/certificate-batches/.../results"},"error":null}
+```
+
+It never renders, contacts SMTP or S3, or loops the roster. A thousand recipients
+must not become a thousand inserts while a person waits on a request, and must not
+be lost if that request is interrupted half way — so the roster is expanded by the
+worker against the frozen approved content, not here.
+
+Refused with 409 `APPROVAL_REQUIRED` when the batch is not approved, has no
+standing approval, or the approval does not cover the current revision; 409
+`REVISION_CONFLICT` when the submitted revision is not current; 422
+`IMPORT_INVALID` with no included recipients.
+
+**The approval's content hash is re-computed against the live database and
+compared.** The revision alone only catches changes made by paths that remember to
+bump it. This is the last moment where catching a drift is still free, and it
+refuses rather than issuing something nobody approved.
+
+Retrying with the same `Idempotency-Key` returns the same accepted intent and
+queues no second job. A *different* request while one issuance is live is refused
+by a partial unique index — two live issuances would each believe they owned the
+roster, and the second would send everyone a duplicate.
+
+`GET /api/lms/certificate-batches/:id/results` requires `CERT_VIEW` and returns the
+most recent issuance with `progress`: `total`, `expanded`, `generated`,
+`emailAccepted`, `pending`, `inFlight`, `failed`, `emailUnknown`. **These are
+reported by category and must not be summed** — a recipient can be both generated
+and emailed, so adding those two reports more work done than exists. `null`
+issuance means nothing has been issued for that batch yet.
+
+`certificate_jobs` carries one render and one email job per recipient per issuance,
+enforced by a unique index, so a retry, a resumed worker or a double-submitted
+request cannot produce two certificates for one person: duplicate-free records are
+a database property rather than something the worker has to remember. `unknown` is
+its own job state and not a failure — plain SMTP cannot promise exactly-once
+delivery, and a crash after the server accepted a message leaves an outcome nobody
+can honestly call sent or unsent.
 
 ```json
 {"success":true,"data":{"batchId":"00000000-0000-4000-8000-000000000001","issuanceId":"00000000-0000-4000-8000-000000000002","state":"queued","statusUrl":"/api/lms/certificate-batches/00000000-0000-4000-8000-000000000001/results"},"error":null}
@@ -702,11 +743,11 @@ template/signature/font hashes are immutable across retries and later edits.
 | 401 | AUTH_REQUIRED, ACCOUNT_UNAVAILABLE, DOWNLOAD_ACCESS_REQUIRED, GOOGLE_TOKEN_INVALID, GOOGLE_EMAIL_UNVERIFIED |
 | 403 | LMS_ACCESS_DISABLED, CERT_PERMISSION_REQUIRED, ADMIN_REQUIRED, ATTENDANCE_NOT_RECOGNISED, ATTENDANCE_WRONG_COURSE |
 | 404 | CERTIFICATE_NOT_FOUND, BATCH_NOT_FOUND, ATTENDANCE_SESSION_NOT_FOUND, SESSION_NOT_FOUND |
-| 409 | REVISION_CONFLICT, IDEMPOTENCY_CONFLICT, BATCH_NOT_DRAFT, BATCH_NOT_APPROVED, APPROVAL_REQUIRED, COHORT_COURSE_CONFLICT, CERTIFICATE_UNAVAILABLE, ATTENDANCE_NOT_STARTED, ATTENDANCE_CLOSED, ATTENDANCE_COURSE_CLOSED, ATTENDANCE_EMAIL_AMBIGUOUS, ATTENDANCE_CONFLICT, OFFERING_CLOSED, OFFERING_ALREADY_CLOSED, COHORT_CLOSED, COHORT_ALREADY_CLOSED |
+| 409 | REVISION_CONFLICT, IDEMPOTENCY_CONFLICT, BATCH_NOT_DRAFT, BATCH_NOT_APPROVED, APPROVAL_REQUIRED, ISSUANCE_CONFLICT, COHORT_COURSE_CONFLICT, CERTIFICATE_UNAVAILABLE, ATTENDANCE_NOT_STARTED, ATTENDANCE_CLOSED, ATTENDANCE_COURSE_CLOSED, ATTENDANCE_EMAIL_AMBIGUOUS, ATTENDANCE_CONFLICT, OFFERING_CLOSED, OFFERING_ALREADY_CLOSED, COHORT_CLOSED, COHORT_ALREADY_CLOSED |
 | 413 | IMPORT_TOO_LARGE |
 | 422 | IMPORT_INVALID, IDENTITY_REVIEW_REQUIRED, ASSET_NOT_APPROVED, SESSION_DETAILS_REQUIRED, SESSION_WINDOW_REQUIRED, SESSION_WINDOW_INCOMPLETE, SESSION_WINDOW_INVALID, SESSION_WINDOW_TOO_LONG, SESSION_LINK_REQUIRES_DETAILS, NO_SESSIONS |
 | 429 | RATE_LIMITED |
-| 503 | CERTIFICATE_SERVICE_UNAVAILABLE, PDF_UNAVAILABLE, ATTENDANCE_UNAVAILABLE, ATTENDANCE_SERVICE_UNAVAILABLE, GOOGLE_SIGN_IN_UNAVAILABLE |
+| 503 | CERTIFICATE_SERVICE_UNAVAILABLE, PDF_UNAVAILABLE, ISSUANCE_UNAVAILABLE, ATTENDANCE_UNAVAILABLE, ATTENDANCE_SERVICE_UNAVAILABLE, GOOGLE_SIGN_IN_UNAVAILABLE |
 
 Pending before real issuance: public full-name/retention policy, approver grants,
 completion evidence, approved measured artwork/font/signature handoff, provider
