@@ -551,7 +551,9 @@ returns the original record; changing them returns 409 `IDEMPOTENCY_CONFLICT`.
 
 - `POST /api/lms/certificate-assets`: multipart `file`, `kind`, `name`, `version`,
   `authorizationReference`, plus `fontFamily`/`fontStyle` for fonts. `kind` is
-  `fixed_artwork` (exact 1536x1024 PNG) or `font` (TTF/OTF, maximum 20 MiB).
+  `fixed_artwork` (PNG of exactly 1536x1024, or exactly 2x or 3x that:
+  3072x2048 or 4608x3072; the renderer scales it to the page, so only exact
+  multiples line up with the text) or `font` (TTF/OTF, maximum 20 MiB).
   Claimed family/style must match the font's internal metadata; approved template
   faces also require their exact internal weight and italic posture. Renamed,
   synthetic or non-embeddable faces are rejected.
