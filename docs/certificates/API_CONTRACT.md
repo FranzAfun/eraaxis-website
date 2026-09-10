@@ -156,15 +156,36 @@ document whose own sections disagree.
   whose form did not ask, or whose answer was unreadable, is not the same as one who
   chose "other", and a report must not imply they were.
 
+`?offeringId=` and `?sessionId=` narrow the report. A session implies its own
+course, so selecting one narrows everything to the learners who could have attended
+it, and each learner's grid collapses to that session alone. The screen, the PDF and
+the workbook share one narrowing so a filtered document can never disagree with the
+page it came from.
+
 Exports follow the existing EDOS report shape — a summary section, then detail —
 and carry **no charts**: a chart in a printed report is a picture of numbers the
-reader cannot check. Excel is one sheet per breakdown (Summary, Courses, Gender,
-Sessions, Learners, and a long-format Attendance detail sheet that can be pivoted).
-PDF is landscape with a summary panel, breakdown tables by course, gender and
-session, then one row per learner carrying a column per session. **Every exported
-header is human wording** — "Email address", "Sessions attended", "Eligibility" —
-never a database column name, because these documents are presented rather than
-only read.
+reader cannot check.
+
+`GET /api/lms/cohorts/:id/metrics/workbook` (`CERT_VIEW`, same filter parameters)
+returns the styled `.xlsx` directly. **It is built server-side on purpose**: the
+browser bundle carries SheetJS, which writes values but cannot style a cell, while
+ExcelJS is already a dependency on the server for the roster export. The workbook
+has six sheets (Summary, Courses, Gender, Sessions, Learners, Attendance detail),
+each with a branded frozen header row, an autofilter, banded rows, sized columns,
+and percentages stored as **real numbers with a percent format** so a reader can
+sort, average and chart them rather than being handed text. Every sheet's subtitle
+repeats whether the figures are Provisional or Final and states the eligibility
+rule, because a printed sheet outlives the screen it came from.
+
+The PDF is landscape with a summary panel, breakdown tables by course, gender and
+session, then one row per learner carrying a column per session.
+
+In the learner grid a session that was never on that learner's course is left
+**blank**, not marked absent: an absence they could not have had is a false record.
+
+**Every exported header is human wording** — "Email address", "Sessions attended",
+"Eligibility" — never a database column name, because these documents are presented
+rather than only read.
 
 ## Learner demographics
 
