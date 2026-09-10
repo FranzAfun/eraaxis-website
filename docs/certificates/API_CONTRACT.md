@@ -132,6 +132,38 @@ must ignore it: a floor was dropped because a learner who clears the percentage 
 is silently ineligible, with nothing on screen explaining why, is worse than no
 floor. Treat it as reserved.
 
+## Learner demographics
+
+The registration form already asks for gender, school and location, and until
+migration 119 the importer discarded all three, so the answers lived only in a
+Google Sheet. They are captured now because partner reporting for a STEM programme
+routinely asks which schools were reached, where learners came from, and how
+participation broke down — and because capturing them after the first roster is
+imported would mean re-uploading it.
+
+All three are optional and nullable on `lms_learners`, and they appear in the import
+template, the review table, the saved-recipient table and the roster export. **No
+row is ever rejected over them**: a learner must not fail to be enrolled, and a
+certificate must not fail to issue, because someone left a form field blank or typed
+something unexpected.
+
+`gender` is normalised on the way in to one of `male`, `female`, `other`,
+`undisclosed`, matched case- and punctuation-insensitively, and a database check
+constrains it to exactly that set. **Anything unrecognised is stored as NULL rather
+than kept verbatim**, so a breakdown can never silently sprout categories nobody
+chose. `school` and `location` are free text on purpose: school and place names are
+messy, regional and inconsistently spelled, and forcing them into a controlled list
+would lose more than it tidies.
+
+On re-upload the three are **only ever filled in, never blanked**. A later roster
+that omits the columns leaves what an earlier one recorded intact, because the
+facilitators' own form may change between intakes; a later roster that supplies a
+different value does correct it.
+
+These are personal data and are for reporting only. They are never printed on a
+certificate and must never appear in any public projection — not in public
+verification, and not in the attendance sign-in payload.
+
 ## Eligibility
 
 `GET /api/lms/offerings/:id/eligibility` requires `CERT_VIEW` and returns who has
