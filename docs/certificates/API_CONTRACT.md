@@ -831,6 +831,15 @@ down, a direct send would be lost and nobody would ever learn the batch complete
   circulate a roster to people who were never granted `CERT_VIEW`. This is asserted
   by a test that fails if any identifying string reaches an administrator.
 
+The requester also gets an **EDOS notification** — the same one the bell shows —
+pointing at the same record the email links to, so somebody who never opens their
+inbox still finds out. **The worker writes that row itself rather than calling
+`utils/notify`**: that module imports the realtime layer, and a socket emit from a
+separate process is a no-op anyway, since the socket map is per-process. Web push
+is sent directly because it is HTTP and does cross a process boundary; a failed
+push is logged and ignored, since a learner's certificate must not wait on
+somebody's expired browser subscription. The bell picks it up on the next load.
+
 A failing administrator mailbox is caught and logged rather than failing the job,
 because a retry would email the operator their own summary a second time over
 somebody else's bounce. The `notify` job is excluded from the outstanding-work
