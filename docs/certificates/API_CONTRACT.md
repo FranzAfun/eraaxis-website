@@ -191,6 +191,15 @@ document whose own sections disagree.
 - `gender` counts `unknown` separately and never folds it into `other`: a learner
   whose form did not ask, or whose answer was unreadable, is not the same as one who
   chose "other", and a report must not imply they were.
+- Each learner carries `certificate`: `sent`, `issued` (a certificate exists but
+  its email was not accepted), `unconfirmed`, `revoked`, `superseded`, or `null`
+  when none was ever issued. It sits **beside** eligibility, never in place of it:
+  eligibility is a judgement about attendance, this is a fact about what was
+  issued, and the two diverge — eligible but not yet issued, or issued and later
+  revoked. A live award wins over history. `totals.certificatesIssued` and each
+  course's `certificatesIssued` count learners holding a live certificate, and
+  `totals.certificatesSent` those whose email was accepted. The screen, the PDF
+  and the workbook all show it.
 
 `?offeringId=` and `?sessionId=` narrow the report. A session implies its own
 course, so selecting one narrows everything to the learners who could have attended
@@ -218,6 +227,10 @@ session, then one row per learner carrying a column per session.
 
 In the learner grid a session that was never on that learner's course is left
 **blank**, not marked absent: an absence they could not have had is a false record.
+Session columns are headed `S1`, `S2`… in date order, and a key under the table
+spells each one out — date, course when the grid spans more than one, and title —
+so a course with many sessions does not bury its learners under header text. The
+PDF and the workbook use the same numbering.
 
 **Every exported header is human wording** — "Email address", "Sessions attended",
 "Eligibility" — never a database column name, because these documents are presented
@@ -713,6 +726,14 @@ only really reportable per person: "12 failed" is not something a facilitator ca
 act on, but "these two addresses bounced" is. `publicId` appears only once the PDF
 is stored, so its presence doubles as proof the certificate exists rather than
 being promised.
+
+The response also carries `batch` — `name`, `programme`, `track`, `issueDate` and
+`cohort` — so the page and its exports can say which run they describe.
+`GET /api/lms/certificate-batches/:id/results/workbook` (`CERT_VIEW`) returns the
+same report as a styled `.xlsx` with Summary and Recipients sheets, using the
+attendance workbook's table styling, or 404 `ISSUANCE_NOT_FOUND` for a batch that
+was never issued. The page also offers a PDF built in the browser. Both are staff
+documents and carry email addresses and certificate IDs; nothing public does.
 
 Staff route: `/lms/certificates/:batchId/results`. It polls at 5 seconds, backs off
 by half each time to a 30-second ceiling, stops entirely once the run has settled,
