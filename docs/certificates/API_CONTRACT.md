@@ -132,6 +132,42 @@ must ignore it: a floor was dropped because a learner who clears the percentage 
 is silently ineligible, with nothing on screen explaining why, is worse than no
 floor. Treat it as reserved.
 
+## Who can do what
+
+Eight grants, each requiring the `LMS_ACCESS` feature flag as well. The flag and
+the grant are both necessary; neither alone opens anything, which is why the
+permissions panel is hidden entirely for a user without the flag rather than
+offering switches that cannot take effect.
+
+| Grant | What it allows |
+| --- | --- |
+| `CERT_VIEW` | See cohorts, courses, sessions, batches and the attendance reports. Read-only, and a prerequisite for every grant below. |
+| `CERT_MANAGE_COHORTS` | Create and edit cohorts and courses, set the attendance threshold, and close a course. |
+| `CERT_PREPARE` | Create draft batches, import and review the registration list, run sessions and issue attendance links. |
+| `CERT_APPROVE` | Freeze a prepared batch for issuing. |
+| `CERT_ISSUE` | Generate and send every certificate in an approved batch. |
+| `CERT_RESEND` | Send an already-issued certificate again. |
+| `CERT_REVOKE` | Withdraw an issued certificate. |
+| `CERT_MANAGE_ASSETS` | Upload and authorise certificate artwork and signature images. |
+
+**`CERT_MANAGE_COHORTS` is deliberately separate from `CERT_PREPARE`.** A
+facilitator registers learners onto a course somebody else set up; the shape of the
+programme — which cohorts and courses exist, and when one closes and freezes
+eligibility — is a different authority. Every cohort and offering write requires it
+at the route **and** again inside the transaction after the actor row is locked, so
+a grant revoked mid-request cannot slip through. Without it the Cohorts screen is
+hidden from the sidebar, its route refuses, and every button leading to it is not
+rendered.
+
+**`CERT_APPROVE` and `CERT_ISSUE` stay separate** even where one person holds both.
+Granting both to a coordinator is a granting decision; keeping them apart means a
+second approver can be required later without a migration.
+
+Not yet wired to any endpoint: `CERT_APPROVE`, `CERT_ISSUE`, `CERT_RESEND`,
+`CERT_REVOKE`. `CERT_MANAGE_ASSETS` has endpoints but no screen — assets are loaded
+outside the app. The permissions panel says so on each, because an administrator
+needs to know a grant currently does nothing.
+
 ## Cohort reporting
 
 `GET /api/lms/cohorts/:id/metrics` requires `CERT_VIEW` and returns the whole
