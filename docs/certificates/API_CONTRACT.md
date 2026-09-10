@@ -735,6 +735,64 @@ pause thresholds require measured headroom. Ambiguous SMTP acceptance becomes
 `email_unknown`, not automatic retry or claimed confirmed delivery. PDFs and
 template/signature/font hashes are immutable across retries and later edits.
 
+## The issuance worker (implemented; not yet rehearsed at scale)
+
+`npm run worker:certificates` from `server/`. **A dedicated process, deliberately
+not another copy of the API** — it never imports `app.js` or `server.js`, so
+starting it does not also start Socket.IO, an HTTP listener or the payment
+reconciliation scheduler, one of which would quietly begin doing real financial
+work on a machine meant only to render PDFs. A test asserts this by inspecting the
+module cache, because it is easy to reintroduce with a single import.
+
+Configuration is validated at startup and **fails closed** — a mistyped pacing
+value that silently fell back to a default could empty a mail quota in minutes:
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `CERT_WORKER_POLL_MS` | 5000 | Idle poll interval |
+| `CERT_WORKER_LEASE_SECONDS` | 120 | Claim lease; a dead worker's job is reclaimed after this |
+| `CERT_WORKER_MAX_ATTEMPTS` | 5 | Before a job is recorded as failed |
+| `CERT_WORKER_EMAIL_MIN_GAP_MS` | 2000 | Minimum gap between sends, measured from the last send |
+| `CERT_WORKER_DB_POOL` | 2 | Small on purpose: the worker must not starve the API of connections |
+| `CERT_WORKER_MAX_PDF_BYTES` | 5 MiB | A render larger than this is refused rather than stored |
+
+One job at a time, expansion before rendering before email, so a batch produces
+certificates before it tries to send them. A long render heartbeats its lease;
+graceful shutdown finishes the job in hand rather than leaving a claim to expire.
+
+**Rendering is idempotent.** The award is created once, and if it already carries a
+stored PDF the work is already done. A retry after a crash must not re-render,
+because that would produce different bytes for a certificate somebody may already
+hold. The PDF is stored before the award records its key, so nothing can be emailed
+that cannot be produced again.
+
+**Delivery distinguishes three outcomes**, and the distinction is what stops a
+learner receiving two certificates or none:
+
+- **sent** — the mail server accepted it. Not proof of delivery.
+- **failed** — a definite rejection (5xx, invalid mailbox). Safe to retry.
+- **unknown** — the connection dropped after the server may already have accepted
+  the message, or a temporary 4xx. Retrying could send a second copy; calling it
+  sent could hide a certificate that never arrived. It is recorded for a person to
+  look at rather than guessed either way.
+
+A recipient with no email address is **skipped, not failed**: assisted delivery
+means somebody hands that one over in person, and it must not sit in the queue
+being retried forever. An email whose certificate is not rendered yet is
+**deferred without counting an attempt**, so a slow render cannot exhaust the retry
+budget and mark a good certificate undeliverable.
+
+Queue guarantees live in the database, not in worker code. `FOR UPDATE SKIP LOCKED`
+means two workers claiming at once take different jobs. Only the holder of a claim
+may complete it, so a worker whose lease expired cannot finish work another has
+taken over. Pause is a column on the issuance rather than a runtime flag, so it
+survives a restart — which is exactly when it matters. Failures back off
+exponentially with jitter.
+
+**Not done: the load rehearsal.** The plan requires 1,200 synthetic recipients
+under representative traffic, with measured API latency and worker RSS, before the
+pacing defaults are trusted in production.
+
 ## Errors and release gates
 
 | HTTP | Codes |
