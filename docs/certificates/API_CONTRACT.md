@@ -132,6 +132,40 @@ must ignore it: a floor was dropped because a learner who clears the percentage 
 is silently ineligible, with nothing on screen explaining why, is worse than no
 floor. Treat it as reserved.
 
+## Cohort reporting
+
+`GET /api/lms/cohorts/:id/metrics` requires `CERT_VIEW` and returns the whole
+cohort picture in one response: `cohort`, `final`, `generatedAt`, `totals`,
+`gender`, `courses[]`, `sessions[]` and `learners[]`, each learner carrying a
+`marks[]` grid of present/excused/absent for every session on their own course.
+
+It is one request rather than several **because an export has to be internally
+consistent**. Four separate reads could each catch a different moment and produce a
+document whose own sections disagree.
+
+- `final` is true only when **every** course in the cohort is closed. While one is
+  still running, any total can still move, and both the screen and the exported
+  documents say so in words rather than presenting provisional figures as settled.
+- Eligibility comes from the same `computeEligibility` the issuance jobs use, so
+  the report and the certificates can never disagree about who earned one.
+- A course's `attendanceRate` is the share of **learner-session opportunities**
+  taken, not the share of learners who passed — that is what a partner means by
+  attendance. A session's rate is over the learners enrolled on that session's own
+  course, with excused absences removed from the denominator.
+- `gender` counts `unknown` separately and never folds it into `other`: a learner
+  whose form did not ask, or whose answer was unreadable, is not the same as one who
+  chose "other", and a report must not imply they were.
+
+Exports follow the existing EDOS report shape — a summary section, then detail —
+and carry **no charts**: a chart in a printed report is a picture of numbers the
+reader cannot check. Excel is one sheet per breakdown (Summary, Courses, Gender,
+Sessions, Learners, and a long-format Attendance detail sheet that can be pivoted).
+PDF is landscape with a summary panel, breakdown tables by course, gender and
+session, then one row per learner carrying a column per session. **Every exported
+header is human wording** — "Email address", "Sessions attended", "Eligibility" —
+never a database column name, because these documents are presented rather than
+only read.
+
 ## Learner demographics
 
 The registration form already asks for gender, school and location, and until
