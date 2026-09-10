@@ -623,9 +623,43 @@ Codes include `COHORT_COURSE_CONFLICT`, `IDENTITY_REVIEW_REQUIRED`,
 track across batches, including concurrent commits. Email/name alone never merge
 learners. No withdrawal exception. Same track reuses the existing enrolment.
 
-Approval is invalidated by any reviewed-content change. Default separate
-preparer/approver; exact approver policy remains a release decision. Block issue
-until that policy and asset authorization are resolved.
+### Approval (implemented)
+
+`POST /api/lms/certificate-batches/:id/approve` requires `CERT_APPROVE` and an
+`Idempotency-Key`, with body `{ revision }`. It returns
+`{ id, state: "approved", approval: { id, revision, contentHash, recipientCount, approvedAt } }`.
+
+**Approval is what freezes a batch.** Every path that could change one — details,
+design assets, recipient import, deletion — already refuses anything that is not a
+`draft`, so moving the state is what makes it immutable, rather than a rule
+somebody has to remember. Approving does not render, email or queue anything.
+
+Refused with 409 `REVISION_CONFLICT` when the submitted revision is not the batch's
+current one: the approver is confirming a revision they have seen, and if it moved
+while they were reading it they are approving something else. Refused with 422
+`ISSUE_DATE_REQUIRED` or `ASSET_NOT_APPROVED` when the batch could never be issued
+as it stands, and 422 `IMPORT_INVALID` with no included recipients. A batch that is
+not a draft is 409 `BATCH_NOT_DRAFT`.
+
+The stored `contentHash` covers the printed wording, issue date, the exact template
+and signature version IDs, and every included recipient in a fixed order. The
+revision alone would only catch changes made by paths that remember to bump it;
+the hash can be re-checked against the database at the moment of issuing.
+
+`POST /api/lms/certificate-batches/:id/withdraw-approval` requires `CERT_APPROVE`
+and a `{ reason }` of up to 240 characters, and returns the batch to `draft` so it
+can be corrected. **The approval row is kept, not deleted** — that someone approved
+a batch and then took it back is exactly what an audit needs to show. A partial
+unique index allows at most one standing approval per batch, so "which approval
+authorised this issuance" always has one answer. Withdrawing when none stands is
+409 `BATCH_NOT_APPROVED`.
+
+**Self-approval is currently allowed**: one person may prepare and approve. The
+plan proposed separate preparer and approver by default, and that remains an open
+policy decision — the permissions are already separate, so requiring two people is
+a granting change plus one check, not a redesign.
+
+Block issue until asset authorization is resolved.
 
 ## Durable issuance and lifecycle
 
@@ -668,7 +702,7 @@ template/signature/font hashes are immutable across retries and later edits.
 | 401 | AUTH_REQUIRED, ACCOUNT_UNAVAILABLE, DOWNLOAD_ACCESS_REQUIRED, GOOGLE_TOKEN_INVALID, GOOGLE_EMAIL_UNVERIFIED |
 | 403 | LMS_ACCESS_DISABLED, CERT_PERMISSION_REQUIRED, ADMIN_REQUIRED, ATTENDANCE_NOT_RECOGNISED, ATTENDANCE_WRONG_COURSE |
 | 404 | CERTIFICATE_NOT_FOUND, BATCH_NOT_FOUND, ATTENDANCE_SESSION_NOT_FOUND, SESSION_NOT_FOUND |
-| 409 | REVISION_CONFLICT, IDEMPOTENCY_CONFLICT, BATCH_NOT_DRAFT, APPROVAL_REQUIRED, COHORT_COURSE_CONFLICT, CERTIFICATE_UNAVAILABLE, ATTENDANCE_NOT_STARTED, ATTENDANCE_CLOSED, ATTENDANCE_COURSE_CLOSED, ATTENDANCE_EMAIL_AMBIGUOUS, ATTENDANCE_CONFLICT, OFFERING_CLOSED, OFFERING_ALREADY_CLOSED, COHORT_CLOSED, COHORT_ALREADY_CLOSED |
+| 409 | REVISION_CONFLICT, IDEMPOTENCY_CONFLICT, BATCH_NOT_DRAFT, BATCH_NOT_APPROVED, APPROVAL_REQUIRED, COHORT_COURSE_CONFLICT, CERTIFICATE_UNAVAILABLE, ATTENDANCE_NOT_STARTED, ATTENDANCE_CLOSED, ATTENDANCE_COURSE_CLOSED, ATTENDANCE_EMAIL_AMBIGUOUS, ATTENDANCE_CONFLICT, OFFERING_CLOSED, OFFERING_ALREADY_CLOSED, COHORT_CLOSED, COHORT_ALREADY_CLOSED |
 | 413 | IMPORT_TOO_LARGE |
 | 422 | IMPORT_INVALID, IDENTITY_REVIEW_REQUIRED, ASSET_NOT_APPROVED, SESSION_DETAILS_REQUIRED, SESSION_WINDOW_REQUIRED, SESSION_WINDOW_INCOMPLETE, SESSION_WINDOW_INVALID, SESSION_WINDOW_TOO_LONG, SESSION_LINK_REQUIRES_DETAILS, NO_SESSIONS |
 | 429 | RATE_LIMITED |
