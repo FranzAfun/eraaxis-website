@@ -369,6 +369,25 @@ and `POST` returns 409 `ATTENDANCE_COURSE_CLOSED`. This is deliberately distinct
 from `ATTENDANCE_CLOSED`: a closed session leaves room to expect another link, and
 a closed course does not.
 
+## Moving a learner to another course
+
+`POST /api/lms/learners/:id/move` (`CERT_PREPARE`, idempotency-keyed) with
+`{ offeringId, reason, acknowledgeAttendance? }` moves a learner to another course
+in the same cohort, for someone who registered for the wrong one. Their row on the
+old course's draft batch is removed, the enrolment's course changes, and the row is
+written on the new course's single draft batch with the same registration details;
+both batches' revisions move. `reason` (1-500 characters) is required and is audited
+with the learner and both courses (`LMS_LEARNER_COURSE_MOVED`). It returns
+`{id,learnerId,learnerName,from,to,batchId,attendanceLeftBehind,audit}`.
+Attendance already recorded on the old course stays on record there but cannot
+count toward the new one, so a learner with any is refused with 409
+`ATTENDANCE_ON_OLD_COURSE` (the message gives the count) until the request is sent
+again with `acknowledgeAttendance: true`. Also refused: 404 `OFFERING_NOT_FOUND` or
+`ENROLMENT_NOT_FOUND`; 409 `ALREADY_ON_COURSE`; 409 `OFFERING_CLOSED` when either
+course or the cohort is closed; 409 `BATCH_NOT_DRAFT` when the learner is on an
+approved or issued batch; and 409 `DESTINATION_BATCH_REQUIRED` when the new course
+has no draft batch or more than one.
+
 ## Private retrieval
 
 1. `POST /:publicId/request-access`, body `{ "email": "synthetic@example.invalid" }`.
@@ -514,7 +533,7 @@ The following batch paths are relative to `/api/lms/certificate-batches`:
 
 ### Implemented import contract (v1.2)
 
-`GET /:id` returns `{id,name,programme,track,revision,state,cohort,sourceNamespace,
+`GET /:id` returns `{id,name,programme,track,cohortId,offeringId,revision,state,cohort,sourceNamespace,
 issueDate,recipientCount,eligibleCount,courseClosed,attendanceApplies,rows,nextCursor}`.
 Here `cohort` is the display label string. `eligibleCount` is how many rows are
 eligible; until an attendance-rule course closes (`attendanceApplies` and not
@@ -982,8 +1001,8 @@ pacing defaults are trusted in production.
 | 400 | INVALID_REQUEST, ACCESS_CODE_INVALID |
 | 401 | AUTH_REQUIRED, ACCOUNT_UNAVAILABLE, DOWNLOAD_ACCESS_REQUIRED, GOOGLE_TOKEN_INVALID, GOOGLE_EMAIL_UNVERIFIED |
 | 403 | LMS_ACCESS_DISABLED, CERT_PERMISSION_REQUIRED, ADMIN_REQUIRED, ATTENDANCE_NOT_RECOGNISED, ATTENDANCE_WRONG_COURSE |
-| 404 | CERTIFICATE_NOT_FOUND, BATCH_NOT_FOUND, ATTENDANCE_SESSION_NOT_FOUND, SESSION_NOT_FOUND |
-| 409 | REVISION_CONFLICT, IDEMPOTENCY_CONFLICT, BATCH_NOT_DRAFT, BATCH_NOT_APPROVED, APPROVAL_REQUIRED, ISSUANCE_CONFLICT, COHORT_COURSE_CONFLICT, CERTIFICATE_UNAVAILABLE, ATTENDANCE_NOT_STARTED, ATTENDANCE_CLOSED, ATTENDANCE_COURSE_CLOSED, ATTENDANCE_EMAIL_AMBIGUOUS, ATTENDANCE_CONFLICT, OFFERING_CLOSED, OFFERING_ALREADY_CLOSED, COHORT_CLOSED, COHORT_ALREADY_CLOSED, COURSE_NOT_CLOSED, SESSION_NOT_STARTED |
+| 404 | CERTIFICATE_NOT_FOUND, BATCH_NOT_FOUND, ATTENDANCE_SESSION_NOT_FOUND, SESSION_NOT_FOUND, OFFERING_NOT_FOUND, ENROLMENT_NOT_FOUND |
+| 409 | REVISION_CONFLICT, IDEMPOTENCY_CONFLICT, BATCH_NOT_DRAFT, BATCH_NOT_APPROVED, APPROVAL_REQUIRED, ISSUANCE_CONFLICT, COHORT_COURSE_CONFLICT, CERTIFICATE_UNAVAILABLE, ATTENDANCE_NOT_STARTED, ATTENDANCE_CLOSED, ATTENDANCE_COURSE_CLOSED, ATTENDANCE_EMAIL_AMBIGUOUS, ATTENDANCE_CONFLICT, OFFERING_CLOSED, OFFERING_ALREADY_CLOSED, COHORT_CLOSED, COHORT_ALREADY_CLOSED, COURSE_NOT_CLOSED, SESSION_NOT_STARTED, ALREADY_ON_COURSE, ATTENDANCE_ON_OLD_COURSE, DESTINATION_BATCH_REQUIRED |
 | 413 | IMPORT_TOO_LARGE |
 | 422 | IMPORT_INVALID, IDENTITY_REVIEW_REQUIRED, ASSET_NOT_APPROVED, SESSION_DETAILS_REQUIRED, SESSION_WINDOW_REQUIRED, SESSION_WINDOW_INCOMPLETE, SESSION_WINDOW_INVALID, SESSION_WINDOW_TOO_LONG, SESSION_LINK_REQUIRES_DETAILS, NO_SESSIONS, NO_ELIGIBLE_RECIPIENTS, LEARNER_NOT_ON_COURSE |
 | 429 | RATE_LIMITED |
