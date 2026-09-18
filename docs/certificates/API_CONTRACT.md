@@ -526,6 +526,13 @@ already claimed earlier in the file is `duplicate` with a `DUPLICATE_IN_FILE`
 warning: excluded by default, includable deliberately, and the commit still
 refuses two included rows resolving to one learner. Preview `counts` add `added`,
 `matched` and `duplicate`.
+A row with no ID of its own is given one derived from its name, email and phone, so
+someone who submitted a form twice produces identical IDs. The first such row imports
+normally; each later copy is `duplicate` and carries a `DUPLICATE_SOURCE_RECORD`
+error ("Same details as row N. Only the first copy is imported."), so it cannot be
+included. A repeat, by contact or by identical details, never counts toward the
+same-name-twice rule that raises `IDENTITY_REVIEW_REQUIRED`. An ID the file itself
+supplies on more than one row still blocks every copy until the file is corrected.
 Errors/warnings contain `{code,field,message}`. Candidate names/IDs are private
 staff data. `valid` counts rows without errors; warnings still need review.
 
