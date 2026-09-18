@@ -123,10 +123,28 @@ link cannot have its title, objective or window removed by an edit
 (422 `SESSION_LINK_REQUIRES_DETAILS`); generating one without them is refused with
 422 `SESSION_DETAILS_REQUIRED` or `SESSION_WINDOW_REQUIRED`.
 
+`GET /api/lms/sessions/:id/register` (`CERT_VIEW`) returns `{ session, summary,
+learners }` for everyone enrolled on the session's course: `session` is
+`{id,offeringId,sessionDate,title,opensAt,closesAt,track,courseClosedAt,started}`,
+`summary` is `{learners,present,excused,absent}`, and each learner is
+`{learnerId,learnerName,email,status,source,note,recordedAt,recordedBy}` with
+`status` one of `present`, `excused` or `absent` (no attendance row).
+`PUT /api/lms/sessions/:id/attendance` (`CERT_PREPARE`, idempotency-keyed) with
+`{ learnerId, status, reason }` marks one learner by hand: for someone who was in
+the class but could not sign in, or to correct a mark. `reason` (1-500 characters)
+is required and is audited with the learner and the before and after
+(`LMS_ATTENDANCE_MARKED`). It returns
+`{id,sessionId,learnerId,learnerName,status,previous,changed,audit}`. A mark that
+is already right is left alone (`changed: false`), so a link sign-in is never
+replaced by a manual one. Present and excused are stored with `source: "manual"`
+and the marker as `recorded_by`; absent removes the row. Refused with 409
+`OFFERING_CLOSED` once the course is closed, 409 `SESSION_NOT_STARTED` before the
+session has begun, and 422 `LEARNER_NOT_ON_COURSE` for anyone not enrolled on it.
+
 The eligibility rule lives on the cohort, not the batch:
 `attendanceThresholdPercent` (1-100), nullable on `lms_cohorts`, where null means
 attendance is not applied. Batches inherit it. The agreed rule is **70% of sessions
-held, rounded in the learner's favour**. `attendanceMinimumSessions` still exists on
+held, rounded in the learner's favour, and at least one session actually attended**. `attendanceMinimumSessions` still exists on
 the table and is still validated by the API, but nothing sets it and eligibility
 must ignore it: a floor was dropped because a learner who clears the percentage and
 is silently ineligible, with nothing on screen explaining why, is worse than no
@@ -289,13 +307,14 @@ The rule, all of it:
   changes every answer under that cohort with no other edit.
 - **Rounded in the learner's favour**: `requiredSessions` is
   `max(1, floor(effectiveHeld * threshold / 100))`. At 70% of 3 sessions that is 2,
-  not 3, because a learner cannot attend a fraction of a class. The floor of 1 stops
-  a one-session course from requiring nothing at all.
+  not 3, because a learner cannot attend a fraction of a class. The minimum of 1
+  holds everywhere: on a one-session course, before any session has been held, and
+  when every session was excused. Nobody is eligible without attending at least once.
 - **An excused absence comes out of the denominator** rather than counting as a
   presence: `effectiveHeld = sessionsHeld - excused`. Counting it as attendance
   would overstate what happened; leaving it in would make the forgiveness pointless.
-  `attended`, `excused` and `sessionsHeld` are all reported so the raw figures stay
-  visible.
+  Excuses shrink what is asked; they cannot replace attending. `attended`, `excused`
+  and `sessionsHeld` are all reported so the raw figures stay visible.
 - `percentage` is **null**, never 0, when nothing has been held or everything was
   excused: "no sessions have run" is a different statement from "attended none of
   them", and a report showing 0% before a course starts reads as everyone failing.
@@ -350,6 +369,25 @@ Its attendance links report `state: "course_closed"`, which outranks the window,
 and `POST` returns 409 `ATTENDANCE_COURSE_CLOSED`. This is deliberately distinct
 from `ATTENDANCE_CLOSED`: a closed session leaves room to expect another link, and
 a closed course does not.
+
+## Moving a learner to another course
+
+`POST /api/lms/learners/:id/move` (`CERT_PREPARE`, idempotency-keyed) with
+`{ offeringId, reason, acknowledgeAttendance? }` moves a learner to another course
+in the same cohort, for someone who registered for the wrong one. Their row on the
+old course's draft batch is removed, the enrolment's course changes, and the row is
+written on the new course's single draft batch with the same registration details;
+both batches' revisions move. `reason` (1-500 characters) is required and is audited
+with the learner and both courses (`LMS_LEARNER_COURSE_MOVED`). It returns
+`{id,learnerId,learnerName,from,to,batchId,attendanceLeftBehind,audit}`.
+Attendance already recorded on the old course stays on record there but cannot
+count toward the new one, so a learner with any is refused with 409
+`ATTENDANCE_ON_OLD_COURSE` (the message gives the count) until the request is sent
+again with `acknowledgeAttendance: true`. Also refused: 404 `OFFERING_NOT_FOUND` or
+`ENROLMENT_NOT_FOUND`; 409 `ALREADY_ON_COURSE`; 409 `OFFERING_CLOSED` when either
+course or the cohort is closed; 409 `BATCH_NOT_DRAFT` when the learner is on an
+approved or issued batch; and 409 `DESTINATION_BATCH_REQUIRED` when the new course
+has no draft batch or more than one.
 
 ## Private retrieval
 
@@ -496,7 +534,7 @@ The following batch paths are relative to `/api/lms/certificate-batches`:
 
 ### Implemented import contract (v1.2)
 
-`GET /:id` returns `{id,name,programme,track,revision,state,cohort,sourceNamespace,
+`GET /:id` returns `{id,name,programme,track,cohortId,offeringId,revision,state,cohort,sourceNamespace,
 issueDate,recipientCount,eligibleCount,courseClosed,attendanceApplies,rows,nextCursor}`.
 Here `cohort` is the display label string. `eligibleCount` is how many rows are
 eligible; until an attendance-rule course closes (`attendanceApplies` and not
@@ -526,6 +564,13 @@ already claimed earlier in the file is `duplicate` with a `DUPLICATE_IN_FILE`
 warning: excluded by default, includable deliberately, and the commit still
 refuses two included rows resolving to one learner. Preview `counts` add `added`,
 `matched` and `duplicate`.
+A row with no ID of its own is given one derived from its name, email and phone, so
+someone who submitted a form twice produces identical IDs. The first such row imports
+normally; each later copy is `duplicate` and carries a `DUPLICATE_SOURCE_RECORD`
+error ("Same details as row N. Only the first copy is imported."), so it cannot be
+included. A repeat, by contact or by identical details, never counts toward the
+same-name-twice rule that raises `IDENTITY_REVIEW_REQUIRED`. An ID the file itself
+supplies on more than one row still blocks every copy until the file is corrected.
 Errors/warnings contain `{code,field,message}`. Candidate names/IDs are private
 staff data. `valid` counts rows without errors; warnings still need review.
 
@@ -957,10 +1002,10 @@ pacing defaults are trusted in production.
 | 400 | INVALID_REQUEST, ACCESS_CODE_INVALID |
 | 401 | AUTH_REQUIRED, ACCOUNT_UNAVAILABLE, DOWNLOAD_ACCESS_REQUIRED, GOOGLE_TOKEN_INVALID, GOOGLE_EMAIL_UNVERIFIED |
 | 403 | LMS_ACCESS_DISABLED, CERT_PERMISSION_REQUIRED, ADMIN_REQUIRED, ATTENDANCE_NOT_RECOGNISED, ATTENDANCE_WRONG_COURSE |
-| 404 | CERTIFICATE_NOT_FOUND, BATCH_NOT_FOUND, ATTENDANCE_SESSION_NOT_FOUND, SESSION_NOT_FOUND |
-| 409 | REVISION_CONFLICT, IDEMPOTENCY_CONFLICT, BATCH_NOT_DRAFT, BATCH_NOT_APPROVED, APPROVAL_REQUIRED, ISSUANCE_CONFLICT, COHORT_COURSE_CONFLICT, CERTIFICATE_UNAVAILABLE, ATTENDANCE_NOT_STARTED, ATTENDANCE_CLOSED, ATTENDANCE_COURSE_CLOSED, ATTENDANCE_EMAIL_AMBIGUOUS, ATTENDANCE_CONFLICT, OFFERING_CLOSED, OFFERING_ALREADY_CLOSED, COHORT_CLOSED, COHORT_ALREADY_CLOSED, COURSE_NOT_CLOSED |
+| 404 | CERTIFICATE_NOT_FOUND, BATCH_NOT_FOUND, ATTENDANCE_SESSION_NOT_FOUND, SESSION_NOT_FOUND, OFFERING_NOT_FOUND, ENROLMENT_NOT_FOUND |
+| 409 | REVISION_CONFLICT, IDEMPOTENCY_CONFLICT, BATCH_NOT_DRAFT, BATCH_NOT_APPROVED, APPROVAL_REQUIRED, ISSUANCE_CONFLICT, COHORT_COURSE_CONFLICT, CERTIFICATE_UNAVAILABLE, ATTENDANCE_NOT_STARTED, ATTENDANCE_CLOSED, ATTENDANCE_COURSE_CLOSED, ATTENDANCE_EMAIL_AMBIGUOUS, ATTENDANCE_CONFLICT, OFFERING_CLOSED, OFFERING_ALREADY_CLOSED, COHORT_CLOSED, COHORT_ALREADY_CLOSED, COURSE_NOT_CLOSED, SESSION_NOT_STARTED, ALREADY_ON_COURSE, ATTENDANCE_ON_OLD_COURSE, DESTINATION_BATCH_REQUIRED |
 | 413 | IMPORT_TOO_LARGE |
-| 422 | IMPORT_INVALID, IDENTITY_REVIEW_REQUIRED, ASSET_NOT_APPROVED, SESSION_DETAILS_REQUIRED, SESSION_WINDOW_REQUIRED, SESSION_WINDOW_INCOMPLETE, SESSION_WINDOW_INVALID, SESSION_WINDOW_TOO_LONG, SESSION_LINK_REQUIRES_DETAILS, NO_SESSIONS, NO_ELIGIBLE_RECIPIENTS |
+| 422 | IMPORT_INVALID, IDENTITY_REVIEW_REQUIRED, ASSET_NOT_APPROVED, SESSION_DETAILS_REQUIRED, SESSION_WINDOW_REQUIRED, SESSION_WINDOW_INCOMPLETE, SESSION_WINDOW_INVALID, SESSION_WINDOW_TOO_LONG, SESSION_LINK_REQUIRES_DETAILS, NO_SESSIONS, NO_ELIGIBLE_RECIPIENTS, LEARNER_NOT_ON_COURSE |
 | 429 | RATE_LIMITED |
 | 503 | CERTIFICATE_SERVICE_UNAVAILABLE, PDF_UNAVAILABLE, ISSUANCE_UNAVAILABLE, ATTENDANCE_UNAVAILABLE, ATTENDANCE_SERVICE_UNAVAILABLE, GOOGLE_SIGN_IN_UNAVAILABLE |
 
