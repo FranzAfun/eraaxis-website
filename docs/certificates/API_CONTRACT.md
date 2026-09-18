@@ -123,6 +123,24 @@ link cannot have its title, objective or window removed by an edit
 (422 `SESSION_LINK_REQUIRES_DETAILS`); generating one without them is refused with
 422 `SESSION_DETAILS_REQUIRED` or `SESSION_WINDOW_REQUIRED`.
 
+`GET /api/lms/sessions/:id/register` (`CERT_VIEW`) returns `{ session, summary,
+learners }` for everyone enrolled on the session's course: `session` is
+`{id,offeringId,sessionDate,title,opensAt,closesAt,track,courseClosedAt,started}`,
+`summary` is `{learners,present,excused,absent}`, and each learner is
+`{learnerId,learnerName,email,status,source,note,recordedAt,recordedBy}` with
+`status` one of `present`, `excused` or `absent` (no attendance row).
+`PUT /api/lms/sessions/:id/attendance` (`CERT_PREPARE`, idempotency-keyed) with
+`{ learnerId, status, reason }` marks one learner by hand: for someone who was in
+the class but could not sign in, or to correct a mark. `reason` (1-500 characters)
+is required and is audited with the learner and the before and after
+(`LMS_ATTENDANCE_MARKED`). It returns
+`{id,sessionId,learnerId,learnerName,status,previous,changed,audit}`. A mark that
+is already right is left alone (`changed: false`), so a link sign-in is never
+replaced by a manual one. Present and excused are stored with `source: "manual"`
+and the marker as `recorded_by`; absent removes the row. Refused with 409
+`OFFERING_CLOSED` once the course is closed, 409 `SESSION_NOT_STARTED` before the
+session has begun, and 422 `LEARNER_NOT_ON_COURSE` for anyone not enrolled on it.
+
 The eligibility rule lives on the cohort, not the batch:
 `attendanceThresholdPercent` (1-100), nullable on `lms_cohorts`, where null means
 attendance is not applied. Batches inherit it. The agreed rule is **70% of sessions
@@ -965,9 +983,9 @@ pacing defaults are trusted in production.
 | 401 | AUTH_REQUIRED, ACCOUNT_UNAVAILABLE, DOWNLOAD_ACCESS_REQUIRED, GOOGLE_TOKEN_INVALID, GOOGLE_EMAIL_UNVERIFIED |
 | 403 | LMS_ACCESS_DISABLED, CERT_PERMISSION_REQUIRED, ADMIN_REQUIRED, ATTENDANCE_NOT_RECOGNISED, ATTENDANCE_WRONG_COURSE |
 | 404 | CERTIFICATE_NOT_FOUND, BATCH_NOT_FOUND, ATTENDANCE_SESSION_NOT_FOUND, SESSION_NOT_FOUND |
-| 409 | REVISION_CONFLICT, IDEMPOTENCY_CONFLICT, BATCH_NOT_DRAFT, BATCH_NOT_APPROVED, APPROVAL_REQUIRED, ISSUANCE_CONFLICT, COHORT_COURSE_CONFLICT, CERTIFICATE_UNAVAILABLE, ATTENDANCE_NOT_STARTED, ATTENDANCE_CLOSED, ATTENDANCE_COURSE_CLOSED, ATTENDANCE_EMAIL_AMBIGUOUS, ATTENDANCE_CONFLICT, OFFERING_CLOSED, OFFERING_ALREADY_CLOSED, COHORT_CLOSED, COHORT_ALREADY_CLOSED, COURSE_NOT_CLOSED |
+| 409 | REVISION_CONFLICT, IDEMPOTENCY_CONFLICT, BATCH_NOT_DRAFT, BATCH_NOT_APPROVED, APPROVAL_REQUIRED, ISSUANCE_CONFLICT, COHORT_COURSE_CONFLICT, CERTIFICATE_UNAVAILABLE, ATTENDANCE_NOT_STARTED, ATTENDANCE_CLOSED, ATTENDANCE_COURSE_CLOSED, ATTENDANCE_EMAIL_AMBIGUOUS, ATTENDANCE_CONFLICT, OFFERING_CLOSED, OFFERING_ALREADY_CLOSED, COHORT_CLOSED, COHORT_ALREADY_CLOSED, COURSE_NOT_CLOSED, SESSION_NOT_STARTED |
 | 413 | IMPORT_TOO_LARGE |
-| 422 | IMPORT_INVALID, IDENTITY_REVIEW_REQUIRED, ASSET_NOT_APPROVED, SESSION_DETAILS_REQUIRED, SESSION_WINDOW_REQUIRED, SESSION_WINDOW_INCOMPLETE, SESSION_WINDOW_INVALID, SESSION_WINDOW_TOO_LONG, SESSION_LINK_REQUIRES_DETAILS, NO_SESSIONS, NO_ELIGIBLE_RECIPIENTS |
+| 422 | IMPORT_INVALID, IDENTITY_REVIEW_REQUIRED, ASSET_NOT_APPROVED, SESSION_DETAILS_REQUIRED, SESSION_WINDOW_REQUIRED, SESSION_WINDOW_INCOMPLETE, SESSION_WINDOW_INVALID, SESSION_WINDOW_TOO_LONG, SESSION_LINK_REQUIRES_DETAILS, NO_SESSIONS, NO_ELIGIBLE_RECIPIENTS, LEARNER_NOT_ON_COURSE |
 | 429 | RATE_LIMITED |
 | 503 | CERTIFICATE_SERVICE_UNAVAILABLE, PDF_UNAVAILABLE, ISSUANCE_UNAVAILABLE, ATTENDANCE_UNAVAILABLE, ATTENDANCE_SERVICE_UNAVAILABLE, GOOGLE_SIGN_IN_UNAVAILABLE |
 
