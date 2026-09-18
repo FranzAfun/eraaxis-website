@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { MapPin, Mail, Phone } from "lucide-react";
 import logo from "../../assets/brand/logo-white.webp";
 import linkedinImg  from "../../assets/social/linkedin.webp";
@@ -9,6 +9,11 @@ import tiktokImg    from "../../assets/social/tiktok.webp";
 import whatsappImg  from "../../assets/social/whatsapp.webp";
 import { useBootstrap } from "../../hooks/useBootstrap";
 import NewsletterForm from "../ui/NewsletterForm";
+
+// Pages with one job, signing in to a class or checking a certificate, leave the
+// newsletter out. There, its email box and Subscribe button read as part of the
+// task: a learner on an attendance link asked whether subscribing was how to sign in.
+const TASK_PAGES = /^\/(attendance|certificates\/verify)\//;
 
 const programmes = [
   { label: "School STEM",         to: "/programs/school-stem" },
@@ -77,6 +82,8 @@ function SocialButton({ label, href, img }) {
 
 export default function Footer() {
   const { settings, socials: bootstrapSocials } = useBootstrap();
+  const { pathname } = useLocation();
+  const showNewsletter = !TASK_PAGES.test(pathname);
 
   const address = settings?.address                                    || FALLBACK_ADDRESS;
   const email   = settings?.contactEmail || settings?.supportEmail     || FALLBACK_EMAIL;
@@ -97,7 +104,7 @@ export default function Footer() {
       <div className="container py-14 md:py-16 lg:py-20">
 
         {/* Newsletter row */}
-        <div className="mb-12 flex flex-col gap-4 border-b border-white/[0.07] pb-12 sm:flex-row sm:items-center sm:justify-between sm:gap-10">
+        {showNewsletter && <div className="mb-12 flex flex-col gap-4 border-b border-white/[0.07] pb-12 sm:flex-row sm:items-center sm:justify-between sm:gap-10">
           <div className="shrink-0">
             <p className="text-sm font-semibold text-white">
               Get ERA AXIS updates in your inbox.
@@ -109,7 +116,7 @@ export default function Footer() {
           <div className="w-full sm:max-w-sm">
             <NewsletterForm source="footer" />
           </div>
-        </div>
+        </div>}
 
         {/* Main grid */}
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
