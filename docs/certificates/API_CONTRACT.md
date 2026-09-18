@@ -144,7 +144,7 @@ session has begun, and 422 `LEARNER_NOT_ON_COURSE` for anyone not enrolled on it
 The eligibility rule lives on the cohort, not the batch:
 `attendanceThresholdPercent` (1-100), nullable on `lms_cohorts`, where null means
 attendance is not applied. Batches inherit it. The agreed rule is **70% of sessions
-held, rounded in the learner's favour**. `attendanceMinimumSessions` still exists on
+held, rounded in the learner's favour, and at least one session actually attended**. `attendanceMinimumSessions` still exists on
 the table and is still validated by the API, but nothing sets it and eligibility
 must ignore it: a floor was dropped because a learner who clears the percentage and
 is silently ineligible, with nothing on screen explaining why, is worse than no
@@ -307,13 +307,14 @@ The rule, all of it:
   changes every answer under that cohort with no other edit.
 - **Rounded in the learner's favour**: `requiredSessions` is
   `max(1, floor(effectiveHeld * threshold / 100))`. At 70% of 3 sessions that is 2,
-  not 3, because a learner cannot attend a fraction of a class. The floor of 1 stops
-  a one-session course from requiring nothing at all.
+  not 3, because a learner cannot attend a fraction of a class. The minimum of 1
+  holds everywhere: on a one-session course, before any session has been held, and
+  when every session was excused. Nobody is eligible without attending at least once.
 - **An excused absence comes out of the denominator** rather than counting as a
   presence: `effectiveHeld = sessionsHeld - excused`. Counting it as attendance
   would overstate what happened; leaving it in would make the forgiveness pointless.
-  `attended`, `excused` and `sessionsHeld` are all reported so the raw figures stay
-  visible.
+  Excuses shrink what is asked; they cannot replace attending. `attended`, `excused`
+  and `sessionsHeld` are all reported so the raw figures stay visible.
 - `percentage` is **null**, never 0, when nothing has been held or everything was
   excused: "no sessions have run" is a different statement from "attended none of
   them", and a report showing 0% before a course starts reads as everyone failing.
