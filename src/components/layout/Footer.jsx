@@ -10,10 +10,20 @@ import whatsappImg  from "../../assets/social/whatsapp.webp";
 import { useBootstrap } from "../../hooks/useBootstrap";
 import NewsletterForm from "../ui/NewsletterForm";
 
-// Pages with one job, signing in to a class or checking a certificate, leave the
-// newsletter out. There, its email box and Subscribe button read as part of the
-// task: a learner on an attendance link asked whether subscribing was how to sign in.
-const TASK_PAGES = /^\/(attendance|certificates\/verify)\//;
+// Where the footer leaves its newsletter signup out. The rule: never on a page whose
+// job is a single task or a form that asks for an email, and never twice on a page
+// that already has a signup of its own. There, its email box and Subscribe button
+// read as part of the task: a learner on an attendance link asked whether
+// subscribing was how to sign in. Every other page keeps it. A new page with a form
+// or a single task belongs on this list.
+const NO_FOOTER_NEWSLETTER = [
+  /^\/attendance\//,               // signing in to a class
+  /^\/certificates\/verify\//,     // checking a certificate
+  /^\/newsletter\/unsubscribe\/?$/, // leaving the newsletter
+  /^\/payments(\/|$)/,             // registration and payment forms
+  /^\/contact\/?$/,                // the contact form
+  /^\/insights(\/|$)/,             // has its own signup already
+];
 
 const programmes = [
   { label: "School STEM",         to: "/programs/school-stem" },
@@ -83,7 +93,7 @@ function SocialButton({ label, href, img }) {
 export default function Footer() {
   const { settings, socials: bootstrapSocials } = useBootstrap();
   const { pathname } = useLocation();
-  const showNewsletter = !TASK_PAGES.test(pathname);
+  const showNewsletter = !NO_FOOTER_NEWSLETTER.some(page => page.test(pathname));
 
   const address = settings?.address                                    || FALLBACK_ADDRESS;
   const email   = settings?.contactEmail || settings?.supportEmail     || FALLBACK_EMAIL;
