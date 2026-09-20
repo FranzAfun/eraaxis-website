@@ -32,4 +32,17 @@
   --radius-lg: 24px;
 
   --shadow-soft: 0 20px 60px rgba(17, 17, 17, 0.08);
+
+  /* The header sits transparent over a dark hero and fades to glass on scroll.
+     Dark glass, because every page here is dark: the logo and the links never
+     have to change with the state, so nothing can flash mid-transition.
+     Switching the site to a light bar is a change to these five values. */
+  --header-scrolled-bg: rgba(14, 11, 26, 0.72);
+  --header-scrolled-border: rgba(201, 163, 255, 0.14);
+  --header-scrolled-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  --header-blur: blur(14px) saturate(160%);
+  --header-fallback-bg: rgba(14, 11, 26, 0.94);
+  /* The drawer covers a whole screen rather than a 64px bar, so it carries more
+     of its own background: text has to stay readable over any hero behind it. */
+  --drawer-bg: rgba(14, 11, 26, 0.88);
 }
