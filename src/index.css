@@ -293,6 +293,65 @@
     transform: scale(0.97);
   }
 
+  /* Over the hero the bar has no background, so a filled button would sit on a
+     photograph with unpredictable contrast. An outlined button reads cleanly on
+     anything. Two classes, so it beats the hover rule further down the file
+     wherever that lands. */
+  .btn-nav-primary.btn-nav-primary--on-hero,
+  .btn-nav-primary.btn-nav-primary--on-hero:hover {
+    background-color: transparent;
+    border: 1px solid rgb(255 255 255 / 0.65);
+    color: #ffffff;
+    box-shadow: none;
+    transform: none;
+  }
+
+  .btn-nav-primary.btn-nav-primary--on-hero:hover {
+    background-color: rgb(255 255 255 / 0.14);
+  }
+
+  /* The header itself. Only background, border and shadow animate: the blur is
+     set once in the scrolled state and removed in the transparent one, because
+     animating a backdrop filter is expensive and janky on the mid-range Android
+     phones most learners are on. */
+  .site-header {
+    background-color: transparent;
+    border-bottom: 1px solid transparent;
+    transition:
+      background-color 280ms ease,
+      border-color 280ms ease,
+      box-shadow 280ms ease;
+  }
+
+  .site-header--glass {
+    background-color: var(--header-scrolled-bg);
+    border-bottom-color: var(--header-scrolled-border);
+    box-shadow: var(--header-scrolled-shadow);
+    -webkit-backdrop-filter: var(--header-blur);
+    backdrop-filter: var(--header-blur);
+  }
+
+  /* The dropdowns that hang off the bar: the same glass, so they read as part
+     of it rather than as a panel floating over the page. */
+  .site-header__panel {
+    background-color: var(--header-scrolled-bg);
+    -webkit-backdrop-filter: var(--header-blur);
+    backdrop-filter: var(--header-blur);
+  }
+
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .site-header--glass,
+    .site-header__panel {
+      background-color: var(--header-fallback-bg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .site-header {
+      transition: none;
+    }
+  }
+
   /* Dark glass — for use on dark/image backgrounds */
   .glass-surface {
     background: rgb(255 255 255 / 0.08);
