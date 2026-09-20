@@ -42,4 +42,7 @@
   --header-scrolled-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
   --header-blur: blur(14px) saturate(160%);
   --header-fallback-bg: rgba(14, 11, 26, 0.94);
+  /* The drawer covers a whole screen rather than a 64px bar, so it carries more
+     of its own background: text has to stay readable over any hero behind it. */
+  --drawer-bg: rgba(14, 11, 26, 0.88);
 }

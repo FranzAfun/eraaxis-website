@@ -1,23 +1,45 @@
-import { useEffect, useState } from "react";
+import { useRef, useState } from "react";
 import { NavLink, Link, useLocation } from "react-router-dom";
-import { ChevronDown, Menu, X } from "lucide-react";
+import {
+  ChevronDown,
+  CircuitBoard,
+  GraduationCap,
+  Handshake,
+  HelpCircle,
+  Home,
+  Images,
+  Info,
+  Mail,
+  Menu,
+  Newspaper,
+  Wallet,
+  X,
+} from "lucide-react";
 import logo from "../../assets/brand/logo-white.webp";
 import useScrolled from "../../hooks/useScrolled";
+import MobileMenu from "./MobileMenu";
 
+// The icons are for the drawer on phones, where a flat list of ten links has no
+// shape to it. The desktop bar ignores them.
 const navLinks = [
-  { label: "Home", to: "/" },
-  { label: "Programs", to: "/programs" },
-  { label: "Dev Board", to: "/dev-board" },
-  { label: "Partners", to: "/partners" },
-  { label: "Insights", to: "/insights" },
-  { label: "Contact", to: "/contact" },
+  { label: "Home", to: "/", icon: Home },
+  { label: "Programs", to: "/programs", icon: GraduationCap },
+  { label: "Dev Board", to: "/dev-board", icon: CircuitBoard },
+  { label: "Partners", to: "/partners", icon: Handshake },
+  { label: "Insights", to: "/insights", icon: Newspaper },
+  { label: "Contact", to: "/contact", icon: Mail },
 ];
 
 const moreLinks = [
-  { label: "About", to: "/about" },
-  { label: "Gallery", to: "/gallery" },
-  { label: "FAQ", to: "/faq" },
-  { label: "Dues", to: "/payments/monthly-dues" },
+  { label: "About", to: "/about", icon: Info },
+  { label: "Gallery", to: "/gallery", icon: Images },
+  { label: "FAQ", to: "/faq", icon: HelpCircle },
+  { label: "Dues", to: "/payments/monthly-dues", icon: Wallet },
+];
+
+const menuGroups = [
+  { label: "Main", links: navLinks },
+  { label: "More", links: moreLinks },
 ];
 
 // Routes whose first screenful is a dark full-bleed hero, so the bar can be
@@ -53,22 +75,13 @@ const linkClasses = ({ isActive }) =>
     isActive ? "text-[var(--color-accent)]" : "text-white/[0.82] hover:text-white",
   ].join(" ");
 
-function NavItem({ to, label, onClick }) {
-  return (
-    <NavLink to={to} end={to === "/"} onClick={onClick} className={linkClasses}>
-      {label}
-    </NavLink>
-  );
-}
-
 export default function Header() {
   const [open, setOpen] = useState(false);
   const { pathname } = useLocation();
   const [menuRoute, setMenuRoute] = useState(pathname);
+  const toggleRef = useRef(null);
   const scrolled = useScrolled(24, 8, pathname);
   const moreIsActive = moreLinks.some((link) => link.to === pathname);
-
-  // An open menu over a transparent bar is unreadable, so it forces the glass.
   const glass = scrolled || open || !opensOnDarkHero(pathname);
 
   // Navigating closes the menu, including by the browser's back button, which no
@@ -77,15 +90,6 @@ export default function Header() {
     setMenuRoute(pathname);
     setOpen(false);
   }
-
-  useEffect(() => {
-    if (!open) return undefined;
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = previous;
-    };
-  }, [open]);
 
   return (
     <header
@@ -108,7 +112,9 @@ export default function Header() {
         {/* Desktop nav */}
         <nav className="hidden items-center gap-7 md:flex">
           {navLinks.map((link) => (
-            <NavItem key={link.to} to={link.to} label={link.label} />
+            <NavLink key={link.to} to={link.to} end={link.to === "/"} className={linkClasses}>
+              {link.label}
+            </NavLink>
           ))}
           <div className="group relative">
             <button
@@ -160,6 +166,7 @@ export default function Header() {
 
         {/* Mobile menu toggle */}
         <button
+          ref={toggleRef}
           type="button"
           aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
@@ -170,39 +177,12 @@ export default function Header() {
         </button>
       </div>
 
-      {/* Mobile dropdown */}
-      {open && (
-        <div className="site-header__panel border-t border-[var(--header-scrolled-border)] md:hidden">
-          <nav className="container flex flex-col gap-1 py-4">
-            {navLinks.map((link) => (
-              <NavItem
-                key={link.to}
-                to={link.to}
-                label={link.label}
-                onClick={() => setOpen(false)}
-              />
-            ))}
-            <p className="mt-3 text-xs font-semibold uppercase tracking-widest text-white/50">
-              More
-            </p>
-            {moreLinks.map((link) => (
-              <NavItem
-                key={link.to}
-                to={link.to}
-                label={link.label}
-                onClick={() => setOpen(false)}
-              />
-            ))}
-            <Link
-              to="/payments"
-              onClick={() => setOpen(false)}
-              className="btn-nav-primary mt-3 w-full justify-center"
-            >
-              Enrol Now
-            </Link>
-          </nav>
-        </div>
-      )}
+      <MobileMenu
+        open={open}
+        groups={menuGroups}
+        onClose={() => setOpen(false)}
+        returnFocusTo={toggleRef}
+      />
     </header>
   );
 }
