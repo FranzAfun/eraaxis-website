@@ -150,6 +150,77 @@ must ignore it: a floor was dropped because a learner who clears the percentage 
 is silently ineligible, with nothing on screen explaining why, is worse than no
 floor. Treat it as reserved.
 
+## Public forms
+
+Versioned separately as `forms.v1`, for the same reason as attendance: forms change
+nothing about the certificate surface. Public base: `/api/website/forms`. Website
+route: `/forms/:slug`, and EDOS builds the link as `<VITE_WEBSITE_URL>/forms/<slug>`.
+Wherever a slug is accepted, the form's 32-hex `publicToken` works too.
+
+`GET /:slug` returns 200 for a published or closed form:
+
+```json
+{"success":true,"data":{"title":"Demo form","description":"<p>…</p>","headerImage":"/api/files/website-media/…","slug":"demo-form","open":true,"closedReason":null,"requiresSignIn":false,"confirmEmail":false,"payment":null,"schemaVersion":1,"rulesSha":"<64 hex>","googleClientId":null,"version":1,"definitionSha256":"<64 hex>","definition":{"schemaVersion":1,"sections":[]},"submissionToken":"<issuedAt>.<mac>"},"error":null}
+```
+
+Drafts, unknown and malformed slugs share 404 `FORM_NOT_FOUND`; a lookup failure is
+503 `FORM_UNAVAILABLE`. A form that is closed, not open yet, past its closing date or
+at its response cap is still 200, with `open: false`, a `closedReason` to show, and
+`definition` and `submissionToken` null. `description` was cleaned against an
+allowlist (p, br, strong, b, em, i, u, ul, ol, li, and http/https/mailto links) when
+it was saved and is rendered as is. `googleClientId` is present only when
+`requiresSignIn`. `payment` is `{ amount, currency }` or null.
+
+The rules are one module, `server/utils/formSchema.js`, generated into
+`src/shared/formSchema.js` here and `src/utils/formSchema.js` on the website by
+`npm run sync:form-schema`. Each copy exports `RULES_SHA`, the sha256 of the
+module it was made from; `rulesSha` in the response is the server's. A page whose
+copy differs lays the form out with it but must not refuse answers on its own
+judgement: the server's check is the one that counts.
+
+`GET /:slug/schools?question=<key>&q=<text>` returns `{ items: [{ id, name,
+shortName, region }] }`, at most eight, from the registers the published question
+offers; the request cannot widen them. 404 `FORM_NOT_FOUND` or `QUESTION_NOT_FOUND`;
+503 `SCHOOL_LIST_UNAVAILABLE`, when the page lets the person type their school if
+the question allows that.
+
+`GET /:slug/seo` returns `{ title, description, image, open }` for a link preview;
+`image` is absolute or null.
+
+`POST /:slug/submissions` takes `{ token, answers, website, credential? }`:
+
+- 201 `{ receipt, confirmEmail, email }`; `email` only when a code was sent.
+- `website` is a trap field a person never sees. Anything in it gets a 200 with a
+  random receipt and nothing is stored.
+- 409 `FORM_CLOSED`; 409 `FORM_TOKEN_INVALID` or `FORM_TOKEN_EXPIRED` (the token is
+  bound to the version and lasts six hours: fetch the form again); 429
+  `FORM_TOO_FAST` (sent within three seconds of the token being issued); 401
+  `SIGN_IN_REQUIRED`; 422 `ANSWERS_INVALID` with `data.errors: [{ questionKey, code,
+  message }]`; 503 `FORM_SUBMIT_FAILED`.
+- The same person sending again, by the name, email and phone identity the importer
+  uses, updates their one submission rather than adding a second.
+- A form that requires sign-in stores the verified Google address, whatever was typed.
+
+Answers are keyed by question key: text types, email, phone and date (`YYYY-MM-DD`)
+are strings; number is a number or numeric string; `yes_no` is a boolean; single
+choice and dropdown are an option value; multiple choice is an array of option
+values; a scale is an integer; school is `{ schoolId }` or `{ other }`, and other
+fields on it are ignored; file is `[{ key, name, size, type }]` from the upload
+endpoint, which is not built yet. Answers to questions the rules hide are dropped.
+
+`POST /submissions/:receipt/confirm` takes `{ code }` and returns 200 `{ confirmed:
+true }`, or 400 `CODE_INVALID`, 404 `SUBMISSION_NOT_FOUND`, 410 `CODE_EXPIRED` (30
+minutes), 422 `CODE_WRONG`, 429 `CODE_ATTEMPTS` after five wrong tries.
+
+`POST /submissions/:receipt/resend` sends a new code, which replaces the old one and
+resets the tries: 200 `{ confirmed: false, retryAfter: 60 }`, or `{ confirmed: true,
+retryAfter: 0 }` when already confirmed. 429 `CODE_RESEND_TOO_SOON` with
+`data.retryAfter` seconds within a minute of the last code; 409 `CODE_NOT_NEEDED`
+for a submission that was never asked for one; 503 `RESEND_FAILED`.
+
+Reads share a limit of 240 requests per 15 minutes per connection; submitting,
+confirming and resending share 20.
+
 ## Who can do what
 
 Eight grants, each requiring the `LMS_ACCESS` feature flag as well. The flag and

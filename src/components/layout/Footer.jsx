@@ -18,6 +18,7 @@ import NewsletterForm from "../ui/NewsletterForm";
 // or a single task belongs on this list.
 const NO_FOOTER_NEWSLETTER = [
   /^\/attendance\//,               // signing in to a class
+  /^\/forms\//,                    // filling in a form
   /^\/certificates\/verify\//,     // checking a certificate
   /^\/newsletter\/unsubscribe\/?$/, // leaving the newsletter
   /^\/payments(\/|$)/,             // registration and payment forms

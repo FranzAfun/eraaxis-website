@@ -210,6 +210,52 @@
 /* ── Reusable component classes ────────────────────────────────────────── */
 @layer components {
 
+  /* A form's introduction, written in EDOS's editor and cleaned on the server to
+     paragraphs, emphasis, lists and links. Tailwind resets all of those, so they
+     get their shape back here, and nowhere else. */
+  .form-intro p + p,
+  .form-intro p + ul,
+  .form-intro p + ol,
+  .form-intro ul + p,
+  .form-intro ol + p {
+    margin-top: 0.75em;
+  }
+
+  .form-intro p:empty {
+    min-height: 0.75em;
+  }
+
+  .form-intro ul,
+  .form-intro ol {
+    margin-top: 0.5em;
+    padding-left: 1.35em;
+  }
+
+  .form-intro ul {
+    list-style: disc;
+  }
+
+  .form-intro ol {
+    list-style: decimal;
+  }
+
+  .form-intro li + li {
+    margin-top: 0.25em;
+  }
+
+  .form-intro strong,
+  .form-intro b {
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  .form-intro a {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    overflow-wrap: anywhere;
+  }
+
   /* Content-area primary button — lifts on hover, no glow */
   .btn-primary {
     display: inline-flex;

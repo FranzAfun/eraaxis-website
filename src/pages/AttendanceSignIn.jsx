@@ -13,6 +13,7 @@ import {
   WifiOff,
 } from "lucide-react";
 import SEO from "../components/SEO";
+import { loadGoogleIdentity } from "../utils/googleIdentity";
 import { API_ERROR_MESSAGES, toUserMessage } from "../services/api";
 import {
   SESSION_STATE,
@@ -31,45 +32,6 @@ const badge =
   "mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest backdrop-blur-xl";
 const heading = "mb-4 text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl";
 const body = "text-base leading-relaxed text-white/68";
-
-const GSI_SRC = "https://accounts.google.com/gsi/client";
-
-// Google's script is loaded only once the window is known to be open, so a
-// learner who arrives early or late never has a third party's script pulled in
-// on their behalf.
-let gsiPromise = null;
-function loadGoogleIdentity() {
-  if (window.google?.accounts?.id) return Promise.resolve(window.google);
-  if (gsiPromise) return gsiPromise;
-
-  gsiPromise = new Promise((resolve, reject) => {
-    // Only this function adds the script, and a load in progress is shared through
-    // gsiPromise, so an element found here is left over from a failed attempt. It
-    // has already fired its events and would never fire them again, which left a
-    // retry waiting forever; start from a fresh element instead.
-    document.querySelector(`script[src="${GSI_SRC}"]`)?.remove();
-    const script = document.createElement("script");
-    const fail = () => {
-      script.remove();
-      reject(new Error("Google sign-in did not load."));
-    };
-    script.addEventListener("load", () => {
-      if (window.google?.accounts?.id) resolve(window.google);
-      else fail();
-    });
-    script.addEventListener("error", fail);
-    script.src = GSI_SRC;
-    script.async = true;
-    script.defer = true;
-    document.head.appendChild(script);
-  }).catch((error) => {
-    // A failed load must not be cached as permanent: the learner may simply
-    // have lost signal for a moment, and Try again has to mean something.
-    gsiPromise = null;
-    throw error;
-  });
-  return gsiPromise;
-}
 
 // The window is shown in the learner's own timezone, because "has it started?"
 // is a question about their clock, not the server's.
