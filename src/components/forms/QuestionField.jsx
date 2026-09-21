@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { AlertCircle, Check, Star } from "lucide-react";
 import SelectField from "../ui/SelectField";
 import SchoolPicker from "./SchoolPicker";
@@ -192,6 +192,7 @@ function EmailInput({ question, value, onChange, describedBy, invalid }) {
         spellCheck={false}
         value={value || ""}
         maxLength={254}
+        placeholder="Your answer"
         aria-invalid={invalid || undefined}
         aria-describedby={describedBy}
         onChange={(event) => onChange(event.target.value.trim())}
@@ -213,6 +214,29 @@ function EmailInput({ question, value, onChange, describedBy, invalid }) {
   );
 }
 
+// A paragraph answer starts as one line and grows with what is written, so a
+// short answer does not face a large empty box and a long one never scrolls
+// inside itself. It also fits an answer brought back from a saved draft.
+function ParagraphInput({ value, onChange, ...field }) {
+  const ref = useRef(null);
+  useLayoutEffect(() => {
+    const box = ref.current;
+    if (!box) return;
+    box.style.height = "auto";
+    box.style.height = `${box.scrollHeight}px`;
+  }, [value]);
+  return (
+    <textarea
+      {...field}
+      ref={ref}
+      rows={1}
+      value={value || ""}
+      onChange={(event) => onChange(event.target.value)}
+      className={`${fieldClass} resize-none overflow-hidden`}
+    />
+  );
+}
+
 // Choices that are not required can be taken back, as on any paper form.
 const CLEARABLE = new Set(["single_choice", "linear_scale", "yes_no", "dropdown"]);
 
@@ -224,6 +248,7 @@ export default function QuestionField({ slug, question, value, onChange, error }
   const common = {
     id: `q-${question.key}`,
     className: fieldClass,
+    placeholder: "Your answer",
     "aria-invalid": invalid || undefined,
     "aria-describedby": describedBy,
   };
@@ -233,13 +258,11 @@ export default function QuestionField({ slug, question, value, onChange, error }
     switch (question.type) {
       case "long_text":
         return (
-          <textarea
+          <ParagraphInput
             {...common}
-            rows={4}
             maxLength={question.validation?.maxLength || 5000}
-            value={value || ""}
-            onChange={(event) => onChange(event.target.value)}
-            className={`${fieldClass} min-h-[112px] resize-y`}
+            value={value}
+            onChange={onChange}
           />
         );
       case "number":
