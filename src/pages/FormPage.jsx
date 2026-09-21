@@ -411,9 +411,12 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
     }
   }
 
+  // Every answer on every page, and the Email tick. The chosen Google account
+  // stays: clearing the answers is not signing out.
   function startAgain() {
     clearDraft(slug);
     setAnswers({});
+    setRecordedFor("");
     setStep(0);
     setRestored(false);
     setRevealed(new Set());
@@ -659,6 +662,16 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
                 {!sending && <Send size={16} aria-hidden="true" />}
               </button>
             )}
+            {/* Asks first when there is something to lose; with nothing typed it
+                just goes back to the start. */}
+            <button
+              type="button"
+              disabled={sending}
+              onClick={() => (hasAnswers(answers) || recordedFor ? setConfirmReset(true) : startAgain())}
+              className="ml-auto min-h-[48px] rounded-[var(--radius-sm)] px-3 text-[15px] font-semibold text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/[0.06] disabled:opacity-60"
+            >
+              Clear form
+            </button>
           </div>
           <p className="mt-4 text-xs leading-relaxed text-[var(--color-text-muted)]">
             Your answers are kept on this device until you send them. Never give your password
@@ -669,10 +682,10 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
 
       <ConfirmDialog
         open={confirmReset}
-        title="Start the form again?"
-        message="This clears every answer you've given so far, on this device. It can't be undone."
-        confirmLabel="Clear my answers"
-        cancelLabel="Keep them"
+        title="Clear the form?"
+        message="This removes your answers from every page of this form, on this device, and takes you back to the start. It can't be undone."
+        confirmLabel="Clear form"
+        cancelLabel="Keep my answers"
         onConfirm={startAgain}
         onCancel={() => setConfirmReset(false)}
       />
