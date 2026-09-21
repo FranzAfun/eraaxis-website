@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
+  AlertCircle,
   ArrowLeft,
   ArrowRight,
   CheckCircle2,
@@ -555,8 +556,9 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
             to type or confirm. We use it for your name and email, and nothing else.
           </p>
           {problem && (
-            <p role="alert" className="mb-4 text-sm font-medium text-red-600">
-              {problem}
+            <p role="alert" className="mb-4 flex items-start gap-1.5 text-sm font-medium text-red-600">
+              <AlertCircle size={16} aria-hidden="true" className="mt-0.5 shrink-0" />
+              <span>{problem}</span>
             </p>
           )}
           <GoogleSignIn clientId={form.googleClientId} onCredential={handleCredential} chooseAgain={switching} />
@@ -589,8 +591,9 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
             </span>
           </label>
           {emailCardError && (
-            <p id="record-email-error" role="alert" className="mt-3 text-sm font-medium text-red-600">
-              Please tick this to send your answers with this address.
+            <p id="record-email-error" role="alert" className="mt-3 flex items-start gap-1.5 text-sm font-medium text-red-600">
+              <AlertCircle size={16} aria-hidden="true" className="mt-0.5 shrink-0" />
+              <span>Please tick this to send your answers with this address.</span>
             </p>
           )}
         </div>
@@ -641,8 +644,9 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
       {!needsSignIn && page && (
         <div className="pt-2">
           {banner && (
-            <p role="alert" className="mb-3 rounded-[var(--radius-sm)] border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-              {banner}
+            <p role="alert" className="mb-3 flex items-start gap-2 rounded-[var(--radius-sm)] border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+              <AlertCircle size={16} aria-hidden="true" className="mt-0.5 shrink-0" />
+              <span>{banner}</span>
             </p>
           )}
           <div className="flex flex-wrap items-center gap-3">

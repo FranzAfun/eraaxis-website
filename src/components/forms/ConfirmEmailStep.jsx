@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { MailCheck } from "lucide-react";
+import { AlertCircle, MailCheck } from "lucide-react";
 import { API_ERROR_MESSAGES, toUserMessage } from "../../services/api";
 import { confirmFormEmail, resendFormCode } from "../../services/formsService";
 import { fieldClass } from "./formDisplay";
@@ -102,8 +102,9 @@ export default function ConfirmEmailStep({ receipt, email, onConfirmed, onChange
           </button>
         </div>
         {message && (
-          <p id="confirm-code-error" role="alert" className="mt-3 text-sm font-medium text-red-600">
-            {message}
+          <p id="confirm-code-error" role="alert" className="mt-3 flex items-start gap-1.5 text-sm font-medium text-red-600">
+            <AlertCircle size={16} aria-hidden="true" className="mt-0.5 shrink-0" />
+            <span>{message}</span>
           </p>
         )}
         {notice && (

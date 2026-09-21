@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, Star } from "lucide-react";
+import { AlertCircle, Check, Star } from "lucide-react";
 import SelectField from "../ui/SelectField";
 import SchoolPicker from "./SchoolPicker";
 import { exampleText, fieldClass, scaleStyle } from "./formDisplay";
@@ -394,7 +394,8 @@ export default function QuestionField({ slug, question, value, onChange, error }
       )}
       {error && (
         <p id={errorId} role="alert" className="mt-3 flex items-start gap-1.5 text-sm font-medium text-red-600">
-          {error}
+          <AlertCircle size={16} aria-hidden="true" className="mt-0.5 shrink-0" />
+          <span>{error}</span>
         </p>
       )}
     </div>
