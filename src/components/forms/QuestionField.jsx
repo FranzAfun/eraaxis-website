@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, Lock, Star } from "lucide-react";
+import { Check, Star } from "lucide-react";
 import SelectField from "../ui/SelectField";
 import SchoolPicker from "./SchoolPicker";
 import { exampleText, fieldClass, scaleStyle } from "./formDisplay";
@@ -179,33 +179,24 @@ function NumberScale({ question, value, onChange, describedBy }) {
 
 // A typed address that is one slip away from a common provider gets a gentle
 // "did you mean", with a button that fixes it. It never blocks anything.
-function EmailInput({ question, value, onChange, locked, describedBy, invalid }) {
-  const suggestion = !locked && value ? suggestEmailCorrection(value) : null;
+function EmailInput({ question, value, onChange, describedBy, invalid }) {
+  const suggestion = value ? suggestEmailCorrection(value) : null;
   return (
     <div>
-      <div className="relative">
-        <input
-          id={`q-${question.key}`}
-          type="email"
-          inputMode="email"
-          autoComplete="email"
-          autoCapitalize="none"
-          spellCheck={false}
-          value={value || ""}
-          readOnly={locked}
-          maxLength={254}
-          aria-invalid={invalid || undefined}
-          aria-describedby={describedBy}
-          onChange={(event) => onChange(event.target.value.trim())}
-          className={`${fieldClass} ${locked ? "bg-[var(--color-surface-soft)] pr-10 text-[var(--color-text-secondary)]" : ""}`}
-        />
-        {locked && (
-          <Lock size={16} aria-hidden="true" className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" />
-        )}
-      </div>
-      {locked && (
-        <p className="mt-1.5 text-sm text-[var(--color-text-muted)]">From the Google account you signed in with.</p>
-      )}
+      <input
+        id={`q-${question.key}`}
+        type="email"
+        inputMode="email"
+        autoComplete="email"
+        autoCapitalize="none"
+        spellCheck={false}
+        value={value || ""}
+        maxLength={254}
+        aria-invalid={invalid || undefined}
+        aria-describedby={describedBy}
+        onChange={(event) => onChange(event.target.value.trim())}
+        className={fieldClass}
+      />
       {suggestion && (
         <p className="mt-2 text-sm text-[var(--color-text-secondary)]">
           Did you mean <span className="font-semibold text-[var(--color-text-primary)]">{suggestion}</span>?{" "}
@@ -225,7 +216,7 @@ function EmailInput({ question, value, onChange, locked, describedBy, invalid })
 // Choices that are not required can be taken back, as on any paper form.
 const CLEARABLE = new Set(["single_choice", "linear_scale", "yes_no", "dropdown"]);
 
-export default function QuestionField({ slug, question, value, onChange, error, locked }) {
+export default function QuestionField({ slug, question, value, onChange, error }) {
   const helpId = question.help ? `q-${question.key}-help` : undefined;
   const errorId = error ? `q-${question.key}-error` : undefined;
   const describedBy = [helpId, errorId].filter(Boolean).join(" ") || undefined;
@@ -267,7 +258,6 @@ export default function QuestionField({ slug, question, value, onChange, error, 
             question={question}
             value={value}
             onChange={onChange}
-            locked={locked}
             invalid={invalid}
             describedBy={describedBy}
           />

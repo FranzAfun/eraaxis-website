@@ -5,6 +5,7 @@ import {
   ArrowRight,
   CheckCircle2,
   CircleSlash,
+  CloudCheck,
   History,
   RefreshCw,
   SearchX,
@@ -59,6 +60,12 @@ const quietButton =
 // The introduction is formatted; a page description takes words.
 const plainText = (html) =>
   (html || "").replace(/<\/(p|li)>/g, " ").replace(/<[^>]+>/g, "").replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
+
+function focusRecordEmail() {
+  const box = document.getElementById("record-email");
+  box?.scrollIntoView({ behavior: "smooth", block: "center" });
+  box?.focus({ preventScroll: true });
+}
 
 function focusQuestion(key) {
   const label = document.getElementById(`q-${key}-label`);
@@ -178,6 +185,9 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
   const [checked, setChecked] = useState(false);
   const [serverErrors, setServerErrors] = useState({});
   const [credential, setCredential] = useState("");
+  // The address somebody ticked to send with. Held as the address rather than a
+  // yes, so switching to another account asks again.
+  const [recordedFor, setRecordedFor] = useState("");
   const [switching, setSwitching] = useState(false);
   const [sending, setSending] = useState(false);
   const [problem, setProblem] = useState("");
@@ -200,6 +210,11 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
   const profile = useMemo(() => (credential ? credentialProfile(credential) : null), [credential]);
   const signedIn = Boolean(profile);
   const needsSignIn = form.requiresSignIn && !signedIn;
+  // As on a Google Form: the address comes from the account, is shown in its own
+  // card before every question, and is sent only once they tick to say so. The
+  // form's own email question is then answered from the account and not shown.
+  const emailRecorded = !form.requiresSignIn || (signedIn && recordedFor === profile.email);
+  const fromAccountKey = form.requiresSignIn ? emailQuestion?.key : undefined;
 
   // A form that proves who is answering fills its email question from the account,
   // which is also the address the server will keep.
@@ -210,8 +225,11 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
   const result = useMemo(() => validateAnswers(definition, effective), [definition, effective]);
 
   const hidden = new Set(result.hidden);
+  const shown = (question) => !hidden.has(question.key) && question.key !== fromAccountKey;
   const sections = definition.sections || [];
-  const pages = sections.filter((section) => (section.questions || []).some((question) => !hidden.has(question.key)));
+  const found = sections.filter((section) => (section.questions || []).some(shown));
+  // A form whose only question was the email still has a first page, for its card.
+  const pages = found.length || !form.requiresSignIn ? found : sections.slice(0, 1);
   const current = Math.min(step, Math.max(pages.length - 1, 0));
   const page = pages[current];
   const paged = pages.length > 1;
@@ -231,6 +249,7 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
       )
     : {};
   const errors = { ...clientErrors, ...serverErrors };
+  const emailCardError = !emailRecorded && (checked || revealed.has(pages[0]?.key));
 
   // Kept on the device as it is typed. The Google credential is never stored.
   useEffect(() => {
@@ -274,6 +293,11 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
   }
 
   function next() {
+    if (current === 0 && !emailRecorded) {
+      setRevealed((existing) => new Set([...existing, page.key]));
+      focusRecordEmail();
+      return;
+    }
     if (trustRules && page) {
       const keys = new Set((page.questions || []).map((question) => question.key));
       const wrong = result.errors.find((item) => keys.has(item.questionKey));
@@ -310,6 +334,16 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
 
   async function submit() {
     setProblem("");
+    if (!emailRecorded) {
+      setChecked(true);
+      if (current !== 0) {
+        setStep(0);
+        setTimeout(focusRecordEmail, 60);
+      } else {
+        focusRecordEmail();
+      }
+      return;
+    }
     if (trustRules && result.errors.length) {
       setChecked(true);
       showFirstProblem(result.errors.map((item) => item.questionKey));
@@ -444,24 +478,32 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
   const hasRequired = questions.some((question) => question.required);
   // Worked out rather than stored, so it goes away as soon as the last problem is
   // put right.
-  const banner = problem || (checked && Object.keys(errors).length ? "Some answers need another look." : "");
+  const banner =
+    problem || (checked && (Object.keys(errors).length || !emailRecorded) ? "Some answers need another look." : "");
 
   return (
     <div ref={topRef} className="scroll-mt-24 space-y-3">
       <FormHeader form={form} intro={current === 0}>
         {form.requiresSignIn && signedIn && !switching && (
           <div className="mt-5 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-[var(--color-border-soft)] pt-4">
-            <p className="min-w-0 break-all text-sm font-semibold text-[var(--color-text-primary)]">{profile.email}</p>
-            <button
-              type="button"
-              onClick={() => {
-                setSwitching(true);
-                setCredential("");
-              }}
-              className="text-sm font-semibold text-[var(--color-primary)] underline-offset-2 hover:underline"
-            >
-              Switch account
-            </button>
+            <p className="min-w-0 text-sm">
+              <span className="break-all font-semibold text-[var(--color-text-primary)]">{profile.email}</span>{" "}
+              <button
+                type="button"
+                onClick={() => {
+                  setSwitching(true);
+                  setCredential("");
+                }}
+                className="font-semibold text-[var(--color-primary)] underline underline-offset-2"
+              >
+                Switch account
+              </button>
+            </p>
+            {hasAnswers(answers) && (
+              <p className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)]">
+                <CloudCheck size={15} aria-hidden="true" /> Saved on this device
+              </p>
+            )}
           </div>
         )}
         {current === 0 && hasRequired && (
@@ -518,10 +560,43 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
         </div>
       )}
 
+      {!needsSignIn && current === 0 && form.requiresSignIn && (
+        <div
+          className={`${card} px-5 py-5 transition-colors sm:px-6 ${emailCardError ? "border-red-400" : ""}`}
+        >
+          <p className="text-base font-semibold leading-snug text-[var(--color-text-primary)]">
+            Email
+            <span className="ml-1 text-red-600" aria-hidden="true">
+              *
+            </span>
+          </p>
+          <label className="mt-4 flex cursor-pointer items-start gap-3 text-[15px] leading-relaxed text-[var(--color-text-primary)]">
+            <input
+              id="record-email"
+              type="checkbox"
+              checked={emailRecorded}
+              onChange={(event) => setRecordedFor(event.target.checked ? profile.email : "")}
+              aria-invalid={emailCardError || undefined}
+              aria-describedby={emailCardError ? "record-email-error" : undefined}
+              className="mt-1 h-5 w-5 shrink-0 cursor-pointer accent-[var(--color-primary)]"
+            />
+            <span className="min-w-0">
+              Record <span className="break-all font-semibold">{profile.email}</span> as the email to be
+              included with my response
+            </span>
+          </label>
+          {emailCardError && (
+            <p id="record-email-error" role="alert" className="mt-3 text-sm font-medium text-red-600">
+              Please tick this to send your answers with this address.
+            </p>
+          )}
+        </div>
+      )}
+
       {!needsSignIn &&
         page &&
         (() => {
-          const visible = (page.questions || []).filter((question) => !hidden.has(question.key));
+          const visible = (page.questions || []).filter(shown);
           const showSectionHeading = sections.indexOf(page) > 0 && (page.title || page.description);
           return (
             <section aria-label={page.title || undefined} className="space-y-3">
@@ -544,7 +619,6 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
                   question={question}
                   value={effective[question.key]}
                   error={errors[question.key]}
-                  locked={Boolean(profile) && question.key === emailQuestion?.key}
                   onChange={(value) => setAnswer(question.key, value)}
                 />
               ))}
