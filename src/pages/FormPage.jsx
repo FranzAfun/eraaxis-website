@@ -448,7 +448,22 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
 
   return (
     <div ref={topRef} className="scroll-mt-24 space-y-3">
-      <FormHeader form={form} intro={current === 0} image={current === 0}>
+      <FormHeader form={form} intro={current === 0}>
+        {form.requiresSignIn && signedIn && !switching && (
+          <div className="mt-5 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-[var(--color-border-soft)] pt-4">
+            <p className="min-w-0 break-all text-sm font-semibold text-[var(--color-text-primary)]">{profile.email}</p>
+            <button
+              type="button"
+              onClick={() => {
+                setSwitching(true);
+                setCredential("");
+              }}
+              className="text-sm font-semibold text-[var(--color-primary)] underline-offset-2 hover:underline"
+            >
+              Switch account
+            </button>
+          </div>
+        )}
         {current === 0 && hasRequired && (
           <p className="mt-4 text-sm text-[var(--color-text-muted)]">
             <span className="text-red-600">*</span> Required question
@@ -487,39 +502,19 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
         </div>
       )}
 
-      {form.requiresSignIn && (
+      {form.requiresSignIn && (!signedIn || switching) && (
         <div className={`${card} px-5 py-5 sm:px-6`}>
-          {signedIn && !switching ? (
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <p className="min-w-0 text-sm text-[var(--color-text-secondary)]">
-                Signed in as <span className="break-all font-semibold text-[var(--color-text-primary)]">{profile.email}</span>
-              </p>
-              <button
-                type="button"
-                onClick={() => {
-                  setSwitching(true);
-                  setCredential("");
-                }}
-                className="text-sm font-semibold text-[var(--color-primary)] underline underline-offset-2"
-              >
-                Use a different account
-              </button>
-            </div>
-          ) : (
-            <>
-              <h2 className="text-base font-semibold text-[var(--color-text-primary)]">Sign in to fill in this form</h2>
-              <p className="mb-4 mt-1 text-sm leading-relaxed text-[var(--color-text-secondary)]">
-                This form asks who is answering. We use your Google account for your name and email
-                address, and nothing else.
-              </p>
-              {problem && (
-                <p role="alert" className="mb-4 text-sm font-medium text-red-600">
-                  {problem}
-                </p>
-              )}
-              <GoogleSignIn clientId={form.googleClientId} onCredential={handleCredential} chooseAgain={switching} />
-            </>
+          <h2 className="text-base font-semibold text-[var(--color-text-primary)]">Choose your Google account</h2>
+          <p className="mb-4 mt-1 text-sm leading-relaxed text-[var(--color-text-secondary)]">
+            This form records the email address of the account you choose, so there&apos;s nothing
+            to type or confirm. We use it for your name and email, and nothing else.
+          </p>
+          {problem && (
+            <p role="alert" className="mb-4 text-sm font-medium text-red-600">
+              {problem}
+            </p>
           )}
+          <GoogleSignIn clientId={form.googleClientId} onCredential={handleCredential} chooseAgain={switching} />
         </div>
       )}
 
@@ -612,9 +607,10 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
 }
 
 // The form's own heading card: banner, title and introduction, as its creator
-// built it in EDOS.
-function FormHeader({ form, intro = false, image = false, children }) {
-  const banner = image && form.headerImage ? resolveMediaUrl(form.headerImage) : null;
+// built it in EDOS. The banner heads every page, as on a Google Form; the
+// introduction is read once, on the first.
+function FormHeader({ form, intro = false, children }) {
+  const banner = form.headerImage ? resolveMediaUrl(form.headerImage) : null;
   return (
     <div className="space-y-3">
       {banner && (

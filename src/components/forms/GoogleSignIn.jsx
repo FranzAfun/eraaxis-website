@@ -2,8 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import { loadGoogleIdentity } from "../../utils/googleIdentity";
 
 /**
- * Google's own button, for a form that asks who is answering. A popup keeps the
- * person on the form, so nothing they have typed is lost to a redirect.
+ * Choosing a Google account, for a form that takes its email address from one.
+ *
+ * Google's own prompt offers the accounts already signed in on this device as the
+ * page opens ("Continue as Ama"), so for most people it is a single tap, the way a
+ * Google Form shows who is answering. The button underneath opens the full account
+ * chooser in a popup, for anybody who dismissed the prompt or wants another
+ * account. A popup keeps the person on the form, so nothing is lost to a redirect.
  *
  * `onCredential` must be stable (useCallback): the button is re-rendered whenever
  * it changes. `chooseAgain` turns off Google's automatic pick of the last account,
@@ -26,8 +31,14 @@ export default function GoogleSignIn({ clientId, onCredential, chooseAgain = fal
           callback: (response) => onCredential(response?.credential || ""),
           ux_mode: "popup",
           cancel_on_tap_outside: true,
+          context: "use",
+          // The browser's own account chooser where it has one (Chrome), and the
+          // prompt still shows in Safari, which blocks the older way of doing it.
+          use_fedcm_for_prompt: true,
+          itp_support: true,
         });
         if (chooseAgain) google.accounts.id.disableAutoSelect();
+        google.accounts.id.prompt();
         // Re-rendering into a div that already holds a button would stack them.
         buttonRef.current.innerHTML = "";
         google.accounts.id.renderButton(buttonRef.current, {
@@ -47,6 +58,8 @@ export default function GoogleSignIn({ clientId, onCredential, chooseAgain = fal
 
     return () => {
       active = false;
+      // Chosen, or the page moved on: the prompt should not linger over the form.
+      window.google?.accounts?.id?.cancel();
     };
   }, [clientId, onCredential, chooseAgain, attempt]);
 
