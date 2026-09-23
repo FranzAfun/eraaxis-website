@@ -7,7 +7,6 @@ import {
   CheckCircle2,
   CircleSlash,
   CloudCheck,
-  RotateCcw,
   History,
   RefreshCw,
   SearchX,
@@ -198,9 +197,6 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
   const [sending, setSending] = useState(false);
   const [problem, setProblem] = useState("");
   const [confirmReset, setConfirmReset] = useState(false);
-  // What clearing the form threw away, kept until they carry on, so a mistaken
-  // clear is one tap to take back rather than a form to fill in again.
-  const [cleared, setCleared] = useState(null);
   // Files still on their way up. Moving on or sending waits for them, or the
   // answer would go without the file somebody just chose.
   const [uploading, setUploading] = useState(0);
@@ -275,8 +271,6 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
   }, [slug, answers, current, form.version, outcome]);
 
   const setAnswer = useCallback((key, value) => {
-    // They have carried on, so there is nothing left to take back.
-    setCleared(null);
     setAnswers((existing) => ({ ...existing, [key]: value }));
     setServerErrors((existing) => {
       if (!(key in existing)) return existing;
@@ -431,7 +425,6 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
   // Every answer on every page, and the Email tick. The chosen Google account
   // stays: clearing the answers is not signing out.
   function startAgain() {
-    setCleared({ answers, step: current, recordedFor });
     clearDraft(slug);
     setAnswers({});
     setRecordedFor("");
@@ -443,14 +436,6 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
     setProblem("");
     setConfirmReset(false);
     topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
-
-  function undoClear() {
-    if (!cleared) return;
-    setAnswers(cleared.answers);
-    setRecordedFor(cleared.recordedFor);
-    setStep(cleared.step);
-    setCleared(null);
   }
 
   if (outcome?.view === "closed") {
@@ -554,22 +539,6 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
           </div>
         )}
       </FormHeader>
-
-      {cleared && (
-        <div className={`${card} flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between`} role="status">
-          <p className="flex items-start gap-2.5 text-sm leading-relaxed text-[var(--color-text-secondary)]">
-            <RotateCcw size={18} aria-hidden="true" className="mt-0.5 shrink-0 text-[var(--color-primary)]" />
-            Your answers were cleared.
-          </p>
-          <button
-            type="button"
-            onClick={undoClear}
-            className="shrink-0 self-start text-sm font-semibold text-[var(--color-primary)] underline underline-offset-2 sm:self-auto"
-          >
-            Undo
-          </button>
-        </div>
-      )}
 
       {restored && (
         <div className={`${card} flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between`}>
