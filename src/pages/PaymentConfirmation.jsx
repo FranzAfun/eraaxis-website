@@ -130,7 +130,7 @@ export default function PaymentConfirmation() {
                 This can take a few moments. We&apos;ll email you a receipt as soon as it&apos;s confirmed.
               </p>
               {reference && (
-                <p className="mb-8 font-mono text-sm text-white/50">{reference}</p>
+                <p className="mb-8 font-mono text-sm text-white/60">{reference}</p>
               )}
               <button
                 type="button"
@@ -154,7 +154,7 @@ export default function PaymentConfirmation() {
                 Your payment for <strong className="text-white">{receipt?.programme?.name}</strong> has been received.
                 A copy of your receipt has been emailed to you.
               </p>
-              <p className="mb-8 text-sm text-white/50">
+              <p className="mb-8 text-sm text-white/60">
                 Didn&apos;t receive it? Contact us with your reference number —{" "}
                 <Link to="/contact" className="text-[var(--color-accent)] underline">
                   get in touch

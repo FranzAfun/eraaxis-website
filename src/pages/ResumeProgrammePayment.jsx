@@ -261,7 +261,7 @@ export default function ResumeProgrammePayment() {
                 <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
               </button>
 
-              <p className="mt-4 flex items-center justify-center gap-2 text-center text-xs text-white/50">
+              <p className="mt-4 flex items-center justify-center gap-2 text-center text-xs text-white/60">
                 <Lock size={13} strokeWidth={2} aria-hidden="true" />
                 Payments are processed securely via Speso.
               </p>

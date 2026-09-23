@@ -82,7 +82,7 @@ function MetricCard({ value, suffix, label, description, isVisible, reducedMotio
         {count}{suffix}
       </p>
       <p className="mb-2 text-[0.9375rem] font-bold text-white">{label}</p>
-      <p className="text-sm leading-relaxed text-white/50">{description}</p>
+      <p className="text-sm leading-relaxed text-white/60">{description}</p>
     </div>
   );
 }

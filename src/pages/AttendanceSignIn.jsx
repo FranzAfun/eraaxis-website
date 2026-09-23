@@ -62,7 +62,7 @@ function SessionHeader({ session }) {
   if (!session) return null;
   return (
     <div className="mb-6 border-b border-white/10 pb-5">
-      <p className="text-xs font-semibold uppercase tracking-widest text-white/45">
+      <p className="text-xs font-semibold uppercase tracking-widest text-white/60">
         {session.programme}
         {session.track ? ` · ${session.track}` : ""}
       </p>
@@ -360,7 +360,7 @@ export default function AttendanceSignIn() {
                     </div>
 
                     {session.closesAt && (
-                      <p className="mt-6 flex items-center gap-2 text-sm text-white/45">
+                      <p className="mt-6 flex items-center gap-2 text-sm text-white/60">
                         <Clock aria-hidden="true" size={14} />
                         Sign-in closes at {formatTime(session.closesAt)}.
                       </p>

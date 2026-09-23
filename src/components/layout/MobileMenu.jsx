@@ -114,7 +114,7 @@ export default function MobileMenu({ open, groups, onClose, returnFocusTo }) {
         <nav className="flex-1 overflow-y-auto overscroll-contain px-3 py-2">
           {groups.map((group) => (
             <div key={group.label} className="mb-2">
-              <p className="px-3 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/40">
+              <p className="px-3 pb-1 pt-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/60">
                 {group.label}
               </p>
               {group.links.map(({ label, to, icon: Icon }) => (
@@ -162,7 +162,7 @@ export default function MobileMenu({ open, groups, onClose, returnFocusTo }) {
             <LifeBuoy size={16} />
             Need help?
           </Link>
-          <p className="text-center text-[11px] text-white/35">
+          <p className="text-center text-[11px] text-white/60">
             ERA AXIS &copy; {new Date().getFullYear()}
           </p>
         </div>

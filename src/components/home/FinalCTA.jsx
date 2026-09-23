@@ -77,7 +77,7 @@ export default function FinalCTA() {
           </div>
 
           {/* Small contact link */}
-          <p className="mt-7 text-sm text-white/35">
+          <p className="mt-7 text-sm text-white/60">
             Have a question?{" "}
             <Link
               to="/contact"

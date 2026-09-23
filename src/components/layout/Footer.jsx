@@ -120,7 +120,7 @@ export default function Footer() {
             <p className="text-sm font-semibold text-white">
               Get ERA AXIS updates in your inbox.
             </p>
-            <p className="mt-1 text-xs text-white/45">
+            <p className="mt-1 text-xs text-white/60">
               Insights, programme news, and learner stories.
             </p>
           </div>
@@ -148,7 +148,7 @@ export default function Footer() {
             <p className="mb-3 max-w-[220px] text-sm leading-relaxed text-white/55">
               Practical STEM and digital skills education for African innovators.
             </p>
-            <p className="max-w-[220px] text-xs leading-relaxed text-white/30">
+            <p className="max-w-[220px] text-xs leading-relaxed text-white/60">
               Built for Africa&apos;s next generation of innovators.
             </p>
           </div>
@@ -229,14 +229,14 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-white/[0.07] pt-6 sm:flex-row">
-          <p className="text-xs text-white/35">
+          <p className="text-xs text-white/60">
             © {new Date().getFullYear()} {orgName}. All rights reserved.
             {" · "}
             <Link to="/privacy" className="transition-colors duration-200 hover:text-[var(--color-accent)]">
               Privacy &amp; Cookie Policy
             </Link>
           </p>
-          <p className="text-xs text-white/25">
+          <p className="text-xs text-white/60">
             Website by <a  rel="noopener noreferrer" className="text-[var(--color-accent)] ">ERA Technologies</a>.
           </p>
         </div>
