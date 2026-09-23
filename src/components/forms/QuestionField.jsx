@@ -192,7 +192,7 @@ function EmailInput({ question, value, onChange, describedBy, invalid }) {
         spellCheck={false}
         value={value || ""}
         maxLength={254}
-        placeholder="Your answer"
+        placeholder="Type your answer"
         aria-invalid={invalid || undefined}
         aria-describedby={describedBy}
         onChange={(event) => onChange(event.target.value.trim())}
@@ -248,7 +248,7 @@ export default function QuestionField({ slug, question, value, onChange, error }
   const common = {
     id: `q-${question.key}`,
     className: fieldClass,
-    placeholder: "Your answer",
+    placeholder: "Type your answer",
     "aria-invalid": invalid || undefined,
     "aria-describedby": describedBy,
   };

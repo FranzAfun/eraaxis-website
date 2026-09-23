@@ -586,8 +586,7 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
               className="mt-1 h-5 w-5 shrink-0 cursor-pointer accent-[var(--color-primary)]"
             />
             <span className="min-w-0">
-              Record <span className="break-all font-semibold">{profile.email}</span> as the email to be
-              included with my response
+              Send my answers with <span className="break-all font-semibold">{profile.email}</span>
             </span>
           </label>
           {emailCardError && (

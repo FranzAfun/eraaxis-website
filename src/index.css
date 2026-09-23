@@ -210,6 +210,36 @@
 /* ── Reusable component classes ────────────────────────────────────────── */
 @layer components {
 
+  /* The line under a form field, drawn in from the left when the field becomes
+     active, so it is obvious which one is taking what is typed. A background
+     gradient rather than an extra element, so the same class works on a bare
+     input, a textarea and the dropdown's button alike. */
+  .field-ink {
+    background-image: linear-gradient(var(--color-primary), var(--color-primary));
+    background-repeat: no-repeat;
+    background-position: left bottom;
+    background-size: 0 2px;
+    /* Named here rather than through a utility class, so nothing else can
+       replace the transition and make the line snap into place instead. */
+    transition: background-size 240ms ease, border-color 150ms ease;
+  }
+
+  .field-ink:focus,
+  .field-ink:focus-within,
+  .field-ink[aria-expanded="true"] {
+    background-size: 100% 2px;
+  }
+
+  .field-ink[aria-invalid="true"] {
+    background-image: linear-gradient(rgb(239 68 68), rgb(239 68 68));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .field-ink {
+      transition: none;
+    }
+  }
+
   /* A form's introduction, written in EDOS's editor and cleaned on the server to
      paragraphs, emphasis, lists and links. Tailwind resets all of those, so they
      get their shape back here, and nowhere else. */

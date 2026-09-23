@@ -12,12 +12,12 @@ export function exampleText(help) {
 }
 
 // Every text box on a form: a flat line to write on, as on the site's enrolment
-// and payment forms and on a Google Form. The line thickens in the brand colour
-// while typing, drawn with a shadow so nothing shifts, and turns red when the
-// answer needs another look. 16px text on a phone, so the page does not zoom in
-// on the field somebody taps.
+// and payment forms. Becoming active draws a brand-coloured line in from the
+// left (`.field-ink`, in index.css), so which field is listening is obvious at a
+// glance; an answer that needs another look turns the line red. 16px text on a
+// phone, so the page does not zoom in on the field somebody taps.
 export const fieldClass =
-  "min-h-[44px] w-full rounded-none border-0 border-b border-[var(--color-border)] bg-transparent px-0 py-2 text-base text-[var(--color-text-primary)] outline-none transition-[border-color,box-shadow] placeholder:text-[var(--color-text-muted)] focus:border-[var(--color-primary)] focus:shadow-[0_1px_0_0_var(--color-primary)] focus:ring-0 aria-[invalid=true]:border-red-500 aria-[invalid=true]:shadow-[0_1px_0_0_rgb(239_68_68)] sm:text-[15px]";
+  "field-ink min-h-[44px] w-full rounded-none border-0 border-b border-[var(--color-border)] bg-transparent px-0 py-2 text-base text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-muted)] focus:ring-0 aria-[invalid=true]:border-red-500 sm:text-[15px]";
 
 // A scale is drawn as stars unless it says otherwise, and never when it starts at
 // zero: nobody can click "no stars".
