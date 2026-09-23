@@ -14,7 +14,9 @@
 
   --color-text-primary: #111111;
   --color-text-secondary: #4b5563;
-  --color-text-muted: #6b7280;
+  /* Measured: the closest grey to the old #6b7280 that clears AA on white (4.90)
+     and on the lilac --color-surface-soft (4.55), which the old one missed. */
+  --color-text-muted: #6a717f;
   --color-text-inverse: #ffffff;
 
   --color-border: #e5e7eb;
