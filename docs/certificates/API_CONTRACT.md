@@ -206,7 +206,24 @@ are strings; number is a number or numeric string; `yes_no` is a boolean; single
 choice and dropdown are an option value; multiple choice is an array of option
 values; a scale is an integer; school is `{ schoolId }` or `{ other }`, and other
 fields on it are ignored; file is `[{ key, name, size, type }]` from the upload
-endpoint, which is not built yet. Answers to questions the rules hide are dropped.
+endpoint below, and only keys uploaded to this form are accepted — any other is
+refused as 422 `NOT_A_FILE` on that question. Answers to questions the rules hide
+are dropped.
+
+`POST /:slug/files?question=<key>` takes one multipart field, `file`, and the form's
+`submissionToken` in an `X-Form-Token` header (its minimum age does not apply). It
+returns 201 `{ key, name, size, type }` for the answer to store. The file's first
+bytes must match its extension, and the stored type is ours, from the extension:
+PDF, JPEG, PNG, WebP, HEIC, Word, Excel, PowerPoint, plain text and CSV. The size
+limit is the question's `file.maxSizeMb` (default 10, never above 25). Refusals:
+404 `FORM_NOT_FOUND` or `QUESTION_NOT_FOUND`; 409 `FORM_CLOSED`, `FORM_TOKEN_INVALID`
+or `FORM_TOKEN_EXPIRED`; 400 `FILE_MISSING` or `FILE_INVALID`; 413 or 422
+`FILE_TOO_LARGE`; 422 `FILE_EMPTY`, `FILE_TYPE_REFUSED` or `FILE_TYPE_MISMATCH`; 503
+`FILE_UPLOAD_FAILED`. Uploads share their own limit of 40 per 15 minutes per
+connection. Files are stored privately under `form-uploads/`, which the shared
+`/api/files` route does not serve; staff open them through
+`GET /api/lms/forms/:id/files/:filename`, behind `FORM_RESPONSES`, and only when a
+response to that form carries the file.
 
 `POST /submissions/:receipt/confirm` takes `{ code }` and returns 200 `{ confirmed:
 true }`, or 400 `CODE_INVALID`, 404 `SUBMISSION_NOT_FOUND`, 410 `CODE_EXPIRED` (30

@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { AlertCircle, Check, Star } from "lucide-react";
 import SelectField from "../ui/SelectField";
 import SchoolPicker from "./SchoolPicker";
+import FileField from "./FileField";
 import { exampleText, fieldClass, scaleStyle } from "./formDisplay";
 import { suggestEmailCorrection } from "../../utils/emailTypoCheck";
 
@@ -240,7 +241,7 @@ function ParagraphInput({ value, onChange, ...field }) {
 // Choices that are not required can be taken back, as on any paper form.
 const CLEARABLE = new Set(["single_choice", "linear_scale", "yes_no", "dropdown"]);
 
-export default function QuestionField({ slug, question, value, onChange, error, note }) {
+export default function QuestionField({ slug, token, question, value, onChange, onBusyChange, error, note }) {
   const helpId = question.help ? `q-${question.key}-help` : undefined;
   const errorId = error ? `q-${question.key}-error` : undefined;
   const describedBy = [helpId, errorId].filter(Boolean).join(" ") || undefined;
@@ -358,9 +359,16 @@ export default function QuestionField({ slug, question, value, onChange, error, 
         );
       case "file":
         return (
-          <p className="rounded-[var(--radius-sm)] border border-dashed border-[var(--color-border)] px-3.5 py-3 text-sm text-[var(--color-text-muted)]">
-            File uploads are not open on this form yet.
-          </p>
+          <FileField
+            slug={slug}
+            token={token}
+            question={question}
+            value={value}
+            onChange={onChange}
+            onBusyChange={onBusyChange}
+            invalid={invalid}
+            describedBy={describedBy}
+          />
         );
       default:
         return (

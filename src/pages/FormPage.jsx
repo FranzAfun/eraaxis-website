@@ -201,6 +201,10 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
   // What clearing the form threw away, kept until they carry on, so a mistaken
   // clear is one tap to take back rather than a form to fill in again.
   const [cleared, setCleared] = useState(null);
+  // Files still on their way up. Moving on or sending waits for them, or the
+  // answer would go without the file somebody just chose.
+  const [uploading, setUploading] = useState(0);
+  const trackUpload = useCallback((busy) => setUploading((count) => Math.max(0, count + (busy ? 1 : -1))), []);
   // What came of sending: waiting on a code, sent, or closed in the meantime. A
   // draft that already has a receipt reopens at the code step.
   const [outcome, setOutcome] = useState(() =>
@@ -658,6 +662,8 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
                 <QuestionField
                   key={question.key}
                   slug={slug}
+                  token={form.submissionToken}
+                  onBusyChange={trackUpload}
                   question={question}
                   value={effective[question.key]}
                   error={errors[question.key]}
@@ -696,12 +702,12 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
               </button>
             )}
             {!last && (
-              <button type="button" onClick={next} className={primaryButton}>
+              <button type="button" onClick={next} className={primaryButton} disabled={uploading > 0}>
                 Next <ArrowRight size={16} aria-hidden="true" />
               </button>
             )}
             {last && (
-              <button type="button" onClick={submit} className={primaryButton} disabled={sending}>
+              <button type="button" onClick={submit} className={primaryButton} disabled={sending || uploading > 0}>
                 {sending ? "Sending…" : "Submit"}
                 {!sending && <Send size={16} aria-hidden="true" />}
               </button>
@@ -717,6 +723,11 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
               Clear form
             </button>
           </div>
+          {uploading > 0 && (
+            <p role="status" className="mt-3 text-sm text-[var(--color-text-secondary)]">
+              Waiting for your file to finish uploading…
+            </p>
+          )}
           <p className="mt-4 text-xs leading-relaxed text-[var(--color-text-muted)]">
             Your answers are kept on this device until you send them. Never give your password
             in a form.

@@ -1,4 +1,4 @@
-import { ApiError, api, envelopeError } from "./api";
+import { API_ERROR_MESSAGES, ApiError, api, envelopeError, safeServerMessage } from "./api";
 
 /**
  * The public side of an ERA AXIS form.
@@ -103,4 +103,40 @@ export async function resendFormCode(receipt) {
     }
     throw error;
   }
+}
+
+/**
+ * One attachment, sent the moment it is chosen so the form sends quickly at the
+ * end. A request of its own rather than the shared JSON client, because a file is
+ * not JSON and because a slow phone connection needs to show how far it has got:
+ * `onProgress` receives a share from 0 to 1.
+ *
+ * Resolves to the reference the answer stores, or to `{ error }` with the server's
+ * wording when the file itself was refused. Throws only when the upload never
+ * reached us.
+ */
+export function uploadFormFile(slug, questionKey, file, token, onProgress) {
+  const base = (import.meta.env.VITE_API_URL || "").replace(/\/+$/, "");
+  const url = `${base}/forms/${encodeURIComponent(slug)}/files?question=${encodeURIComponent(questionKey)}`;
+  return new Promise((resolve, reject) => {
+    const request = new XMLHttpRequest();
+    request.open("POST", url);
+    request.setRequestHeader("X-Form-Token", token || "");
+    request.upload.onprogress = (event) => {
+      if (event.lengthComputable) onProgress?.(event.loaded / event.total);
+    };
+    request.onerror = () => reject(new ApiError(API_ERROR_MESSAGES.network, { kind: "network", path: url }));
+    request.onload = () => {
+      let body = null;
+      try { body = JSON.parse(request.responseText); } catch { /* not JSON: treated below */ }
+      if (request.status >= 200 && request.status < 300 && body?.data?.key) return resolve(body.data);
+      if (request.status >= 400 && request.status < 500) {
+        return resolve({ error: safeServerMessage(body?.error) || API_ERROR_MESSAGES.badRequest, code: body?.code || null });
+      }
+      return reject(new ApiError(API_ERROR_MESSAGES.server, { status: request.status, kind: "http", path: url }));
+    };
+    const data = new FormData();
+    data.append("file", file);
+    request.send(data);
+  });
 }
