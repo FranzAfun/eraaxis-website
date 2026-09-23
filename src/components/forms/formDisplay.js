@@ -43,6 +43,20 @@ export function credentialProfile(credential) {
 }
 
 /**
+ * Is this a name worth putting in the box for somebody?
+ *
+ * A Google account is named by whoever made it: plenty read "Zum", "KK" or a first
+ * name alone. Filling one of those in is worse than leaving the box empty, because
+ * a prefilled answer is the one nobody reads — and this name is what a certificate
+ * is printed with. So only a name with at least two parts is offered, and even then
+ * the form says where it came from.
+ */
+export function looksLikeFullName(value) {
+  const parts = String(value || "").trim().split(/\s+/).filter(Boolean);
+  return parts.length >= 2 && parts.every((part) => part.length >= 2);
+}
+
+/**
  * Answers in progress, kept on this device so a dropped signal or a closed tab
  * does not cost somebody what they had typed. Per form rather than per version:
  * question keys are never reused, so answers survive the form being edited.

@@ -240,7 +240,7 @@ function ParagraphInput({ value, onChange, ...field }) {
 // Choices that are not required can be taken back, as on any paper form.
 const CLEARABLE = new Set(["single_choice", "linear_scale", "yes_no", "dropdown"]);
 
-export default function QuestionField({ slug, question, value, onChange, error }) {
+export default function QuestionField({ slug, question, value, onChange, error, note }) {
   const helpId = question.help ? `q-${question.key}-help` : undefined;
   const errorId = error ? `q-${question.key}-error` : undefined;
   const describedBy = [helpId, errorId].filter(Boolean).join(" ") || undefined;
@@ -406,6 +406,7 @@ export default function QuestionField({ slug, question, value, onChange, error }
         </p>
       )}
       <div className="mt-4">{field()}</div>
+      {note && <p className="mt-2 text-sm text-[var(--color-text-muted)]">{note}</p>}
       {!question.required && answered && CLEARABLE.has(question.type) && (
         <button
           type="button"

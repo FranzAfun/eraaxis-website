@@ -22,6 +22,7 @@ import {
   clearDraft,
   credentialProfile,
   hasAnswers,
+  looksLikeFullName,
   readDraft,
   writeDraft,
 } from "../components/forms/formDisplay";
@@ -189,6 +190,9 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
   // The address somebody ticked to send with. Held as the address rather than a
   // yes, so switching to another account asks again.
   const [recordedFor, setRecordedFor] = useState("");
+  // The name the account supplied, kept so the form can say so for as long as that
+  // is still what is in the box.
+  const [accountName, setAccountName] = useState("");
   const [switching, setSwitching] = useState(false);
   const [sending, setSending] = useState(false);
   const [problem, setProblem] = useState("");
@@ -279,10 +283,12 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
       setCredential(value);
       setSwitching(false);
       setProblem("");
-      // The name comes from the account too, when the form asks for it and nothing
-      // has been typed there yet. It stays editable.
-      if (nameKey && signedInAs.name) {
+      // The name can come from the account too, when the form asks for it, nothing
+      // has been typed there yet, and the account is named like a person rather
+      // than "Zum". It stays editable either way.
+      if (nameKey && looksLikeFullName(signedInAs.name)) {
         setAnswers((existing) => (existing[nameKey] ? existing : { ...existing, [nameKey]: signedInAs.name }));
+        setAccountName(signedInAs.name);
       }
     },
     [nameKey]
@@ -624,6 +630,10 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
                   question={question}
                   value={effective[question.key]}
                   error={errors[question.key]}
+                  // Only while it is still the account's name, untouched.
+                  note={question.key === nameKey && accountName && answers[nameKey] === accountName
+                    ? "From your Google account. Change it if this isn't your full name."
+                    : undefined}
                   onChange={(value) => setAnswer(question.key, value)}
                 />
               ))}
