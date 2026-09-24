@@ -152,7 +152,7 @@ export async function startFormPayment(enrolmentId) {
   try {
     body = await api.post("/payments/initialize", { enrolment_id: enrolmentId, months_paid: 1 });
   } catch (error) {
-    if (error instanceof ApiError && error.status === 409) return { paid: true };
+    if (error instanceof ApiError && error.payload?.code === "ALREADY_PAID") return { paid: true };
     throw error;
   }
   if (!body?.success || !body.data?.authorizationUrl) {

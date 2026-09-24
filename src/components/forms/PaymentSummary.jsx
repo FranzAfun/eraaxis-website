@@ -8,12 +8,17 @@ import { calculatePaymentBreakdown, formatGhs } from "../../data/payments";
  * with the same rules and current Speso rates the payment page uses, so the total
  * here is the total on the receipt.
  */
-export default function PaymentSummary({ amount, sent = false, className = "" }) {
+// "30 September, 11:59 pm": when the early-bird price stops.
+function formatEnd(value) {
+  return new Date(value).toLocaleString("en-GB", { day: "numeric", month: "long", hour: "numeric", minute: "2-digit" });
+}
+
+export default function PaymentSummary({ amount, earlyBird = null, regularAmount, sent = false, className = "" }) {
   const { feeConfig, feesLoading, feesError } = useSpesoFees();
   const breakdown = calculatePaymentBreakdown(amount, feeConfig);
 
   const rows = [
-    ["Form fee", breakdown.baseAmount],
+    [earlyBird ? "Form fee (early bird)" : "Form fee", breakdown.baseAmount],
     ["Maintenance fee", breakdown.maintenanceFee],
     ["Speso processing fee", breakdown.spesoFee],
   ];
@@ -38,6 +43,11 @@ export default function PaymentSummary({ amount, sent = false, className = "" })
         <span className="text-sm font-semibold text-[var(--color-primary-deep)]">Total payable</span>
         <span className="text-lg font-bold tabular-nums text-[var(--color-primary)]">{formatGhs(breakdown.customerTotal)}</span>
       </div>
+      {earlyBird && (
+        <p className="mt-3 text-xs leading-relaxed text-[var(--color-text-secondary)]">
+          Early-bird price until {formatEnd(earlyBird.endsAt)}. After that, the form fee is {formatGhs(regularAmount)}.
+        </p>
+      )}
       {feesError && (
         <p className="mt-3 text-xs leading-relaxed text-[var(--color-text-muted)]">{feesError}</p>
       )}

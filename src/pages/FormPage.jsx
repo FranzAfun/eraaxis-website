@@ -560,7 +560,7 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
             We&apos;ve kept your answers. Your submission is complete once the payment goes through.
           </p>
         </div>
-        <PaymentSummary amount={form.payment?.amount ?? outcome.payment.amount} sent />
+        <PaymentSummary {...(form.payment || outcome.payment)} sent />
         {outcome.error && (
           <p role="alert" className="flex items-start gap-2 rounded-[var(--radius-sm)] border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
             <AlertCircle size={16} aria-hidden="true" className="mt-0.5 shrink-0" />
@@ -744,7 +744,7 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
           );
         })()}
 
-      {!needsSignIn && onPayment && <PaymentSummary amount={form.payment.amount} />}
+      {!needsSignIn && onPayment && <PaymentSummary {...form.payment} />}
 
       {/* A field a person never sees and a script fills in anyway. Named so no
           browser's autofill mistakes it for a real one. */}
