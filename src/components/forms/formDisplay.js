@@ -96,3 +96,36 @@ export const hasAnswers = (answers) =>
   Object.values(answers || {}).some((value) =>
     Array.isArray(value) ? value.length > 0 : value !== undefined && value !== null && value !== ""
   );
+
+/**
+ * Where the confirmation page sends somebody back to when a form's payment does
+ * not go through: the form, where their answers are still waiting. Tied to the
+ * payment it was set for, so it can never send somebody paying for something
+ * else to a form they were never on.
+ */
+const PAYMENT_RETURN = "eraaxis_payment_return";
+
+export function rememberPaymentReturn(reference, slug) {
+  try {
+    window.sessionStorage.setItem(PAYMENT_RETURN, JSON.stringify({ reference, slug }));
+  } catch {
+    // The confirmation page falls back to the payments page.
+  }
+}
+
+export function paymentReturnFor(reference) {
+  try {
+    const saved = JSON.parse(window.sessionStorage.getItem(PAYMENT_RETURN) || "null");
+    return saved && saved.reference === reference && typeof saved.slug === "string" ? saved.slug : null;
+  } catch {
+    return null;
+  }
+}
+
+export function forgetPaymentReturn() {
+  try {
+    window.sessionStorage.removeItem(PAYMENT_RETURN);
+  } catch {
+    // Nothing to forget.
+  }
+}

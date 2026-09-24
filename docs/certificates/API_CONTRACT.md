@@ -189,7 +189,16 @@ the question allows that.
 
 `POST /:slug/submissions` takes `{ token, answers, website, credential? }`:
 
-- 201 `{ receipt, confirmEmail, email }`; `email` only when a code was sent.
+- 201 `{ receipt, confirmEmail, email, payment }`; `email` only when a code was sent.
+  `payment` is null for a free form, else `{ enrolmentId, paid, amount, currency }`:
+  the server has made (or reused) a `website_enrolments` row against the form's priced
+  item, and the page pays for it through the unchanged `POST /payments/initialize`
+  `{ enrolment_id, months_paid: 1 }` flow once any email code is confirmed. `paid: true`
+  means it was already paid and nothing more is owed. A second person using an address
+  already paid for, or waiting to pay, on this form gets 422 `ANSWERS_INVALID` with
+  code `EMAIL_ALREADY_USED` on the email question: one enrolment per email per item.
+  A paid form takes GHS only, since Speso charges in cedis; its receipt email is the
+  PDF receipt alone ("Form Fee", maintenance fee, processing fee, total).
 - `website` is a trap field a person never sees. Anything in it gets a 200 with a
   random receipt and nothing is stored.
 - 409 `FORM_CLOSED`; 409 `FORM_TOKEN_INVALID` or `FORM_TOKEN_EXPIRED` (the token is

@@ -140,3 +140,23 @@ export function uploadFormFile(slug, questionKey, file, token, onProgress) {
     request.send(data);
   });
 }
+
+/**
+ * Starts paying for a form that was just sent, through the same checkout every
+ * ERA AXIS payment uses. The server prices it from the form, never from here.
+ * Resolves to where to send the person, or `paid` when the payment was already
+ * received — sending the form again after paying must not charge twice.
+ */
+export async function startFormPayment(enrolmentId) {
+  let body;
+  try {
+    body = await api.post("/payments/initialize", { enrolment_id: enrolmentId, months_paid: 1 });
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 409) return { paid: true };
+    throw error;
+  }
+  if (!body?.success || !body.data?.authorizationUrl) {
+    throw envelopeError(body, "We couldn't start your payment. Please try again.");
+  }
+  return { paid: false, reference: body.data.reference, url: body.data.authorizationUrl };
+}

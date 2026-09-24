@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import SEO from "../components/SEO";
 import { formatGhs } from "../data/payments";
+import { clearDraft, forgetPaymentReturn, paymentReturnFor } from "../components/forms/formDisplay";
 import { getPageSeo } from "../data/seo";
 import { api } from "../services/api";
 
@@ -28,6 +29,10 @@ export default function PaymentConfirmation() {
     searchParams.get("order_id") ||
     searchParams.get("trxref") ||
     window.sessionStorage.getItem("eraaxis_payment_reference");
+
+  // A payment for a form goes back to that form if it does not go through, where
+  // the answers are still waiting.
+  const formSlug = reference ? paymentReturnFor(reference) : null;
 
   // loading | pending | success | failed | error
   const [status, setStatus] = useState(() => (reference ? "loading" : "error"));
@@ -58,6 +63,10 @@ export default function PaymentConfirmation() {
           setReceipt(receiptJson.data);
           setStatus("success");
           window.sessionStorage.removeItem("eraaxis_payment_reference");
+          // Paid: the form's answers on this device have done their job.
+          const paidForm = paymentReturnFor(reference);
+          if (paidForm) clearDraft(paidForm);
+          forgetPaymentReturn();
           return;
         }
 
@@ -200,10 +209,10 @@ export default function PaymentConfirmation() {
               </p>
               <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
                 <Link
-                  to="/payments"
+                  to={formSlug ? `/forms/${formSlug}` : "/payments"}
                   className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-white px-6 text-sm font-semibold text-[var(--color-primary)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/90"
                 >
-                  Back to Payments <ArrowRight size={16} />
+                  {formSlug ? "Back to the form" : "Back to Payments"} <ArrowRight size={16} />
                 </Link>
                 <Link
                   to="/contact"

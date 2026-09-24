@@ -18,16 +18,18 @@ import ConfirmDialog from "../components/ui/ConfirmDialog";
 import QuestionField from "../components/forms/QuestionField";
 import GoogleSignIn from "../components/forms/GoogleSignIn";
 import ConfirmEmailStep from "../components/forms/ConfirmEmailStep";
+import PaymentSummary from "../components/forms/PaymentSummary";
 import {
   clearDraft,
   credentialProfile,
   hasAnswers,
   looksLikeFullName,
   readDraft,
+  rememberPaymentReturn,
   writeDraft,
 } from "../components/forms/formDisplay";
 import { API_ERROR_MESSAGES, toUserMessage } from "../services/api";
-import { SUBMIT_OUTCOME, loadPublicForm, submitPublicForm } from "../services/formsService";
+import { SUBMIT_OUTCOME, loadPublicForm, startFormPayment, submitPublicForm } from "../services/formsService";
 import { RULES_SHA, SCHEMA_VERSION, validateAnswers } from "../utils/formSchema";
 import { resolveMediaUrl } from "../utils/resolveMediaUrl";
 
@@ -52,6 +54,18 @@ const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const tooSoonBy = (loadedAt) => loadedAt + MIN_FILL_MS - Date.now();
 // Google's credential lasts an hour; one about to run out would be refused.
 const signInLapsed = (profile) => !profile || profile.expiresAt < Date.now() + 30000;
+
+// Where a draft left off once it was sent: waiting on a code, or on a payment.
+function outcomeFromDraft(draft) {
+  if (draft?.stage === "pay" && draft.payment?.enrolmentId) return { view: "pay", payment: draft.payment };
+  if (draft?.receipt) return { view: "confirm", receipt: draft.receipt, email: draft.email, payment: draft.payment || null };
+  return null;
+}
+
+// Speso's checkout is a different site, so this is a full-page move.
+function leaveForCheckout(url) {
+  window.location.assign(url);
+}
 
 const card = "rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white";
 const primaryButton =
@@ -201,11 +215,9 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
   // answer would go without the file somebody just chose.
   const [uploading, setUploading] = useState(0);
   const trackUpload = useCallback((busy) => setUploading((count) => Math.max(0, count + (busy ? 1 : -1))), []);
-  // What came of sending: waiting on a code, sent, or closed in the meantime. A
-  // draft that already has a receipt reopens at the code step.
-  const [outcome, setOutcome] = useState(() =>
-    draft?.receipt ? { view: "confirm", receipt: draft.receipt, email: draft.email } : null
-  );
+  // What came of sending: waiting on a code, waiting on a payment, sent, or closed
+  // in the meantime. A draft that was already sent reopens where it stopped.
+  const [outcome, setOutcome] = useState(() => outcomeFromDraft(draft));
   const honeypot = useRef(null);
   const topRef = useRef(null);
 
@@ -264,7 +276,11 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
   useEffect(() => {
     if (outcome?.view === "sent" || outcome?.view === "closed") return;
     if (outcome?.view === "confirm") {
-      writeDraft(slug, { answers, step: current, version: form.version, receipt: outcome.receipt, email: outcome.email });
+      writeDraft(slug, {
+        answers, step: current, version: form.version, receipt: outcome.receipt, email: outcome.email, payment: outcome.payment,
+      });
+    } else if (outcome?.view === "pay") {
+      writeDraft(slug, { answers, step: current, version: form.version, stage: "pay", payment: outcome.payment });
     } else if (hasAnswers(answers)) {
       writeDraft(slug, { answers, step: current, version: form.version });
     }
@@ -343,6 +359,34 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
     });
   }
 
+  // The answers are in; the payment is what is left. Speso's checkout opens in
+  // this tab and comes back to the confirmation page. If it cannot be started the
+  // person stays here, told why, with a button to try again.
+  async function pay(payment) {
+    setOutcome({ view: "pay", payment, starting: true });
+    try {
+      const started = await startFormPayment(payment.enrolmentId);
+      if (started.paid) {
+        clearDraft(slug);
+        setOutcome({ view: "sent", alreadyPaid: true });
+        return;
+      }
+      try {
+        window.sessionStorage.setItem("eraaxis_payment_reference", started.reference);
+      } catch {
+        // The confirmation page also reads the reference from its address.
+      }
+      rememberPaymentReturn(started.reference, slug);
+      leaveForCheckout(started.url);
+    } catch (error) {
+      setOutcome({
+        view: "pay",
+        payment,
+        error: `${toUserMessage(error, "We couldn't start your payment. Please try again.")} Your answers are saved.`,
+      });
+    }
+  }
+
   async function submit() {
     setProblem("");
     if (!emailRecorded) {
@@ -392,13 +436,18 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
       }
 
       if (response.outcome === SUBMIT_OUTCOME.SENT) {
+        // Paid already, say by somebody sending the form again after paying: there
+        // is nothing more to pay, and nobody is sent to pay twice.
+        const payment = response.payment && !response.payment.paid ? response.payment : null;
+        topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
         if (response.confirmEmail) {
-          setOutcome({ view: "confirm", receipt: response.receipt, email: response.email });
+          setOutcome({ view: "confirm", receipt: response.receipt, email: response.email, payment });
+        } else if (payment) {
+          await pay(payment);
         } else {
           clearDraft(slug);
-          setOutcome({ view: "sent" });
+          setOutcome({ view: "sent", alreadyPaid: Boolean(response.payment?.paid) });
         }
-        topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       } else if (response.outcome === SUBMIT_OUTCOME.INVALID) {
         const refused = Object.fromEntries((response.errors || []).map((item) => [item.questionKey, item.message]));
         setServerErrors(refused);
@@ -458,6 +507,7 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
           </h2>
           <p className="mx-auto mt-2 max-w-md text-[15px] leading-relaxed text-[var(--color-text-secondary)]">
             Thank you. {outcome.confirmed ? "Your email address is confirmed, too. " : ""}
+            {outcome.alreadyPaid ? "Your payment for this form was already received, so there's nothing more to pay. " : ""}
             You can close this page now.
           </p>
           <Link to="/" className={`${quietButton} mt-6`}>
@@ -476,6 +526,10 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
           receipt={outcome.receipt}
           email={outcome.email}
           onConfirmed={() => {
+            if (outcome.payment) {
+              pay(outcome.payment);
+              return;
+            }
             clearDraft(slug);
             setOutcome({ view: "sent", confirmed: true });
           }}
@@ -489,7 +543,46 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
     );
   }
 
+  if (outcome?.view === "pay") {
+    return (
+      <div ref={topRef} className="scroll-mt-24 space-y-3">
+        <FormHeader form={form} />
+        <div className={`${card} px-5 py-6 sm:px-8`}>
+          <h2 className="text-xl font-bold tracking-tight text-[var(--color-text-primary)]">
+            Your answers are in. One step left: payment.
+          </h2>
+          <p className="mt-2 text-[15px] leading-relaxed text-[var(--color-text-secondary)]">
+            We&apos;ve kept your answers. Your submission is complete once the payment goes through.
+          </p>
+        </div>
+        <PaymentSummary amount={form.payment?.amount ?? outcome.payment.amount} sent />
+        {outcome.error && (
+          <p role="alert" className="flex items-start gap-2 rounded-[var(--radius-sm)] border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+            <AlertCircle size={16} aria-hidden="true" className="mt-0.5 shrink-0" />
+            <span>{outcome.error}</span>
+          </p>
+        )}
+        <div className="flex flex-wrap items-center gap-3 pt-2">
+          <button
+            type="button"
+            onClick={() => pay(outcome.payment)}
+            className={primaryButton}
+            disabled={outcome.starting}
+          >
+            {outcome.starting ? "Opening checkout…" : "Continue to pay"}
+            {!outcome.starting && <ArrowRight size={16} aria-hidden="true" />}
+          </button>
+          {/* Sending again keeps the same payment, so nothing is lost by going back. */}
+          <button type="button" onClick={() => setOutcome(null)} className={quietButton} disabled={outcome.starting}>
+            <ArrowLeft size={16} aria-hidden="true" /> Change my answers
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const hasRequired = questions.some((question) => question.required);
+  const paid = Boolean(form.payment?.amount);
   // Worked out rather than stored, so it goes away as soon as the last problem is
   // put right.
   const banner =
@@ -658,6 +751,7 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
 
       {!needsSignIn && page && (
         <div className="pt-2">
+          {paid && last && <PaymentSummary amount={form.payment.amount} className="mb-4" />}
           {banner && (
             <p role="alert" className="mb-3 flex items-start gap-2 rounded-[var(--radius-sm)] border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
               <AlertCircle size={16} aria-hidden="true" className="mt-0.5 shrink-0" />
@@ -677,8 +771,8 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
             )}
             {last && (
               <button type="button" onClick={submit} className={primaryButton} disabled={sending || uploading > 0}>
-                {sending ? "Sending…" : "Submit"}
-                {!sending && <Send size={16} aria-hidden="true" />}
+                {sending ? "Sending…" : paid ? "Continue to pay" : "Submit"}
+                {!sending && (paid ? <ArrowRight size={16} aria-hidden="true" /> : <Send size={16} aria-hidden="true" />)}
               </button>
             )}
             {/* Asks first when there is something to lose; with nothing typed it
