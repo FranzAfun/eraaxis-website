@@ -251,10 +251,15 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
   const found = sections.filter((section) => (section.questions || []).some(shown));
   // A form whose only question was the email still has a first page, for its card.
   const pages = found.length || !form.requiresSignIn ? found : sections.slice(0, 1);
-  const current = Math.min(step, Math.max(pages.length - 1, 0));
-  const page = pages[current];
-  const paged = pages.length > 1;
-  const last = current >= pages.length - 1;
+  // A form with a fee ends on a page of its own, so the amount is read on its own
+  // before anybody is sent to pay it, not skimmed under the last questions.
+  const paid = Boolean(form.payment?.amount);
+  const pageCount = pages.length + (paid ? 1 : 0);
+  const current = Math.min(step, Math.max(pageCount - 1, 0));
+  const onPayment = paid && current === pages.length;
+  const page = onPayment ? null : pages[current];
+  const paged = pageCount > 1;
+  const last = current >= pageCount - 1;
   const sectionOf = new Map(
     sections.flatMap((section) => (section.questions || []).map((question) => [question.key, section.key]))
   );
@@ -582,7 +587,6 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
   }
 
   const hasRequired = questions.some((question) => question.required);
-  const paid = Boolean(form.payment?.amount);
   // Worked out rather than stored, so it goes away as soon as the last problem is
   // put right.
   const banner =
@@ -621,12 +625,12 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
         {paged && (
           <div className="mt-5">
             <p className="text-sm font-medium text-[var(--color-text-muted)]">
-              Page {current + 1} of {pages.length}
+              Page {current + 1} of {pageCount}
             </p>
             <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[var(--color-surface-soft)]" aria-hidden="true">
               <div
                 className="h-full rounded-full bg-[var(--color-primary)] transition-all duration-300"
-                style={{ width: `${((current + 1) / pages.length) * 100}%` }}
+                style={{ width: `${((current + 1) / pageCount) * 100}%` }}
               />
             </div>
           </div>
@@ -740,6 +744,8 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
           );
         })()}
 
+      {!needsSignIn && onPayment && <PaymentSummary amount={form.payment.amount} />}
+
       {/* A field a person never sees and a script fills in anyway. Named so no
           browser's autofill mistakes it for a real one. */}
       <div aria-hidden="true" className="absolute -left-[9999px] top-0 h-px w-px overflow-hidden">
@@ -749,9 +755,8 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
         </label>
       </div>
 
-      {!needsSignIn && page && (
+      {!needsSignIn && (page || onPayment) && (
         <div className="pt-2">
-          {paid && last && <PaymentSummary amount={form.payment.amount} className="mb-4" />}
           {banner && (
             <p role="alert" className="mb-3 flex items-start gap-2 rounded-[var(--radius-sm)] border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
               <AlertCircle size={16} aria-hidden="true" className="mt-0.5 shrink-0" />

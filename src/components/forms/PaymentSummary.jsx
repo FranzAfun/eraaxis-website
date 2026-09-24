@@ -24,7 +24,7 @@ export default function PaymentSummary({ amount, sent = false, className = "" })
       <p className="mt-1 text-sm leading-relaxed text-[var(--color-text-secondary)]">
         {sent
           ? "You'll pay on Speso, and we'll email your receipt as soon as the payment goes through."
-          : "This form has a fee. After you send your answers, you'll pay on Speso and we'll email your receipt."}
+          : "This form has a fee. When you continue, your answers are sent and you'll pay on Speso. We'll email your receipt."}
       </p>
       <dl className="mt-4 space-y-3 text-sm" aria-busy={feesLoading}>
         {rows.map(([label, value]) => (
