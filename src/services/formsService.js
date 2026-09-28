@@ -49,6 +49,8 @@ export const SUBMIT_OUTCOME = Object.freeze({
   // The page sat open long enough for its token to expire, or was sent too fast.
   RELOAD: "reload",
   SIGN_IN: "sign_in",
+  // A registration form, and this person already holds a place in the cohort.
+  ALREADY_REGISTERED: "already_registered",
 });
 
 export async function submitPublicForm(slug, payload) {
@@ -66,6 +68,7 @@ export async function submitPublicForm(slug, payload) {
       return { outcome: SUBMIT_OUTCOME.RELOAD, code, message: error.message };
     }
     if (code === "SIGN_IN_REQUIRED") return { outcome: SUBMIT_OUTCOME.SIGN_IN, message: error.message };
+    if (code === "ALREADY_REGISTERED") return { outcome: SUBMIT_OUTCOME.ALREADY_REGISTERED, message: error.message };
     throw error;
   }
 
@@ -83,7 +86,8 @@ export async function confirmFormEmail(receipt, code) {
   if (!RECEIPT.test(receipt || "")) return { confirmed: false, message: "This confirmation link is not valid." };
   try {
     const body = await api.post(`/forms/submissions/${receipt}/confirm`, { code });
-    return { confirmed: Boolean(body?.data?.confirmed) };
+    // On a registration form, confirming is also registering: what came of it.
+    return { confirmed: Boolean(body?.data?.confirmed), registration: body?.data?.registration || null };
   } catch (error) {
     if (error instanceof ApiError && error.status >= 400 && error.status < 500) {
       return { confirmed: false, code: error.payload?.code, message: error.message };

@@ -40,7 +40,7 @@ export default function ConfirmEmailStep({ receipt, email, onConfirmed, onChange
     setNotice("");
     try {
       const result = await confirmFormEmail(receipt, digits);
-      if (result.confirmed) onConfirmed();
+      if (result.confirmed) onConfirmed(result);
       else setMessage(result.message || "That code doesn't match. Check the email and try again.");
     } catch (error) {
       setMessage(toUserMessage(error, API_ERROR_MESSAGES.server));

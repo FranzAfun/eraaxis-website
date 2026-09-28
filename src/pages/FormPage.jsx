@@ -444,6 +444,7 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
         // Paid already, say by somebody sending the form again after paying: there
         // is nothing more to pay, and nobody is sent to pay twice.
         const payment = response.payment && !response.payment.paid ? response.payment : null;
+        const registeredFor = response.registration?.status === "registered" ? response.registration.course : null;
         topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
         if (response.confirmEmail) {
           setOutcome({ view: "confirm", receipt: response.receipt, email: response.email, payment });
@@ -451,13 +452,17 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
           await pay(payment);
         } else {
           clearDraft(slug);
-          setOutcome({ view: "sent", alreadyPaid: Boolean(response.payment?.paid) });
+          setOutcome({ view: "sent", alreadyPaid: Boolean(response.payment?.paid), registeredFor });
         }
       } else if (response.outcome === SUBMIT_OUTCOME.INVALID) {
         const refused = Object.fromEntries((response.errors || []).map((item) => [item.questionKey, item.message]));
         setServerErrors(refused);
         setChecked(true);
         if (Object.keys(refused).length) showFirstProblem(Object.keys(refused));
+      } else if (response.outcome === SUBMIT_OUTCOME.ALREADY_REGISTERED) {
+        clearDraft(slug);
+        setOutcome({ view: "registered_already", message: response.message });
+        topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       } else if (response.outcome === SUBMIT_OUTCOME.CLOSED) {
         clearDraft(slug);
         setOutcome({ view: "closed", message: response.message });
@@ -512,11 +517,32 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
           </h2>
           <p className="mx-auto mt-2 max-w-md text-[15px] leading-relaxed text-[var(--color-text-secondary)]">
             Thank you. {outcome.confirmed ? "Your email address is confirmed, too. " : ""}
+            {outcome.registeredFor ? `You're registered for ${outcome.registeredFor}. ` : ""}
             {outcome.alreadyPaid ? "Your payment for this form was already received, so there's nothing more to pay. " : ""}
             You can close this page now.
           </p>
           <Link to="/" className={`${quietButton} mt-6`}>
             Visit ERA AXIS <ArrowRight size={16} aria-hidden="true" />
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (outcome?.view === "registered_already") {
+    return (
+      <div ref={topRef} className="scroll-mt-24 space-y-3">
+        <FormHeader form={form} />
+        <div className={`${card} px-5 py-8 text-center sm:px-8`}>
+          <CheckCircle2 size={44} strokeWidth={1.75} aria-hidden="true" className="mx-auto text-[var(--color-primary)]" />
+          <h2 className="mt-4 text-xl font-bold tracking-tight text-[var(--color-text-primary)]">
+            You&apos;re already registered.
+          </h2>
+          <p className="mx-auto mt-2 max-w-md text-[15px] leading-relaxed text-[var(--color-text-secondary)]">
+            {outcome.message}
+          </p>
+          <Link to="/contact" className={`${quietButton} mt-6`}>
+            Contact ERA AXIS <ArrowRight size={16} aria-hidden="true" />
           </Link>
         </div>
       </div>
@@ -530,13 +556,25 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
         <ConfirmEmailStep
           receipt={outcome.receipt}
           email={outcome.email}
-          onConfirmed={() => {
+          onConfirmed={(result) => {
+            const registration = result?.registration;
+            // Confirming registered them, or found they already hold a place: then
+            // there is nothing to pay for and nothing more to do here.
+            if (registration?.message) {
+              clearDraft(slug);
+              setOutcome({ view: "registered_already", message: registration.message });
+              return;
+            }
             if (outcome.payment) {
               pay(outcome.payment);
               return;
             }
             clearDraft(slug);
-            setOutcome({ view: "sent", confirmed: true });
+            setOutcome({
+              view: "sent",
+              confirmed: true,
+              registeredFor: registration?.status === "registered" ? registration.course : null,
+            });
           }}
           onChangeAddress={() => {
             setOutcome(null);

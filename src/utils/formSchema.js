@@ -43,7 +43,8 @@ const LIMITS = Object.freeze({
 // The fields the LMS itself reads off a submission. A question bound to one of
 // these is promoted to a column when the response is saved, which is what lets a
 // registration become a learner without anybody re-typing it.
-const BINDINGS = Object.freeze(['full_name', 'email', 'phone', 'gender', 'school', 'location']);
+// `course` is the course a cohort registration enrols somebody on.
+const BINDINGS = Object.freeze(['full_name', 'email', 'phone', 'gender', 'school', 'location', 'course']);
 
 const OPERATORS = Object.freeze(['equals', 'not_equals', 'in', 'not_in', 'answered', 'not_answered', 'gt', 'lt']);
 
@@ -233,6 +234,24 @@ const TYPES = Object.freeze({
       if (registers.some((register) => !['gtec', 'ges'].includes(register))) add(path, 'SCHOOL_INVALID', 'A school question offers the tertiary list, the senior high list, or both.');
     },
   },
+  // Which course, on a form that registers people onto a cohort. Its options are
+  // the cohort's open courses, filled in by the server when the form is served and
+  // again when it is answered, so a course added later is offered without anybody
+  // editing the form. The definition never stores them.
+  course: {
+    answer(raw, question) {
+      const value = text(raw);
+      if (!value) return { error: problem('REQUIRED', 'Please choose a course.') };
+      if (Array.isArray(question.options) && !optionValues(question).includes(value)) {
+        return { error: problem('NOT_AN_OPTION', 'Please choose one of the courses given.') };
+      }
+      return { value };
+    },
+    define(question, add, path) {
+      if (question.binding !== 'course') add(path, 'COURSE_UNBOUND', 'The course question is the one a registration enrols from.');
+      if (question.visibleWhen) add(path, 'COURSE_HIDDEN', 'Everyone registering chooses a course, so this question cannot be hidden by a rule.');
+    },
+  },
   file: {
     answer(raw, question) {
       const given = Array.isArray(raw) ? raw : [raw];
@@ -285,6 +304,7 @@ const BINDING_TYPES = Object.freeze({
   gender: ['single_choice', 'dropdown'],
   school: ['school', 'short_text'],
   location: ['short_text', 'single_choice', 'dropdown'],
+  course: ['course'],
 });
 
 function validateCondition(condition, { path, earlier, add }) {
@@ -513,7 +533,7 @@ function newKey(prefix = 'q') {
 // rewrite of the line below and nothing else.
 const QUESTION_TYPES = Object.freeze(Object.keys(TYPES));
 
-export const RULES_SHA = '38a592848d79bd058fc9a832b529c82ca158fdfd91f6425f63bc7fb8010a40bd';
+export const RULES_SHA = '02e2811201f2b681e9b927afe5a24c4469eaf6e948ec9f87ae977493083f1d25';
 
 export {
   SCHEMA_VERSION,

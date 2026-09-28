@@ -308,7 +308,9 @@ export default function QuestionField({ slug, token, question, value, onChange, 
             onChange={(event) => onChange(event.target.value)}
           />
         );
+      // A course question is a single choice over the cohort's courses, filled in by the server.
       case "single_choice":
+      case "course":
         return <Choices question={question} value={value} onChange={onChange} options={options} describedBy={describedBy} />;
       case "multiple_choice":
         return <Choices question={question} value={value} onChange={onChange} options={options} describedBy={describedBy} multiple />;
@@ -386,7 +388,7 @@ export default function QuestionField({ slug, token, question, value, onChange, 
 
   const answered = value !== undefined && value !== null && value !== "";
   // Choice groups are labelled by id; single fields by their <label>.
-  const grouped = ["single_choice", "multiple_choice", "yes_no", "linear_scale"].includes(question.type);
+  const grouped = ["single_choice", "course", "multiple_choice", "yes_no", "linear_scale"].includes(question.type);
   const LabelTag = grouped ? "p" : "label";
 
   return (

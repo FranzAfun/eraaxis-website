@@ -246,8 +246,39 @@ connection. Files are stored privately under `form-uploads/`, which the shared
 response to that form carries the file.
 
 `POST /submissions/:receipt/confirm` takes `{ code }` and returns 200 `{ confirmed:
-true }`, or 400 `CODE_INVALID`, 404 `SUBMISSION_NOT_FOUND`, 410 `CODE_EXPIRED` (30
+true, registration }`, or 400 `CODE_INVALID`, 404 `SUBMISSION_NOT_FOUND`, 410 `CODE_EXPIRED` (30
 minutes), 422 `CODE_WRONG`, 429 `CODE_ATTEMPTS` after five wrong tries.
+
+**Registration forms.** A form bound to a cohort (`lms_forms.cohort_id`) registers the
+people who fill it in. Its `course` question (type `course`, binding `course`, always
+required, never conditional) offers the cohort's open courses as `options`, filled in by
+the server each time the form is served and answered and never stored; with no open
+course left the form reads as closed ("Registration for this programme has closed.").
+A registration runs once the address is proven: at submit with Google sign-in, or at
+`confirm` with a code. It uses the importer's identity matching and learner write.
+`registration` is null for other forms, else `{ status, course, message }` where
+`status` is `registered`, `duplicate` (this person already holds an open place in the
+cohort; `message` names the course, the submission is kept as `rejected`), `review`
+(details could belong to more than one learner; staff decide, and the registrant is
+told nothing is wrong) or `invalid`. At submit, a duplicate is refused outright with
+409 `ALREADY_REGISTERED` and nothing is stored; a successful one adds
+`registration: { status, course }` to the 201. A registration form must check the
+address (Google sign-in or code): 422 `REGISTRATION_NEEDS_CHECKED_EMAIL` on settings,
+and publishing also needs the course question (`REGISTRATION_NEEDS_COURSE`), required
+name and email questions (`REGISTRATION_NEEDS_DETAILS`) and an open course
+(`COHORT_HAS_NO_COURSES`); a course question on a form with no cohort is
+`COURSE_WITHOUT_COHORT`.
+
+Staff side: `GET /api/lms/forms/:id/responses` adds `registration` per response
+(`registered` with `course`, `refused` with `note`, `waiting` for the address, `review`)
+and `counts.registered` / `counts.needsDecision`; the form detail adds `courseOptions`.
+`POST /api/lms/forms/:id/responses/:submissionId/register` (`FORM_RESPONSES`,
+`Idempotency-Key`) registers a response by hand: with no body it answers 409
+`IDENTITY_REVIEW_REQUIRED` and `data.candidates`, or registers if nothing is ambiguous;
+`{ learnerId }` or `{ newLearner: true }` decides. `POST /api/lms/offerings/:id/learners`
+(`CERT_PREPARE`) adds one learner by hand (`fullName`, `email`, `phone`, `gender`,
+`school`, `location`, plus the same decision fields) through the same matching, in the
+cohort's `cohort:<id>` namespace; 409 `ALREADY_REGISTERED` when they already hold a place.
 
 `POST /submissions/:receipt/resend` sends a new code, which replaces the old one and
 resets the tries: 200 `{ confirmed: false, retryAfter: 60 }`, or `{ confirmed: true,
@@ -1151,7 +1182,7 @@ pacing defaults are trusted in production.
 | 401 | AUTH_REQUIRED, ACCOUNT_UNAVAILABLE, DOWNLOAD_ACCESS_REQUIRED, GOOGLE_TOKEN_INVALID, GOOGLE_EMAIL_UNVERIFIED |
 | 403 | LMS_ACCESS_DISABLED, CERT_PERMISSION_REQUIRED, ADMIN_REQUIRED, ATTENDANCE_NOT_RECOGNISED, ATTENDANCE_WRONG_COURSE |
 | 404 | CERTIFICATE_NOT_FOUND, BATCH_NOT_FOUND, ATTENDANCE_SESSION_NOT_FOUND, SESSION_NOT_FOUND, OFFERING_NOT_FOUND, ENROLMENT_NOT_FOUND |
-| 409 | REVISION_CONFLICT, IDEMPOTENCY_CONFLICT, BATCH_NOT_DRAFT, BATCH_NOT_APPROVED, APPROVAL_REQUIRED, ISSUANCE_CONFLICT, COHORT_COURSE_CONFLICT, CERTIFICATE_UNAVAILABLE, ATTENDANCE_NOT_STARTED, ATTENDANCE_CLOSED, ATTENDANCE_COURSE_CLOSED, ATTENDANCE_EMAIL_AMBIGUOUS, ATTENDANCE_CONFLICT, OFFERING_CLOSED, OFFERING_ALREADY_CLOSED, COHORT_CLOSED, COHORT_ALREADY_CLOSED, COURSE_NOT_CLOSED, SESSION_NOT_STARTED, ALREADY_ON_COURSE, ATTENDANCE_ON_OLD_COURSE, DESTINATION_BATCH_REQUIRED, COHORT_NOT_ROLLING, ENROLMENT_NOT_OPEN, ENROLMENT_COMPLETED, COMPLETION_REQUIRED, RECIPIENT_NOT_AVAILABLE |
+| 409 | REVISION_CONFLICT, IDEMPOTENCY_CONFLICT, BATCH_NOT_DRAFT, BATCH_NOT_APPROVED, APPROVAL_REQUIRED, ISSUANCE_CONFLICT, COHORT_COURSE_CONFLICT, CERTIFICATE_UNAVAILABLE, ATTENDANCE_NOT_STARTED, ATTENDANCE_CLOSED, ATTENDANCE_COURSE_CLOSED, ATTENDANCE_EMAIL_AMBIGUOUS, ATTENDANCE_CONFLICT, OFFERING_CLOSED, OFFERING_ALREADY_CLOSED, COHORT_CLOSED, COHORT_ALREADY_CLOSED, COURSE_NOT_CLOSED, SESSION_NOT_STARTED, ALREADY_ON_COURSE, ATTENDANCE_ON_OLD_COURSE, DESTINATION_BATCH_REQUIRED, COHORT_NOT_ROLLING, ENROLMENT_NOT_OPEN, ENROLMENT_COMPLETED, COMPLETION_REQUIRED, RECIPIENT_NOT_AVAILABLE, ALREADY_REGISTERED |
 | 413 | IMPORT_TOO_LARGE |
 | 422 | IMPORT_INVALID, IDENTITY_REVIEW_REQUIRED, ASSET_NOT_APPROVED, SESSION_DETAILS_REQUIRED, SESSION_WINDOW_REQUIRED, SESSION_WINDOW_INCOMPLETE, SESSION_WINDOW_INVALID, SESSION_WINDOW_TOO_LONG, SESSION_LINK_REQUIRES_DETAILS, NO_SESSIONS, NO_ELIGIBLE_RECIPIENTS, LEARNER_NOT_ON_COURSE |
 | 429 | RATE_LIMITED |
