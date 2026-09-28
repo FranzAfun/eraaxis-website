@@ -13,6 +13,14 @@ function formatEnd(value) {
   return new Date(value).toLocaleString("en-GB", { day: "numeric", month: "long", hour: "numeric", minute: "2-digit" });
 }
 
+// How long the early-bird price lasts: a time, a number of places, or both.
+function earlyTerms({ endsAt, places, placesLeft }) {
+  const left = places ? `${placesLeft} of ${places} early-bird ${places === 1 ? "place" : "places"} left` : "";
+  if (endsAt && places) return `Early-bird price until ${formatEnd(endsAt)} or while places last (${left}).`;
+  if (places) return `Early-bird price for the first ${places} ${places === 1 ? "payer" : "payers"}: ${left}.`;
+  return `Early-bird price until ${formatEnd(endsAt)}.`;
+}
+
 export default function PaymentSummary({ amount, earlyBird = null, regularAmount, sent = false, className = "" }) {
   const { feeConfig, feesLoading, feesError } = useSpesoFees();
   const breakdown = calculatePaymentBreakdown(amount, feeConfig);
@@ -45,7 +53,7 @@ export default function PaymentSummary({ amount, earlyBird = null, regularAmount
       </div>
       {earlyBird && (
         <p className="mt-3 text-xs leading-relaxed text-[var(--color-text-secondary)]">
-          Early-bird price until {formatEnd(earlyBird.endsAt)}. After that, the form fee is {formatGhs(regularAmount)}.
+          {earlyTerms(earlyBird)} After that, the form fee is {formatGhs(regularAmount)}.
         </p>
       )}
       {feesError && (

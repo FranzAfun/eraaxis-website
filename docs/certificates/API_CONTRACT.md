@@ -171,7 +171,10 @@ allowlist (p, br, strong, b, em, i, u, ul, ol, li, and http/https/mailto links) 
 it was saved and is rendered as is. `googleClientId` is present only when
 `requiresSignIn`. `payment` is null for a free form, else `{ amount, regularAmount, earlyBird, currency }`:
 `amount` is the price as of now, `earlyBird` is `{ amount, endsAt }` while an early-bird
-price lasts, else null.
+price lasts, else null. `earlyBird` is `{ amount, endsAt, places, placesLeft }`: it ends at
+`endsAt`, once `places` early-bird payments have completed, or whichever comes first
+(either may be null). Places are counted from completed payments, so the last place
+can go to two people paying at the same moment.
 
 The rules are one module, `server/utils/formSchema.js`, generated into
 `src/shared/formSchema.js` here and `src/utils/formSchema.js` on the website by
