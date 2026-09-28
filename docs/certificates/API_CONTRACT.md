@@ -463,6 +463,46 @@ under it, in one transaction, and returns the cohort plus `coursesClosed` and
 already closed keeps its own earlier `closedAt`. Already closed is 409
 `COHORT_ALREADY_CLOSED`; adding a course to a closed cohort is 409 `COHORT_CLOSED`.
 
+**Continuous (rolling) programmes.** A cohort is `kind` `dated` (the default, and
+every cohort created before this) or `rolling`, chosen at creation
+(`POST /api/lms/cohorts` takes `kind`; it cannot be changed afterwards). A rolling
+cohort is a permanent programme that learners join and finish at different times:
+
+- An enrolment has `joined_on` (a rolling enrolment made by import is stamped with
+  the day it was made), `completed_at`, `completed_by`, `sessions_held_at_completion`
+  and `attempt`. A learner may hold one *open* enrolment per cohort; once completed
+  they may enrol again (`attempt` 2, and so on).
+- Attendance for an enrolment counts only the sessions held while it was open: from
+  `joined_on`, up to the day it completed. Its denominator is the count frozen at
+  completion, else the course's frozen count if the course closed (for an enrolment
+  with no `joined_on`), else the live count in its window. With neither date, which
+  is every dated-cohort enrolment, this is exactly the whole-course figure as before.
+- `POST /api/lms/offerings/:id/complete` (`CERT_MANAGE_COHORTS`, `Idempotency-Key`)
+  takes `{ enrolmentIds }` and marks those learners complete: their window closes
+  today, their verdict is written as closing writes one (evidence "Attendance at
+  completion: …"), and draft batch rows for them move their batch's revision.
+  Returns `{ id, completed, applied, eligible, notEligible }`. 409 `COHORT_NOT_ROLLING`
+  for a dated course, `OFFERING_CLOSED` for a closed one, `ENROLMENT_NOT_OPEN` if any
+  enrolment is not open on that course.
+- `POST /api/lms/certificate-batches/:id/recipients/completed` (`CERT_PREPARE`,
+  `Idempotency-Key`) adds the course's completed learners not already on any batch
+  to a draft batch, with the same snapshot shape an import writes, and moves its
+  revision. Optional `{ enrolmentIds }` narrows it. Returns
+  `{ id, revision, added, eligible, withoutEmail }`. 422 `NO_COMPLETED_LEARNERS`,
+  409 `RECIPIENT_NOT_AVAILABLE`, `COHORT_NOT_ROLLING`, `BATCH_NOT_DRAFT`.
+- A rolling course's batch is approved without closing the course, but with an
+  attendance rule every included recipient must be complete: otherwise 409
+  `COMPLETION_REQUIRED`.
+- Attendance cannot be marked for a completed enrolment (409 `ENROLMENT_COMPLETED`)
+  or for a session before the learner joined (422 `SESSION_BEFORE_JOINING`). The
+  register lists the learners whose enrolment was open on the session's date, each
+  with `completed`. The course eligibility report is per enrolment, adding
+  `enrolmentId`, `joinedOn`, `completedAt` and `final` to each learner and
+  `completed` to its summary. Cohort and course lists count distinct learners and add
+  `completedCount`; the batch detail adds `cohortKind` and `completedWaiting`.
+- Every lookup that assumed one enrolment per learner per cohort uses the open one:
+  the import and its validation, moving a learner, and public attendance sign-in.
+
 **Closing is irreversible and there is no reopen endpoint.** Closed cohorts are
 archived: still listed and readable, marked closed, filtered out of the default
 view. Closing is not deleting — a closed course keeps its batches and certificates
@@ -1111,7 +1151,7 @@ pacing defaults are trusted in production.
 | 401 | AUTH_REQUIRED, ACCOUNT_UNAVAILABLE, DOWNLOAD_ACCESS_REQUIRED, GOOGLE_TOKEN_INVALID, GOOGLE_EMAIL_UNVERIFIED |
 | 403 | LMS_ACCESS_DISABLED, CERT_PERMISSION_REQUIRED, ADMIN_REQUIRED, ATTENDANCE_NOT_RECOGNISED, ATTENDANCE_WRONG_COURSE |
 | 404 | CERTIFICATE_NOT_FOUND, BATCH_NOT_FOUND, ATTENDANCE_SESSION_NOT_FOUND, SESSION_NOT_FOUND, OFFERING_NOT_FOUND, ENROLMENT_NOT_FOUND |
-| 409 | REVISION_CONFLICT, IDEMPOTENCY_CONFLICT, BATCH_NOT_DRAFT, BATCH_NOT_APPROVED, APPROVAL_REQUIRED, ISSUANCE_CONFLICT, COHORT_COURSE_CONFLICT, CERTIFICATE_UNAVAILABLE, ATTENDANCE_NOT_STARTED, ATTENDANCE_CLOSED, ATTENDANCE_COURSE_CLOSED, ATTENDANCE_EMAIL_AMBIGUOUS, ATTENDANCE_CONFLICT, OFFERING_CLOSED, OFFERING_ALREADY_CLOSED, COHORT_CLOSED, COHORT_ALREADY_CLOSED, COURSE_NOT_CLOSED, SESSION_NOT_STARTED, ALREADY_ON_COURSE, ATTENDANCE_ON_OLD_COURSE, DESTINATION_BATCH_REQUIRED |
+| 409 | REVISION_CONFLICT, IDEMPOTENCY_CONFLICT, BATCH_NOT_DRAFT, BATCH_NOT_APPROVED, APPROVAL_REQUIRED, ISSUANCE_CONFLICT, COHORT_COURSE_CONFLICT, CERTIFICATE_UNAVAILABLE, ATTENDANCE_NOT_STARTED, ATTENDANCE_CLOSED, ATTENDANCE_COURSE_CLOSED, ATTENDANCE_EMAIL_AMBIGUOUS, ATTENDANCE_CONFLICT, OFFERING_CLOSED, OFFERING_ALREADY_CLOSED, COHORT_CLOSED, COHORT_ALREADY_CLOSED, COURSE_NOT_CLOSED, SESSION_NOT_STARTED, ALREADY_ON_COURSE, ATTENDANCE_ON_OLD_COURSE, DESTINATION_BATCH_REQUIRED, COHORT_NOT_ROLLING, ENROLMENT_NOT_OPEN, ENROLMENT_COMPLETED, COMPLETION_REQUIRED, RECIPIENT_NOT_AVAILABLE |
 | 413 | IMPORT_TOO_LARGE |
 | 422 | IMPORT_INVALID, IDENTITY_REVIEW_REQUIRED, ASSET_NOT_APPROVED, SESSION_DETAILS_REQUIRED, SESSION_WINDOW_REQUIRED, SESSION_WINDOW_INCOMPLETE, SESSION_WINDOW_INVALID, SESSION_WINDOW_TOO_LONG, SESSION_LINK_REQUIRES_DETAILS, NO_SESSIONS, NO_ELIGIBLE_RECIPIENTS, LEARNER_NOT_ON_COURSE |
 | 429 | RATE_LIMITED |
