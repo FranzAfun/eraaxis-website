@@ -238,6 +238,9 @@ function ParagraphInput({ value, onChange, ...field }) {
   );
 }
 
+// Lets the browser fill a name from the person's own saved details.
+const NAME_AUTOCOMPLETE = { full_name: "name", first_name: "given-name", last_name: "family-name", other_names: "additional-name" };
+
 // Choices that are not required can be taken back, as on any paper form.
 const CLEARABLE = new Set(["single_choice", "linear_scale", "yes_no", "dropdown"]);
 
@@ -377,7 +380,7 @@ export default function QuestionField({ slug, token, question, value, onChange, 
           <input
             {...common}
             type="text"
-            autoComplete={question.binding === "full_name" ? "name" : "off"}
+            autoComplete={NAME_AUTOCOMPLETE[question.binding] || "off"}
             maxLength={question.validation?.maxLength || 240}
             value={value || ""}
             onChange={(event) => onChange(event.target.value)}

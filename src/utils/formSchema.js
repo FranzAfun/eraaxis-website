@@ -43,8 +43,10 @@ const LIMITS = Object.freeze({
 // The fields the LMS itself reads off a submission. A question bound to one of
 // these is promoted to a column when the response is saved, which is what lets a
 // registration become a learner without anybody re-typing it.
-// `course` is the course a cohort registration enrols somebody on.
-const BINDINGS = Object.freeze(['full_name', 'email', 'phone', 'gender', 'school', 'location', 'course']);
+// `course` is the course a cohort registration enrols somebody on. A name is asked
+// either whole (`full_name`) or in parts (`first_name`, `last_name`, and optionally
+// `other_names`), which the server composes as "First Other Last".
+const BINDINGS = Object.freeze(['full_name', 'first_name', 'last_name', 'other_names', 'email', 'phone', 'gender', 'school', 'location', 'course']);
 
 const OPERATORS = Object.freeze(['equals', 'not_equals', 'in', 'not_in', 'answered', 'not_answered', 'gt', 'lt']);
 
@@ -299,6 +301,9 @@ function defineOptions(question, add, path) {
 // store a spelling where the rest of the system expects a school.
 const BINDING_TYPES = Object.freeze({
   full_name: ['short_text'],
+  first_name: ['short_text'],
+  last_name: ['short_text'],
+  other_names: ['short_text'],
   email: ['email'],
   phone: ['phone', 'short_text'],
   gender: ['single_choice', 'dropdown'],
@@ -430,6 +435,13 @@ function validateDefinition(definition) {
   });
 
   if (questionCount > LIMITS.questions) add('sections', 'TOO_MANY', `A form can hold up to ${LIMITS.questions} questions.`);
+  // One way of asking a name, and the parts as a set.
+  const parts = ['first_name', 'last_name', 'other_names'].filter(binding => bindings.has(binding));
+  if (bindings.has('full_name') && parts.length) {
+    add('sections', 'NAME_BINDINGS_MIXED', 'Ask the name either in one question or in parts (first, last, other names), not both.');
+  } else if (parts.length && !(bindings.has('first_name') && bindings.has('last_name'))) {
+    add('sections', 'NAME_PARTS_INCOMPLETE', 'A name asked in parts needs both a first name and a last name question.');
+  }
   return problems;
 }
 
@@ -533,7 +545,7 @@ function newKey(prefix = 'q') {
 // rewrite of the line below and nothing else.
 const QUESTION_TYPES = Object.freeze(Object.keys(TYPES));
 
-export const RULES_SHA = '02e2811201f2b681e9b927afe5a24c4469eaf6e948ec9f87ae977493083f1d25';
+export const RULES_SHA = '368da5c881c519fbd5dc96f69ef978db67055bdac05d456e1034045384e8383e';
 
 export {
   SCHEMA_VERSION,

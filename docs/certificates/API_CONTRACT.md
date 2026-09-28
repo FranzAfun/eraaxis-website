@@ -269,6 +269,19 @@ name and email questions (`REGISTRATION_NEEDS_DETAILS`) and an open course
 (`COHORT_HAS_NO_COURSES`); a course question on a form with no cohort is
 `COURSE_WITHOUT_COHORT`.
 
+**Names in parts.** Bindings `first_name`, `last_name` and `other_names` (short text)
+ask a name in parts; a form uses either those (first and last both present) or
+`full_name`, never both (`NAME_BINDINGS_MIXED`, `NAME_PARTS_INCOMPLETE`). The server
+composes the parts as "First Other Last", tidying only a part typed all in capitals or
+all in lowercase, and that composition is the submission's `full_name`, the learner's
+`display_name` and the name a certificate prints. The parts are kept on the submission
+and the learner (`first_name`, `last_name`, `other_names`, migration 133). A payment's
+receipt uses the parts. A registration form needs required first and last name
+questions (or a required full name). `POST /api/lms/offerings/:id/learners` takes
+`firstName`, `lastName`, `otherNames` (or `fullName`). The spreadsheet template's columns
+are `first_name,last_name,other_names,email,phone,gender,school,location`; a single
+full-name column is still read.
+
 Staff side: `GET /api/lms/forms/:id/responses` adds `registration` per response
 (`registered` with `course`, `refused` with `note`, `waiting` for the address, `review`)
 and `counts.registered` / `counts.needsDecision`; the form detail adds `courseOptions`.
