@@ -65,9 +65,11 @@ VITE_SOCIAL_WHATSAPP_URL=
 - Build command: `npm run build`
 - Publish directory: `dist`
 - SPA routing is handled via `netlify.toml` redirects
+- Shared `/forms/*` links get their own preview card from the edge function in `netlify/edge-functions/`; it needs `VITE_API_URL` scoped to Functions as well as Builds
 
 ## Deployment Readiness Checklist
 - `npm run lint`
+- `npm test` (link previews for shared form links)
 - `npm run build`
 - Check routes and page transitions
 - Check mobile responsiveness
