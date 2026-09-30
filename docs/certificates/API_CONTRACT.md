@@ -581,6 +581,73 @@ course or the cohort is closed; 409 `BATCH_NOT_DRAFT` when the learner is on an
 approved or issued batch; and 409 `DESTINATION_BATCH_REQUIRED` when the new course
 has no draft batch or more than one.
 
+## The learner directory
+
+Everyone on record, however they came in, with where they were reached. Reading is
+`CERT_VIEW`; adding, correcting, enrolling and uploading are `CERT_PREPARE`; renaming or
+merging a community and linking a typed school name are `CERT_MANAGE_COHORTS`, because
+they reshape every report. Writes are idempotency-keyed and audited under entity type
+`lms_learner`.
+
+`lms_learners.origin` records how somebody first came to be on record — `form`,
+`import` (a spreadsheet, onto a batch or straight into the directory) or `staff` (added
+by hand) — and never changes afterwards. Existing learners were back-filled by
+migration 134. A school is linked to the Ghana register (`school_id`) when it was chosen
+from it or its text matches a register name or alias exactly; the typed text is kept.
+A community is typed, stored once per normalised name in `lms_communities`, and can be
+renamed, given one of the sixteen regions, or merged into another.
+
+- `GET /api/lms/learners` → `{ items, total }`, one row per learner: name and parts,
+  contact, gender, `school`, `schoolId`, `schoolListed`, `community`, `region` (the
+  school's, else the community's), `origin`, `addedAt`, `cohorts`, `enrolments`,
+  `active`, `completed`, `sessionsAttended`, `certificates`, `responses`,
+  `lastActivityAt`. Filters: `q`, `origin`, `gender` (or `unknown`), `region` (or
+  `unknown`), `schoolId`, `communityId`, `cohortId`, `certified` (`yes`/`no`), `from`
+  and `to` (the date first recorded, Ghana time).
+- `GET /api/lms/learners/:id` → the same row plus `addedBy`, `enrolments` (course,
+  cohort, attendance, eligibility, whether final), `certificates` (issued awards, never
+  synthetic ones) and `submissions` (forms they filled).
+- `POST /api/lms/learners` `{ firstName, lastName, otherNames?, email?, phone?, gender?,
+  schoolId? | school?, communityId? | community?, communityRegion?, location?,
+  offeringId?, newLearner? }` → 201 `{ id, name, enrolledOn }`. 409 `LEARNER_EXISTS`
+  (`data.learner`) when somebody already holds the email or phone; 409
+  `IDENTITY_REVIEW_REQUIRED` (`data.candidates`) for a same-name match until sent again
+  with `newLearner: true`; 409 `ALREADY_REGISTERED` / `OFFERING_CLOSED` for the course.
+- `PATCH /api/lms/learners/:id` (same details) replaces them, blanks included. 409
+  `CONTACT_IN_USE` when another learner holds the email or phone.
+- `POST /api/lms/learners/:id/enrolments` `{ offeringId }` → 201; one open course per
+  cohort (`ALREADY_REGISTERED`).
+- `GET /api/lms/learners/template?format=csv|xlsx` → `first_name, last_name,
+  other_names, email, phone, gender, school, community, region, location`.
+- `POST /api/lms/learners/import-preview` (multipart `file`, optional `schoolId`,
+  `communityId` or `community` applied to rows that leave theirs blank) →
+  `{ previewToken, counts }`; `GET /api/lms/learners/import-preview/:token` → the rows,
+  each with `action` (`new`, `reuse`, `update`, `duplicate`, `review`, `invalid`),
+  `errors`, `warnings` (including `SCHOOL_NOT_LISTED`) and `candidates`. A missing email
+  is not a problem in the directory. `POST /api/lms/learners/import-commit`
+  `{ previewToken, decisions: [{ rowId, include, identity?, matchLearnerId? }] }` →
+  `{ counts: { included, excluded, created, updated, reused } }`.
+- `GET /api/lms/communities?q=` → `{ items: [{ id, name, region, learners }] }`;
+  `POST /api/lms/communities` `{ name, region? }` finds or creates one;
+  `PATCH /api/lms/communities/:id` `{ name, region? }` (409 `COMMUNITY_EXISTS` when the
+  new name is another community's); `POST /api/lms/communities/:id/merge`
+  `{ intoId }` moves its learners and returns `{ moved }`.
+- `GET /api/lms/learner-schools` → `{ listed, unlisted }`: register schools with their
+  learner counts, and typed names grouped by normalised spelling.
+  `POST /api/lms/learner-schools/link` `{ text, schoolId }` adds a staff alias and links
+  every learner who typed that name; returns `{ linked }`.
+- `GET /api/lms/overview` (the same filters as the list) → `totals`, monthly `growth`
+  by origin with a running total, `byOrigin`, `byGender`, `byRegion`, `bySchoolLevel`,
+  `topSchools`, `topCommunities`, `cohorts` and `recent`. Its `totals.learners` always
+  equals the list's length under the same filters. Sessions, attendance, certificates
+  and form responses are counted within the date range.
+
+A form that is not a registration adds its respondents to the directory when
+`recordsLearners` is on (a form setting): once the submission is final — at once, once
+the address is proven, or once a fee is paid. An unambiguous email or phone is the same
+person; a name that could be several people is left unlinked rather than guessed. It is
+never enrolled on anything, and never fails the submission.
+
 ## Private retrieval
 
 1. `POST /:publicId/request-access`, body `{ "email": "synthetic@example.invalid" }`.
