@@ -617,10 +617,18 @@ renamed, given one of the sixteen regions, or merged into another.
   `CONTACT_IN_USE` when another learner holds the email or phone.
 - `POST /api/lms/learners/:id/enrolments` `{ offeringId }` → 201; one open course per
   cohort (`ALREADY_REGISTERED`).
+- `DELETE /api/lms/learners/:id` (`CERT_MANAGE_COHORTS`) removes a learner added by mistake,
+  with their enrolments and source aliases; their form submissions are kept, unlinked. 409
+  `LEARNER_HAS_HISTORY` while they have attendance or a place on a certificate batch. The
+  audit keeps their name, email, phone and origin.
+- `GET /api/lms/learners/workbook` (the list's filters) and `GET /api/lms/overview/workbook`
+  (the overview's filters) return styled `.xlsx` files: the filtered learners, and the partner
+  report (summary, growth, each breakdown, cohorts, and one row per learner).
 - `GET /api/lms/learners/template?format=csv|xlsx` → `first_name, last_name,
   other_names, email, phone, gender, school, community, region, location`.
 - `POST /api/lms/learners/import-preview` (multipart `file`, optional `schoolId`,
-  `communityId` or `community` applied to rows that leave theirs blank) →
+  `communityId` or `community` applied to rows that leave theirs blank, and optional `offeringId`
+to enrol everyone saved onto that open course; `counts.enrolled` says how many) →
   `{ previewToken, counts }`; `GET /api/lms/learners/import-preview/:token` → the rows,
   each with `action` (`new`, `reuse`, `update`, `duplicate`, `review`, `invalid`),
   `errors`, `warnings` (including `SCHOOL_NOT_LISTED`) and `candidates`. A missing email
@@ -641,6 +649,18 @@ renamed, given one of the sixteen regions, or merged into another.
   `topSchools`, `topCommunities`, `cohorts` and `recent`. Its `totals.learners` always
   equals the list's length under the same filters. Sessions, attendance, certificates
   and form responses are counted within the date range.
+
+**Permanent programmes.** A course may name a website programme people enrol on
+(`websiteProgrammeId` on `POST/PATCH /api/lms/offerings`, returned by the offerings list;
+categories `school_stem`, `out_of_school_youth`, `online_learning`, `digital_skills`; one
+open course per programme, else 409 `PROGRAMME_ALREADY_LINKED`). On every confirmed payment for
+such a programme the payer is recorded as a learner (origin `form`) and enrolled on that course.
+
+**In-person registers.** `POST /api/lms/sessions/:id/register` (`CERT_PREPARE`,
+idempotency-keyed) `{ present: [learnerId], note }` marks everyone ticked present in one go,
+source `manual`, with the note. Learners not ticked are left as they are; finished learners and
+those who joined after the session are skipped and named in `skipped`. Returns `{ marked,
+already, skipped }`; audited as `LMS_REGISTER_TAKEN`.
 
 A form that is not a registration adds its respondents to the directory when
 `recordsLearners` is on (a form setting): once the submission is final — at once, once
