@@ -598,7 +598,8 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
             We&apos;ve kept your answers. Your submission is complete once the payment goes through.
           </p>
         </div>
-        <PaymentSummary {...(form.payment || outcome.payment)} sent />
+        {/* The price as sent: the early-bird price may have ended since the page loaded. */}
+        <PaymentSummary {...(outcome.payment || form.payment)} sent />
         {outcome.error && (
           <p role="alert" className="flex items-start gap-2 rounded-[var(--radius-sm)] border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
             <AlertCircle size={16} aria-hidden="true" className="mt-0.5 shrink-0" />
