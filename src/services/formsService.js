@@ -41,6 +41,13 @@ export async function searchFormSchools(slug, questionKey, query) {
   return body?.data?.items || [];
 }
 
+/** Communities ERA AXIS has recorded, for a form's community question. */
+export async function searchFormCommunities(slug, questionKey, query) {
+  const params = new URLSearchParams({ question: questionKey, q: query || "" });
+  const body = await api.get(`/forms/${encodeURIComponent(slug)}/communities?${params}`);
+  return body?.data?.items || [];
+}
+
 export const SUBMIT_OUTCOME = Object.freeze({
   SENT: "sent",
   // Some answers were refused; `errors` says which, in the rules' own words.

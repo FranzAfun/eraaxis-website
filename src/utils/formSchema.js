@@ -46,7 +46,13 @@ const LIMITS = Object.freeze({
 // `course` is the course a cohort registration enrols somebody on. A name is asked
 // either whole (`full_name`) or in parts (`first_name`, `last_name`, and optionally
 // `other_names`), which the server composes as "First Other Last".
-const BINDINGS = Object.freeze(['full_name', 'first_name', 'last_name', 'other_names', 'email', 'phone', 'gender', 'school', 'location', 'course']);
+// `community`, `date_of_birth`, `age` and `guardian` reach the learner's record the
+// same way: where they were reached, how old they are, and for someone under 18,
+// the parent or guardian who agreed to it.
+const BINDINGS = Object.freeze(['full_name', 'first_name', 'last_name', 'other_names', 'email', 'phone', 'gender', 'school', 'location', 'course', 'community', 'date_of_birth', 'age', 'guardian']);
+// The school lists a question can offer: universities and colleges (GTEC), senior
+// high schools (GES), and the schools ERA AXIS added itself, mostly basic schools.
+const SCHOOL_REGISTERS = Object.freeze(['gtec', 'ges', 'edos']);
 
 const OPERATORS = Object.freeze(['equals', 'not_equals', 'in', 'not_in', 'answered', 'not_answered', 'gt', 'lt']);
 
@@ -233,7 +239,41 @@ const TYPES = Object.freeze({
     define(question, add, path) {
       const registers = question.school?.registers;
       if (!Array.isArray(registers) || !registers.length) return add(path, 'SCHOOL_INVALID', 'Choose which list this question offers.');
-      if (registers.some((register) => !['gtec', 'ges'].includes(register))) add(path, 'SCHOOL_INVALID', 'A school question offers the tertiary list, the senior high list, or both.');
+      if (registers.some((register) => !SCHOOL_REGISTERS.includes(register))) add(path, 'SCHOOL_INVALID', 'A school question offers universities and colleges, senior high schools, schools ERA AXIS added, or a mix.');
+    },
+  },
+  // Where somebody was reached outside a school: a community chosen from the ones
+  // on record, or typed when it is new. A typed one becomes a community record when
+  // the response is turned into a learner, the same record anyone else who names
+  // the place joins.
+  community: {
+    answer(raw) {
+      const given = typeof raw === 'string' ? { other: raw } : raw || {};
+      if (given.communityId) {
+        const id = text(given.communityId);
+        if (!/^[0-9a-f-]{36}$/i.test(id)) return { error: problem('NOT_A_COMMUNITY', 'Please choose a community from the list.') };
+        return { value: { communityId: id } };
+      }
+      const other = text(given.other || '');
+      if (!other) return { error: problem('NOT_A_COMMUNITY', 'Please choose or type your community.') };
+      if (other.length > 160) return { error: problem('TOO_LONG', 'Please keep this under 160 characters.') };
+      return { value: { other } };
+    },
+  },
+  // A parent or guardian, asked of somebody under 18. Their name and phone, how
+  // they are related, and that they agree: the consent is the point, so the answer
+  // is refused without it.
+  guardian: {
+    answer(raw) {
+      const given = raw && typeof raw === 'object' ? raw : {};
+      const name = text(given.name || '');
+      const phone = text(given.phone || '');
+      const relationship = text(given.relationship || '');
+      if (!name) return { error: problem('GUARDIAN_INCOMPLETE', "Please give the parent or guardian's name.") };
+      if (name.length > 160 || relationship.length > 60) return { error: problem('TOO_LONG', 'Please keep the name and relationship short.') };
+      if (!PHONE.test(phone)) return { error: problem('NOT_A_PHONE', "Please give the parent or guardian's phone number.") };
+      if (given.consent !== true && given.consent !== 'true') return { error: problem('CONSENT_REQUIRED', 'A parent or guardian has to agree before someone under 18 can take part.') };
+      return { value: { name, phone, relationship, consent: true } };
     },
   },
   // Which course, on a form that registers people onto a cohort. Its options are
@@ -310,6 +350,10 @@ const BINDING_TYPES = Object.freeze({
   school: ['school', 'short_text'],
   location: ['short_text', 'single_choice', 'dropdown'],
   course: ['course'],
+  community: ['community', 'short_text'],
+  date_of_birth: ['date'],
+  age: ['number'],
+  guardian: ['guardian'],
 });
 
 function validateCondition(condition, { path, earlier, add }) {
@@ -545,7 +589,7 @@ function newKey(prefix = 'q') {
 // rewrite of the line below and nothing else.
 const QUESTION_TYPES = Object.freeze(Object.keys(TYPES));
 
-export const RULES_SHA = '368da5c881c519fbd5dc96f69ef978db67055bdac05d456e1034045384e8383e';
+export const RULES_SHA = '8dceab559f177abe2c8e15605277283d1418c8c3df8b7515cf05a07e180b4278';
 
 export {
   SCHEMA_VERSION,

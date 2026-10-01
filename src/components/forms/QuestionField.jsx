@@ -2,6 +2,8 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { AlertCircle, Check, Star } from "lucide-react";
 import SelectField from "../ui/SelectField";
 import SchoolPicker from "./SchoolPicker";
+import CommunityPicker from "./CommunityPicker";
+import GuardianField from "./GuardianField";
 import FileField from "./FileField";
 import { exampleText, fieldClass, scaleStyle } from "./formDisplay";
 import { suggestEmailCorrection } from "../../utils/emailTypoCheck";
@@ -354,6 +356,29 @@ export default function QuestionField({ slug, token, question, value, onChange, 
         return (
           <SchoolPicker
             slug={slug}
+            question={question}
+            value={value}
+            onChange={onChange}
+            fieldClass={fieldClass}
+            invalid={invalid}
+            describedBy={describedBy}
+          />
+        );
+      case "community":
+        return (
+          <CommunityPicker
+            slug={slug}
+            question={question}
+            value={value}
+            onChange={onChange}
+            fieldClass={fieldClass}
+            invalid={invalid}
+            describedBy={describedBy}
+          />
+        );
+      case "guardian":
+        return (
+          <GuardianField
             question={question}
             value={value}
             onChange={onChange}
