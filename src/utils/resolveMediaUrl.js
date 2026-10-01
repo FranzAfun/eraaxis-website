@@ -18,3 +18,12 @@ export function resolveMediaUrl(url) {
   if (!url) return null;
   return /^https?:\/\//i.test(url) ? url : `${API_ORIGIN}${url}`;
 }
+
+// Pictures inside an article are stored by their relative address, which EDOS
+// resolves against its API. Here the browser would ask eraaxis.com for them, get
+// the site's page back, and show an empty gap; so each one is given the API's
+// address before the article is shown.
+export function resolveArticleMedia(html) {
+  if (typeof html !== "string" || !html) return html;
+  return html.replace(/(\s(?:src|href|poster)\s*=\s*)(["'])\/api\/files\//gi, (_, attr, quote) => `${attr}${quote}${API_ORIGIN}/api/files/`);
+}

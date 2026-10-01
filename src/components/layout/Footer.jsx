@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { MapPin, Mail, Phone } from "lucide-react";
 import logo from "../../assets/brand/logo-white.webp";
 import linkedinImg  from "../../assets/social/linkedin.webp";
@@ -9,6 +9,22 @@ import tiktokImg    from "../../assets/social/tiktok.webp";
 import whatsappImg  from "../../assets/social/whatsapp.webp";
 import { useBootstrap } from "../../hooks/useBootstrap";
 import NewsletterForm from "../ui/NewsletterForm";
+
+// Where the footer leaves its newsletter signup out. The rule: never on a page whose
+// job is a single task or a form that asks for an email, and never twice on a page
+// that already has a signup of its own. There, its email box and Subscribe button
+// read as part of the task: a learner on an attendance link asked whether
+// subscribing was how to sign in. Every other page keeps it. A new page with a form
+// or a single task belongs on this list.
+const NO_FOOTER_NEWSLETTER = [
+  /^\/attendance\//,               // signing in to a class
+  /^\/forms\//,                    // filling in a form
+  /^\/certificates\/verify\//,     // checking a certificate
+  /^\/newsletter\/unsubscribe\/?$/, // leaving the newsletter
+  /^\/payments(\/|$)/,             // registration and payment forms
+  /^\/contact\/?$/,                // the contact form
+  /^\/insights(\/|$)/,             // has its own signup already
+];
 
 const programmes = [
   { label: "School STEM",         to: "/programs/school-stem" },
@@ -77,6 +93,8 @@ function SocialButton({ label, href, img }) {
 
 export default function Footer() {
   const { settings, socials: bootstrapSocials } = useBootstrap();
+  const { pathname } = useLocation();
+  const showNewsletter = !NO_FOOTER_NEWSLETTER.some(page => page.test(pathname));
 
   const address = settings?.address                                    || FALLBACK_ADDRESS;
   const email   = settings?.contactEmail || settings?.supportEmail     || FALLBACK_EMAIL;
@@ -97,19 +115,19 @@ export default function Footer() {
       <div className="container py-14 md:py-16 lg:py-20">
 
         {/* Newsletter row */}
-        <div className="mb-12 flex flex-col gap-4 border-b border-white/[0.07] pb-12 sm:flex-row sm:items-center sm:justify-between sm:gap-10">
+        {showNewsletter && <div className="mb-12 flex flex-col gap-4 border-b border-white/[0.07] pb-12 sm:flex-row sm:items-center sm:justify-between sm:gap-10">
           <div className="shrink-0">
             <p className="text-sm font-semibold text-white">
               Get ERA AXIS updates in your inbox.
             </p>
-            <p className="mt-1 text-xs text-white/45">
+            <p className="mt-1 text-xs text-white/60">
               Insights, programme news, and learner stories.
             </p>
           </div>
           <div className="w-full sm:max-w-sm">
             <NewsletterForm source="footer" />
           </div>
-        </div>
+        </div>}
 
         {/* Main grid */}
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
@@ -130,7 +148,7 @@ export default function Footer() {
             <p className="mb-3 max-w-[220px] text-sm leading-relaxed text-white/55">
               Practical STEM and digital skills education for African innovators.
             </p>
-            <p className="max-w-[220px] text-xs leading-relaxed text-white/30">
+            <p className="max-w-[220px] text-xs leading-relaxed text-white/60">
               Built for Africa&apos;s next generation of innovators.
             </p>
           </div>
@@ -211,14 +229,14 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-white/[0.07] pt-6 sm:flex-row">
-          <p className="text-xs text-white/35">
+          <p className="text-xs text-white/60">
             © {new Date().getFullYear()} {orgName}. All rights reserved.
             {" · "}
             <Link to="/privacy" className="transition-colors duration-200 hover:text-[var(--color-accent)]">
               Privacy &amp; Cookie Policy
             </Link>
           </p>
-          <p className="text-xs text-white/25">
+          <p className="text-xs text-white/60">
             Website by <a  rel="noopener noreferrer" className="text-[var(--color-accent)] ">ERA Technologies</a>.
           </p>
         </div>

@@ -173,7 +173,7 @@ export default function OnlineLearning() {
         <div className="container relative z-10">
           <Link
             to="/programs"
-            className="mb-8 flex w-fit items-center gap-1.5 text-xs font-medium text-white/40 transition-colors hover:text-white/70"
+            className="mb-8 flex w-fit items-center gap-1.5 text-xs font-medium text-white/60 transition-colors hover:text-white/70"
           >
             <ArrowLeft size={12} strokeWidth={2.5} aria-hidden="true" />
             Back to programmes

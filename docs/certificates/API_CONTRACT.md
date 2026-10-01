@@ -24,7 +24,7 @@ are allowed. See PROGRESS.md for what actually exists.
 - Staff uses existing cookie/CSRF/screen-lock authentication. Every staff request
   also reads current active account, authority level, LMS flag and explicit
   action grants from the database. No Admin bypass or inherited action grant.
-- Permission keys stored in `users.permissions`: `CERT_VIEW`, `CERT_PREPARE`,
+- Permission keys stored in `users.permissions`: `CERT_VIEW`, `CERT_VIEW_LOG`, `CERT_PREPARE`,
   `CERT_APPROVE`, `CERT_ISSUE`, `CERT_RESEND`, `CERT_REVOKE`, `CERT_MANAGE_ASSETS`.
   `LMS_ACCESS` must be explicitly boolean true. Absent/malformed values deny.
   Administrative grant writes must check current level 0 and audit transactionally;
@@ -123,14 +123,185 @@ link cannot have its title, objective or window removed by an edit
 (422 `SESSION_LINK_REQUIRES_DETAILS`); generating one without them is refused with
 422 `SESSION_DETAILS_REQUIRED` or `SESSION_WINDOW_REQUIRED`.
 
+`GET /api/lms/sessions/:id/register` (`CERT_VIEW`) returns `{ session, summary,
+learners }` for everyone enrolled on the session's course: `session` is
+`{id,offeringId,sessionDate,title,opensAt,closesAt,track,courseClosedAt,started}`,
+`summary` is `{learners,present,excused,absent}`, and each learner is
+`{learnerId,learnerName,email,status,source,note,recordedAt,recordedBy}` with
+`status` one of `present`, `excused` or `absent` (no attendance row).
+`PUT /api/lms/sessions/:id/attendance` (`CERT_PREPARE`, idempotency-keyed) with
+`{ learnerId, status, reason }` marks one learner by hand: for someone who was in
+the class but could not sign in, or to correct a mark. `reason` (1-500 characters)
+is required and is audited with the learner and the before and after
+(`LMS_ATTENDANCE_MARKED`). It returns
+`{id,sessionId,learnerId,learnerName,status,previous,changed,audit}`. A mark that
+is already right is left alone (`changed: false`), so a link sign-in is never
+replaced by a manual one. Present and excused are stored with `source: "manual"`
+and the marker as `recorded_by`; absent removes the row. Refused with 409
+`OFFERING_CLOSED` once the course is closed, 409 `SESSION_NOT_STARTED` before the
+session has begun, and 422 `LEARNER_NOT_ON_COURSE` for anyone not enrolled on it.
+
 The eligibility rule lives on the cohort, not the batch:
 `attendanceThresholdPercent` (1-100), nullable on `lms_cohorts`, where null means
 attendance is not applied. Batches inherit it. The agreed rule is **70% of sessions
-held, rounded in the learner's favour**. `attendanceMinimumSessions` still exists on
+held, rounded in the learner's favour, and at least one session actually attended**. `attendanceMinimumSessions` still exists on
 the table and is still validated by the API, but nothing sets it and eligibility
 must ignore it: a floor was dropped because a learner who clears the percentage and
 is silently ineligible, with nothing on screen explaining why, is worse than no
 floor. Treat it as reserved.
+
+## Public forms
+
+Versioned separately as `forms.v1`, for the same reason as attendance: forms change
+nothing about the certificate surface. Public base: `/api/website/forms`. Website
+route: `/forms/:slug`, and EDOS builds the link as `<VITE_WEBSITE_URL>/forms/<slug>`.
+Wherever a slug is accepted, the form's 32-hex `publicToken` works too.
+
+`GET /:slug` returns 200 for a published or closed form:
+
+```json
+{"success":true,"data":{"title":"Demo form","description":"<p>…</p>","headerImage":"/api/files/website-media/…","slug":"demo-form","open":true,"closedReason":null,"requiresSignIn":false,"confirmEmail":false,"payment":null,"schemaVersion":1,"rulesSha":"<64 hex>","googleClientId":null,"version":1,"definitionSha256":"<64 hex>","definition":{"schemaVersion":1,"sections":[]},"submissionToken":"<issuedAt>.<mac>"},"error":null}
+```
+
+Drafts, unknown and malformed slugs share 404 `FORM_NOT_FOUND`; a lookup failure is
+503 `FORM_UNAVAILABLE`. A form that is closed, not open yet, past its closing date or
+at its response cap is still 200, with `open: false`, a `closedReason` to show, and
+`definition` and `submissionToken` null. `description` was cleaned against an
+allowlist (p, br, strong, b, em, i, u, ul, ol, li, and http/https/mailto links) when
+it was saved and is rendered as is. `googleClientId` is present only when
+`requiresSignIn`. `payment` is null for a free form, else `{ amount, regularAmount, earlyBird, currency }`:
+`amount` is the price as of now, `earlyBird` is `{ amount, endsAt }` while an early-bird
+price lasts, else null. `earlyBird` is `{ amount, endsAt, places, placesLeft }`: it ends at
+`endsAt`, once `places` early-bird payments have completed, or whichever comes first
+(either may be null). Places are counted from completed payments, so the last place
+can go to two people paying at the same moment.
+
+The rules are one module, `server/utils/formSchema.js`, generated into
+`src/shared/formSchema.js` here and `src/utils/formSchema.js` on the website by
+`npm run sync:form-schema`. Each copy exports `RULES_SHA`, the sha256 of the
+module it was made from; `rulesSha` in the response is the server's. A page whose
+copy differs lays the form out with it but must not refuse answers on its own
+judgement: the server's check is the one that counts.
+
+`GET /:slug/schools?question=<key>&q=<text>` returns `{ items: [{ id, name,
+shortName, region }] }`, at most eight, from the registers the published question
+offers; the request cannot widen them. 404 `FORM_NOT_FOUND` or `QUESTION_NOT_FOUND`;
+503 `SCHOOL_LIST_UNAVAILABLE`, when the page lets the person type their school if
+the question allows that.
+
+`GET /:slug/seo` returns `{ title, description, image, open }` for a link preview;
+`image` is absolute or null.
+
+`POST /:slug/submissions` takes `{ token, answers, website, credential? }`:
+
+- 201 `{ receipt, confirmEmail, email, payment }`; `email` only when a code was sent.
+  `payment` is null for a free form, else `{ enrolmentId, paid, amount, regularAmount,
+  earlyBird, currency }`:
+  the server has made (or reused) a `website_enrolments` row against the form's priced
+  item, and the page pays for it through the unchanged `POST /payments/initialize`
+  `{ enrolment_id, months_paid: 1 }` flow once any email code is confirmed. `paid: true`
+  means it was already paid and nothing more is owed. A second person using an address
+  already paid for, or waiting to pay, on this form gets 422 `ANSWERS_INVALID` with
+  code `EMAIL_ALREADY_USED` on the email question: one enrolment per email per item.
+  A paid form takes GHS only, since Speso charges in cedis; its receipt email is the
+  PDF receipt alone ("Form Fee", or at the early-bird price "Form Fee" at the full
+  amount then "Early-bird Discount" as a negative line, maintenance fee, processing
+  fee, total; the email lists the same two lines above the total). A paid form always checks the address (Google sign-in or
+  code), and `/payments/initialize` for a form's enrolment prices it from the form at
+  that moment (early-bird while it lasts) and refuses with 409 `EMAIL_NOT_CONFIRMED`
+  until the address is confirmed, or 409 `FORM_NOT_PAYABLE` if the fee was removed.
+  An enrolment already paid gets 409 `ALREADY_PAID` (the code is new; the reply is not).
+- `website` is a trap field a person never sees. Anything in it gets a 200 with a
+  random receipt and nothing is stored.
+- 409 `FORM_CLOSED`; 409 `FORM_TOKEN_INVALID` or `FORM_TOKEN_EXPIRED` (the token is
+  bound to the version and lasts six hours: fetch the form again); 429
+  `FORM_TOO_FAST` (sent within three seconds of the token being issued); 401
+  `SIGN_IN_REQUIRED`; 422 `ANSWERS_INVALID` with `data.errors: [{ questionKey, code,
+  message }]`; 503 `FORM_SUBMIT_FAILED`.
+- The same person sending again, by the name, email and phone identity the importer
+  uses, updates their one submission rather than adding a second.
+- A form that requires sign-in stores the verified Google address, whatever was typed.
+
+Answers are keyed by question key: text types, email, phone and date (`YYYY-MM-DD`)
+are strings; number is a number or numeric string; `yes_no` is a boolean; single
+choice and dropdown are an option value; multiple choice is an array of option
+values; a scale is an integer; school is `{ schoolId }` or `{ other }`, and other
+fields on it are ignored; file is `[{ key, name, size, type }]` from the upload
+endpoint below, and only keys uploaded to this form are accepted — any other is
+refused as 422 `NOT_A_FILE` on that question. Answers to questions the rules hide
+are dropped.
+
+`POST /:slug/files?question=<key>` takes one multipart field, `file`, and the form's
+`submissionToken` in an `X-Form-Token` header (its minimum age does not apply). It
+returns 201 `{ key, name, size, type }` for the answer to store. The file's first
+bytes must match its extension, and the stored type is ours, from the extension:
+PDF, JPEG, PNG, WebP, HEIC, Word, Excel, PowerPoint, plain text and CSV. The size
+limit is the question's `file.maxSizeMb` (default 10, never above 25). Refusals:
+404 `FORM_NOT_FOUND` or `QUESTION_NOT_FOUND`; 409 `FORM_CLOSED`, `FORM_TOKEN_INVALID`
+or `FORM_TOKEN_EXPIRED`; 400 `FILE_MISSING` or `FILE_INVALID`; 413 or 422
+`FILE_TOO_LARGE`; 422 `FILE_EMPTY`, `FILE_TYPE_REFUSED` or `FILE_TYPE_MISMATCH`; 503
+`FILE_UPLOAD_FAILED`. Uploads share their own limit of 40 per 15 minutes per
+connection. Files are stored privately under `form-uploads/`, which the shared
+`/api/files` route does not serve; staff open them through
+`GET /api/lms/forms/:id/files/:filename`, behind `FORM_RESPONSES`, and only when a
+response to that form carries the file.
+
+`POST /submissions/:receipt/confirm` takes `{ code }` and returns 200 `{ confirmed:
+true, registration }`, or 400 `CODE_INVALID`, 404 `SUBMISSION_NOT_FOUND`, 410 `CODE_EXPIRED` (30
+minutes), 422 `CODE_WRONG`, 429 `CODE_ATTEMPTS` after five wrong tries.
+
+**Registration forms.** A form bound to a cohort (`lms_forms.cohort_id`) registers the
+people who fill it in. Its `course` question (type `course`, binding `course`, always
+required, never conditional) offers the cohort's open courses as `options`, filled in by
+the server each time the form is served and answered and never stored; with no open
+course left the form reads as closed ("Registration for this programme has closed.").
+A registration runs once the address is proven: at submit with Google sign-in, or at
+`confirm` with a code. It uses the importer's identity matching and learner write.
+`registration` is null for other forms, else `{ status, course, message }` where
+`status` is `registered`, `duplicate` (this person already holds an open place in the
+cohort; `message` names the course, the submission is kept as `rejected`), `review`
+(details could belong to more than one learner; staff decide, and the registrant is
+told nothing is wrong) or `invalid`. At submit, a duplicate is refused outright with
+409 `ALREADY_REGISTERED` and nothing is stored; a successful one adds
+`registration: { status, course }` to the 201. A registration form must check the
+address (Google sign-in or code): 422 `REGISTRATION_NEEDS_CHECKED_EMAIL` on settings,
+and publishing also needs the course question (`REGISTRATION_NEEDS_COURSE`), required
+name and email questions (`REGISTRATION_NEEDS_DETAILS`) and an open course
+(`COHORT_HAS_NO_COURSES`); a course question on a form with no cohort is
+`COURSE_WITHOUT_COHORT`.
+
+**Names in parts.** Bindings `first_name`, `last_name` and `other_names` (short text)
+ask a name in parts; a form uses either those (first and last both present) or
+`full_name`, never both (`NAME_BINDINGS_MIXED`, `NAME_PARTS_INCOMPLETE`). The server
+composes the parts as "First Other Last", tidying only a part typed all in capitals or
+all in lowercase, and that composition is the submission's `full_name`, the learner's
+`display_name` and the name a certificate prints. The parts are kept on the submission
+and the learner (`first_name`, `last_name`, `other_names`, migration 133). A payment's
+receipt uses the parts. A registration form needs required first and last name
+questions (or a required full name). `POST /api/lms/offerings/:id/learners` takes
+`firstName`, `lastName`, `otherNames` (or `fullName`). The spreadsheet template's columns
+are `first_name,last_name,other_names,email,phone,gender,school,location`; a single
+full-name column is still read.
+
+Staff side: `GET /api/lms/forms/:id/responses` adds `registration` per response
+(`registered` with `course`, `refused` with `note`, `waiting` for the address, `review`)
+and `counts.registered` / `counts.needsDecision`; the form detail adds `courseOptions`.
+`POST /api/lms/forms/:id/responses/:submissionId/register` (`FORM_RESPONSES`,
+`Idempotency-Key`) registers a response by hand: with no body it answers 409
+`IDENTITY_REVIEW_REQUIRED` and `data.candidates`, or registers if nothing is ambiguous;
+`{ learnerId }` or `{ newLearner: true }` decides. `POST /api/lms/offerings/:id/learners`
+(`CERT_PREPARE`) adds one learner by hand (`fullName`, `email`, `phone`, `gender`,
+`school`, `location`, plus the same decision fields) through the same matching, in the
+cohort's `cohort:<id>` namespace; 409 `ALREADY_REGISTERED` when they already hold a place.
+
+`POST /submissions/:receipt/resend` sends a new code, which replaces the old one and
+resets the tries: 200 `{ confirmed: false, retryAfter: 60 }`, or `{ confirmed: true,
+retryAfter: 0 }` when already confirmed. 429 `CODE_RESEND_TOO_SOON` with
+`data.retryAfter` seconds within a minute of the last code; 409 `CODE_NOT_NEEDED`
+for a submission that was never asked for one; 503 `RESEND_FAILED`.
+
+Reads share a limit of 240 requests per 15 minutes per connection; submitting,
+confirming and resending share 20.
 
 ## Who can do what
 
@@ -142,6 +313,7 @@ offering switches that cannot take effect.
 | Grant | What it allows |
 | --- | --- |
 | `CERT_VIEW` | See cohorts, courses, sessions, batches and the attendance reports. Read-only, and a prerequisite for every grant below. |
+| `CERT_VIEW_LOG` | Read the LMS activity log (who did what in the LMS). Needs `CERT_VIEW`. |
 | `CERT_MANAGE_COHORTS` | Create and edit cohorts and courses, set the attendance threshold, and close a course. |
 | `CERT_PREPARE` | Create draft batches, import and review the registration list, run sessions and issue attendance links. |
 | `CERT_APPROVE` | Freeze a prepared batch for issuing. |
@@ -289,13 +461,14 @@ The rule, all of it:
   changes every answer under that cohort with no other edit.
 - **Rounded in the learner's favour**: `requiredSessions` is
   `max(1, floor(effectiveHeld * threshold / 100))`. At 70% of 3 sessions that is 2,
-  not 3, because a learner cannot attend a fraction of a class. The floor of 1 stops
-  a one-session course from requiring nothing at all.
+  not 3, because a learner cannot attend a fraction of a class. The minimum of 1
+  holds everywhere: on a one-session course, before any session has been held, and
+  when every session was excused. Nobody is eligible without attending at least once.
 - **An excused absence comes out of the denominator** rather than counting as a
   presence: `effectiveHeld = sessionsHeld - excused`. Counting it as attendance
   would overstate what happened; leaving it in would make the forgiveness pointless.
-  `attended`, `excused` and `sessionsHeld` are all reported so the raw figures stay
-  visible.
+  Excuses shrink what is asked; they cannot replace attending. `attended`, `excused`
+  and `sessionsHeld` are all reported so the raw figures stay visible.
 - `percentage` is **null**, never 0, when nothing has been held or everything was
   excused: "no sessions have run" is a different statement from "attended none of
   them", and a report showing 0% before a course starts reads as everyone failing.
@@ -336,6 +509,46 @@ under it, in one transaction, and returns the cohort plus `coursesClosed` and
 already closed keeps its own earlier `closedAt`. Already closed is 409
 `COHORT_ALREADY_CLOSED`; adding a course to a closed cohort is 409 `COHORT_CLOSED`.
 
+**Continuous (rolling) programmes.** A cohort is `kind` `dated` (the default, and
+every cohort created before this) or `rolling`, chosen at creation
+(`POST /api/lms/cohorts` takes `kind`; it cannot be changed afterwards). A rolling
+cohort is a permanent programme that learners join and finish at different times:
+
+- An enrolment has `joined_on` (a rolling enrolment made by import is stamped with
+  the day it was made), `completed_at`, `completed_by`, `sessions_held_at_completion`
+  and `attempt`. A learner may hold one *open* enrolment per cohort; once completed
+  they may enrol again (`attempt` 2, and so on).
+- Attendance for an enrolment counts only the sessions held while it was open: from
+  `joined_on`, up to the day it completed. Its denominator is the count frozen at
+  completion, else the course's frozen count if the course closed (for an enrolment
+  with no `joined_on`), else the live count in its window. With neither date, which
+  is every dated-cohort enrolment, this is exactly the whole-course figure as before.
+- `POST /api/lms/offerings/:id/complete` (`CERT_MANAGE_COHORTS`, `Idempotency-Key`)
+  takes `{ enrolmentIds }` and marks those learners complete: their window closes
+  today, their verdict is written as closing writes one (evidence "Attendance at
+  completion: …"), and draft batch rows for them move their batch's revision.
+  Returns `{ id, completed, applied, eligible, notEligible }`. 409 `COHORT_NOT_ROLLING`
+  for a dated course, `OFFERING_CLOSED` for a closed one, `ENROLMENT_NOT_OPEN` if any
+  enrolment is not open on that course.
+- `POST /api/lms/certificate-batches/:id/recipients/completed` (`CERT_PREPARE`,
+  `Idempotency-Key`) adds the course's completed learners not already on any batch
+  to a draft batch, with the same snapshot shape an import writes, and moves its
+  revision. Optional `{ enrolmentIds }` narrows it. Returns
+  `{ id, revision, added, eligible, withoutEmail }`. 422 `NO_COMPLETED_LEARNERS`,
+  409 `RECIPIENT_NOT_AVAILABLE`, `COHORT_NOT_ROLLING`, `BATCH_NOT_DRAFT`.
+- A rolling course's batch is approved without closing the course, but with an
+  attendance rule every included recipient must be complete: otherwise 409
+  `COMPLETION_REQUIRED`.
+- Attendance cannot be marked for a completed enrolment (409 `ENROLMENT_COMPLETED`)
+  or for a session before the learner joined (422 `SESSION_BEFORE_JOINING`). The
+  register lists the learners whose enrolment was open on the session's date, each
+  with `completed`. The course eligibility report is per enrolment, adding
+  `enrolmentId`, `joinedOn`, `completedAt` and `final` to each learner and
+  `completed` to its summary. Cohort and course lists count distinct learners and add
+  `completedCount`; the batch detail adds `cohortKind` and `completedWaiting`.
+- Every lookup that assumed one enrolment per learner per cohort uses the open one:
+  the import and its validation, moving a learner, and public attendance sign-in.
+
 **Closing is irreversible and there is no reopen endpoint.** Closed cohorts are
 archived: still listed and readable, marked closed, filtered out of the default
 view. Closing is not deleting — a closed course keeps its batches and certificates
@@ -350,6 +563,112 @@ Its attendance links report `state: "course_closed"`, which outranks the window,
 and `POST` returns 409 `ATTENDANCE_COURSE_CLOSED`. This is deliberately distinct
 from `ATTENDANCE_CLOSED`: a closed session leaves room to expect another link, and
 a closed course does not.
+
+## Moving a learner to another course
+
+`POST /api/lms/learners/:id/move` (`CERT_PREPARE`, idempotency-keyed) with
+`{ offeringId, reason, acknowledgeAttendance? }` moves a learner to another course
+in the same cohort, for someone who registered for the wrong one. Their row on the
+old course's draft batch is removed, the enrolment's course changes, and the row is
+written on the new course's single draft batch with the same registration details;
+both batches' revisions move. `reason` (1-500 characters) is required and is audited
+with the learner and both courses (`LMS_LEARNER_COURSE_MOVED`). It returns
+`{id,learnerId,learnerName,from,to,batchId,attendanceLeftBehind,audit}`.
+Attendance already recorded on the old course stays on record there but cannot
+count toward the new one, so a learner with any is refused with 409
+`ATTENDANCE_ON_OLD_COURSE` (the message gives the count) until the request is sent
+again with `acknowledgeAttendance: true`. Also refused: 404 `OFFERING_NOT_FOUND` or
+`ENROLMENT_NOT_FOUND`; 409 `ALREADY_ON_COURSE`; 409 `OFFERING_CLOSED` when either
+course or the cohort is closed; 409 `BATCH_NOT_DRAFT` when the learner is on an
+approved or issued batch; and 409 `DESTINATION_BATCH_REQUIRED` when the new course
+has no draft batch or more than one.
+
+## The learner directory
+
+Everyone on record, however they came in, with where they were reached. Reading is
+`CERT_VIEW`; adding, correcting, enrolling and uploading are `CERT_PREPARE`; renaming or
+merging a community and linking a typed school name are `CERT_MANAGE_COHORTS`, because
+they reshape every report. Writes are idempotency-keyed and audited under entity type
+`lms_learner`.
+
+`lms_learners.origin` records how somebody first came to be on record — `form`,
+`import` (a spreadsheet, onto a batch or straight into the directory) or `staff` (added
+by hand) — and never changes afterwards. Existing learners were back-filled by
+migration 134. A school is linked to the Ghana register (`school_id`) when it was chosen
+from it or its text matches a register name or alias exactly; the typed text is kept.
+A community is typed, stored once per normalised name in `lms_communities`, and can be
+renamed, given one of the sixteen regions, or merged into another.
+
+- `GET /api/lms/learners` → `{ items, total }`, one row per learner: name and parts,
+  contact, gender, `school`, `schoolId`, `schoolListed`, `community`, `region` (the
+  school's, else the community's), `origin`, `addedAt`, `cohorts`, `enrolments`,
+  `active`, `completed`, `sessionsAttended`, `certificates`, `responses`,
+  `lastActivityAt`. Filters: `q`, `origin`, `gender` (or `unknown`), `region` (or
+  `unknown`), `schoolId`, `communityId`, `cohortId`, `certified` (`yes`/`no`), `from`
+  and `to` (the date first recorded, Ghana time).
+- `GET /api/lms/learners/:id` → the same row plus `addedBy`, `enrolments` (course,
+  cohort, attendance, eligibility, whether final), `certificates` (issued awards, never
+  synthetic ones) and `submissions` (forms they filled).
+- `POST /api/lms/learners` `{ firstName, lastName, otherNames?, email?, phone?, gender?,
+  schoolId? | school?, communityId? | community?, communityRegion?, location?,
+  offeringId?, newLearner? }` → 201 `{ id, name, enrolledOn }`. 409 `LEARNER_EXISTS`
+  (`data.learner`) when somebody already holds the email or phone; 409
+  `IDENTITY_REVIEW_REQUIRED` (`data.candidates`) for a same-name match until sent again
+  with `newLearner: true`; 409 `ALREADY_REGISTERED` / `OFFERING_CLOSED` for the course.
+- `PATCH /api/lms/learners/:id` (same details) replaces them, blanks included. 409
+  `CONTACT_IN_USE` when another learner holds the email or phone.
+- `POST /api/lms/learners/:id/enrolments` `{ offeringId }` → 201; one open course per
+  cohort (`ALREADY_REGISTERED`).
+- `DELETE /api/lms/learners/:id` (`CERT_MANAGE_COHORTS`) removes a learner added by mistake,
+  with their enrolments and source aliases; their form submissions are kept, unlinked. 409
+  `LEARNER_HAS_HISTORY` while they have attendance or a place on a certificate batch. The
+  audit keeps their name, email, phone and origin.
+- `GET /api/lms/learners/workbook` (the list's filters) and `GET /api/lms/overview/workbook`
+  (the overview's filters) return styled `.xlsx` files: the filtered learners, and the partner
+  report (summary, growth, each breakdown, cohorts, and one row per learner).
+- `GET /api/lms/learners/template?format=csv|xlsx` → `first_name, last_name,
+  other_names, email, phone, gender, school, community, region, location`.
+- `POST /api/lms/learners/import-preview` (multipart `file`, optional `schoolId`,
+  `communityId` or `community` applied to rows that leave theirs blank, and optional `offeringId`
+to enrol everyone saved onto that open course; `counts.enrolled` says how many) →
+  `{ previewToken, counts }`; `GET /api/lms/learners/import-preview/:token` → the rows,
+  each with `action` (`new`, `reuse`, `update`, `duplicate`, `review`, `invalid`),
+  `errors`, `warnings` (including `SCHOOL_NOT_LISTED`) and `candidates`. A missing email
+  is not a problem in the directory. `POST /api/lms/learners/import-commit`
+  `{ previewToken, decisions: [{ rowId, include, identity?, matchLearnerId? }] }` →
+  `{ counts: { included, excluded, created, updated, reused } }`.
+- `GET /api/lms/communities?q=` → `{ items: [{ id, name, region, learners }] }`;
+  `POST /api/lms/communities` `{ name, region? }` finds or creates one;
+  `PATCH /api/lms/communities/:id` `{ name, region? }` (409 `COMMUNITY_EXISTS` when the
+  new name is another community's); `POST /api/lms/communities/:id/merge`
+  `{ intoId }` moves its learners and returns `{ moved }`.
+- `GET /api/lms/learner-schools` → `{ listed, unlisted }`: register schools with their
+  learner counts, and typed names grouped by normalised spelling.
+  `POST /api/lms/learner-schools/link` `{ text, schoolId }` adds a staff alias and links
+  every learner who typed that name; returns `{ linked }`.
+- `GET /api/lms/overview` (the same filters as the list) → `totals`, monthly `growth`
+  by origin with a running total, `byOrigin`, `byGender`, `byRegion`, `bySchoolLevel`,
+  `topSchools`, `topCommunities`, `cohorts` and `recent`. Its `totals.learners` always
+  equals the list's length under the same filters. Sessions, attendance, certificates
+  and form responses are counted within the date range.
+
+**Permanent programmes.** A course may name a website programme people enrol on
+(`websiteProgrammeId` on `POST/PATCH /api/lms/offerings`, returned by the offerings list;
+categories `school_stem`, `out_of_school_youth`, `online_learning`, `digital_skills`; one
+open course per programme, else 409 `PROGRAMME_ALREADY_LINKED`). On every confirmed payment for
+such a programme the payer is recorded as a learner (origin `form`) and enrolled on that course.
+
+**In-person registers.** `POST /api/lms/sessions/:id/register` (`CERT_PREPARE`,
+idempotency-keyed) `{ present: [learnerId], note }` marks everyone ticked present in one go,
+source `manual`, with the note. Learners not ticked are left as they are; finished learners and
+those who joined after the session are skipped and named in `skipped`. Returns `{ marked,
+already, skipped }`; audited as `LMS_REGISTER_TAKEN`.
+
+A form that is not a registration adds its respondents to the directory when
+`recordsLearners` is on (a form setting): once the submission is final — at once, once
+the address is proven, or once a fee is paid. An unambiguous email or phone is the same
+person; a name that could be several people is left unlinked rather than guessed. It is
+never enrolled on anything, and never fails the submission.
 
 ## Private retrieval
 
@@ -496,7 +815,7 @@ The following batch paths are relative to `/api/lms/certificate-batches`:
 
 ### Implemented import contract (v1.2)
 
-`GET /:id` returns `{id,name,programme,track,revision,state,cohort,sourceNamespace,
+`GET /:id` returns `{id,name,programme,track,cohortId,offeringId,revision,state,cohort,sourceNamespace,
 issueDate,recipientCount,eligibleCount,courseClosed,attendanceApplies,rows,nextCursor}`.
 Here `cohort` is the display label string. `eligibleCount` is how many rows are
 eligible; until an attendance-rule course closes (`attendanceApplies` and not
@@ -526,6 +845,13 @@ already claimed earlier in the file is `duplicate` with a `DUPLICATE_IN_FILE`
 warning: excluded by default, includable deliberately, and the commit still
 refuses two included rows resolving to one learner. Preview `counts` add `added`,
 `matched` and `duplicate`.
+A row with no ID of its own is given one derived from its name, email and phone, so
+someone who submitted a form twice produces identical IDs. The first such row imports
+normally; each later copy is `duplicate` and carries a `DUPLICATE_SOURCE_RECORD`
+error ("Same details as row N. Only the first copy is imported."), so it cannot be
+included. A repeat, by contact or by identical details, never counts toward the
+same-name-twice rule that raises `IDENTITY_REVIEW_REQUIRED`. An ID the file itself
+supplies on more than one row still blocks every copy until the file is corrected.
 Errors/warnings contain `{code,field,message}`. Candidate names/IDs are private
 staff data. `valid` counts rows without errors; warnings still need review.
 
@@ -957,10 +1283,10 @@ pacing defaults are trusted in production.
 | 400 | INVALID_REQUEST, ACCESS_CODE_INVALID |
 | 401 | AUTH_REQUIRED, ACCOUNT_UNAVAILABLE, DOWNLOAD_ACCESS_REQUIRED, GOOGLE_TOKEN_INVALID, GOOGLE_EMAIL_UNVERIFIED |
 | 403 | LMS_ACCESS_DISABLED, CERT_PERMISSION_REQUIRED, ADMIN_REQUIRED, ATTENDANCE_NOT_RECOGNISED, ATTENDANCE_WRONG_COURSE |
-| 404 | CERTIFICATE_NOT_FOUND, BATCH_NOT_FOUND, ATTENDANCE_SESSION_NOT_FOUND, SESSION_NOT_FOUND |
-| 409 | REVISION_CONFLICT, IDEMPOTENCY_CONFLICT, BATCH_NOT_DRAFT, BATCH_NOT_APPROVED, APPROVAL_REQUIRED, ISSUANCE_CONFLICT, COHORT_COURSE_CONFLICT, CERTIFICATE_UNAVAILABLE, ATTENDANCE_NOT_STARTED, ATTENDANCE_CLOSED, ATTENDANCE_COURSE_CLOSED, ATTENDANCE_EMAIL_AMBIGUOUS, ATTENDANCE_CONFLICT, OFFERING_CLOSED, OFFERING_ALREADY_CLOSED, COHORT_CLOSED, COHORT_ALREADY_CLOSED, COURSE_NOT_CLOSED |
+| 404 | CERTIFICATE_NOT_FOUND, BATCH_NOT_FOUND, ATTENDANCE_SESSION_NOT_FOUND, SESSION_NOT_FOUND, OFFERING_NOT_FOUND, ENROLMENT_NOT_FOUND |
+| 409 | REVISION_CONFLICT, IDEMPOTENCY_CONFLICT, BATCH_NOT_DRAFT, BATCH_NOT_APPROVED, APPROVAL_REQUIRED, ISSUANCE_CONFLICT, COHORT_COURSE_CONFLICT, CERTIFICATE_UNAVAILABLE, ATTENDANCE_NOT_STARTED, ATTENDANCE_CLOSED, ATTENDANCE_COURSE_CLOSED, ATTENDANCE_EMAIL_AMBIGUOUS, ATTENDANCE_CONFLICT, OFFERING_CLOSED, OFFERING_ALREADY_CLOSED, COHORT_CLOSED, COHORT_ALREADY_CLOSED, COURSE_NOT_CLOSED, SESSION_NOT_STARTED, ALREADY_ON_COURSE, ATTENDANCE_ON_OLD_COURSE, DESTINATION_BATCH_REQUIRED, COHORT_NOT_ROLLING, ENROLMENT_NOT_OPEN, ENROLMENT_COMPLETED, COMPLETION_REQUIRED, RECIPIENT_NOT_AVAILABLE, ALREADY_REGISTERED |
 | 413 | IMPORT_TOO_LARGE |
-| 422 | IMPORT_INVALID, IDENTITY_REVIEW_REQUIRED, ASSET_NOT_APPROVED, SESSION_DETAILS_REQUIRED, SESSION_WINDOW_REQUIRED, SESSION_WINDOW_INCOMPLETE, SESSION_WINDOW_INVALID, SESSION_WINDOW_TOO_LONG, SESSION_LINK_REQUIRES_DETAILS, NO_SESSIONS, NO_ELIGIBLE_RECIPIENTS |
+| 422 | IMPORT_INVALID, IDENTITY_REVIEW_REQUIRED, ASSET_NOT_APPROVED, SESSION_DETAILS_REQUIRED, SESSION_WINDOW_REQUIRED, SESSION_WINDOW_INCOMPLETE, SESSION_WINDOW_INVALID, SESSION_WINDOW_TOO_LONG, SESSION_LINK_REQUIRES_DETAILS, NO_SESSIONS, NO_ELIGIBLE_RECIPIENTS, LEARNER_NOT_ON_COURSE |
 | 429 | RATE_LIMITED |
 | 503 | CERTIFICATE_SERVICE_UNAVAILABLE, PDF_UNAVAILABLE, ISSUANCE_UNAVAILABLE, ATTENDANCE_UNAVAILABLE, ATTENDANCE_SERVICE_UNAVAILABLE, GOOGLE_SIGN_IN_UNAVAILABLE |
 

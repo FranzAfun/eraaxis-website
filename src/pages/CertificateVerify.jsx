@@ -59,7 +59,7 @@ function DetailRow({ label, value, valueClassName = "break-words", stacked = fal
   if (!value && !children) return null;
   return (
     <div className={`border-t border-white/10 py-3 first:border-t-0 first:pt-0 ${stacked ? "" : "sm:flex sm:gap-6"}`}>
-      <dt className="text-xs font-semibold uppercase tracking-widest text-white/45 sm:w-40 sm:shrink-0">
+      <dt className="text-xs font-semibold uppercase tracking-widest text-white/60 sm:w-40 sm:shrink-0">
         {label}
       </dt>
       <dd className={`mt-1 min-w-0 text-base text-white ${stacked ? "" : "sm:mt-0"} ${valueClassName}`}>
@@ -210,7 +210,7 @@ export default function CertificateVerify() {
 
                 {/* The recipient is the answer the visitor came for, so it leads
                     rather than sitting as one row among the details below. */}
-                <p className="text-xs font-semibold uppercase tracking-widest text-white/45">
+                <p className="text-xs font-semibold uppercase tracking-widest text-white/60">
                   Awarded to
                 </p>
                 <p className="mt-1 mb-5 break-words text-2xl font-bold leading-snug text-white sm:text-3xl">

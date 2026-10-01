@@ -81,7 +81,7 @@ export default function Hero() {
             {stats.map(({ value, label }) => (
               <div key={label}>
                 <p className="text-xl font-black text-white sm:text-2xl">{value}</p>
-                <p className="mt-0.5 text-[10px] font-medium uppercase tracking-wider text-white/50 sm:text-xs">
+                <p className="mt-0.5 text-[10px] font-medium uppercase tracking-wider text-white/60 sm:text-xs">
                   {label}
                 </p>
               </div>
