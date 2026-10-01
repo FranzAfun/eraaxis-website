@@ -24,7 +24,7 @@ are allowed. See PROGRESS.md for what actually exists.
 - Staff uses existing cookie/CSRF/screen-lock authentication. Every staff request
   also reads current active account, authority level, LMS flag and explicit
   action grants from the database. No Admin bypass or inherited action grant.
-- Permission keys stored in `users.permissions`: `CERT_VIEW`, `CERT_PREPARE`,
+- Permission keys stored in `users.permissions`: `CERT_VIEW`, `CERT_VIEW_LOG`, `CERT_PREPARE`,
   `CERT_APPROVE`, `CERT_ISSUE`, `CERT_RESEND`, `CERT_REVOKE`, `CERT_MANAGE_ASSETS`.
   `LMS_ACCESS` must be explicitly boolean true. Absent/malformed values deny.
   Administrative grant writes must check current level 0 and audit transactionally;
@@ -313,6 +313,7 @@ offering switches that cannot take effect.
 | Grant | What it allows |
 | --- | --- |
 | `CERT_VIEW` | See cohorts, courses, sessions, batches and the attendance reports. Read-only, and a prerequisite for every grant below. |
+| `CERT_VIEW_LOG` | Read the LMS activity log (who did what in the LMS). Needs `CERT_VIEW`. |
 | `CERT_MANAGE_COHORTS` | Create and edit cohorts and courses, set the attendance threshold, and close a course. |
 | `CERT_PREPARE` | Create draft batches, import and review the registration list, run sessions and issue attendance links. |
 | `CERT_APPROVE` | Freeze a prepared batch for issuing. |
