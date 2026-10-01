@@ -204,8 +204,9 @@ the question allows that.
   already paid for, or waiting to pay, on this form gets 422 `ANSWERS_INVALID` with
   code `EMAIL_ALREADY_USED` on the email question: one enrolment per email per item.
   A paid form takes GHS only, since Speso charges in cedis; its receipt email is the
-  PDF receipt alone ("Form Fee", or "Form Fee (early bird)", maintenance fee,
-  processing fee, total). A paid form always checks the address (Google sign-in or
+  PDF receipt alone ("Form Fee", or at the early-bird price "Form Fee" at the full
+  amount then "Early-bird Discount" as a negative line, maintenance fee, processing
+  fee, total; the email lists the same two lines above the total). A paid form always checks the address (Google sign-in or
   code), and `/payments/initialize` for a form's enrolment prices it from the form at
   that moment (early-bird while it lasts) and refuses with 409 `EMAIL_NOT_CONFIRMED`
   until the address is confirmed, or 409 `FORM_NOT_PAYABLE` if the fee was removed.

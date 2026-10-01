@@ -25,8 +25,11 @@ export default function PaymentSummary({ amount, earlyBird = null, regularAmount
   const { feeConfig, feesLoading, feesError } = useSpesoFees();
   const breakdown = calculatePaymentBreakdown(amount, feeConfig);
 
+  // At the early-bird price: the full form fee, then the discount off it.
+  const discount = earlyBird && regularAmount > amount ? Math.round((regularAmount - amount) * 100) / 100 : 0;
   const rows = [
-    [earlyBird ? "Form fee (early bird)" : "Form fee", breakdown.baseAmount],
+    ["Form fee", discount ? regularAmount : breakdown.baseAmount],
+    ...(discount ? [["Early-bird discount", -discount]] : []),
     ["Maintenance fee", breakdown.maintenanceFee],
     ["Speso processing fee", breakdown.spesoFee],
   ];
@@ -43,7 +46,9 @@ export default function PaymentSummary({ amount, earlyBird = null, regularAmount
         {rows.map(([label, value]) => (
           <div key={label} className="flex items-center justify-between gap-4 border-b border-[var(--color-border)] pb-3">
             <dt className="text-[var(--color-text-secondary)]">{label}</dt>
-            <dd className="font-semibold tabular-nums text-[var(--color-text-primary)]">{formatGhs(value)}</dd>
+            <dd className="font-semibold tabular-nums text-[var(--color-text-primary)]">
+              {value < 0 ? `−${formatGhs(-value)}` : formatGhs(value)}
+            </dd>
           </div>
         ))}
       </dl>
