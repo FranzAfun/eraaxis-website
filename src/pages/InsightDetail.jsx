@@ -5,7 +5,7 @@ import { insights as STATIC_INSIGHTS } from "../data/insights";
 import NewsletterForm from "../components/ui/NewsletterForm";
 import SEO from "../components/SEO";
 import { api } from "../services/api";
-import { resolveMediaUrl } from "../utils/resolveMediaUrl";
+import { resolveArticleMedia, resolveMediaUrl } from "../utils/resolveMediaUrl";
 
 const CONTENT_TYPE_LABEL = {
   article:         "Article",
@@ -157,7 +157,7 @@ export default function InsightDetail() {
   const seoDescription = insight.seoDescription || excerpt;
 
   // Content
-  const cmsContent = !insight._isStatic ? insight.content : null;
+  const cmsContent = !insight._isStatic ? resolveArticleMedia(insight.content) : null;
   const staticBody  = insight._isStatic ? insight.body : null;
   const staticImages = insight._isStatic && insight.images?.length > 0 ? insight.images : [];
 
@@ -192,7 +192,8 @@ export default function InsightDetail() {
             Back to Insights
           </Link>
 
-          <div className="mx-auto max-w-3xl">
+          <div className={featuredImageSrc ? "grid items-center gap-10 lg:grid-cols-2 lg:gap-14" : "mx-auto max-w-3xl"}>
+          <div>
             <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
               {typeLabel}
             </p>
@@ -216,29 +217,24 @@ export default function InsightDetail() {
               )}
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* ── Featured image ─────────────────────────────────────────────────── */}
-      {featuredImageSrc && (
-        <div className="bg-white">
-          <div className="container pt-0">
-            {/*
-              Deliberately a wide cinematic banner: fills the content width and
-              crops (object-cover) to a capped height on desktop. Portrait
-              sources get centre-cropped rather than shown full-height — a
-              full-width horizontal treatment is the chosen look for this page.
-            */}
-            <img
-              src={featuredImageSrc}
-              alt={title}
-              className="w-full rounded-[var(--radius-lg)] object-cover shadow-[var(--shadow-soft)] md:max-h-[480px]"
-              loading="eager"
-              decoding="async"
-            />
+          {/* The featured image beside the title, as the Partners and Dev Board
+              pages show theirs; on a phone it follows the title instead. */}
+          {featuredImageSrc && (
+            <div className="relative">
+              <div className="hero-media-card">
+                <img
+                  src={featuredImageSrc}
+                  alt={title}
+                  className="aspect-[4/3] w-full object-cover"
+                  loading="eager"
+                  decoding="async"
+                />
+              </div>
+            </div>
+          )}
           </div>
         </div>
-      )}
+      </section>
 
       {/* ── Article body ───────────────────────────────────────────────────── */}
       <section className="bg-white py-14 md:py-20">
