@@ -531,11 +531,42 @@ cohort is a permanent programme that learners join and finish at different times
   for a dated course, `OFFERING_CLOSED` for a closed one, `ENROLMENT_NOT_OPEN` if any
   enrolment is not open on that course.
 - `POST /api/lms/certificate-batches/:id/recipients/completed` (`CERT_PREPARE`,
-  `Idempotency-Key`) adds the course's completed learners not already on any batch
+  `Idempotency-Key`) adds the course's waiting learners not already on any batch
   to a draft batch, with the same snapshot shape an import writes, and moves its
-  revision. Optional `{ enrolmentIds }` narrows it. Returns
-  `{ id, revision, added, eligible, withoutEmail }`. 422 `NO_COMPLETED_LEARNERS`,
-  409 `RECIPIENT_NOT_AVAILABLE`, `COHORT_NOT_ROLLING`, `BATCH_NOT_DRAFT`.
+  revision. Waiting means marked complete (a rolling attendance cohort) or marked
+  eligible (a manual cohort, dated or rolling). Optional `{ enrolmentIds }` narrows it.
+  Returns `{ id, revision, added, eligible, withoutEmail }`. 422 `NO_COMPLETED_LEARNERS`
+  or `NO_ELIGIBLE_LEARNERS`, 409 `RECIPIENT_NOT_AVAILABLE`, `COHORT_NOT_ROLLING` (a
+  dated attendance course, which imports), `BATCH_NOT_DRAFT`.
+
+### Eligibility modes and standalone batches (migration 141)
+
+- A cohort's `eligibilityMode` is `attendance` or `manual`, derived by the database from
+  `attendanceThresholdPercent` (none means manual), so the two cannot disagree. Create
+  and update take `eligibilityMode`; `attendance` requires a percentage (400
+  `ATTENDANCE_PERCENT_REQUIRED`), `manual` stores none. A request with no mode is read as
+  before: a percentage means attendance.
+- `POST /api/lms/offerings/:id/eligibility` (`CERT_MANAGE_COHORTS`, `Idempotency-Key`)
+  takes `{ enrolmentIds, eligible }` on a manual cohort's course and writes the verdict
+  on each enrolment (evidence "Marked eligible by staff" / "Marked not eligible by
+  staff") and on its draft batch rows, moving those batches' revisions. Returns
+  `{ id, marked, eligible, batchesUpdated }`. 409 `ELIGIBILITY_BY_ATTENDANCE`, 404
+  `ENROLMENT_NOT_FOUND`. The course eligibility report adds `eligibilityMode`, and on a
+  manual cohort each learner's `eligible` is the marked verdict (false until marked).
+- A standalone batch (`kind: 'standalone'`) has no cohort or course: `offeringId` and
+  `cohort` are null, and its rows carry no enrolment. Draft preview, approval, issuing,
+  email, resend and public verification are unchanged.
+  - `POST /api/lms/certificate-batches/standalone` (`CERT_PREPARE`, `Idempotency-Key`):
+    `{ name, programme, track, issueDate, people: [{ fullName, email }] }`, 1 to 200
+    people, each with a valid email (the certificate is emailed). 201
+    `{ id, name, revision, state, kind, recipientCount }`. 400 `PEOPLE_REQUIRED`,
+    `PEOPLE_TOO_MANY`, `PERSON_NAME_REQUIRED`, `PERSON_EMAIL_REQUIRED`, `PERSON_DUPLICATE`.
+  - `PUT /api/lms/certificate-batches/:id/people` (`CERT_PREPARE`, `Idempotency-Key`):
+    `{ revision, people }` replaces the people on a draft. 200 `{ id, revision,
+    recipientCount }`. 409 `BATCH_NOT_STANDALONE`, `BATCH_NOT_DRAFT`, `REVISION_CONFLICT`.
+  - Spreadsheet import refuses a standalone batch (409 `BATCH_NOT_STANDALONE`).
+  - The approval fingerprint keys standalone people by their row id; a course batch's
+    fingerprint is unchanged.
 - A rolling course's batch is approved without closing the course, but with an
   attendance rule every included recipient must be complete: otherwise 409
   `COMPLETION_REQUIRED`.
