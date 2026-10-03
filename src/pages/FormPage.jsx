@@ -880,6 +880,15 @@ function FormHeader({ form, intro = false, children }) {
             dangerouslySetInnerHTML={{ __html: form.description }}
           />
         )}
+        {/* On forms that register people: one record per person depends on the
+            same email (and name) being used each time. */}
+        {intro && form.returningNote && (
+          <p className="mt-4 rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-[var(--color-surface-soft)] px-4 py-3 text-sm leading-relaxed text-[var(--color-text-secondary)]">
+            <span className="font-semibold text-[var(--color-text-primary)]">Registered with ERA AXIS before?</span>{" "}
+            Please use the same email address as last time, and write your name exactly as it was. That keeps one
+            record for you, and your certificates will show the right name.
+          </p>
+        )}
         {children}
       </div>
     </div>
