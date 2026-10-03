@@ -51,7 +51,7 @@ const tracks = [
 function TrackCard({ icon: Icon, title, description }) {
   return (
     <article className="insights-card group flex h-full flex-col p-6 sm:p-7">
-      <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/8 text-[var(--color-accent)] transition-transform duration-300 group-hover:-translate-y-1">
+      <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-[var(--radius-md)] bg-white/8 text-[var(--color-accent)] transition-transform duration-300 group-hover:-translate-y-1">
         <Icon size={22} strokeWidth={2.1} />
       </div>
 
@@ -111,7 +111,7 @@ export default function WhatYouLearn() {
           </div>
         </div>
 
-        <div className="mt-8 rounded-[18px] border border-white/10 bg-[rgb(255_255_255_/_0.06)] p-4 shadow-[0_16px_40px_rgb(0_0_0_/_0.16)] sm:hidden">
+        <div className="mt-8 rounded-[var(--radius-md)] border border-white/10 bg-[rgb(255_255_255_/_0.06)] p-4 shadow-[0_16px_40px_rgb(0_0_0_/_0.16)] sm:hidden">
           <div className="flex flex-col gap-3">
             <Link to="/payments" className="btn-primary cta-mobile-btn">
               Enrol now

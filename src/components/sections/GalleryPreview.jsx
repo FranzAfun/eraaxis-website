@@ -24,7 +24,7 @@ function GalleryThumbnail({ item, isActive, onClick }) {
       type="button"
       onClick={onClick}
       className={[
-        "group relative aspect-[16/10] overflow-hidden rounded-2xl border text-left transition-all duration-300",
+        "group relative aspect-[16/10] overflow-hidden rounded-[var(--radius-md)] border text-left transition-all duration-300",
         isActive
           ? "border-[var(--color-accent)] shadow-[0_0_0_1px_var(--color-accent)]"
           : "border-white/10 opacity-60 hover:opacity-90",

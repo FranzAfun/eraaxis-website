@@ -26,6 +26,7 @@ import { EMAIL_RE } from "../utils/validateEmail";
 import { suggestEmailCorrection } from "../utils/emailTypoCheck";
 import useSpesoFees from "../hooks/useSpesoFees";
 
+import BusyLabel from "../components/ui/BusyLabel";
 const category = getPaymentCategoryBySlug("monthly-dues");
 const item = category.items[0];
 
@@ -433,7 +434,7 @@ export default function MonthlyDuesPayment() {
                           disabled={loginSubmitting}
                           className={`btn-outline min-h-[44px] justify-center sm:px-5${loginSubmitting ? " cursor-not-allowed opacity-50" : ""}`}
                         >
-                          {loginSubmitting ? "Sending…" : "Continue with OTP"}
+                          {loginSubmitting ? <BusyLabel>Sending…</BusyLabel> : "Continue with OTP"}
                         </button>
                       </div>
                     )}
@@ -464,7 +465,7 @@ export default function MonthlyDuesPayment() {
                             disabled={loginSubmitting}
                             className={`btn-primary min-h-[44px] justify-center sm:px-5${loginSubmitting ? " cursor-not-allowed opacity-50" : ""}`}
                           >
-                            {loginSubmitting ? "Verifying…" : "Verify"}
+                            {loginSubmitting ? <BusyLabel>Verifying…</BusyLabel> : "Verify"}
                           </button>
                         </div>
                         <div className="flex items-center gap-4 text-xs">
@@ -532,7 +533,7 @@ export default function MonthlyDuesPayment() {
                             disabled={loginSubmitting}
                             className={`btn-primary min-h-[44px] justify-center sm:px-5${loginSubmitting ? " cursor-not-allowed opacity-50" : ""}`}
                           >
-                            {loginSubmitting ? "Processing…" : "Pay Now"}
+                            {loginSubmitting ? <BusyLabel>Processing…</BusyLabel> : "Pay Now"}
                             <ArrowRight size={15} strokeWidth={2.25} aria-hidden="true" />
                           </button>
                         </div>
@@ -772,7 +773,7 @@ export default function MonthlyDuesPayment() {
                     disabled={submitting || !showManualForm}
                     className={`btn-primary w-full justify-center${submitting || !showManualForm ? " cursor-not-allowed opacity-50" : ""}`}
                   >
-                    {submitting ? "Processing…" : "Continue to checkout"}
+                    {submitting ? <BusyLabel>Processing…</BusyLabel> : "Continue to checkout"}
                     <ArrowRight size={15} strokeWidth={2.25} aria-hidden="true" />
                   </button>
                   <Link

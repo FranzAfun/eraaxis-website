@@ -4,6 +4,7 @@ import { API_ERROR_MESSAGES, toUserMessage } from "../../services/api";
 import { confirmFormEmail, resendFormCode } from "../../services/formsService";
 import { fieldClass } from "./formDisplay";
 
+import BusyLabel from "../ui/BusyLabel";
 // Matches the server's wait between codes.
 const RESEND_WAIT_SECONDS = 60;
 
@@ -98,7 +99,7 @@ export default function ConfirmEmailStep({ receipt, email, onConfirmed, onChange
             className={`${fieldClass} font-mono tracking-[0.3em] sm:max-w-[200px]`}
           />
           <button type="submit" disabled={checking} className="btn-primary min-h-[48px] justify-center disabled:opacity-60">
-            {checking ? "Checking…" : "Confirm"}
+            {checking ? <BusyLabel>Checking…</BusyLabel> : "Confirm"}
           </button>
         </div>
         {message && (

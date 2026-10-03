@@ -33,6 +33,7 @@ import { SUBMIT_OUTCOME, loadPublicForm, startFormPayment, submitPublicForm } fr
 import { RULES_SHA, SCHEMA_VERSION, validateAnswers } from "../utils/formSchema";
 import { resolveMediaUrl } from "../utils/resolveMediaUrl";
 
+import BusyLabel from "../components/ui/BusyLabel";
 /**
  * A form published from EDOS, as the public fills it in.
  *
@@ -613,7 +614,7 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
             className={primaryButton}
             disabled={outcome.starting}
           >
-            {outcome.starting ? "Opening checkout…" : "Continue to pay"}
+            {outcome.starting ? <BusyLabel>Opening checkout…</BusyLabel> : "Continue to pay"}
             {!outcome.starting && <ArrowRight size={16} aria-hidden="true" />}
           </button>
           {/* Sending again keeps the same payment, so nothing is lost by going back. */}
@@ -815,7 +816,7 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
             )}
             {last && (
               <button type="button" onClick={submit} className={primaryButton} disabled={sending || uploading > 0}>
-                {sending ? "Sending…" : paid ? "Continue to pay" : "Submit"}
+                {sending ? <BusyLabel>Sending…</BusyLabel> : paid ? "Continue to pay" : "Submit"}
                 {!sending && (paid ? <ArrowRight size={16} aria-hidden="true" /> : <Send size={16} aria-hidden="true" />)}
               </button>
             )}

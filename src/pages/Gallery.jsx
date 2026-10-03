@@ -67,7 +67,7 @@ function GalleryGridCard({ src, alt, eventName, dateTaken, index, onOpen }) {
     <button
       type="button"
       onClick={() => onOpen(index)}
-      className="group relative block w-full overflow-hidden rounded-[18px] border border-[rgb(17_17_17_/_0.06)] bg-[var(--color-surface)] text-left shadow-[0_10px_30px_rgb(17_17_17_/_0.08)] transition-transform duration-300 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2"
+      className="group relative block w-full overflow-hidden rounded-[var(--radius-md)] border border-[rgb(17_17_17_/_0.06)] bg-[var(--color-surface)] text-left shadow-[0_10px_30px_rgb(17_17_17_/_0.08)] transition-transform duration-300 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2"
       aria-label={`Open gallery image ${index + 1}`}
     >
       <img
@@ -316,7 +316,7 @@ export default function Gallery() {
               <img
                 src={activeItem.src}
                 alt={activeItem.alt}
-                className="max-h-[calc(100dvh-8rem)] w-auto max-w-full rounded-[20px] object-contain shadow-[0_24px_80px_rgb(0_0_0_/_0.45)] sm:max-h-[78vh]"
+                className="max-h-[calc(100dvh-8rem)] w-auto max-w-full rounded-[var(--radius-md)] object-contain shadow-[0_24px_80px_rgb(0_0_0_/_0.45)] sm:max-h-[78vh]"
               />
               {/* Mobile (always visible, no hover): event name + date only —
                   kept short so it never covers much of the photo. Desktop

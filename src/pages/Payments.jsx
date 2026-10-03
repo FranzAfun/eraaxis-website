@@ -92,7 +92,7 @@ function OptionCard({ option }) {
           </h2>
         </div>
         <span
-          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border shadow-sm ${
+          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--radius-md)] border shadow-sm ${
             isPopular
               ? "border-[var(--color-primary)]/20 bg-white"
               : "border-[var(--color-border)] bg-[var(--color-surface-soft)]"
@@ -192,7 +192,7 @@ export default function Payments() {
       <section id="payment-options" className="bg-[var(--color-surface-soft)] py-16 md:py-24">
         <div className="container">
           <div className="mb-10 flex max-w-2xl items-start gap-4">
-            <span className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[var(--color-border)] bg-white shadow-sm sm:flex">
+            <span className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white shadow-sm sm:flex">
               <GraduationCap
                 size={21}
                 className="text-[var(--color-primary)]"

@@ -62,7 +62,7 @@ export default function DevBoardFeature() {
             <img
               src={devBoardImg}
               alt="ERA Dev Board — hands-on electronics learning kit"
-              className="w-full rounded-[18px] object-cover shadow-[0_20px_55px_rgb(0_0_0_/_0.24)]"
+              className="w-full rounded-[var(--radius-md)] object-cover shadow-[0_20px_55px_rgb(0_0_0_/_0.24)]"
               loading="lazy"
               decoding="async"
             />

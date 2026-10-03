@@ -15,6 +15,7 @@ import { EMAIL_RE } from "../utils/validateEmail";
 import { suggestEmailCorrection } from "../utils/emailTypoCheck";
 import useSpesoFees from "../hooks/useSpesoFees";
 
+import BusyLabel from "../components/ui/BusyLabel";
 const category = getPaymentCategoryBySlug("student-chapter");
 const item = category.items[0];
 
@@ -376,7 +377,7 @@ export default function StudentChapterPayment() {
                     disabled={submitting}
                     className={`btn-primary w-full justify-center${submitting ? " cursor-not-allowed opacity-60" : ""}`}
                   >
-                    {submitting ? "Processing…" : "Continue to checkout"}
+                    {submitting ? <BusyLabel>Processing…</BusyLabel> : "Continue to checkout"}
                     <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
                   </button>
                   <Link

@@ -8,6 +8,7 @@ import { api, envelopeError, toUserMessage } from "../services/api";
 import SelectField from "../components/ui/SelectField";
 import useSpesoFees from "../hooks/useSpesoFees";
 
+import BusyLabel from "../components/ui/BusyLabel";
 const labelCls =
   "mb-1.5 block text-[10px] font-bold uppercase tracking-[0.08em] text-white/70";
 
@@ -257,7 +258,7 @@ export default function ResumeProgrammePayment() {
                 disabled={submitting}
                 className={`inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-white px-6 text-sm font-semibold text-[var(--color-primary)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/90${submitting ? " cursor-not-allowed opacity-60" : ""}`}
               >
-                {submitting ? "Processing…" : "Pay Now"}
+                {submitting ? <BusyLabel>Processing…</BusyLabel> : "Pay Now"}
                 <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
               </button>
 

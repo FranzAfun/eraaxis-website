@@ -7,7 +7,7 @@ import { getPageSeo } from "../data/seo";
 
 function FaqItem({ item, isOpen, onToggle }) {
   return (
-    <div className="overflow-hidden rounded-[18px] border border-white/10 bg-white/[0.05] backdrop-blur-sm transition-colors duration-200 hover:border-white/16">
+    <div className="overflow-hidden rounded-[var(--radius-md)] border border-white/10 bg-white/[0.05] backdrop-blur-sm transition-colors duration-200 hover:border-white/16">
       <button
         type="button"
         onClick={onToggle}
@@ -127,7 +127,7 @@ export default function Faq() {
                     key={group.id}
                     type="button"
                     onClick={() => handleGroupChange(group.id)}
-                    className={`rounded-[14px] border px-4 py-3 text-left text-sm font-semibold transition-all duration-200 ${
+                    className={`rounded-[var(--radius-sm)] border px-4 py-3 text-left text-sm font-semibold transition-all duration-200 ${
                       group.id === activeGroup.id
                         ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-white"
                         : "border-white/10 bg-white/[0.04] text-white/72 hover:border-white/18 hover:bg-white/[0.08] hover:text-white"

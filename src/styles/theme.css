@@ -29,9 +29,10 @@
   --section-padding: 96px;
   --section-padding-mobile: 56px;
 
-  --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 24px;
+  /* Tighter corners, matching EDOS (3 Oct 2026): 6 / 8 / 12, down from 8 / 14 / 24. */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
 
   --shadow-soft: 0 20px 60px rgba(17, 17, 17, 0.08);
 

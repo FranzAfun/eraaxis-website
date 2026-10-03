@@ -16,6 +16,7 @@ import { EMAIL_RE } from "../utils/validateEmail";
 import { suggestEmailCorrection } from "../utils/emailTypoCheck";
 import useSpesoFees from "../hooks/useSpesoFees";
 
+import BusyLabel from "../components/ui/BusyLabel";
 const category = getPaymentCategoryBySlug("programme-enrolment");
 
 const NEXT_STEPS = [
@@ -483,9 +484,9 @@ export default function ProgrammeEnrolmentPayment() {
                     className={`btn-primary w-full justify-center${submitting || feesLoading ? " cursor-not-allowed opacity-60" : ""}`}
                   >
                     {feesLoading
-                      ? "Loading current fees…"
+                      ? <BusyLabel>Loading current fees…</BusyLabel>
                       : submitting
-                        ? "Processing…"
+                        ? <BusyLabel>Processing…</BusyLabel>
                         : "Continue to checkout"}
                     <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
                   </button>

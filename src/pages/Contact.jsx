@@ -13,6 +13,7 @@ import { getPageSeo } from "../data/seo";
 import { api } from "../services/api";
 import { useBootstrap } from "../hooks/useBootstrap";
 
+import BusyLabel from "../components/ui/BusyLabel";
 /* ── Static data ─────────────────────────────────────────────────────────── */
 
 const INQUIRY_TYPES = [
@@ -345,7 +346,7 @@ export default function Contact() {
                       disabled={isSubmitting}
                       className="btn-primary min-h-[44px] justify-center sm:px-8 disabled:opacity-60 disabled:cursor-not-allowed"
                     >
-                      {isSubmitting ? "Sending…" : "Send Message"}
+                      {isSubmitting ? <BusyLabel>Sending…</BusyLabel> : "Send Message"}
                       {!isSubmitting && <ArrowRight size={16} />}
                     </button>
                     <p className="mt-3 text-xs text-[var(--color-text-muted)]">

@@ -7,6 +7,7 @@ import SEO from "../components/SEO";
 import { api } from "../services/api";
 import { resolveArticleMedia, resolveMediaUrl } from "../utils/resolveMediaUrl";
 
+import { Waiting } from "../components/ui/BusyLabel";
 const CONTENT_TYPE_LABEL = {
   article:         "Article",
   news:            "News",
@@ -102,7 +103,7 @@ export default function InsightDetail() {
     return (
       <section className="bg-[var(--color-surface-soft)] py-24">
         <div className="container text-center">
-          <p className="text-sm text-[var(--color-text-muted)]">Loading…</p>
+          <Waiting className="text-sm text-[var(--color-text-muted)]">Loading…</Waiting>
         </div>
       </section>
     );

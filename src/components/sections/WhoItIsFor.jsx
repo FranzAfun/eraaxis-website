@@ -58,7 +58,7 @@ function AudienceCard({ icon: Icon, title, badge, description }) {
   return (
     <article className="card-interactive group flex h-full flex-col p-6 sm:p-7">
       <div className="mb-5 flex items-start justify-between gap-4">
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[color-mix(in_srgb,var(--color-primary)_10%,white)] text-[var(--color-primary)] transition-transform duration-300 group-hover:-translate-y-1">
+        <div className="flex h-12 w-12 items-center justify-center rounded-[var(--radius-md)] bg-[color-mix(in_srgb,var(--color-primary)_10%,white)] text-[var(--color-primary)] transition-transform duration-300 group-hover:-translate-y-1">
           <Icon size={22} strokeWidth={2.1} />
         </div>
         <span className="rounded-full border border-[var(--color-border-soft)] bg-white/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--color-text-muted)]">
