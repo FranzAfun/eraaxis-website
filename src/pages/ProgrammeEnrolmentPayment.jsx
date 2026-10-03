@@ -17,6 +17,8 @@ import { suggestEmailCorrection } from "../utils/emailTypoCheck";
 import useSpesoFees from "../hooks/useSpesoFees";
 
 import BusyLabel from "../components/ui/BusyLabel";
+import SignUpDetails from "../components/forms/SignUpDetails";
+import { EMPTY_SIGNUP, learnerLabel, signUpPayload, signUpProblem } from "../components/forms/signUp";
 const category = getPaymentCategoryBySlug("programme-enrolment");
 
 const NEXT_STEPS = [
@@ -25,13 +27,7 @@ const NEXT_STEPS = [
   "After payment, the next steps and confirmation details will be shared with you.",
 ];
 
-const learnerTypes = [
-  "School learner",
-  "Out-of-school youth",
-  "Working professional",
-  "Parent/guardian paying",
-  "Sponsor paying for learner",
-];
+
 
 const fieldCls =
   "min-h-[38px] w-full border-0 border-b border-[var(--color-border)] bg-transparent px-0 py-2 text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] outline-none transition-colors focus:border-[var(--color-primary)] focus:ring-0";
@@ -51,14 +47,13 @@ export default function ProgrammeEnrolmentPayment() {
   const requestedProgrammeSlug = location.state?.programmeSlug;
   const [manualProgrammeSlug, setManualProgrammeSlug] = useState("");
   const [paymentOption, setPaymentOption] = useState("monthly");
-  const [learnerType, setLearnerType] = useState("");
+  const [signUp, setSignUp] = useState(EMPTY_SIGNUP);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [otherNames, setOtherNames] = useState("");
   const [email, setEmail] = useState("");
   const [emailSuggestion, setEmailSuggestion] = useState("");
   const [phone, setPhone] = useState("");
-  const [institution, setInstitution] = useState("");
   const [learningGoal, setLearningGoal] = useState("");
   const [previousExperience, setPreviousExperience] = useState("");
   const [notes, setNotes] = useState("");
@@ -92,10 +87,8 @@ export default function ProgrammeEnrolmentPayment() {
     if (!email.trim())    { setFormError("Email address is required."); return; }
     if (!EMAIL_RE.test(email.trim())) { setFormError("Please enter a valid email address."); return; }
     if (!phone.trim())    { setFormError("Phone number is required."); return; }
-    if (requiresInstitution && !institution.trim()) {
-      setFormError("Institution is required for the Junior STEM programme.");
-      return;
-    }
+    const problem = signUpProblem(signUp, { schoolRequired: requiresInstitution });
+    if (problem) { setFormError(problem); return; }
     setSubmitting(true);
     try {
       const programmesData = await api.get("/programmes");
@@ -110,8 +103,7 @@ export default function ProgrammeEnrolmentPayment() {
         other_names:         otherNames.trim() || undefined,
         email:               email.trim(),
         phone:               phone.trim(),
-        institution:         institution.trim() || undefined,
-        learner_type:        learnerType || undefined,
+        ...signUpPayload(signUp),
         learning_goal:       learningGoal.trim() || undefined,
         previous_experience: previousExperience.trim() || undefined,
         notes:               notes.trim() || undefined,
@@ -225,9 +217,10 @@ export default function ProgrammeEnrolmentPayment() {
                 </div>
 
                 <div className="space-y-5">
+                  <SignUpDetails part="who" value={signUp} onChange={setSignUp} fieldCls={fieldCls} labelCls={labelCls} optionalTag={optionalTag} />
                   <div className="grid gap-5 sm:grid-cols-2">
                     <div>
-                      <label className={labelCls}>First name</label>
+                      <label className={labelCls}>{learnerLabel(signUp, "First name")}</label>
                       <input
                         type="text"
                         placeholder="Genny"
@@ -237,7 +230,7 @@ export default function ProgrammeEnrolmentPayment() {
                       />
                     </div>
                     <div>
-                      <label className={labelCls}>Last name</label>
+                      <label className={labelCls}>{learnerLabel(signUp, "Last name")}</label>
                       <input
                         type="text"
                         placeholder="Amadapah"
@@ -250,7 +243,7 @@ export default function ProgrammeEnrolmentPayment() {
 
                   <div className="grid gap-5 sm:grid-cols-2">
                     <div>
-                      <label className={labelCls}>Other names {optionalTag}</label>
+                      <label className={labelCls}>{learnerLabel(signUp, "Other names")} {optionalTag}</label>
                       <input
                         type="text"
                         placeholder="Middle name(s), if any"
@@ -260,7 +253,7 @@ export default function ProgrammeEnrolmentPayment() {
                       />
                     </div>
                     <div>
-                      <label className={labelCls}>Email address</label>
+                      <label className={labelCls}>{signUp.who && signUp.who !== "learner" ? "Email for receipts and updates" : "Email address"}</label>
                       <input
                         type="email"
                         placeholder="e.g. genny@example.com"
@@ -287,7 +280,7 @@ export default function ProgrammeEnrolmentPayment() {
 
                   <div className="grid gap-5 sm:grid-cols-2">
                     <div>
-                      <label className={labelCls}>Phone number</label>
+                      <label className={labelCls}>{signUp.who && signUp.who !== "learner" ? "Phone for updates" : "Phone number"}</label>
                       <input
                         type="tel"
                         placeholder="+233 XX XXX XXXX"
@@ -327,40 +320,9 @@ export default function ProgrammeEnrolmentPayment() {
                         ]}
                       />
                     </div>
-                    <div>
-                      <label className={labelCls}>
-                        Institution / organisation{" "}
-                        {requiresInstitution ? (
-                          <span className="ml-1 font-normal normal-case tracking-normal text-red-500">*</span>
-                        ) : (
-                          optionalTag
-                        )}
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="School, company, or organisation"
-                        className={fieldCls}
-                        value={institution}
-                        onChange={(e) => setInstitution(e.target.value)}
-                      />
-                    </div>
                   </div>
-
+                  <SignUpDetails part="details" value={signUp} onChange={setSignUp} schoolRequired={requiresInstitution} fieldCls={fieldCls} labelCls={labelCls} optionalTag={optionalTag} />
                   <div className="grid gap-5 sm:grid-cols-2">
-                    <div>
-                      <label className={labelCls}>Learner type {optionalTag}</label>
-                      <SelectField
-                        name="learnerType"
-                        value={learnerType}
-                        onChange={(event) => setLearnerType(event.target.value)}
-                        className={fieldCls}
-                        placeholder="Select learner type"
-                        options={learnerTypes.map((type) => ({
-                          value: type,
-                          label: type,
-                        }))}
-                      />
-                    </div>
                     <div>
                       <label className={labelCls}>Learning goal {optionalTag}</label>
                       <input

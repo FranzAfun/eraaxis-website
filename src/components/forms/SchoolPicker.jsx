@@ -12,7 +12,21 @@ import { searchFormSchools } from "../../services/formsService";
  * Nobody is ever stopped by the list. "My school is not listed" is always there
  * when the question allows it, and what they type is passed to our team.
  */
-export default function SchoolPicker({ slug, question, value, onChange, fieldClass, invalid, describedBy }) {
+// The kind of school, asked only for one that is not listed: it decides
+// whether a parent or guardian has to agree.
+const UNLISTED_LEVELS = [
+  { value: "basic", label: "Basic school (primary)" },
+  { value: "junior_high", label: "Junior high school" },
+  { value: "senior_high", label: "Senior high school" },
+  { value: "tertiary", label: "University or college" },
+];
+
+/**
+ * `searchSchools` replaces the form's own school list (the sign-up pages search
+ * every register); `askLevel` asks the kind of school when it is not listed.
+ * The chosen school carries its level.
+ */
+export default function SchoolPicker({ slug, question, value, onChange, fieldClass, invalid, describedBy, searchSchools, askLevel = false }) {
   const allowOther = question.school?.allowOther !== false;
   const [results, setResults] = useState([]);
   const [searching, setSearching] = useState(false);
@@ -30,7 +44,7 @@ export default function SchoolPicker({ slug, question, value, onChange, fieldCla
         async () => {
           setSearching(true);
           try {
-            const items = await searchFormSchools(slug, question.key, query);
+            const items = searchSchools ? await searchSchools(query) : await searchFormSchools(slug, question.key, query);
             if (ticket !== request.current) return;
             setResults(items);
             setFailed(false);
@@ -46,7 +60,7 @@ export default function SchoolPicker({ slug, question, value, onChange, fieldCla
         query ? 250 : 0
       );
     },
-    [slug, question.key]
+    [slug, question.key, searchSchools]
   );
 
   // The first page is fetched before the menu opens, so it never opens empty.
@@ -68,8 +82,20 @@ export default function SchoolPicker({ slug, question, value, onChange, fieldCla
           aria-invalid={invalid || undefined}
           aria-describedby={describedBy}
           className={fieldClass}
-          onChange={(event) => onChange(event.target.value ? { other: event.target.value } : null)}
+          onChange={(event) => onChange(event.target.value ? { other: event.target.value, level: value?.level || "" } : null)}
         />
+        {askLevel && (
+          <SelectField
+            id={`q-${question.key}-level`}
+            name={`${question.key}-level`}
+            className={fieldClass}
+            value={value?.level || ""}
+            placeholder="What kind of school is it?"
+            options={UNLISTED_LEVELS}
+            aria-invalid={(invalid && !value?.level) || undefined}
+            onChange={(event) => onChange({ other: value?.other || "", level: event.target.value })}
+          />
+        )}
         <button
           type="button"
           className="text-sm font-semibold text-[var(--color-primary)] underline underline-offset-2"
@@ -113,7 +139,7 @@ export default function SchoolPicker({ slug, question, value, onChange, fieldCla
       aria-describedby={describedBy}
       onChange={(event) => {
         const school = results.find((item) => item.id === event.target.value);
-        onChange(event.target.value ? { schoolId: event.target.value, name: school?.name || "" } : null);
+        onChange(event.target.value ? { schoolId: event.target.value, name: school?.name || "", level: school?.level || "" } : null);
       }}
       footer={
         allowOther ? (

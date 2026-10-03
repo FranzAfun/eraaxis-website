@@ -16,6 +16,8 @@ import { suggestEmailCorrection } from "../utils/emailTypoCheck";
 import useSpesoFees from "../hooks/useSpesoFees";
 
 import BusyLabel from "../components/ui/BusyLabel";
+import SignUpDetails from "../components/forms/SignUpDetails";
+import { EMPTY_SIGNUP, learnerLabel, signUpPayload, signUpProblem } from "../components/forms/signUp";
 const category = getPaymentCategoryBySlug("student-chapter");
 const item = category.items[0];
 
@@ -48,7 +50,7 @@ export default function StudentChapterPayment() {
   const [email, setEmail]               = useState("");
   const [emailSuggestion, setEmailSuggestion] = useState("");
   const [phone, setPhone]               = useState("");
-  const [institution, setInstitution]   = useState("");
+  const [signUp, setSignUp]             = useState(EMPTY_SIGNUP);
   const [yearLevel, setYearLevel]       = useState("");
   const [notes, setNotes]               = useState("");
   const [submitting, setSubmitting]     = useState(false);
@@ -61,7 +63,8 @@ export default function StudentChapterPayment() {
     if (!email.trim())       { setFormError("Email address is required."); return; }
     if (!EMAIL_RE.test(email.trim())) { setFormError("Please enter a valid email address."); return; }
     if (!phone.trim())       { setFormError("Phone number is required."); return; }
-    if (!institution.trim()) { setFormError("Institution / School / Community is required."); return; }
+    const problem = signUpProblem(signUp, { schoolRequired: true });
+    if (problem) { setFormError(problem); return; }
     setSubmitting(true);
     try {
       const programmesData = await api.get("/programmes");
@@ -75,7 +78,7 @@ export default function StudentChapterPayment() {
         other_names:  otherNames.trim() || undefined,
         email:        email.trim(),
         phone:        phone.trim(),
-        institution:  institution.trim(),
+        ...signUpPayload(signUp),
         year_level:   yearLevel.trim() || undefined,
         notes:        notes.trim() || undefined,
       });
@@ -188,9 +191,10 @@ export default function StudentChapterPayment() {
                 </div>
 
                 <div className="space-y-5">
+                  <SignUpDetails part="who" value={signUp} onChange={setSignUp} fieldCls={fieldCls} labelCls={labelCls} optionalTag={optionalTag} />
                   <div className="grid gap-5 sm:grid-cols-2">
                     <div>
-                      <label className={labelCls}>First name</label>
+                      <label className={labelCls}>{learnerLabel(signUp, "First name")}</label>
                       <input
                         type="text"
                         placeholder="Genny"
@@ -200,7 +204,7 @@ export default function StudentChapterPayment() {
                       />
                     </div>
                     <div>
-                      <label className={labelCls}>Last name</label>
+                      <label className={labelCls}>{learnerLabel(signUp, "Last name")}</label>
                       <input
                         type="text"
                         placeholder="Amadapah"
@@ -213,7 +217,7 @@ export default function StudentChapterPayment() {
 
                   <div className="grid gap-5 sm:grid-cols-2">
                     <div>
-                      <label className={labelCls}>Other names {optionalTag}</label>
+                      <label className={labelCls}>{learnerLabel(signUp, "Other names")} {optionalTag}</label>
                       <input
                         type="text"
                         placeholder="Middle name(s), if any"
@@ -223,7 +227,7 @@ export default function StudentChapterPayment() {
                       />
                     </div>
                     <div>
-                      <label className={labelCls}>Email address</label>
+                      <label className={labelCls}>{signUp.who && signUp.who !== "learner" ? "Email for receipts and updates" : "Email address"}</label>
                       <input
                         type="email"
                         placeholder="genny@example.com"
@@ -250,7 +254,7 @@ export default function StudentChapterPayment() {
 
                   <div className="grid gap-5 sm:grid-cols-2">
                     <div>
-                      <label className={labelCls}>Phone number</label>
+                      <label className={labelCls}>{signUp.who && signUp.who !== "learner" ? "Phone for updates" : "Phone number"}</label>
                       <input
                         type="tel"
                         placeholder="+233 XX XXX XXXX"
@@ -259,19 +263,8 @@ export default function StudentChapterPayment() {
                         onChange={(e) => setPhone(e.target.value)}
                       />
                     </div>
-                    <div>
-                      <label className={labelCls}>
-                        Institution / School / Community
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="Your school or community"
-                        className={fieldCls}
-                        value={institution}
-                        onChange={(e) => setInstitution(e.target.value)}
-                      />
-                    </div>
                   </div>
+                  <SignUpDetails part="details" value={signUp} onChange={setSignUp} schoolRequired fieldCls={fieldCls} labelCls={labelCls} optionalTag={optionalTag} />
 
                   <div className="grid gap-5 sm:grid-cols-2">
                     <div>

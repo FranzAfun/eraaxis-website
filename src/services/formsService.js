@@ -41,6 +41,16 @@ export async function searchFormSchools(slug, questionKey, query) {
   return body?.data?.items || [];
 }
 
+/**
+ * Schools for the programme and Student Chapter sign-ups: universities and
+ * colleges, senior high schools, and schools ERA AXIS has added, each with its
+ * level.
+ */
+export async function searchSignupSchools(query) {
+  const body = await api.get(`/schools?${new URLSearchParams({ q: query || "" })}`);
+  return body?.data?.items || [];
+}
+
 /** Communities ERA AXIS has recorded, for a form's community question. */
 export async function searchFormCommunities(slug, questionKey, query) {
   const params = new URLSearchParams({ question: questionKey, q: query || "" });

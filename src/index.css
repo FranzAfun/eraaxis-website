@@ -370,20 +370,27 @@
   }
 
   /* Over the hero the bar has no background, so a filled button would sit on a
-     photograph with unpredictable contrast. An outlined button reads cleanly on
-     anything. Two classes, so it beats the hover rule further down the file
-     wherever that lands. */
-  .btn-nav-primary.btn-nav-primary--on-hero,
-  .btn-nav-primary.btn-nav-primary--on-hero:hover {
-    background-color: transparent;
-    border: 1px solid rgb(255 255 255 / 0.65);
+     photograph with unpredictable contrast. It takes the hero's own secondary
+     button instead: glass at rest, filling white (with the primary colour for
+     its words) and lifting on hover. Two classes, so it beats the nav hover
+     rule further down the file wherever that lands. */
+  .btn-nav-primary.btn-nav-primary--on-hero {
+    background-color: rgb(255 255 255 / 0.08);
+    border: 1px solid rgb(255 255 255 / 0.35);
     color: #ffffff;
     box-shadow: none;
-    transform: none;
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
   }
 
-  .btn-nav-primary.btn-nav-primary--on-hero:hover {
-    background-color: rgb(255 255 255 / 0.14);
+  @media (hover: hover) {
+    .btn-nav-primary.btn-nav-primary--on-hero:hover {
+      background-color: var(--color-text-inverse);
+      border-color: var(--color-text-inverse);
+      color: var(--color-primary);
+      transform: translateY(-0.25rem);
+      box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    }
   }
 
   /* The header itself. Only background, border and shadow animate: the blur is
