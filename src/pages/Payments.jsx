@@ -3,18 +3,19 @@ import {
   ArrowRight,
   CalendarDays,
   GraduationCap,
-  Landmark,
   Users,
 } from "lucide-react";
 import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
 
+// Three ways in, side by side. Student Chapter is the one most people choose,
+// so it carries the badge and the brand colour. Group or institutional support
+// is a line under the cards, not a fourth card.
 const paymentOptions = [
   {
     title: "Programme Enrolment",
     amount: "From GHS 200/month",
-    description:
-      "Choose an ERA AXIS learning programme. Monthly or full upfront.",
+    description: "Choose an ERA AXIS learning programme. Monthly or full upfront.",
     bullets: [
       "4 programmes across school, youth, and professional tracks",
       "Monthly or full programme enrolment options",
@@ -23,7 +24,6 @@ const paymentOptions = [
     cta: "Choose programme",
     to: "/payments/programme-enrolment",
     Icon: GraduationCap,
-    isPopular: true,
   },
   {
     title: "Student Chapter",
@@ -34,9 +34,10 @@ const paymentOptions = [
       "GHS 15 first month dues",
       "Then GHS 110 every 3 months",
     ],
-    cta: "Start chapter enrolment",
+    cta: "Join the chapter",
     to: "/payments/student-chapter",
     Icon: Users,
+    isPopular: true,
   },
   {
     title: "Monthly Dues",
@@ -51,81 +52,68 @@ const paymentOptions = [
     to: "/payments/monthly-dues",
     Icon: CalendarDays,
   },
-  {
-    title: "Institutional / Group Enrolment",
-    amount: "Custom quote",
-    description:
-      "For schools, communities, NGOs, CSR sponsors, and partners supporting multiple learners.",
-    bullets: [
-      "Group learner support",
-      "School/community arrangements",
-      "Custom enrolment guidance",
-    ],
-    cta: "Request quote",
-    to: "/contact#enquiry",
-    Icon: Landmark,
-    isSecondary: true,
-  },
 ];
 
 function OptionCard({ option }) {
   const { Icon, isPopular } = option;
-
-  const baseClasses = "flex min-h-[360px] flex-col p-6 transition-all duration-300 hover:-translate-y-1";
-  const popularClasses = "relative rounded-[var(--radius-md)] border-2 border-[var(--color-primary)] bg-white bg-gradient-to-b from-[var(--color-primary)]/[0.06] to-transparent shadow-lg shadow-[var(--color-primary)]/10 hover:shadow-xl hover:shadow-[var(--color-primary)]/20";
-  const standardClasses = "card-interactive";
+  // The popular card is filled with the primary colour, its words in white.
+  const tone = isPopular
+    ? {
+        card: "relative border-2 border-[var(--color-primary)] bg-[var(--color-primary)] text-white shadow-xl shadow-[var(--color-primary)]/25 lg:-my-3",
+        eyebrow: "text-white/80",
+        title: "text-white",
+        amount: "text-white",
+        body: "text-white/85",
+        dot: "bg-white",
+        icon: "border-white/25 bg-white/10",
+        iconColour: "text-white",
+        button: "inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-white px-5 text-sm font-semibold text-[var(--color-primary)] transition hover:bg-white/90",
+      }
+    : {
+        card: "card-interactive",
+        eyebrow: "text-[var(--color-primary)]",
+        title: "text-[var(--color-text-primary)]",
+        amount: "text-[var(--color-primary)]",
+        body: "text-[var(--color-text-secondary)]",
+        dot: "bg-[var(--color-primary)]",
+        icon: "border-[var(--color-border)] bg-[var(--color-surface-soft)]",
+        iconColour: "text-[var(--color-primary)]",
+        button: "btn-primary",
+      };
 
   return (
-    <article className={`${baseClasses} ${isPopular ? popularClasses : standardClasses}`}>
+    <article className={`flex flex-col rounded-[var(--radius-md)] p-6 transition-all duration-300 hover:-translate-y-1 ${tone.card}`}>
       {isPopular && (
-        <div className="absolute right-5 top-0 -translate-y-1/2 rounded-full bg-[var(--color-primary)] px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white shadow-sm">
+        <div className="absolute right-5 top-0 -translate-y-1/2 rounded-full bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-[var(--color-primary)] shadow-sm ring-2 ring-[var(--color-primary)]">
           Most Popular
         </div>
       )}
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
-          <p className="mb-2 text-[11px] font-semibold uppercase tracking-widest text-[var(--color-primary)]">
+          <p className={`mb-2 text-[11px] font-semibold uppercase tracking-widest ${tone.eyebrow}`}>
             Enrolment option
           </p>
-          <h2 className="text-2xl font-black tracking-tight text-[var(--color-text-primary)]">
-            {option.title}
-          </h2>
+          <h2 className={`text-2xl font-black tracking-tight ${tone.title}`}>{option.title}</h2>
         </div>
-        <span
-          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--radius-md)] border shadow-sm ${
-            isPopular
-              ? "border-[var(--color-primary)]/20 bg-white"
-              : "border-[var(--color-border)] bg-[var(--color-surface-soft)]"
-          }`}
-        >
-          <Icon size={21} className="text-[var(--color-primary)]" strokeWidth={1.85} />
+        <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--radius-md)] border shadow-sm ${tone.icon}`}>
+          <Icon size={21} className={tone.iconColour} strokeWidth={1.85} />
         </span>
       </div>
 
-      <p className="text-2xl font-black tracking-tight text-[var(--color-primary)]">
-        {option.amount}
-      </p>
-      <p className="mt-4 text-sm leading-relaxed text-[var(--color-text-secondary)]">
-        {option.description}
-      </p>
+      <p className={`text-2xl font-black tracking-tight ${tone.amount}`}>{option.amount}</p>
+      <p className={`mt-4 text-sm leading-relaxed ${tone.body}`}>{option.description}</p>
 
       <ul className="mt-6 space-y-3">
         {option.bullets.map((bullet) => (
-          <li key={bullet} className="flex items-start gap-3 text-sm text-[var(--color-text-secondary)]">
-            <span
-              aria-hidden="true"
-              className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-primary)]"
-            />
+          <li key={bullet} className={`flex items-start gap-3 text-sm ${tone.body}`}>
+            <span aria-hidden="true" className={`mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${tone.dot}`} />
             <span>{bullet}</span>
           </li>
         ))}
       </ul>
 
       <div className="mt-auto pt-7">
-        <Link
-          to={option.to}
-          className={option.isSecondary ? "btn-outline" : "btn-primary"}
-        >
+        <Link to={option.to} className={tone.button}>
           {option.cta}
           <ArrowRight size={16} strokeWidth={2} />
         </Link>
@@ -138,7 +126,7 @@ export default function Payments() {
   return (
     <>
       <SEO {...getPageSeo("/payments")} />
-      <section className="relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-16 pt-36 text-white md:pb-24 md:pt-44">
+      <section className="relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-14 pt-36 text-white md:pb-20 md:pt-44">
         <div
           aria-hidden="true"
           className="absolute inset-0"
@@ -147,15 +135,6 @@ export default function Payments() {
               "radial-gradient(circle at 15% 18%, color-mix(in srgb, var(--color-accent) 24%, transparent) 0%, transparent 30%), radial-gradient(circle at 84% 8%, color-mix(in srgb, var(--color-primary) 38%, transparent) 0%, transparent 34%), linear-gradient(135deg, var(--color-background-dark) 0%, var(--color-primary-deep) 54%, var(--color-background-dark) 100%)",
           }}
         />
-        <div
-          aria-hidden="true"
-          className="absolute -left-28 top-28 h-80 w-80 rounded-full bg-white/[0.05] blur-3xl"
-        />
-        <div
-          aria-hidden="true"
-          className="absolute -bottom-24 right-4 h-96 w-96 rounded-full bg-[var(--color-accent)]/10 blur-3xl"
-        />
-
         <div className="container relative z-10">
           <div className="max-w-3xl">
             <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
@@ -165,78 +144,26 @@ export default function Payments() {
               Enrolment &amp; Dues
             </h1>
             <p className="max-w-2xl text-base leading-relaxed text-white/72 sm:text-lg">
-              Start programme enrolment, pay dues, join the Student Chapter, or
-              request institutional or group support.
+              Enrol on a programme, join the Student Chapter, or pay your dues. Totals are shown before you pay.
             </p>
-
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <a
-                href="#payment-options"
-                className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-white px-5 text-sm font-semibold text-[var(--color-primary)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/90"
-              >
-                Choose enrolment option
-                <ArrowRight size={16} strokeWidth={2} />
-              </a>
-              <Link
-                to="/contact#enquiry"
-                className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[var(--radius-sm)] border border-white/25 bg-white/[0.08] px-5 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:text-[var(--color-primary)]"
-              >
-                Request institutional quote
-                <ArrowRight size={16} strokeWidth={2} />
-              </Link>
-            </div>
           </div>
         </div>
       </section>
 
       <section id="payment-options" className="bg-[var(--color-surface-soft)] py-16 md:py-24">
         <div className="container">
-          <div className="mb-10 flex max-w-2xl items-start gap-4">
-            <span className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white shadow-sm sm:flex">
-              <GraduationCap
-                size={21}
-                className="text-[var(--color-primary)]"
-                strokeWidth={1.85}
-              />
-            </span>
-            <div>
-              <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
-                Enrolment &amp; dues
-              </p>
-              <h2 className="mb-4 text-3xl font-black tracking-tight text-[var(--color-text-primary)] sm:text-4xl">
-                Start with the enrolment path that fits.
-              </h2>
-              <p className="text-sm leading-relaxed text-[var(--color-text-secondary)] sm:text-base">
-                Choose a category now. Final totals and confirmation steps will
-                be shown clearly before any payment is made.
-              </p>
-            </div>
-          </div>
-
-          <div className="grid gap-5 lg:grid-cols-2">
+          <div className="grid gap-6 pt-3 lg:grid-cols-3 lg:items-stretch">
             {paymentOptions.map((option) => (
               <OptionCard key={option.title} option={option} />
             ))}
           </div>
-        </div>
-      </section>
-
-      <section className="final-cta-band relative overflow-hidden py-16 md:py-20">
-        <div aria-hidden="true" className="final-cta-orb pointer-events-none absolute inset-0" />
-        <div className="container relative text-center">
-          <h2 className="mb-4 text-2xl font-black tracking-tight text-white sm:text-3xl">
-            Need help choosing?
-          </h2>
-          <p className="mx-auto mb-8 max-w-xl text-sm leading-relaxed text-white/80 sm:text-base">
-            Contact ERA AXIS and we will guide you to the right enrolment path.
+          {/* The other ways in, quietly: groups, and help choosing. */}
+          <p className="mt-10 text-center text-sm leading-relaxed text-[var(--color-text-secondary)]">
+            Enrolling several learners for a school, community or organisation?{" "}
+            <Link to="/contact#enquiry" className="font-semibold text-[var(--color-primary)] underline underline-offset-2">Request a group quote</Link>.
+            {" "}Not sure which to choose?{" "}
+            <Link to="/contact#enquiry" className="font-semibold text-[var(--color-primary)] underline underline-offset-2">Ask us</Link>.
           </p>
-          <Link
-            to="/contact#enquiry"
-            className="final-cta-btn-primary inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[var(--radius-sm)] px-5 text-sm font-semibold"
-          >
-            Contact ERA AXIS
-            <ArrowRight size={16} strokeWidth={2} />
-          </Link>
         </div>
       </section>
     </>
