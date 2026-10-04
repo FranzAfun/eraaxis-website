@@ -390,6 +390,11 @@
     transform: scale(0.97);
   }
 
+  .site-header--glass .btn-nav-primary,
+  .site-drawer .btn-nav-primary {
+    border: 1px solid var(--color-accent);
+  }
+
   /* Over the hero the bar has no background, so a filled button would sit on a
      photograph with unpredictable contrast. It takes the hero's own secondary
      button instead: glass at rest, filling white (with the primary colour for

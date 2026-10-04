@@ -55,6 +55,10 @@ if (foundation) {
   }
   add("drawer muted60%", mix(white, glass, 0.6), glass);
   add("drawer active icon", accent, mix(accent, drawerRow, 0.15), 3);
+  add("drawer inactive85% hover", mix(white, dropdown, 0.85), dropdown);
+  add("dark focus ring against offset", mix(white, glass, 0.7), glassBase, 3);
+  const lower = mix(white, mix(glassBase, white, alpha - 0.000001), 0.1);
+  if (contrast(accent, lower) >= 4.5) throw new Error("Header opacity is no longer the lowest passing six-decimal value.");
   }
   for (const background of light) {
     add("required / error words", token("field-danger"), background);

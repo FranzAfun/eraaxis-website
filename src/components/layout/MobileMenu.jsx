@@ -105,7 +105,7 @@ export default function MobileMenu({ open, groups, onClose, returnFocusTo }) {
             type="button"
             aria-label="Close menu"
             onClick={onClose}
-            className="grid h-10 w-10 place-items-center rounded-full border border-white/15 text-white transition-colors duration-200 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+            className="grid h-10 w-10 place-items-center rounded-full border border-white/15 text-white transition-colors duration-200 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface-dark)]"
           >
             <X size={18} />
           </button>
@@ -126,7 +126,7 @@ export default function MobileMenu({ open, groups, onClose, returnFocusTo }) {
                   className={({ isActive }) =>
                     [
                       "flex items-center gap-3 rounded-[var(--radius-md)] px-3 py-2.5 text-[15px] font-medium transition-colors duration-200",
-                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface-dark)]",
                       isActive ? "bg-white/[0.08] text-[var(--color-accent)]" : "text-white/85 hover:bg-white/[0.06] hover:text-white",
                     ].join(" ")
                   }
@@ -157,7 +157,7 @@ export default function MobileMenu({ open, groups, onClose, returnFocusTo }) {
           <Link
             to="/contact"
             onClick={onClose}
-            className="flex w-full items-center justify-center gap-2 rounded-[var(--radius-sm)] border border-white/15 px-4 py-2.5 text-sm font-medium text-white/85 transition-colors duration-200 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+            className="flex w-full items-center justify-center gap-2 rounded-[var(--radius-sm)] border border-white/15 px-4 py-2.5 text-sm font-medium text-white/85 transition-colors duration-200 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface-dark)]"
           >
             <LifeBuoy size={16} />
             Need help?

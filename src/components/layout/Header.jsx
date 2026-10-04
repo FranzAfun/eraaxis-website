@@ -139,7 +139,7 @@ export default function Header() {
                     className={({ isActive }) =>
                       [
                         "flex rounded-[var(--radius-sm)] px-3 py-2 text-sm font-medium transition-colors duration-200",
-                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70",
+                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface-dark)]",
                         isActive
                           ? "bg-white/10 text-[var(--color-accent)]"
                           : "text-white/[0.82] hover:bg-white/10 hover:text-white",
@@ -171,7 +171,7 @@ export default function Header() {
           aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
-          className="flex items-center justify-center rounded text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 md:hidden"
+          className="flex items-center justify-center rounded text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface-dark)] md:hidden"
         >
           {open ? <X size={22} /> : <Menu size={22} />}
         </button>
