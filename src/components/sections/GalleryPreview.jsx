@@ -148,13 +148,13 @@ export default function GalleryPreview() {
       <div className="container">
         <div className="mb-8 flex flex-col gap-6 md:mb-10 lg:mb-12 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-2xl">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)]">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)]">
               Gallery
             </p>
             <h2 className="mb-4 text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl lg:text-[2.7rem]">
               Moments from practical learning in action.
             </h2>
-            <p className="text-base leading-relaxed text-white/68 sm:text-[17px]">
+            <p className="text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-[17px]">
               A glimpse of ERA AXIS workshops, learner builds, STEM sessions,
               and community innovation activities.
             </p>

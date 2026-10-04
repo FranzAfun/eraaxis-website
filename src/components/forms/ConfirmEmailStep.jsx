@@ -102,7 +102,7 @@ export default function ConfirmEmailStep({ receipt, email, onConfirmed, onChange
             aria-describedby={message ? "confirm-code-error" : undefined}
             className={`${fieldClass} font-mono tracking-[0.3em] sm:max-w-[200px]`}
           />
-          <button type="submit" disabled={checking} className="btn-primary min-h-[48px] justify-center disabled:opacity-60">
+          <button type="submit" disabled={checking} className="btn-primary min-h-[48px] justify-center disabled:opacity-100">
             {checking ? <BusyLabel>Checking…</BusyLabel> : "Confirm"}
           </button>
         </div>

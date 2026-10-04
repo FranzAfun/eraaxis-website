@@ -179,7 +179,7 @@ export default function StudentChapterPayment() {
         <div className="container relative z-10">
           <BackLinkButton
             fallbackTo="/payments"
-            className="mb-8 flex w-fit items-center gap-1.5 text-xs font-medium text-white/60 transition-colors hover:text-white/70"
+            className="mb-8 flex w-fit items-center gap-1.5 text-xs font-medium text-[var(--color-text-on-dark-muted)] transition-colors hover:text-[var(--color-text-on-dark-muted)]"
           >
             <ArrowLeft size={12} strokeWidth={2.5} aria-hidden="true" />
             Back
@@ -187,13 +187,13 @@ export default function StudentChapterPayment() {
 
           <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
             <div className="flex flex-col justify-center">
-              <p className="mb-5 inline-flex w-fit self-start rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
+              <p className="mb-5 inline-flex w-fit self-start rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)] backdrop-blur-xl">
                 Student Chapter
               </p>
               <h1 className="mb-5 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-[4rem]">
                 Join the ERA AXIS Student Chapter.
               </h1>
-              <p className="max-w-2xl text-base leading-relaxed text-white/65 sm:text-lg">
+              <p className="max-w-2xl text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-lg">
                 Complete your first payment to access the Student Chapter
                 community, monthly practical sessions, and collaborative build
                 opportunities.

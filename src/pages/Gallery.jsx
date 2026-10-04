@@ -53,7 +53,7 @@ function CaptionOverlay({ eventName, dateTaken }) {
           </p>
         )}
         {dateTaken && (
-          <p className="text-[10px] leading-snug text-white/70 drop-shadow-sm sm:shrink-0 sm:whitespace-nowrap sm:text-xs sm:text-white/75">
+          <p className="text-[10px] leading-snug text-[var(--color-text-on-dark-muted)] drop-shadow-sm sm:shrink-0 sm:whitespace-nowrap sm:text-xs sm:text-[var(--color-text-on-dark-muted)]">
             {formatDate(dateTaken)}
           </p>
         )}
@@ -197,20 +197,20 @@ export default function Gallery() {
         <div className="container relative z-10">
           <Link
             to="/"
-            className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-white/68 transition-colors duration-200 hover:text-white"
+            className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-[var(--color-text-on-dark-muted)] transition-colors duration-200 hover:text-white"
           >
             <ArrowLeft size={16} strokeWidth={2} />
             Back to home
           </Link>
 
           <div className="max-w-3xl">
-            <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
+            <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)] backdrop-blur-xl">
               ERA AXIS Gallery
             </p>
             <h1 className="mb-5 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-[4rem]">
               Practical learning, captured in motion.
             </h1>
-            <p className="mb-8 text-base leading-relaxed text-white/72 sm:text-lg">
+            <p className="mb-8 text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-lg">
               Explore moments from workshops, learner projects, STEM sessions,
               Dev Board activities, and community innovation programmes.
             </p>
@@ -304,7 +304,7 @@ export default function Gallery() {
             className="relative flex max-h-full w-full max-w-6xl flex-col items-center justify-center gap-4"
             onClick={(event) => event.stopPropagation()}
           >
-            <div className="hidden self-center rounded-full border border-white/10 bg-white/8 px-3 py-1 text-xs font-semibold tracking-[0.18em] text-white/76 backdrop-blur-md sm:block sm:text-sm">
+            <div className="hidden self-center rounded-full border border-white/10 bg-white/8 px-3 py-1 text-xs font-semibold tracking-[0.18em] text-[var(--color-text-on-dark-muted)] backdrop-blur-md sm:block sm:text-sm">
               {activeIndex + 1} / {items.length}
             </div>
 
@@ -334,12 +334,12 @@ export default function Gallery() {
                       </p>
                     )}
                     {activeItem.dateTaken && (
-                      <p className="text-xs leading-snug text-white/75 drop-shadow-sm md:hidden">
+                      <p className="text-xs leading-snug text-[var(--color-text-on-dark-muted)] drop-shadow-sm md:hidden">
                         {formatDate(activeItem.dateTaken)}
                       </p>
                     )}
                     {activeDetails && (
-                      <p className="hidden text-xs leading-snug text-white/75 drop-shadow-sm md:block">
+                      <p className="hidden text-xs leading-snug text-[var(--color-text-on-dark-muted)] drop-shadow-sm md:block">
                         {activeDetails}
                       </p>
                     )}
@@ -365,7 +365,7 @@ export default function Gallery() {
               <ArrowLeft size={20} strokeWidth={2.25} />
             </button>
 
-            <div className="text-center text-sm font-semibold tracking-[0.16em] text-white/78">
+            <div className="text-center text-sm font-semibold tracking-[0.16em] text-[var(--color-text-on-dark-muted)]">
               {activeIndex + 1} / {items.length}
             </div>
 

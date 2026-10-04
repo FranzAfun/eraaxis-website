@@ -60,10 +60,10 @@ function OptionCard({ option }) {
   const tone = isPopular
     ? {
         card: "relative border-2 border-[var(--color-primary)] bg-[var(--color-primary)] text-white shadow-xl shadow-[var(--color-primary)]/25 lg:-my-3",
-        eyebrow: "text-white/80",
+        eyebrow: "text-[var(--color-text-on-dark-muted)]",
         title: "text-white",
         amount: "text-white",
-        body: "text-white/85",
+        body: "text-[var(--color-text-on-dark-muted)]",
         dot: "bg-white",
         icon: "border-white/25 bg-white/10",
         iconColour: "text-white",
@@ -137,13 +137,13 @@ export default function Payments() {
         />
         <div className="container relative z-10">
           <div className="max-w-3xl">
-            <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
+            <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)] backdrop-blur-xl">
               ERA AXIS ENROLMENT
             </p>
             <h1 className="mb-5 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-[4rem]">
               Enrolment &amp; Dues
             </h1>
-            <p className="max-w-2xl text-base leading-relaxed text-white/72 sm:text-lg">
+            <p className="max-w-2xl text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-lg">
               Enrol on a programme, join the Student Chapter, or pay your dues. Totals are shown before you pay.
             </p>
           </div>

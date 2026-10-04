@@ -54,7 +54,7 @@ export default function ChoiceCards({ name, legend, options, value, onChange, co
                 </span>
               )}
               {option.hint && (
-                <span className={`mt-1 text-sm leading-relaxed ${chosen ? "text-white/85" : "text-[var(--color-text-secondary)]"}`}>
+                <span className={`mt-1 text-sm leading-relaxed ${chosen ? "text-[var(--color-text-on-dark-muted)]" : "text-[var(--color-text-secondary)]"}`}>
                   {option.hint}
                 </span>
               )}

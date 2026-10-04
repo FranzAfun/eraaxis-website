@@ -34,7 +34,7 @@ export default function Hero() {
       <div className="container relative z-10 pb-16 pt-28 sm:pb-20 sm:pt-32 md:pb-24 md:pt-36 lg:pb-28 lg:pt-40">
         <div className="hero-content max-w-2xl">
           {/* Eyebrow */}
-          <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-[var(--color-accent)]/30 bg-[var(--color-accent)]/10 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-widest text-[var(--color-accent)] sm:mb-5">
+          <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-[var(--color-accent)]/30 bg-[var(--color-accent)]/10 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)] sm:mb-5">
             Practical STEM &amp; Digital Skills
           </p>
 
@@ -44,7 +44,7 @@ export default function Hero() {
           </h1>
 
           {/* Subtext */}
-          <p className="mb-7 max-w-[540px] text-[15px] leading-relaxed text-white/70 sm:mb-10 sm:text-base sm:text-[17px]">
+          <p className="mb-7 max-w-[540px] text-[15px] leading-relaxed text-[var(--color-text-on-dark-muted)] sm:mb-10 sm:text-base sm:text-[17px]">
             ERA AXIS equips students, youth, and professionals with practical
             technology skills through hands-on STEM education, software
             development, and innovation programmes.
@@ -81,7 +81,7 @@ export default function Hero() {
             {stats.map(({ value, label }) => (
               <div key={label}>
                 <p className="text-xl font-black text-white sm:text-2xl">{value}</p>
-                <p className="mt-0.5 text-[10px] font-medium uppercase tracking-wider text-white/60 sm:text-xs">
+                <p className="mt-0.5 text-[10px] font-medium uppercase tracking-wider text-[var(--color-text-on-dark-muted)] sm:text-xs">
                   {label}
                 </p>
               </div>

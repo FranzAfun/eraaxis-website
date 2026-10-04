@@ -18,7 +18,7 @@ import { suggestEmailCorrection } from "../../utils/emailTypoCheck";
 function optionRow(selected) {
   return [
     "flex min-h-[48px] w-full cursor-pointer items-center gap-3 rounded-[var(--radius-sm)] border px-3.5 py-2.5 text-left text-[15px] transition-colors",
-    "has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[var(--color-primary)]/30",
+    "has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[var(--color-primary)] has-[:focus-visible]:ring-offset-2",
     selected
       ? "border-[var(--color-primary)] bg-[var(--color-primary)]/[0.06] text-[var(--color-primary-deep)]"
       : "border-[var(--color-border)] bg-white text-[var(--color-text-primary)] hover:border-[var(--color-primary)]/40",
@@ -105,7 +105,7 @@ function StarRating({ question, value, onChange, describedBy }) {
               onChange={() => onChange(star)}
               className="peer sr-only"
             />
-            <span className="block rounded-md p-1 peer-focus-visible:ring-2 peer-focus-visible:ring-[var(--color-primary)]">
+            <span className="block rounded-md p-1 peer-focus-visible:ring-2 peer-focus-visible:ring-[var(--color-primary)] peer-focus-visible:ring-offset-2">
               <Star
                 aria-hidden="true"
                 strokeWidth={1.5}
@@ -152,7 +152,7 @@ function NumberScale({ question, value, onChange, describedBy }) {
               key={point}
               className={[
                 "flex h-12 cursor-pointer items-center justify-center rounded-[var(--radius-sm)] border text-base font-semibold transition-colors",
-                "has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[var(--color-primary)]/30",
+                "has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[var(--color-primary)] has-[:focus-visible]:ring-offset-2",
                 selected
                   ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-white"
                   : "border-[var(--color-border)] bg-white text-[var(--color-text-primary)] hover:border-[var(--color-primary)]/40",

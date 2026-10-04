@@ -41,18 +41,18 @@ export default function NewsletterUnsubscribe() {
         />
         <div className="container relative z-10 text-center">
           {status === "loading" && (
-            <p className="text-base text-white/60">Processing your request…</p>
+            <p className="text-base text-[var(--color-text-on-dark-muted)]">Processing your request…</p>
           )}
 
           {status === "success" && (
             <div className="mx-auto max-w-lg">
-              <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
+              <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)] backdrop-blur-xl">
                 Unsubscribed
               </p>
               <h1 className="mb-5 text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl">
                 You&apos;re unsubscribed from ERA AXIS updates.
               </h1>
-              <p className="mb-8 text-base leading-relaxed text-white/68">
+              <p className="mb-8 text-base leading-relaxed text-[var(--color-text-on-dark-muted)]">
                 You won&apos;t receive any further newsletter emails from ERA AXIS.
                 You can resubscribe at any time from the Insights page.
               </p>
@@ -70,7 +70,7 @@ export default function NewsletterUnsubscribe() {
               <h1 className="mb-5 text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl">
                 Link not valid
               </h1>
-              <p className="mb-8 text-base leading-relaxed text-white/68">
+              <p className="mb-8 text-base leading-relaxed text-[var(--color-text-on-dark-muted)]">
                 This unsubscribe link may have already been used or is no longer valid.
                 If you are still receiving emails, please contact us.
               </p>

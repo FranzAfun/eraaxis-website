@@ -131,7 +131,7 @@ export default function SchoolStem() {
         <div className="container relative z-10">
           <Link
             to="/programs"
-            className="mb-8 flex w-fit items-center gap-1.5 text-xs font-medium text-white/60 transition-colors hover:text-white/70"
+            className="mb-8 flex w-fit items-center gap-1.5 text-xs font-medium text-[var(--color-text-on-dark-muted)] transition-colors hover:text-[var(--color-text-on-dark-muted)]"
           >
             <ArrowLeft size={12} strokeWidth={2.5} aria-hidden="true" />
             Back to programmes
@@ -141,19 +141,19 @@ export default function SchoolStem() {
 
             {/* Left: text */}
             <div className="flex flex-col justify-center">
-              <p className="mb-5 inline-flex w-fit self-start rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
+              <p className="mb-5 inline-flex w-fit self-start rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)] backdrop-blur-xl">
                 School STEM Programmes
               </p>
               <h1 className="mb-5 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-[4rem]">
                 Hands-on STEM learning from Basic&nbsp;1 to SHS&nbsp;3.
               </h1>
-              <p className="mb-3 text-base leading-relaxed text-white/72 sm:text-lg">
+              <p className="mb-3 text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-lg">
                 ERA AXIS helps schools bring practical STEM into the classroom
                 through structured lessons, real tools, and project-based learning
                 built around electronics, coding, sensors, automation, and the ERA
                 Dev Board.
               </p>
-              <p className="mb-8 text-sm text-white/55">
+              <p className="mb-8 text-sm text-[var(--color-text-on-dark-muted)]">
                 Built for schools that want learners to understand technology by
                 building it.
               </p>
@@ -406,13 +406,13 @@ export default function SchoolStem() {
             />
             <div className="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
               <div className="max-w-xl">
-                <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)]">
+                <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)]">
                   ERA Dev Board
                 </p>
                 <h2 className="mb-3 text-xl font-black tracking-tight text-white sm:text-2xl">
                   Powered by the ERA Dev Board.
                 </h2>
-                <p className="text-sm leading-relaxed text-white/75 sm:text-base">
+                <p className="text-sm leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-base">
                   The ERA Dev Board gives learners a real platform for exploring
                   circuits, sensors, programming, and automation. They do not need
                   to wait until university to touch practical technology.
@@ -439,7 +439,7 @@ export default function SchoolStem() {
           <h2 className="mb-4 text-2xl font-black tracking-tight text-white sm:text-3xl">
             Bring practical STEM into your school.
           </h2>
-          <p className="mx-auto mb-8 max-w-lg text-sm leading-relaxed text-white/80 sm:text-base">
+          <p className="mx-auto mb-8 max-w-lg text-sm leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-base">
             Partner with ERA AXIS to introduce structured, hands-on STEM
             learning for learners from Basic 1 to SHS 3.
           </p>

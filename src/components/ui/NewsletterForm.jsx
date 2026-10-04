@@ -73,10 +73,10 @@ export default function NewsletterForm({ source }) {
           onChange={handleChange}
           placeholder="Enter your email"
           disabled={isSubmitting}
-          className={`min-h-[44px] w-full rounded-[var(--radius-sm)] border px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] outline-none transition-colors focus:ring-2 disabled:opacity-60 ${
+          className={`min-h-[44px] w-full rounded-[var(--radius-sm)] border px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] outline-none transition-colors focus:ring-2 disabled:opacity-100 ${
             emailError
               ? "border-red-400 focus:border-red-400 focus:ring-red-400/20"
-              : "border-[var(--color-border)] bg-white focus:border-[var(--color-primary)] focus:ring-[var(--color-primary)]/20"
+              : "border-[var(--color-border)] bg-white focus:border-[var(--color-primary)] focus:ring-[var(--color-primary)] focus:ring-offset-2"
           }`}
         />
         {emailError && (
@@ -94,7 +94,7 @@ export default function NewsletterForm({ source }) {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="btn-primary min-h-[44px] shrink-0 justify-center disabled:opacity-60 disabled:cursor-not-allowed"
+        className="btn-primary min-h-[44px] shrink-0 justify-center disabled:opacity-100 disabled:cursor-not-allowed"
       >
         {isSubmitting ? (
           "Subscribing…"

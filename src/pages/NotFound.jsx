@@ -31,22 +31,22 @@ export default function NotFound() {
       />
       <div className="container relative z-10">
         <div className="mx-auto max-w-4xl text-center">
-          <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
+          <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)] backdrop-blur-xl">
             Error 404
           </p>
 
           <div className="notfound-wave mb-8 flex items-center justify-center gap-4 sm:gap-6">
-            <span className="notfound-wave-char text-[clamp(4.5rem,17vw,9rem)] font-black leading-none tracking-[-0.06em] text-white/96">
+            <span className="notfound-wave-char text-[clamp(4.5rem,17vw,9rem)] font-black leading-none tracking-[-0.06em] text-[var(--color-text-on-dark-muted)]">
               4
             </span>
             <span
               aria-hidden="true"
               className="notfound-axis-line h-14 w-px rounded-full bg-gradient-to-b from-transparent via-[var(--color-accent)]/85 to-transparent sm:h-[4.5rem]"
             />
-            <span className="notfound-wave-char text-[clamp(4.5rem,17vw,9rem)] font-black leading-none tracking-[-0.06em] text-white/96">
+            <span className="notfound-wave-char text-[clamp(4.5rem,17vw,9rem)] font-black leading-none tracking-[-0.06em] text-[var(--color-text-on-dark-muted)]">
               0
             </span>
-            <span className="notfound-wave-char text-[clamp(4.5rem,17vw,9rem)] font-black leading-none tracking-[-0.06em] text-white/96">
+            <span className="notfound-wave-char text-[clamp(4.5rem,17vw,9rem)] font-black leading-none tracking-[-0.06em] text-[var(--color-text-on-dark-muted)]">
               4
             </span>
           </div>
@@ -54,7 +54,7 @@ export default function NotFound() {
           <h1 className="mb-5 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-[4rem]">
             This page drifted off-axis.
           </h1>
-          <p className="mx-auto max-w-2xl text-base leading-relaxed text-white/72 sm:text-lg">
+          <p className="mx-auto max-w-2xl text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-lg">
             The page you&apos;re looking for may have moved, been renamed, or
             no longer exists.
           </p>
@@ -77,7 +77,7 @@ export default function NotFound() {
             <button
               type="button"
               onClick={handleGoBack}
-              className="cta-mobile-btn inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[var(--radius-sm)] border border-white/15 bg-transparent px-5 text-sm font-semibold text-white/82 transition-all duration-300 hover:-translate-y-0.5 hover:border-white/28 hover:bg-white/[0.06] hover:text-white"
+              className="cta-mobile-btn inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[var(--radius-sm)] border border-white/15 bg-transparent px-5 text-sm font-semibold text-[var(--color-text-on-dark-muted)] transition-all duration-300 hover:-translate-y-0.5 hover:border-white/28 hover:bg-white/[0.06] hover:text-white"
             >
               <ArrowLeft size={16} strokeWidth={2} aria-hidden="true" />
               Go Back

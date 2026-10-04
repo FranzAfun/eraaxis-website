@@ -173,7 +173,7 @@ export default function OnlineLearning() {
         <div className="container relative z-10">
           <Link
             to="/programs"
-            className="mb-8 flex w-fit items-center gap-1.5 text-xs font-medium text-white/60 transition-colors hover:text-white/70"
+            className="mb-8 flex w-fit items-center gap-1.5 text-xs font-medium text-[var(--color-text-on-dark-muted)] transition-colors hover:text-[var(--color-text-on-dark-muted)]"
           >
             <ArrowLeft size={12} strokeWidth={2.5} aria-hidden="true" />
             Back to programmes
@@ -183,18 +183,18 @@ export default function OnlineLearning() {
 
             {/* Left: text */}
             <div className="flex flex-col justify-center">
-              <p className="mb-5 inline-flex w-fit self-start rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
+              <p className="mb-5 inline-flex w-fit self-start rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)] backdrop-blur-xl">
                 Online Learning Programme
               </p>
               <h1 className="mb-5 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-[4rem]">
                 Flexible technology learning you can build around your life.
               </h1>
-              <p className="mb-3 text-base leading-relaxed text-white/72 sm:text-lg">
+              <p className="mb-3 text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-lg">
                 ERA AXIS online learning helps learners develop practical skills
                 in programming, AI, electronics, PCB design, simulation tools,
                 and automation through guided, project-based training.
               </p>
-              <p className="mb-8 text-sm text-white/55">
+              <p className="mb-8 text-sm text-[var(--color-text-on-dark-muted)]">
                 Learn remotely, practise consistently, and build projects that
                 show what you can do.
               </p>
@@ -473,13 +473,13 @@ export default function OnlineLearning() {
             />
             <div className="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
               <div className="max-w-xl">
-                <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)]">
+                <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)]">
                   Learning Support
                 </p>
                 <h2 className="mb-3 text-xl font-black tracking-tight text-white sm:text-2xl">
                   Online does not mean learning alone.
                 </h2>
-                <p className="text-sm leading-relaxed text-white/75 sm:text-base">
+                <p className="text-sm leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-base">
                   ERA AXIS keeps online learning practical through guided tasks,
                   practical projects, and learning support focused on helping
                   learners build real competence, not just complete content.
@@ -506,7 +506,7 @@ export default function OnlineLearning() {
           <h2 className="mb-4 text-2xl font-black tracking-tight text-white sm:text-3xl">
             Ready to learn technology by building?
           </h2>
-          <p className="mx-auto mb-8 max-w-lg text-sm leading-relaxed text-white/80 sm:text-base">
+          <p className="mx-auto mb-8 max-w-lg text-sm leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-base">
             Talk to ERA AXIS about joining the Online Learning Programme or
             choosing the right pathway for your goals.
           </p>

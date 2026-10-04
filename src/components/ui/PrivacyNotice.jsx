@@ -35,7 +35,7 @@ export default function PrivacyNotice() {
       className="fixed inset-x-0 bottom-0 z-[60] border-t border-white/10 bg-[var(--color-background-dark)] px-4 py-4 shadow-[0_-4px_24px_rgba(0,0,0,0.25)] sm:px-6"
     >
       <div className="container flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-        <p className="text-sm leading-relaxed text-white/72">
+        <p className="text-sm leading-relaxed text-[var(--color-text-on-dark-muted)]">
           We use minimal local storage to keep this site running smoothly —
           no tracking or advertising cookies.{" "}
           <Link
@@ -57,7 +57,7 @@ export default function PrivacyNotice() {
             type="button"
             onClick={handleDismiss}
             aria-label="Dismiss privacy notice"
-            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-white/50 transition-colors duration-200 hover:bg-white/10 hover:text-white sm:hidden"
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[var(--color-text-on-dark-muted)] transition-colors duration-200 hover:bg-white/10 hover:text-white sm:hidden"
           >
             <X size={18} />
           </button>

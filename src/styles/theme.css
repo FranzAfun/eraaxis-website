@@ -1,10 +1,10 @@
 :root {
-  --color-primary: #39366f;
-  --color-primary-dark: #2a2850;
-  --color-primary-deep: #1a1a3a;
-  --color-primary-soft: #4a4780;
-  --color-primary-light: #6b68a0;
-  --color-accent: #c9a3ff;
+  --color-primary: #3b1174;
+  --color-primary-dark: #2f0e5d;
+  --color-primary-deep: #200940;
+  --color-primary-soft: #583589;
+  --color-primary-light: #76589e;
+  --color-accent: #d0adff;
 
   /* Separate text, decoration and essential-control roles for the ERA palette. */
   --color-surface-tint-top: #fcfbfd;
@@ -20,20 +20,19 @@
   --color-caption-bg: rgba(9, 3, 17, 0.85);
 
   --color-background: #ffffff;
-  --color-background-dark: #06060a;
+  --color-background-dark: #040108;
   --color-surface: #ffffff;
-  --color-surface-soft: #f7f5ff;
-  --color-surface-dark: #0e0b1a;
+  --color-surface-soft: #f7f5f9;
+  --color-surface-dark: #090311;
 
   --color-text-primary: #111111;
   --color-text-secondary: #4b5563;
-  /* Measured: the closest grey to the old #6b7280 that clears AA on white (4.90)
-     and on the lilac --color-surface-soft (4.55), which the old one missed. */
-  --color-text-muted: #6a717f;
+  /* Clears AA on white, soft surfaces and primary-tinted selected rows. */
+  --color-text-muted: #606877;
   --color-text-inverse: #ffffff;
 
   --color-border: #e5e7eb;
-  --color-border-soft: #eceaf5;
+  --color-border-soft: #ebe7f1;
 
   --font-heading: "Inter", sans-serif;
   --font-body: "Inter", sans-serif;

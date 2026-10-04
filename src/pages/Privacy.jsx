@@ -33,13 +33,13 @@ export default function Privacy() {
           }}
         />
         <div className="container relative z-10">
-          <p className="mb-5 inline-flex w-fit rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
+          <p className="mb-5 inline-flex w-fit rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)] backdrop-blur-xl">
             Legal
           </p>
           <h1 className="mb-5 max-w-3xl text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl">
             Privacy &amp; Cookie Policy
           </h1>
-          <p className="max-w-2xl text-base leading-relaxed text-white/72 sm:text-lg">
+          <p className="max-w-2xl text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-lg">
             A plain-language explanation of what information ERA AXIS collects
             through this website, and how local storage and cookies are used.
           </p>

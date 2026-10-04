@@ -67,14 +67,15 @@
     to right,
     color-mix(in srgb, var(--color-background-dark) 92%, transparent) 0%,
     color-mix(in srgb, var(--color-background-dark) 70%, transparent) 45%,
-    color-mix(in srgb, var(--color-background-dark) 20%, transparent) 100%
+    color-mix(in srgb, var(--color-background-dark) 65%, transparent) 100%
   );
 }
 
 .hero-overlay-v {
   background: linear-gradient(
     to bottom,
-    color-mix(in srgb, var(--color-background-dark) 50%, transparent) 0%,
+    color-mix(in srgb, var(--color-background-dark) 90%, transparent) 0%,
+    color-mix(in srgb, var(--color-background-dark) 85%, transparent) 20%,
     transparent 40%,
     transparent 65%,
     color-mix(in srgb, var(--color-background-dark) 55%, transparent) 100%
@@ -318,6 +319,12 @@
 
   .btn-primary:active {
     transform: scale(0.97);
+  }
+
+  .btn-primary:disabled,
+  .btn-primary:disabled:hover {
+    background-color: var(--color-primary-soft);
+    transform: none;
   }
 
   /* Glass secondary — for dark/image backgrounds; fills white on hover */

@@ -32,7 +32,7 @@ const secondaryAction =
 const badge =
   "mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest backdrop-blur-xl";
 const heading = "mb-4 text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl";
-const body = "text-base leading-relaxed text-white/68";
+const body = "text-base leading-relaxed text-[var(--color-text-on-dark-muted)]";
 
 // The window is shown in the learner's own timezone, because "has it started?"
 // is a question about their clock, not the server's.
@@ -63,7 +63,7 @@ function SessionHeader({ session }) {
   if (!session) return null;
   return (
     <div className="mb-6 border-b border-white/10 pb-5">
-      <p className="text-xs font-semibold uppercase tracking-widest text-white/60">
+      <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-on-dark-muted)]">
         {session.programme}
         {session.track ? ` · ${session.track}` : ""}
       </p>
@@ -71,7 +71,7 @@ function SessionHeader({ session }) {
         {session.title}
       </p>
       {session.objective && (
-        <p className="mt-2 text-sm leading-relaxed text-white/60">{session.objective}</p>
+        <p className="mt-2 text-sm leading-relaxed text-[var(--color-text-on-dark-muted)]">{session.objective}</p>
       )}
     </div>
   );
@@ -222,12 +222,12 @@ export default function AttendanceSignIn() {
         <div className="container relative z-10">
           <div aria-live="polite" aria-busy={view === "loading" || busy}>
             {view === "loading" && (
-              <Waiting className="text-center text-base text-white/60">Opening this session…</Waiting>
+              <Waiting className="text-center text-base text-[var(--color-text-on-dark-muted)]">Opening this session…</Waiting>
             )}
 
             {view === "unknown-link" && (
               <div className={panel}>
-                <p className={`${badge} text-white/70`}>
+                <p className={`${badge} text-[var(--color-text-on-dark-muted)]`}>
                   <SearchX aria-hidden="true" size={14} />
                   Not valid
                 </p>
@@ -247,7 +247,7 @@ export default function AttendanceSignIn() {
 
             {view === "error" && (
               <div className={panel}>
-                <p className={`${badge} text-white/70`}>
+                <p className={`${badge} text-[var(--color-text-on-dark-muted)]`}>
                   <WifiOff aria-hidden="true" size={14} />
                   Unavailable
                 </p>
@@ -274,7 +274,7 @@ export default function AttendanceSignIn() {
 
                 {marked && (
                   <>
-                    <p className={`${badge} text-[var(--color-accent)]`}>
+                    <p className={`${badge} text-[var(--color-accent-text-on-hero)]`}>
                       <CheckCircle2 aria-hidden="true" size={14} />
                       {signIn.outcome === SIGN_IN_OUTCOME.PRESENT ? "Marked present" : "Already present"}
                     </p>
@@ -349,7 +349,7 @@ export default function AttendanceSignIn() {
                               an empty div once the busy state ended, losing the button
                               Google rendered into it. */}
                           <div ref={buttonRef} hidden={busy} />
-                          {busy && <p className="text-sm text-white/60">Recording your attendance…</p>}
+                          {busy && <p className="text-sm text-[var(--color-text-on-dark-muted)]">Recording your attendance…</p>}
                         </>
                       ) : (
                         <Refusal
@@ -361,7 +361,7 @@ export default function AttendanceSignIn() {
                     </div>
 
                     {session.closesAt && (
-                      <p className="mt-6 flex items-center gap-2 text-sm text-white/60">
+                      <p className="mt-6 flex items-center gap-2 text-sm text-[var(--color-text-on-dark-muted)]">
                         <Clock aria-hidden="true" size={14} />
                         Sign-in closes at {formatTime(session.closesAt)}.
                       </p>
@@ -402,7 +402,7 @@ function NotStarted({ session, onRetry }) {
 function Closed({ session }) {
   return (
     <>
-      <p className={`${badge} text-white/70`}>
+      <p className={`${badge} text-[var(--color-text-on-dark-muted)]`}>
         <CircleSlash aria-hidden="true" size={14} />
         Closed
       </p>
@@ -424,7 +424,7 @@ function Closed({ session }) {
 function CourseClosed() {
   return (
     <>
-      <p className={`${badge} text-white/70`}>
+      <p className={`${badge} text-[var(--color-text-on-dark-muted)]`}>
         <CircleSlash aria-hidden="true" size={14} />
         Course ended
       </p>
@@ -450,7 +450,7 @@ function Refusal({ icon: Icon, label, message }) {
         <Icon aria-hidden="true" size={14} />
         {label}
       </p>
-      <p className="text-sm leading-relaxed text-white/75">{message}</p>
+      <p className="text-sm leading-relaxed text-[var(--color-text-on-dark-muted)]">{message}</p>
     </div>
   );
 }

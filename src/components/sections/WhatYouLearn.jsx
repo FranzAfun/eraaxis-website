@@ -58,7 +58,7 @@ function TrackCard({ icon: Icon, title, description }) {
       <h3 className="mb-3 text-lg font-black leading-snug text-white">
         {title}
       </h3>
-      <p className="text-sm leading-relaxed text-white/58 sm:text-[15px]">
+      <p className="text-sm leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-[15px]">
         {description}
       </p>
     </article>
@@ -80,13 +80,13 @@ export default function WhatYouLearn() {
       <div className="container relative z-10">
         <div className="grid gap-10 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] xl:gap-12">
           <div className="xl:pr-4">
-            <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)]">
+            <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)]">
               What You Learn
             </p>
             <h2 className="mb-5 text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl lg:text-[2.7rem]">
               Five learning tracks. One practical innovation pathway.
             </h2>
-            <p className="max-w-xl text-base leading-relaxed text-white/65 sm:text-[17px]">
+            <p className="max-w-xl text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-[17px]">
               ERA AXIS helps learners build real skills across electronics,
               programming, AI, design, and product development. Each track is
               practical, project-based, and connected to real outcomes.

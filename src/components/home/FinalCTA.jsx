@@ -43,7 +43,7 @@ export default function FinalCTA() {
           }`}
         >
           {/* Eyebrow */}
-          <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)]">
+          <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)]">
             Start Building With ERA AXIS
           </p>
 
@@ -53,7 +53,7 @@ export default function FinalCTA() {
           </h2>
 
           {/* Body */}
-          <p className="mb-9 text-base leading-relaxed text-white/60 sm:text-[17px]">
+          <p className="mb-9 text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-[17px]">
             Whether you are a learner, school, parent, or partner, ERA AXIS
             helps you move from interest to hands-on technology skills.
           </p>
@@ -77,11 +77,11 @@ export default function FinalCTA() {
           </div>
 
           {/* Small contact link */}
-          <p className="mt-7 text-sm text-white/60">
+          <p className="mt-7 text-sm text-[var(--color-text-on-dark-muted)]">
             Have a question?{" "}
             <Link
               to="/contact"
-              className="text-white/55 underline underline-offset-2 transition-colors duration-200 hover:text-white"
+              className="text-[var(--color-text-on-dark-muted)] underline underline-offset-2 transition-colors duration-200 hover:text-white"
             >
               Talk to us
             </Link>

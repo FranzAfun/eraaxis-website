@@ -222,18 +222,18 @@ export default function DevBoard() {
 
             {/* Left: text */}
             <div className="flex flex-col justify-center">
-              <p className="mb-5 inline-flex w-fit self-start rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
+              <p className="mb-5 inline-flex w-fit self-start rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)] backdrop-blur-xl">
                 ERA Dev Board
               </p>
               <h1 className="mb-5 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-[4rem]">
                 A hands-on electronics learning kit for real circuits.
               </h1>
-              <p className="mb-3 text-base leading-relaxed text-white/72 sm:text-lg">
+              <p className="mb-3 text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-lg">
                 The ERA Kids Development Board introduces children and learners to
                 basic electrical and electronic principles through circuits they
                 can build, test, compare, and explain for themselves.
               </p>
-              <p className="mb-8 text-sm text-white/55">
+              <p className="mb-8 text-sm text-[var(--color-text-on-dark-muted)]">
                 From LEDs and resistors to series and parallel circuits, learners
                 move from observation to independent building at their own pace.
               </p>
@@ -447,7 +447,7 @@ export default function DevBoard() {
                 <p className="text-xs font-semibold leading-snug text-white drop-shadow-sm sm:text-sm">
                   ERA Dev Board &mdash; Front View
                 </p>
-                <p className="text-[10px] leading-snug text-white/70 drop-shadow-sm sm:shrink-0 sm:whitespace-nowrap sm:text-xs sm:text-white/75">
+                <p className="text-[10px] leading-snug text-[var(--color-text-on-dark-muted)] drop-shadow-sm sm:shrink-0 sm:whitespace-nowrap sm:text-xs sm:text-[var(--color-text-on-dark-muted)]">
                   Power + practice area
                 </p>
               </div>
@@ -468,7 +468,7 @@ export default function DevBoard() {
                 <p className="text-xs font-semibold leading-snug text-white drop-shadow-sm sm:text-sm">
                   ERA Dev Board &mdash; Blue Back
                 </p>
-                <p className="text-[10px] leading-snug text-white/70 drop-shadow-sm sm:shrink-0 sm:whitespace-nowrap sm:text-xs sm:text-white/75">
+                <p className="text-[10px] leading-snug text-[var(--color-text-on-dark-muted)] drop-shadow-sm sm:shrink-0 sm:whitespace-nowrap sm:text-xs sm:text-[var(--color-text-on-dark-muted)]">
                   Build &bull; Play &bull; Invent
                 </p>
               </div>
@@ -489,7 +489,7 @@ export default function DevBoard() {
                 <p className="text-xs font-semibold leading-snug text-white drop-shadow-sm sm:text-sm">
                   ERA Dev Board &mdash; Purple Back
                 </p>
-                <p className="text-[10px] leading-snug text-white/70 drop-shadow-sm sm:shrink-0 sm:whitespace-nowrap sm:text-xs sm:text-white/75">
+                <p className="text-[10px] leading-snug text-[var(--color-text-on-dark-muted)] drop-shadow-sm sm:shrink-0 sm:whitespace-nowrap sm:text-xs sm:text-[var(--color-text-on-dark-muted)]">
                   Build &bull; Play &bull; Invent
                 </p>
               </div>
@@ -606,14 +606,14 @@ export default function DevBoard() {
                   <span className="flex h-9 w-9 items-center justify-center rounded-[var(--radius-sm)] bg-white/10">
                     <Bot size={18} className="text-[var(--color-accent)]" strokeWidth={1.75} />
                   </span>
-                  <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)]">
+                  <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)]">
                     AI-Assisted Support
                   </p>
                 </div>
                 <h2 className="mb-4 text-2xl font-black tracking-tight text-white sm:text-3xl">
                   Guidance while learners build.
                 </h2>
-                <p className="text-sm leading-relaxed text-white/75 sm:text-base">
+                <p className="text-sm leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-base">
                   ERA AXIS is developing AI-assisted support for the ERA Dev Board
                   so learners can get help while practising. The assistant is being
                   trained to understand the board layout, common wiring issues,
@@ -636,7 +636,7 @@ export default function DevBoard() {
                       <h3 className="mb-1.5 text-sm font-bold text-white">
                         {title}
                       </h3>
-                      <p className="text-xs leading-relaxed text-white/65">
+                      <p className="text-xs leading-relaxed text-[var(--color-text-on-dark-muted)]">
                         {body}
                       </p>
                     </div>
@@ -645,8 +645,8 @@ export default function DevBoard() {
               </div>
 
               <div className="rounded-[var(--radius-sm)] border border-white/10 bg-white/[0.04] px-5 py-4">
-                <p className="text-xs leading-relaxed text-white/55">
-                  <span className="font-semibold text-white/75">Note: </span>
+                <p className="text-xs leading-relaxed text-[var(--color-text-on-dark-muted)]">
+                  <span className="font-semibold text-[var(--color-text-on-dark-muted)]">Note: </span>
                   This support is designed to complement facilitators and learning
                   materials, not replace them. It is an extra layer for practice
                   and revision, not a guaranteed problem-solving service.
@@ -671,13 +671,13 @@ export default function DevBoard() {
             />
             <div className="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
               <div className="max-w-xl">
-                <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)]">
+                <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)]">
                   Practical Learning Pathways
                 </p>
                 <h2 className="mb-3 text-xl font-black tracking-tight text-white sm:text-2xl">
                   Used across practical learning pathways.
                 </h2>
-                <p className="text-sm leading-relaxed text-white/75 sm:text-base">
+                <p className="text-sm leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-base">
                   The ERA Dev Board supports ERA AXIS learning experiences across
                   school STEM, youth training, and project-based technology
                   education.
@@ -711,7 +711,7 @@ export default function DevBoard() {
           <h2 className="mb-4 text-2xl font-black tracking-tight text-white sm:text-3xl">
             Bring hands-on STEM learning to your learners.
           </h2>
-          <p className="mx-auto mb-8 max-w-lg text-sm leading-relaxed text-white/80 sm:text-base">
+          <p className="mx-auto mb-8 max-w-lg text-sm leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-base">
             Talk to ERA AXIS about using the ERA Dev Board as part of a practical
             STEM programme for your school, youth group, or learning community.
           </p>

@@ -46,7 +46,7 @@ function fieldCls(hasError) {
     "outline-none transition-colors focus:ring-2",
     hasError
       ? "border-red-400 focus:border-red-400 focus:ring-red-400/20"
-      : "border-[var(--color-border)] bg-white focus:border-[var(--color-primary)] focus:ring-[var(--color-primary)]/20",
+      : "border-[var(--color-border)] bg-white focus:border-[var(--color-primary)] focus:ring-[var(--color-primary)] focus:ring-offset-2",
   ].join(" ");
 }
 
@@ -193,13 +193,13 @@ export default function Contact() {
           className="absolute -bottom-24 right-4 h-96 w-96 rounded-full bg-[var(--color-accent)]/10 blur-3xl"
         />
         <div className="container relative z-10">
-          <p className="mb-5 inline-flex w-fit rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
+          <p className="mb-5 inline-flex w-fit rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)] backdrop-blur-xl">
             Contact ERA AXIS
           </p>
           <h1 className="mb-5 max-w-3xl text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-[4rem]">
             Let&apos;s talk about practical STEM and digital skills learning.
           </h1>
-          <p className="mb-8 max-w-2xl text-base leading-relaxed text-white/72 sm:text-lg">
+          <p className="mb-8 max-w-2xl text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-lg">
             Reach out about programmes, school partnerships, sponsorships, media
             enquiries, or general questions about ERA AXIS.
           </p>
@@ -344,7 +344,7 @@ export default function Contact() {
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="btn-primary min-h-[44px] justify-center sm:px-8 disabled:opacity-60 disabled:cursor-not-allowed"
+                      className="btn-primary min-h-[44px] justify-center sm:px-8 disabled:opacity-100 disabled:cursor-not-allowed"
                     >
                       {isSubmitting ? <BusyLabel>Sending…</BusyLabel> : "Send Message"}
                       {!isSubmitting && <ArrowRight size={16} />}
@@ -508,7 +508,7 @@ export default function Contact() {
           <h2 className="mb-4 text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl md:text-5xl">
             Ready to start the conversation?
           </h2>
-          <p className="mx-auto mb-8 max-w-xl text-base leading-relaxed text-white/80 sm:text-lg">
+          <p className="mx-auto mb-8 max-w-xl text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-lg">
             Whether you are a learner, parent, school, sponsor, or partner, ERA
             AXIS is ready to help you take the next step.
           </p>

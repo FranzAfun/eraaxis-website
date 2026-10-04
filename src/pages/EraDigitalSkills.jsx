@@ -185,7 +185,7 @@ export default function EraDigitalSkills() {
         <div className="container relative z-10">
           <Link
             to="/programs"
-            className="mb-8 flex w-fit items-center gap-1.5 text-xs font-medium text-white/60 transition-colors hover:text-white/70"
+            className="mb-8 flex w-fit items-center gap-1.5 text-xs font-medium text-[var(--color-text-on-dark-muted)] transition-colors hover:text-[var(--color-text-on-dark-muted)]"
           >
             <ArrowLeft size={12} strokeWidth={2.5} aria-hidden="true" />
             Back to programmes
@@ -195,19 +195,19 @@ export default function EraDigitalSkills() {
 
             {/* Left: text */}
             <div className="flex flex-col justify-center">
-              <p className="mb-5 inline-flex w-fit self-start rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
+              <p className="mb-5 inline-flex w-fit self-start rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)] backdrop-blur-xl">
                 ERA Digital Skills
               </p>
               <h1 className="mb-5 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-[4rem]">
                 Practical AI and digital productivity skills for work.
               </h1>
-              <p className="mb-3 text-base leading-relaxed text-white/72 sm:text-lg">
+              <p className="mb-3 text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-lg">
                 ERA Digital Skills helps working adults, business owners, and
                 professionals use AI tools, spreadsheets, automation, and
                 digital systems to work smarter and build practical solutions
                 for their own context.
               </p>
-              <p className="mb-8 text-sm text-white/55">
+              <p className="mb-8 text-sm text-[var(--color-text-on-dark-muted)]">
                 A 3-month online programme built around real tasks, useful
                 tools, and practical work outcomes.
               </p>
@@ -500,13 +500,13 @@ export default function EraDigitalSkills() {
             />
             <div className="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
               <div className="max-w-xl">
-                <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)]">
+                <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)]">
                   Capstone Project
                 </p>
                 <h2 className="mb-3 text-xl font-black tracking-tight text-white sm:text-2xl">
                   Build a system for your own work.
                 </h2>
-                <p className="text-sm leading-relaxed text-white/75 sm:text-base">
+                <p className="text-sm leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-base">
                   Learners do not just watch tool demos. They work toward a
                   practical digital workflow, dashboard, automation, or content
                   system connected to their own job, business, or professional
@@ -534,7 +534,7 @@ export default function EraDigitalSkills() {
           <h2 className="mb-4 text-2xl font-black tracking-tight text-white sm:text-3xl">
             Ready to upgrade how you work?
           </h2>
-          <p className="mx-auto mb-8 max-w-lg text-sm leading-relaxed text-white/80 sm:text-base">
+          <p className="mx-auto mb-8 max-w-lg text-sm leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-base">
             Talk to ERA AXIS about joining ERA Digital Skills or enrolling
             your team in practical AI and digital productivity training.
           </p>

@@ -19,7 +19,9 @@ const black = token("background-dark");
 const primary = token("primary");
 const deep = token("primary-deep");
 const accent = token("accent");
+const glassBase = token("surface-dark");
 const foundation = process.argv.includes("--foundation");
+const paletteOnly = process.argv.includes("--palette");
 const light = [white, token("surface-tint-top"), token("surface-tint-strong"), token("surface-soft"), mix(primary, white, 0.1)];
 if (foundation) {
   for (const background of light) add("new essential UI edge", token("ui-border"), background, 3);
@@ -41,8 +43,8 @@ if (foundation) {
     add("accent on dark", accent, background);
     add("white dark words", white, background);
   }
+  if (!paletteOnly) {
   const alpha = Number(css.match(/--header-opacity:\s*([.\d]+)/)[1]);
-  const glassBase = token("surface-dark");
   const glass = mix(glassBase, white, alpha);
   const dropdown = mix(white, glass, 0.1);
   const drawerRow = mix(white, glass, 0.08);
@@ -53,6 +55,7 @@ if (foundation) {
   }
   add("drawer muted60%", mix(white, glass, 0.6), glass);
   add("drawer active icon", accent, mix(accent, drawerRow, 0.15), 3);
+  }
   for (const background of light) {
     add("required / error words", token("field-danger"), background);
     add("invalid focus ring", token("field-danger"), background, 3);
@@ -63,6 +66,9 @@ if (foundation) {
   add("rating selected", token("rating"), white, 3);
   add("caption white words on white-photo bound", white, mix(glassBase, white, 0.85));
   add("caption pale words on white-photo bound", token("text-on-dark-muted"), mix(glassBase, white, 0.85));
+  add("hero white on white-photo bound", white, mix(black, white, 0.65));
+  add("hero pale on white-photo bound", token("text-on-dark-muted"), mix(black, white, 0.65));
+  add("hero pale badge on white-photo bound", token("accent-text-on-hero"), mix(accent, mix(black, white, 0.65), 0.1));
   add("choice white85% description", mix(white, primary, 0.85), primary);
   add("choice white selection mark", white, mix(white, primary, 0.15), 3);
   add("dark selected accent edge vs primary", accent, primary, 3);

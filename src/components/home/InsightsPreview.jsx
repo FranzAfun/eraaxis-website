@@ -37,16 +37,16 @@ function InsightCard({ type, title, excerpt, slug, image, isVisible, reducedMoti
         />
       )}
       <div className="flex flex-1 flex-col p-7">
-        <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)]">
+        <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)]">
           {type}
         </p>
         <h3 className="mb-3 text-base font-bold leading-snug text-white">
           {title}
         </h3>
-        <p className="mb-6 flex-1 text-sm leading-relaxed text-white/55">
+        <p className="mb-6 flex-1 text-sm leading-relaxed text-[var(--color-text-on-dark-muted)]">
           {excerpt}
         </p>
-        <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--color-accent)] transition-[gap] duration-200 group-hover:gap-2.5">
+        <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--color-accent-text-on-hero)] transition-[gap] duration-200 group-hover:gap-2.5">
           Read insight
           <ArrowRight size={15} strokeWidth={2} />
         </span>
@@ -107,13 +107,13 @@ export default function InsightsPreview() {
           }`}
         >
           <div className="max-w-xl">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)]">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)]">
               Insights
             </p>
             <h2 className="mb-3 text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl">
               Thinking behind the work.
             </h2>
-            <p className="text-base leading-relaxed text-white/60">
+            <p className="text-base leading-relaxed text-[var(--color-text-on-dark-muted)]">
               Perspectives on STEM education, digital skills, and how practical
               learning shapes better outcomes.
             </p>

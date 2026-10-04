@@ -10,7 +10,7 @@ import useSpesoFees from "../hooks/useSpesoFees";
 
 import BusyLabel from "../components/ui/BusyLabel";
 const labelCls =
-  "mb-1.5 block text-[10px] font-bold uppercase tracking-[0.08em] text-white/70";
+  "mb-1.5 block text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--color-text-on-dark-muted)]";
 
 function buildMonthOptions(durationMonths, monthsPaidTotal) {
   if (durationMonths) {
@@ -126,7 +126,7 @@ export default function ResumeProgrammePayment() {
                   />
                 ))}
               </div>
-              <p className="text-base text-white/60">Looking up your payment…</p>
+              <p className="text-base text-[var(--color-text-on-dark-muted)]">Looking up your payment…</p>
             </div>
           )}
 
@@ -135,7 +135,7 @@ export default function ResumeProgrammePayment() {
               <h1 className="mb-5 text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl">
                 We couldn&apos;t find this payment link.
               </h1>
-              <p className="mb-8 text-base leading-relaxed text-white/68">
+              <p className="mb-8 text-base leading-relaxed text-[var(--color-text-on-dark-muted)]">
                 This link may be out of date. Please contact us if you believe this is a mistake.
               </p>
               <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -160,7 +160,7 @@ export default function ResumeProgrammePayment() {
               <h1 className="mb-5 text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl">
                 Something went wrong.
               </h1>
-              <p className="mb-8 text-base leading-relaxed text-white/68">
+              <p className="mb-8 text-base leading-relaxed text-[var(--color-text-on-dark-muted)]">
                 We couldn&apos;t load your payment details. Please try again shortly.
               </p>
               <Link
@@ -174,13 +174,13 @@ export default function ResumeProgrammePayment() {
 
           {status === "paid-up" && (
             <div className="mx-auto max-w-lg">
-              <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
+              <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)] backdrop-blur-xl">
                 All Paid Up
               </p>
               <h1 className="mb-5 text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl">
                 You&apos;re all paid up, {summary?.fullName || "friend"}.
               </h1>
-              <p className="mb-8 text-base leading-relaxed text-white/68">
+              <p className="mb-8 text-base leading-relaxed text-[var(--color-text-on-dark-muted)]">
                 There&apos;s no outstanding payment on your <strong className="text-white">{summary?.programmeName}</strong> enrolment right now.
               </p>
               <Link
@@ -194,13 +194,13 @@ export default function ResumeProgrammePayment() {
 
           {status === "owes" && summary && (
             <div className="mx-auto max-w-lg text-left">
-              <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
+              <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)] backdrop-blur-xl">
                 Continue Payment
               </p>
               <h1 className="mb-5 text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl">
                 Welcome back, {summary.fullName}.
               </h1>
-              <p className="mb-8 text-base leading-relaxed text-white/68">
+              <p className="mb-8 text-base leading-relaxed text-[var(--color-text-on-dark-muted)]">
                 {isStudentChapter
                   ? "Renew your Student Chapter membership for another 3 months."
                   : summary.durationMonths
@@ -212,12 +212,12 @@ export default function ResumeProgrammePayment() {
                 {isStudentChapter ? (
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center justify-between gap-4">
-                      <span className="text-white/60">Chapter fee (3 months)</span>
+                      <span className="text-[var(--color-text-on-dark-muted)]">Chapter fee (3 months)</span>
                       <span className="font-semibold text-white">{formatGhs(summary.chapterFee)}</span>
                     </div>
                     {summary.duesRequired && (
                       <div className="flex items-center justify-between gap-4">
-                        <span className="text-white/60">Membership dues (not covered)</span>
+                        <span className="text-[var(--color-text-on-dark-muted)]">Membership dues (not covered)</span>
                         <span className="font-semibold text-white">{formatGhs(summary.duesFee)}</span>
                       </div>
                     )}
@@ -237,7 +237,7 @@ export default function ResumeProgrammePayment() {
 
                 {breakdown && (
                   <div className="flex items-center justify-between gap-4 border-t border-white/15 pt-4 text-sm">
-                    <span className="text-white/60">Total payable</span>
+                    <span className="text-[var(--color-text-on-dark-muted)]">Total payable</span>
                     <span className="text-xl font-bold text-white">{formatGhs(breakdown.customerTotal)}</span>
                   </div>
                 )}
@@ -262,7 +262,7 @@ export default function ResumeProgrammePayment() {
                 <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
               </button>
 
-              <p className="mt-4 flex items-center justify-center gap-2 text-center text-xs text-white/60">
+              <p className="mt-4 flex items-center justify-center gap-2 text-center text-xs text-[var(--color-text-on-dark-muted)]">
                 <Lock size={13} strokeWidth={2} aria-hidden="true" />
                 Payments are processed securely via Speso.
               </p>

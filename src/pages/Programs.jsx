@@ -227,13 +227,13 @@ export default function Programs() {
         <div className="container relative z-10">
           <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
             <div className="flex flex-col justify-center">
-              <p className="mb-5 inline-flex w-fit self-start rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
+              <p className="mb-5 inline-flex w-fit self-start rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)] backdrop-blur-xl">
                 Programmes
               </p>
               <h1 className="mb-5 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-[4rem]">
                 Learning pathways for every stage of growth.
               </h1>
-              <p className="mb-8 max-w-2xl text-base leading-relaxed text-white/72 sm:text-lg">
+              <p className="mb-8 max-w-2xl text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-lg">
                 From school-based STEM learning to digital skills for working
                 adults, ERA AXIS provides practical programmes that help learners
                 build real solutions.
@@ -327,7 +327,7 @@ export default function Programs() {
           <h2 className="mb-4 text-2xl font-black tracking-tight text-white sm:text-3xl">
             Not sure which pathway fits?
           </h2>
-          <p className="mx-auto mb-8 max-w-lg text-sm leading-relaxed text-white/80 sm:text-base">
+          <p className="mx-auto mb-8 max-w-lg text-sm leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-base">
             Talk to ERA AXIS and we'll help you choose the right programme for
             your school, team, career, or learning goals.
           </p>

@@ -20,13 +20,13 @@ export default function DevBoardFeature() {
 
           {/* Text column */}
           <div>
-            <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)]">
+            <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)]">
               ERA Dev Board
             </p>
             <h2 className="mb-5 text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl lg:text-[2.5rem]">
               Hands-on STEM learning, powered by hardware built in Ghana.
             </h2>
-            <p className="mb-8 max-w-[480px] text-base leading-relaxed text-white/65 sm:text-[17px]">
+            <p className="mb-8 max-w-[480px] text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-[17px]">
               The ERA Dev Board gives learners a practical way to understand
               electronics, sensors, automation, and embedded systems by
               building real working projects.
@@ -40,7 +40,7 @@ export default function DevBoardFeature() {
                     strokeWidth={2}
                     className="mt-0.5 shrink-0 text-[var(--color-accent)]"
                   />
-                  <span className="text-[0.9375rem] leading-snug text-white/80">
+                  <span className="text-[0.9375rem] leading-snug text-[var(--color-text-on-dark-muted)]">
                     {feature}
                   </span>
                 </li>

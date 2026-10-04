@@ -70,9 +70,9 @@ function leaveForCheckout(url) {
 
 const card = "rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white";
 const primaryButton =
-  "btn-primary min-h-[48px] justify-center px-6 text-[15px] disabled:cursor-not-allowed disabled:opacity-60";
+  "btn-primary min-h-[48px] justify-center px-6 text-[15px] disabled:cursor-not-allowed disabled:opacity-100";
 const quietButton =
-  "inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-white px-5 text-[15px] font-semibold text-[var(--color-text-primary)] transition-colors hover:border-[var(--color-primary)]/40 disabled:opacity-60";
+  "inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-white px-5 text-[15px] font-semibold text-[var(--color-text-primary)] transition-colors hover:border-[var(--color-primary)]/40 disabled:opacity-100";
 
 // The introduction is formatted; a page description takes words.
 const plainText = (html) =>
@@ -826,7 +826,7 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
               type="button"
               disabled={sending}
               onClick={() => (hasAnswers(answers) || recordedFor ? setConfirmReset(true) : startAgain())}
-              className="ml-auto min-h-[48px] rounded-[var(--radius-sm)] px-3 text-[15px] font-semibold text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/[0.06] disabled:opacity-60"
+              className="ml-auto min-h-[48px] rounded-[var(--radius-sm)] px-3 text-[15px] font-semibold text-[var(--color-primary)] transition-colors hover:bg-[var(--color-primary)]/[0.06] disabled:opacity-100"
             >
               Clear form
             </button>

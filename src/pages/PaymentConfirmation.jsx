@@ -123,23 +123,23 @@ export default function PaymentConfirmation() {
                   />
                 ))}
               </div>
-              <p className="text-base text-white/60">Confirming your payment…</p>
+              <p className="text-base text-[var(--color-text-on-dark-muted)]">Confirming your payment…</p>
             </div>
           )}
 
           {status === "pending" && (
             <div className="mx-auto max-w-lg">
-              <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
+              <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)] backdrop-blur-xl">
                 Processing
               </p>
               <h1 className="mb-5 text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl">
                 Your payment is still processing.
               </h1>
-              <p className="mb-3 text-base leading-relaxed text-white/68">
+              <p className="mb-3 text-base leading-relaxed text-[var(--color-text-on-dark-muted)]">
                 This can take a few moments. We&apos;ll email you a receipt as soon as it&apos;s confirmed.
               </p>
               {reference && (
-                <p className="mb-8 font-mono text-sm text-white/60">{reference}</p>
+                <p className="mb-8 font-mono text-sm text-[var(--color-text-on-dark-muted)]">{reference}</p>
               )}
               <button
                 type="button"
@@ -153,17 +153,17 @@ export default function PaymentConfirmation() {
 
           {status === "success" && (
             <div className="mx-auto max-w-lg">
-              <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
+              <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)] backdrop-blur-xl">
                 Payment Confirmed
               </p>
               <h1 className="mb-5 text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl">
                 Thank you, {receipt?.customer?.fullName || "friend"}.
               </h1>
-              <p className="mb-3 text-base leading-relaxed text-white/68">
+              <p className="mb-3 text-base leading-relaxed text-[var(--color-text-on-dark-muted)]">
                 Your payment for <strong className="text-white">{receipt?.programme?.name}</strong> has been received.
                 A copy of your receipt has been emailed to you.
               </p>
-              <p className="mb-8 text-sm text-white/60">
+              <p className="mb-8 text-sm text-[var(--color-text-on-dark-muted)]">
                 Didn&apos;t receive it? Contact us with your reference number —{" "}
                 <Link to="/contact" className="text-[var(--color-accent)] underline">
                   get in touch
@@ -173,17 +173,17 @@ export default function PaymentConfirmation() {
 
               <div className="mb-8 space-y-3 rounded-[var(--radius-md)] border border-white/15 bg-white/[0.06] p-5 text-left backdrop-blur-xl">
                 <div className="flex items-center justify-between gap-4 text-sm">
-                  <span className="text-white/60">Reference</span>
+                  <span className="text-[var(--color-text-on-dark-muted)]">Reference</span>
                   <span className="font-mono text-white">{receipt?.reference}</span>
                 </div>
                 <div className="flex items-center justify-between gap-4 text-sm">
-                  <span className="text-white/60">Amount Paid</span>
+                  <span className="text-[var(--color-text-on-dark-muted)]">Amount Paid</span>
                   <span className="font-semibold text-white">
                     {formatGhs(receipt?.amount?.amountPaid ?? 0)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between gap-4 text-sm">
-                  <span className="text-white/60">Paid</span>
+                  <span className="text-[var(--color-text-on-dark-muted)]">Paid</span>
                   <span className="text-white">{formatPaidAt(receipt?.paidAt)}</span>
                 </div>
               </div>
@@ -202,7 +202,7 @@ export default function PaymentConfirmation() {
               <h1 className="mb-5 text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl">
                 {status === "failed" ? "Payment not completed" : "Something went wrong"}
               </h1>
-              <p className="mb-8 text-base leading-relaxed text-white/68">
+              <p className="mb-8 text-base leading-relaxed text-[var(--color-text-on-dark-muted)]">
                 {status === "failed"
                   ? "Speso reported that this payment was not successful. No charge should have been made. Please try again."
                   : "We couldn't confirm this payment. If money was deducted from your account, please contact us with your reference number."}

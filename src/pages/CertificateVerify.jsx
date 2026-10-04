@@ -30,7 +30,7 @@ const STATUS_PRESENTATION = {
   [CERTIFICATE_STATUS.ISSUED]: {
     icon: BadgeCheck,
     label: "Verified",
-    tone: "text-[var(--color-accent)]",
+    tone: "text-[var(--color-accent-text-on-hero)]",
     heading: "Certificate verified",
     body: "ERA AXIS issued this certificate and it remains valid.",
     // Only the valid state asks the visitor to compare: for a revoked or
@@ -60,7 +60,7 @@ function DetailRow({ label, value, valueClassName = "break-words", stacked = fal
   if (!value && !children) return null;
   return (
     <div className={`border-t border-white/10 py-3 first:border-t-0 first:pt-0 ${stacked ? "" : "sm:flex sm:gap-6"}`}>
-      <dt className="text-xs font-semibold uppercase tracking-widest text-white/60 sm:w-40 sm:shrink-0">
+      <dt className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-on-dark-muted)] sm:w-40 sm:shrink-0">
         {label}
       </dt>
       <dd className={`mt-1 min-w-0 text-base text-white ${stacked ? "" : "sm:mt-0"} ${valueClassName}`}>
@@ -194,7 +194,7 @@ export default function CertificateVerify() {
         <div className="container relative z-10">
           <div aria-live="polite" aria-busy={state === "loading"}>
             {state === "loading" && (
-              <Waiting className="text-center text-base text-white/60">Checking this certificate…</Waiting>
+              <Waiting className="text-center text-base text-[var(--color-text-on-dark-muted)]">Checking this certificate…</Waiting>
             )}
 
             {state === "found" && presentation && (
@@ -211,14 +211,14 @@ export default function CertificateVerify() {
 
                 {/* The recipient is the answer the visitor came for, so it leads
                     rather than sitting as one row among the details below. */}
-                <p className="text-xs font-semibold uppercase tracking-widest text-white/60">
+                <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-text-on-dark-muted)]">
                   Awarded to
                 </p>
                 <p className="mt-1 mb-5 break-words text-2xl font-bold leading-snug text-white sm:text-3xl">
                   {certificate.issuedName}
                 </p>
 
-                <div className="mb-8 space-y-2 text-base leading-relaxed text-white/68">
+                <div className="mb-8 space-y-2 text-base leading-relaxed text-[var(--color-text-on-dark-muted)]">
                   <p>{presentation.body}</p>
                   {presentation.note && <p>{presentation.note}</p>}
                 </div>
@@ -264,7 +264,7 @@ export default function CertificateVerify() {
 
             {state === "not-found" && (
               <div className={panel}>
-                <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white/70 backdrop-blur-xl">
+                <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-text-on-dark-muted)] backdrop-blur-xl">
                   <SearchX aria-hidden="true" size={14} />
                   Not found
                 </p>
@@ -273,7 +273,7 @@ export default function CertificateVerify() {
                 </h1>
                 {/* Deliberately does not claim the certificate is fake: a mistyped
                     or truncated ID reaches this same state. */}
-                <p className="mb-8 text-base leading-relaxed text-white/68">
+                <p className="mb-8 text-base leading-relaxed text-[var(--color-text-on-dark-muted)]">
                   No ERA AXIS certificate matches this link. Check that the full
                   certificate ID was entered exactly as it appears, or scan the QR
                   code on the certificate again. If it still doesn&apos;t match,
@@ -292,7 +292,7 @@ export default function CertificateVerify() {
 
             {state === "error" && (
               <div className={panel}>
-                <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white/70 backdrop-blur-xl">
+                <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-text-on-dark-muted)] backdrop-blur-xl">
                   <WifiOff aria-hidden="true" size={14} />
                   Unavailable
                 </p>
@@ -300,7 +300,7 @@ export default function CertificateVerify() {
                   We couldn&apos;t check this certificate.
                 </h1>
                 {/* An outage must never be presented as an invalid certificate. */}
-                <p className="mb-8 text-base leading-relaxed text-white/68">
+                <p className="mb-8 text-base leading-relaxed text-[var(--color-text-on-dark-muted)]">
                   {errorMessage} This does not mean the certificate is invalid — we
                   simply could not reach our records just now.
                 </p>

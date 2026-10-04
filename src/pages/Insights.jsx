@@ -123,13 +123,13 @@ export default function Insights() {
           className="absolute -bottom-24 right-4 h-96 w-96 rounded-full bg-[var(--color-accent)]/10 blur-3xl"
         />
         <div className="container relative z-10">
-          <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
+          <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)] backdrop-blur-xl">
             Insights
           </p>
           <h1 className="mb-5 max-w-3xl text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-[4rem]">
             Ideas, stories, and updates from practical STEM learning.
           </h1>
-          <p className="mb-8 max-w-2xl text-base leading-relaxed text-white/72 sm:text-lg">
+          <p className="mb-8 max-w-2xl text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-lg">
             Explore ERA AXIS perspectives on STEM education, digital skills,
             learner outcomes, programme stories, and the future of practical
             learning in Africa.
@@ -277,7 +277,7 @@ export default function Insights() {
           <h2 className="mb-4 text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl md:text-5xl">
             Want to see practical learning in action?
           </h2>
-          <p className="mx-auto mb-8 max-w-xl text-base leading-relaxed text-white/80 sm:text-lg">
+          <p className="mx-auto mb-8 max-w-xl text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-lg">
             Explore ERA AXIS programmes or talk to the team about partnerships,
             school programmes, and youth skills development.
           </p>

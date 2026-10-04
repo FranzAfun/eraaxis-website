@@ -106,13 +106,13 @@ export default function Partners() {
 
             {/* Left: text */}
             <div className="flex flex-col justify-center">
-              <p className="mb-5 inline-flex w-fit self-start rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
+              <p className="mb-5 inline-flex w-fit self-start rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)] backdrop-blur-xl">
                 Partners, Accelerators &amp; Recognition
               </p>
               <h1 className="mb-5 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-[4rem]">
                 Building practical STEM education with the right ecosystem.
               </h1>
-              <p className="text-base leading-relaxed text-white/72 sm:text-lg">
+              <p className="text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-lg">
                 ERA AXIS is supported by a growing network of partners,
                 accelerator programs, and organizations advancing innovation,
                 education, and youth development.
@@ -301,7 +301,7 @@ export default function Partners() {
                   <p className="text-xs font-semibold leading-snug text-white drop-shadow-sm sm:text-sm">
                     {item.caption}
                   </p>
-                  <p className="text-[10px] leading-snug text-white/70 drop-shadow-sm sm:shrink-0 sm:whitespace-nowrap sm:text-xs sm:text-white/75">
+                  <p className="text-[10px] leading-snug text-[var(--color-text-on-dark-muted)] drop-shadow-sm sm:shrink-0 sm:whitespace-nowrap sm:text-xs sm:text-[var(--color-text-on-dark-muted)]">
                     {item.tag}
                   </p>
                 </div>
@@ -350,7 +350,7 @@ export default function Partners() {
           <h2 className="mb-4 text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl md:text-5xl">
             Work with ERA AXIS.
           </h2>
-          <p className="mx-auto mb-8 max-w-xl text-base leading-relaxed text-white/80 sm:text-lg">
+          <p className="mx-auto mb-8 max-w-xl text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-lg">
             Partner with us to expand practical STEM and digital skills learning
             for schools, youth groups, and communities.
           </p>

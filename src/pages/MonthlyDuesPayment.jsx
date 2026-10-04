@@ -370,19 +370,19 @@ export default function MonthlyDuesPayment() {
           <div className="max-w-3xl">
             <BackLinkButton
               fallbackTo="/payments"
-              className="mb-8 flex w-fit items-center gap-1.5 text-xs font-medium text-white/70 transition-colors hover:text-white"
+              className="mb-8 flex w-fit items-center gap-1.5 text-xs font-medium text-[var(--color-text-on-dark-muted)] transition-colors hover:text-white"
             >
               <ArrowLeft size={12} strokeWidth={2.5} aria-hidden="true" />
               Back
             </BackLinkButton>
 
-            <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
+            <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)] backdrop-blur-xl">
               Monthly Dues
             </p>
             <h1 className="mb-5 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl">
               Pay your monthly dues.
             </h1>
-            <p className="max-w-2xl text-base leading-relaxed text-white/75 sm:text-lg">
+            <p className="max-w-2xl text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-lg">
               {formatGhs(item.baseAmount)} a month. Members sign in with a code; paying for the first time takes a minute.
             </p>
           </div>

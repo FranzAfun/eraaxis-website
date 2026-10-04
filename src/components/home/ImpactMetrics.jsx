@@ -78,11 +78,11 @@ function MetricCard({ value, suffix, label, description, isVisible, reducedMotio
       }`}
       style={{ transitionDelay: `${delay}ms` }}
     >
-      <p className="mb-3 text-5xl font-black leading-none tracking-tight text-[var(--color-accent)] lg:text-[3.25rem]">
+      <p className="mb-3 text-5xl font-black leading-none tracking-tight text-[var(--color-accent-text-on-hero)] lg:text-[3.25rem]">
         {count}{suffix}
       </p>
       <p className="mb-2 text-[0.9375rem] font-bold text-white">{label}</p>
-      <p className="text-sm leading-relaxed text-white/60">{description}</p>
+      <p className="text-sm leading-relaxed text-[var(--color-text-on-dark-muted)]">{description}</p>
     </div>
   );
 }
@@ -134,13 +134,13 @@ export default function ImpactMetrics() {
               : "opacity-0 translate-y-3"
           }`}
         >
-          <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)]">
+          <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)]">
             Our Impact
           </p>
           <h2 className="mb-4 text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl lg:text-[2.5rem]">
             Measurable outcomes across schools&nbsp;and communities.
           </h2>
-          <p className="max-w-[520px] text-base leading-relaxed text-white/60 sm:text-[17px]">
+          <p className="max-w-[520px] text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-[17px]">
             Every number reflects a real learner, a real school, and a real
             project built through practical STEM education.
           </p>

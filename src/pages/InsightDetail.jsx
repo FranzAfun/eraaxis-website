@@ -187,7 +187,7 @@ export default function InsightDetail() {
         <div className="container relative z-10">
           <Link
             to="/insights"
-            className="mb-8 flex w-fit items-center gap-1.5 text-xs font-medium text-white/60 transition-colors hover:text-white"
+            className="mb-8 flex w-fit items-center gap-1.5 text-xs font-medium text-[var(--color-text-on-dark-muted)] transition-colors hover:text-white"
           >
             <ArrowLeft size={12} strokeWidth={2.5} />
             Back to Insights
@@ -195,23 +195,23 @@ export default function InsightDetail() {
 
           <div className={featuredImageSrc ? "grid items-center gap-10 lg:grid-cols-2 lg:gap-14" : "mx-auto max-w-3xl"}>
           <div>
-            <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
+            <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)] backdrop-blur-xl">
               {typeLabel}
             </p>
             <h1 className="mb-5 text-3xl font-black leading-[1.1] tracking-tight text-white sm:text-4xl md:text-5xl">
               {title}
             </h1>
-            <p className="mb-7 text-lg leading-relaxed text-white/72">
+            <p className="mb-7 text-lg leading-relaxed text-[var(--color-text-on-dark-muted)]">
               {excerpt}
             </p>
 
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-white/10 pt-5">
-              <span className="inline-flex items-center gap-2 text-sm text-white/55">
+              <span className="inline-flex items-center gap-2 text-sm text-[var(--color-text-on-dark-muted)]">
                 <UserRound size={14} strokeWidth={1.75} aria-hidden="true" />
                 {author}
               </span>
               {publishedAt && (
-                <span className="inline-flex items-center gap-2 text-sm text-white/55">
+                <span className="inline-flex items-center gap-2 text-sm text-[var(--color-text-on-dark-muted)]">
                   <CalendarDays size={14} strokeWidth={1.75} aria-hidden="true" />
                   {formatDate(publishedAt)}
                 </span>
@@ -336,7 +336,7 @@ export default function InsightDetail() {
           <h2 className="mb-4 text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl">
             Want to see practical learning in action?
           </h2>
-          <p className="mx-auto mb-8 max-w-xl text-base leading-relaxed text-white/80">
+          <p className="mx-auto mb-8 max-w-xl text-base leading-relaxed text-[var(--color-text-on-dark-muted)]">
             Explore ERA AXIS programmes or reach out to learn more about
             partnerships, school programmes, and youth skills development.
           </p>

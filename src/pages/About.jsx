@@ -68,13 +68,13 @@ export default function About() {
 
         <div className="container relative z-10">
           <div className="max-w-3xl">
-            <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent)] backdrop-blur-xl">
+            <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)] backdrop-blur-xl">
               About ERA AXIS
             </p>
             <h1 className="mb-5 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-[4rem]">
               Making STEM practical for Africa&apos;s next generation of builders.
             </h1>
-            <p className="max-w-2xl text-base leading-relaxed text-white/72 sm:text-lg">
+            <p className="max-w-2xl text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-lg">
               ERA AXIS is Ghana&apos;s practical STEM innovation platform,
               helping students, out-of-school youth, parents, and business
               owners gain real technology skills through hands-on learning.
