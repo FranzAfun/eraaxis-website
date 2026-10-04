@@ -230,6 +230,20 @@
     background-size: 100% 2px;
   }
 
+  /* A sign-up step arriving: a short rise into place, nothing that delays typing. */
+  .signup-step {
+    animation: signup-step-in 260ms ease-out both;
+  }
+
+  @keyframes signup-step-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .signup-step { animation: none; }
+  }
+
   .field-ink[aria-invalid="true"] {
     background-image: linear-gradient(rgb(239 68 68), rgb(239 68 68));
   }

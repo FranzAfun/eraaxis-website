@@ -30,12 +30,12 @@ export default function SignUpEmail({ clientId, email, onEmail, credential, onCr
     return (
       <div>
         <p className={labelCls}>{label}</p>
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-sm)] border border-[var(--color-border)] px-3.5 py-3">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface-soft)]/60 px-4 py-3.5">
           <span className="flex min-w-0 items-center gap-2 text-sm">
             <CheckCircle2 size={18} aria-hidden="true" className="shrink-0 text-green-700" />
             <span className="min-w-0">
               <span className="block break-all font-semibold text-[var(--color-text-primary)]">{profile.email}</span>
-              <span className="block text-xs text-[var(--color-text-secondary)]">Confirmed with Google</span>
+              <span className="block text-sm text-[var(--color-text-secondary)]">Confirmed with Google</span>
             </span>
           </span>
           <button
@@ -64,7 +64,7 @@ export default function SignUpEmail({ clientId, email, onEmail, credential, onCr
         onBlur={() => setSuggestion(suggestEmailCorrection(email) || "")}
       />
       {suggestion && (
-        <p className="mt-1.5 text-xs text-[var(--color-text-muted)]">
+        <p className="mt-1.5 text-sm text-[var(--color-text-secondary)]">
           Did you mean{" "}
           <button
             type="button"
@@ -76,10 +76,10 @@ export default function SignUpEmail({ clientId, email, onEmail, credential, onCr
           ?
         </p>
       )}
-      <p className="mt-1.5 text-xs text-[var(--color-text-secondary)]">We&apos;ll email a six-digit code to confirm it before payment.</p>
+      <p className="mt-1.5 text-sm text-[var(--color-text-secondary)]">We&apos;ll email a six-digit code to confirm it before payment.</p>
       {clientId && (
         <div className="mt-4">
-          <p className="mb-2 flex items-center gap-3 text-xs text-[var(--color-text-muted)]">
+          <p className="mb-3 flex items-center gap-3 text-sm text-[var(--color-text-muted)]">
             <span aria-hidden="true" className="h-px flex-1 bg-[var(--color-border)]" />
             or skip the code
             <span aria-hidden="true" className="h-px flex-1 bg-[var(--color-border)]" />

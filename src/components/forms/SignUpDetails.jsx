@@ -1,3 +1,5 @@
+import { Building2, HeartHandshake, UserRound } from "lucide-react";
+import ChoiceCards from "./ChoiceCards";
 import SchoolPicker from "./SchoolPicker";
 import { searchSignupSchools } from "../../services/formsService";
 import { needsGuardian } from "./signUp";
@@ -14,9 +16,9 @@ import { needsGuardian } from "./signUp";
  */
 
 const WHO = [
-  { value: "learner", title: "I'm the learner", hint: "Signing myself up" },
-  { value: "guardian", title: "I'm a parent or guardian", hint: "Signing up my child or ward" },
-  { value: "organisation", title: "An organisation", hint: "A school, NGO or sponsor signing up one learner" },
+  { value: "learner", title: "I'm the learner", hint: "Signing myself up", Icon: UserRound },
+  { value: "guardian", title: "I'm a parent or guardian", hint: "Signing up my child or ward", Icon: HeartHandshake },
+  { value: "organisation", title: "An organisation", hint: "A school, NGO or sponsor signing up one learner", Icon: Building2 },
 ];
 
 /** `part`: "who" for the choice alone, "details" for the rest, or both. */
@@ -30,42 +32,16 @@ export default function SignUpDetails({ value, onChange, schoolRequired = false,
 
   return (
     <div className="space-y-5">
-      {part !== "details" && <fieldset>
-        <legend className={labelCls}>Who is signing up?</legend>
-        <div className="mt-2 grid gap-2 sm:grid-cols-3">
-          {WHO.map((option) => {
-            const chosen = value.who === option.value;
-            return (
-              <label
-                key={option.value}
-                className={`flex cursor-pointer flex-col rounded-[var(--radius-sm)] border-2 px-3.5 py-3 text-sm transition-all duration-200 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[var(--color-primary)] has-[:focus-visible]:ring-offset-2 ${
-                  chosen
-                    ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-white shadow-lg shadow-[var(--color-primary)]/25"
-                    : "border-[var(--color-border)] bg-white hover:-translate-y-0.5 hover:border-[var(--color-primary)]"
-                }`}
-              >
-                <span className={`flex items-center gap-2 font-semibold ${chosen ? "text-white" : "text-[var(--color-text-primary)]"}`}>
-                  <input
-                    type="radio"
-                    name="signed-up-by"
-                    className="sr-only"
-                    checked={chosen}
-                    onChange={() => set({ who: option.value })}
-                  />
-                  <span
-                    aria-hidden="true"
-                    className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 ${chosen ? "border-white" : "border-[var(--color-border)]"}`}
-                  >
-                    {chosen && <span className="h-1.5 w-1.5 rounded-full bg-white" />}
-                  </span>
-                  {option.title}
-                </span>
-                <span className={`mt-0.5 pl-6 text-xs ${chosen ? "text-white/85" : "text-[var(--color-text-secondary)]"}`}>{option.hint}</span>
-              </label>
-            );
-          })}
-        </div>
-      </fieldset>}
+      {part !== "details" && (
+        <ChoiceCards
+          name="signed-up-by"
+          legend={part === "who" ? null : "Who is signing up?"}
+          legendCls={labelCls}
+          options={WHO}
+          value={value.who}
+          onChange={(who) => set({ who })}
+        />
+      )}
 
       {part !== "who" && value.who && (
         <div>
@@ -76,19 +52,20 @@ export default function SignUpDetails({ value, onChange, schoolRequired = false,
             question={{ key: "signup-school", school: { allowOther: true } }}
             searchSchools={searchSignupSchools}
             askLevel
+            placeholder={value.who === "learner" ? "Choose your school" : "Choose the learner's school"}
             value={value.school}
             onChange={(school) => set({ school })}
             fieldClass={fieldCls}
           />
           {!schoolRequired && !value.school && (
-            <p className="mt-1.5 text-xs text-[var(--color-text-muted)]">Leave this empty if the learner is not in school.</p>
+            <p className="mt-1.5 text-sm text-[var(--color-text-secondary)]">Leave this empty if the learner is not in school.</p>
           )}
         </div>
       )}
 
       {part !== "who" && value.who === "organisation" && (
-        <div className="space-y-4 rounded-[var(--radius-sm)] border border-[var(--color-border)] p-4">
-          <p className="text-sm font-semibold text-[var(--color-text-primary)]">The organisation</p>
+        <div className="space-y-4 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface-soft)]/60 p-5">
+          <p className="text-base font-semibold text-[var(--color-text-primary)]">The organisation</p>
           <div className="grid gap-5 sm:grid-cols-2">
             <div>
               <label className={labelCls} htmlFor="org-name">Organisation name</label>
@@ -103,24 +80,24 @@ export default function SignUpDetails({ value, onChange, schoolRequired = false,
               <input id="org-phone" type="tel" className={fieldCls} maxLength={40} value={value.organisation.phone} onChange={(e) => setOrganisation({ phone: e.target.value })} />
             </div>
           </div>
-          <p className="text-xs text-[var(--color-text-muted)]">Signing up several learners? Request a group quote from the Enrolment &amp; Dues page instead.</p>
+          <p className="text-sm text-[var(--color-text-secondary)]">Signing up several learners? Request a group quote from the Enrolment &amp; Dues page instead.</p>
         </div>
       )}
 
       {part !== "who" && value.who && !guardianRequired && (
-        <label className="flex items-start gap-3 text-sm text-[var(--color-text-secondary)]">
-          <input type="checkbox" className="mt-0.5 h-4 w-4 accent-[var(--color-primary)]" checked={value.addGuardian} onChange={(e) => set({ addGuardian: e.target.checked })} />
+        <label className="flex cursor-pointer items-start gap-3 text-[15px] text-[var(--color-text-primary)]">
+          <input type="checkbox" className="mt-0.5 h-5 w-5 shrink-0 cursor-pointer accent-[var(--color-primary)]" checked={value.addGuardian} onChange={(e) => set({ addGuardian: e.target.checked })} />
           <span>Add a parent or guardian {optionalTag}</span>
         </label>
       )}
 
       {part !== "who" && value.who && showGuardian && (
-        <div className="space-y-4 rounded-[var(--radius-sm)] border border-[var(--color-border)] p-4">
-          <p className="text-sm font-semibold text-[var(--color-text-primary)]">
+        <div className="space-y-4 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface-soft)]/60 p-5">
+          <p className="text-base font-semibold text-[var(--color-text-primary)]">
             {parentSigning ? "Your details, as their parent or guardian" : value.who === "learner" ? "Your parent or guardian" : "The learner's parent or guardian"}
           </p>
           {guardianRequired && !parentSigning && (
-            <p className="text-xs text-[var(--color-text-secondary)]">Needed for learners at a basic or senior high school.</p>
+            <p className="text-sm text-[var(--color-text-secondary)]">Needed for learners at a basic or senior high school.</p>
           )}
           <div className="grid gap-5 sm:grid-cols-2">
             <div>
@@ -138,8 +115,8 @@ export default function SignUpDetails({ value, onChange, schoolRequired = false,
               <input id="guardian-relationship" className={fieldCls} maxLength={60} placeholder="For example mother, uncle, guardian" value={value.guardian.relationship} onChange={(e) => setGuardian({ relationship: e.target.value })} />
             </div>
           </div>
-          <label className="flex items-start gap-3 text-sm text-[var(--color-text-secondary)]">
-            <input type="checkbox" className="mt-0.5 h-4 w-4 accent-[var(--color-primary)]" checked={value.guardian.consent} onChange={(e) => setGuardian({ consent: e.target.checked })} />
+          <label className="flex cursor-pointer items-start gap-3 text-[15px] text-[var(--color-text-primary)]">
+            <input type="checkbox" className="mt-0.5 h-5 w-5 shrink-0 cursor-pointer accent-[var(--color-primary)]" checked={value.guardian.consent} onChange={(e) => setGuardian({ consent: e.target.checked })} />
             <span>
               {parentSigning
                 ? "I am the learner's parent or guardian, and I agree to them taking part."

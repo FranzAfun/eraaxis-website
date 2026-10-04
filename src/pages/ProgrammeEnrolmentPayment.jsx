@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { ArrowLeft, Check, FileText, Info, Lock } from "lucide-react";
+import { useLocation } from "react-router-dom";
+import { ArrowLeft, Check } from "lucide-react";
 import {
   getPaymentCategoryBySlug,
   calculatePaymentBreakdown,
@@ -9,19 +9,22 @@ import {
 } from "../data/payments";
 import { api, ApiError } from "../services/api";
 import BackLinkButton from "../components/navigation/BackLinkButton";
-import SelectField from "../components/ui/SelectField";
 import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
 import { EMAIL_RE } from "../utils/validateEmail";
 import useSpesoFees from "../hooks/useSpesoFees";
 
 import BusyLabel from "../components/ui/BusyLabel";
+import ChoiceCards from "../components/forms/ChoiceCards";
 import SignUpDetails from "../components/forms/SignUpDetails";
 import SignUpEmail from "../components/forms/SignUpEmail";
 import SignUpSteps from "../components/forms/SignUpSteps";
+import OrderSummary from "../components/forms/OrderSummary";
 import ConfirmEmailStep from "../components/forms/ConfirmEmailStep";
 import useSignUpCheckout from "../components/forms/useSignUpCheckout";
 import { EMPTY_SIGNUP, learnerLabel, signUpPayload, signUpProblem } from "../components/forms/signUp";
+import { fieldCls, growingTextCls, labelCls, optionalCls } from "../components/forms/signUpStyles";
+
 const category = getPaymentCategoryBySlug("programme-enrolment");
 
 const NEXT_STEPS = [
@@ -30,25 +33,22 @@ const NEXT_STEPS = [
   "After payment, the next steps and confirmation details will be shared with you.",
 ];
 
+// Maps frontend static slugs to backend DB slugs (where they differ)
+const SLUG_TO_BACKEND = {
+  "junior-stem": "school-stem",
+};
 
-
-const fieldCls =
-  "min-h-[38px] w-full border-0 border-b border-[var(--color-border)] bg-transparent px-0 py-2 text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] outline-none transition-colors focus:border-[var(--color-primary)] focus:ring-0";
-
-const labelCls =
-  "mb-1.5 block text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--color-primary-deep)]";
-
-const optionalTag = (
-  <span className="ml-1 font-normal normal-case tracking-normal text-[var(--color-text-muted)]">
-    (optional)
-  </span>
-);
+const optionalTag = <span className={optionalCls}>(optional)</span>;
 
 export default function ProgrammeEnrolmentPayment() {
   const { feeConfig, feesLoading, feesError } = useSpesoFees();
   const location = useLocation();
-  const requestedProgrammeSlug = location.state?.programmeSlug;
-  const [manualProgrammeSlug, setManualProgrammeSlug] = useState("");
+  // Arriving from a programme's own page chooses it; otherwise nothing is chosen
+  // for them.
+  const [programmeSlug, setProgrammeSlug] = useState(() => {
+    const requested = location.state?.programmeSlug;
+    return category.items.some((programme) => programme.slug === requested) ? requested : "";
+  });
   const [paymentOption, setPaymentOption] = useState("monthly");
   const [signUp, setSignUp] = useState(EMPTY_SIGNUP);
   const [firstName, setFirstName] = useState("");
@@ -62,89 +62,83 @@ export default function ProgrammeEnrolmentPayment() {
   const [step, setStep] = useState(0);
   const checkout = useSignUpCheckout();
   const self = !signUp.who || signUp.who === "learner";
-  const selectedProgrammeSlug = category.items.some(
-    (programme) => programme.slug === manualProgrammeSlug
-  )
-    ? manualProgrammeSlug
-    : category.items.some(
-        (programme) => programme.slug === requestedProgrammeSlug
-      )
-      ? requestedProgrammeSlug
-      : "junior-stem";
 
-  const selectedProgramme =
-    category.items.find((programme) => programme.slug === selectedProgrammeSlug) ||
-    category.items[0];
-
-  // Maps frontend static slugs to backend DB slugs (where they differ)
-  const SLUG_TO_BACKEND = {
-    "junior-stem": "school-stem",
-  };
-
-  const requiresInstitution = selectedProgrammeSlug === "junior-stem";
+  const selectedProgramme = category.items.find((programme) => programme.slug === programmeSlug) || null;
+  const requiresInstitution = programmeSlug === "junior-stem";
+  const isFullPayment = paymentOption === "full";
+  const fullMonths = selectedProgramme?.fullPaymentMonths ?? 3;
 
   function finish() {
     checkout.start({
       findProgramme: async () => {
         const programmesData = await api.get("/programmes");
-        const backendSlug = SLUG_TO_BACKEND[selectedProgrammeSlug] || selectedProgrammeSlug;
+        const backendSlug = SLUG_TO_BACKEND[programmeSlug] || programmeSlug;
         const prog = programmesData.data?.find((p) => p.slug === backendSlug);
         if (!prog) throw new ApiError("This programme isn't available right now. Please try again shortly.");
         return prog;
       },
       payload: {
-        first_name:          firstName.trim(),
-        last_name:           lastName.trim(),
-        other_names:         otherNames.trim() || undefined,
-        email:               email.trim(),
-        phone:               phone.trim(),
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
+        other_names: otherNames.trim() || undefined,
+        email: email.trim(),
+        phone: phone.trim(),
         ...signUpPayload(signUp),
-        learning_goal:       learningGoal.trim() || undefined,
+        learning_goal: learningGoal.trim() || undefined,
         previous_experience: previousExperience.trim() || undefined,
-        notes:               notes.trim() || undefined,
-        payment_option:      paymentOption,
+        notes: notes.trim() || undefined,
+        payment_option: paymentOption,
       },
-      months: paymentOption === "full" ? (selectedProgramme.fullPaymentMonths ?? 3) : 1,
+      months: isFullPayment ? fullMonths : 1,
     });
   }
 
   const steps = [
     {
       title: "Programme",
-      problem: () => (signUp.who ? "" : "Please choose who is signing up."),
+      heading: "Choose your programme",
+      intro: "Pick the programme, then how you'd like to pay for it.",
+      problem: () => (selectedProgramme ? "" : "Please choose a programme."),
       body: (
         <>
-                      <div className="grid gap-5 sm:grid-cols-2">
-                        <div>
-                          <label className={labelCls}>Programme</label>
-                          <SelectField
-                            name="programme"
-                            value={selectedProgrammeSlug}
-                            onChange={(event) => setManualProgrammeSlug(event.target.value)}
-                            className={fieldCls}
-                            options={category.items.map((programme) => ({ value: programme.slug, label: programme.title }))}
-                          />
-                        </div>
-                        <div>
-                          <label className={labelCls}>Payment option</label>
-                          <SelectField
-                            name="paymentOption"
-                            value={paymentOption}
-                            onChange={(event) => setPaymentOption(event.target.value)}
-                            className={fieldCls}
-                            options={[
-                              { value: "monthly", label: "Monthly" },
-                              { value: "full", label: "Full programme" },
-                            ]}
-                          />
-                        </div>
-                      </div>
-                      <SignUpDetails part="who" value={signUp} onChange={setSignUp} fieldCls={fieldCls} labelCls={labelCls} optionalTag={optionalTag} />
+          <ChoiceCards
+            name="programme"
+            columns="sm:grid-cols-2"
+            options={category.items.map((programme) => ({
+              value: programme.slug,
+              title: programme.title,
+              hint: programme.audience,
+              aside: `${formatGhs(programme.monthlyAmount)} / month`,
+            }))}
+            value={programmeSlug}
+            onChange={setProgrammeSlug}
+          />
+          <ChoiceCards
+            name="payment-option"
+            legend="How would you like to pay?"
+            legendCls={labelCls}
+            columns="sm:grid-cols-2"
+            options={[
+              { value: "monthly", title: "Monthly", hint: "Pay one month at a time." },
+              { value: "full", title: "Full programme", hint: `All ${fullMonths} months at once.` },
+            ]}
+            value={paymentOption}
+            onChange={setPaymentOption}
+          />
         </>
       ),
     },
     {
+      title: "Who's signing up",
+      heading: "Who's signing up?",
+      intro: "Use the learner's official details. They go on the enrolment and on certificates later.",
+      problem: () => (signUp.who ? "" : "Please choose who is signing up."),
+      body: <SignUpDetails part="who" value={signUp} onChange={setSignUp} fieldCls={fieldCls} labelCls={labelCls} optionalTag={optionalTag} />,
+    },
+    {
       title: "The learner",
+      heading: self ? "About you" : "About the learner",
+      intro: self ? "Your name as it should appear on your enrolment, and a little about your goals." : "The learner's name as it should appear on their enrolment, and a little about their goals.",
       problem: () => {
         if (!firstName.trim()) return self ? "Please enter your first name." : "Please enter the learner's first name.";
         if (!lastName.trim()) return self ? "Please enter your last name." : "Please enter the learner's last name.";
@@ -152,36 +146,38 @@ export default function ProgrammeEnrolmentPayment() {
       },
       body: (
         <>
-                      <div className="grid gap-5 sm:grid-cols-2">
-                        <div>
-                          <label className={labelCls} htmlFor="signup-first-name">{learnerLabel(signUp, "First name")}</label>
-                          <input id="signup-first-name" type="text" autoComplete={self ? "given-name" : "off"} placeholder="Genny" className={fieldCls} value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-                        </div>
-                        <div>
-                          <label className={labelCls} htmlFor="signup-last-name">{learnerLabel(signUp, "Last name")}</label>
-                          <input id="signup-last-name" type="text" autoComplete={self ? "family-name" : "off"} placeholder="Amadapah" className={fieldCls} value={lastName} onChange={(e) => setLastName(e.target.value)} />
-                        </div>
-                        <div>
-                          <label className={labelCls} htmlFor="signup-other-names">{learnerLabel(signUp, "Other names")} {optionalTag}</label>
-                          <input id="signup-other-names" type="text" placeholder="Middle name(s), if any" className={fieldCls} value={otherNames} onChange={(e) => setOtherNames(e.target.value)} />
-                        </div>
-                      </div>
-                      <SignUpDetails part="details" value={signUp} onChange={setSignUp} schoolRequired={requiresInstitution} fieldCls={fieldCls} labelCls={labelCls} optionalTag={optionalTag} />
-                      <div className="grid gap-5 sm:grid-cols-2">
-                        <div>
-                          <label className={labelCls} htmlFor="signup-goal">Learning goal {optionalTag}</label>
-                          <input id="signup-goal" type="text" placeholder="What do you want to achieve?" className={fieldCls} value={learningGoal} onChange={(e) => setLearningGoal(e.target.value)} />
-                        </div>
-                        <div>
-                          <label className={labelCls} htmlFor="signup-experience">Previous experience {optionalTag}</label>
-                          <input id="signup-experience" type="text" placeholder="Beginner, some experience, or advanced" className={fieldCls} value={previousExperience} onChange={(e) => setPreviousExperience(e.target.value)} />
-                        </div>
-                      </div>
+          <div className="grid gap-6 sm:grid-cols-2">
+            <div>
+              <label className={labelCls} htmlFor="signup-first-name">{learnerLabel(signUp, "First name")}</label>
+              <input id="signup-first-name" type="text" autoComplete={self ? "given-name" : "off"} placeholder="Genny" className={fieldCls} value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+            </div>
+            <div>
+              <label className={labelCls} htmlFor="signup-last-name">{learnerLabel(signUp, "Last name")}</label>
+              <input id="signup-last-name" type="text" autoComplete={self ? "family-name" : "off"} placeholder="Amadapah" className={fieldCls} value={lastName} onChange={(e) => setLastName(e.target.value)} />
+            </div>
+            <div>
+              <label className={labelCls} htmlFor="signup-other-names">{learnerLabel(signUp, "Other names")}{optionalTag}</label>
+              <input id="signup-other-names" type="text" placeholder="Middle name(s), if any" className={fieldCls} value={otherNames} onChange={(e) => setOtherNames(e.target.value)} />
+            </div>
+          </div>
+          <SignUpDetails part="details" value={signUp} onChange={setSignUp} schoolRequired={requiresInstitution} fieldCls={fieldCls} labelCls={labelCls} optionalTag={optionalTag} />
+          <div className="grid gap-6 sm:grid-cols-2">
+            <div>
+              <label className={labelCls} htmlFor="signup-goal">Learning goal{optionalTag}</label>
+              <input id="signup-goal" type="text" placeholder="What do you want to achieve?" className={fieldCls} value={learningGoal} onChange={(e) => setLearningGoal(e.target.value)} />
+            </div>
+            <div>
+              <label className={labelCls} htmlFor="signup-experience">Previous experience{optionalTag}</label>
+              <input id="signup-experience" type="text" placeholder="Beginner, some, or advanced" className={fieldCls} value={previousExperience} onChange={(e) => setPreviousExperience(e.target.value)} />
+            </div>
+          </div>
         </>
       ),
     },
     {
       title: "Contact",
+      heading: "How do we reach you?",
+      intro: "Receipts, class reminders and programme news go here.",
       problem: () => {
         if (feesLoading) return "The current fees are still loading. Please try again in a moment.";
         if (!email.trim()) return "Please enter an email address, or continue with Google.";
@@ -191,39 +187,54 @@ export default function ProgrammeEnrolmentPayment() {
       },
       body: (
         <>
-                      <SignUpEmail
-                        clientId={checkout.clientId}
-                        email={email}
-                        onEmail={setEmail}
-                        credential={checkout.credential}
-                        onCredential={checkout.setCredential}
-                        label={self ? "Email address" : "Your email, for receipts and updates"}
-                        fieldCls={fieldCls}
-                        labelCls={labelCls}
-                      />
-                      <div className="grid gap-5 sm:grid-cols-2">
-                        <div>
-                          <label className={labelCls} htmlFor="signup-phone">{self ? "Phone number" : "Your phone, for updates"}</label>
-                          <input id="signup-phone" type="tel" autoComplete="tel" placeholder="+233 XX XXX XXXX" className={fieldCls} value={phone} onChange={(e) => setPhone(e.target.value)} />
-                        </div>
-                      </div>
-                      <div>
-                        <label className={labelCls} htmlFor="signup-notes">Notes {optionalTag}</label>
-                        <textarea id="signup-notes" rows={3} placeholder="Anything ERA AXIS should know before enrolment..." className={`${fieldCls} min-h-20 resize-none`} value={notes} onChange={(e) => setNotes(e.target.value)} />
-                      </div>
+          <SignUpEmail
+            clientId={checkout.clientId}
+            email={email}
+            onEmail={setEmail}
+            credential={checkout.credential}
+            onCredential={checkout.setCredential}
+            label={self ? "Email address" : "Your email, for receipts and updates"}
+            fieldCls={fieldCls}
+            labelCls={labelCls}
+          />
+          <div className="grid gap-6 sm:grid-cols-2">
+            <div>
+              <label className={labelCls} htmlFor="signup-phone">{self ? "Phone number" : "Your phone, for updates"}</label>
+              <input id="signup-phone" type="tel" autoComplete="tel" placeholder="+233 XX XXX XXXX" className={fieldCls} value={phone} onChange={(e) => setPhone(e.target.value)} />
+            </div>
+          </div>
+          <div>
+            <label className={labelCls} htmlFor="signup-notes">Anything we should know?{optionalTag}</label>
+            <textarea id="signup-notes" rows={1} placeholder="Access needs, questions, anything at all" className={growingTextCls} value={notes} onChange={(e) => setNotes(e.target.value)} />
+          </div>
         </>
       ),
     },
   ];
+  const lastStep = step === steps.length - 1;
 
-  const isFullPayment = paymentOption === "full";
-  const baseAmount = isFullPayment
-    ? calculateFullProgrammeBase(
-        selectedProgramme.monthlyAmount,
-        selectedProgramme.fullPaymentMonths
-      )
-    : selectedProgramme.monthlyAmount;
+  const baseAmount = selectedProgramme
+    ? isFullPayment
+      ? calculateFullProgrammeBase(selectedProgramme.monthlyAmount, fullMonths)
+      : selectedProgramme.monthlyAmount
+    : 0;
   const breakdown = calculatePaymentBreakdown(baseAmount, feeConfig);
+
+  const summary = (
+    <OrderSummary
+      title={selectedProgramme ? selectedProgramme.title : "Programme enrolment"}
+      empty={selectedProgramme ? null : "Choose a programme to see what it costs."}
+      rows={[
+        { label: "Payment option", value: isFullPayment ? "Full programme" : "Monthly" },
+        ...(isFullPayment ? [{ label: "Programme duration", value: `${fullMonths} months` }] : []),
+        { label: "Base amount", amount: breakdown.baseAmount },
+        { label: "Maintenance fee", amount: breakdown.maintenanceFee },
+        { label: "Speso processing fee", amount: breakdown.spesoFee },
+      ]}
+      total={breakdown.customerTotal}
+      error={feesError}
+    />
+  );
 
   return (
     <>
@@ -237,14 +248,8 @@ export default function ProgrammeEnrolmentPayment() {
               "radial-gradient(circle at 15% 18%, color-mix(in srgb, var(--color-accent) 22%, transparent) 0%, transparent 30%), radial-gradient(circle at 84% 8%, color-mix(in srgb, var(--color-primary) 38%, transparent) 0%, transparent 34%), linear-gradient(135deg, var(--color-background-dark) 0%, var(--color-primary-deep) 54%, var(--color-background-dark) 100%)",
           }}
         />
-        <div
-          aria-hidden="true"
-          className="absolute -left-28 top-28 h-80 w-80 rounded-full bg-white/[0.04] blur-3xl"
-        />
-        <div
-          aria-hidden="true"
-          className="absolute -bottom-24 right-4 h-96 w-96 rounded-full bg-[var(--color-accent)]/[0.08] blur-3xl"
-        />
+        <div aria-hidden="true" className="absolute -left-28 top-28 h-80 w-80 rounded-full bg-white/[0.04] blur-3xl" />
+        <div aria-hidden="true" className="absolute -bottom-24 right-4 h-96 w-96 rounded-full bg-[var(--color-accent)]/[0.08] blur-3xl" />
 
         <div className="container relative z-10">
           <BackLinkButton
@@ -270,167 +275,55 @@ export default function ProgrammeEnrolmentPayment() {
         </div>
       </section>
 
-      <section className="bg-[var(--color-surface-soft)] py-8 md:py-10">
+      <section className="bg-[var(--color-surface-soft)] py-8 md:py-12">
         <div className="container">
-          <div className="grid gap-6 lg:grid-cols-[1fr_330px] lg:items-start">
-            <div className="order-1 lg:order-none">
-          {checkout.confirming ? (
-            <div className="space-y-3">
-              <ConfirmEmailStep
-                email={checkout.confirming.email}
-                savedNote="Your sign-up is saved."
-                checkCode={checkout.checkCode}
-                sendAgain={checkout.sendAgain}
-                onConfirmed={checkout.confirmed}
-                onChangeAddress={checkout.changeAddress}
-              />
-              {checkout.busy && (
-                <p className="text-sm text-[var(--color-text-secondary)]"><BusyLabel>Opening checkout…</BusyLabel></p>
+          <div className="grid gap-6 lg:grid-cols-[1fr_340px] lg:items-start">
+            <div>
+              {checkout.confirming ? (
+                <div className="space-y-3">
+                  <ConfirmEmailStep
+                    email={checkout.confirming.email}
+                    savedNote="Your sign-up is saved."
+                    checkCode={checkout.checkCode}
+                    sendAgain={checkout.sendAgain}
+                    onConfirmed={checkout.confirmed}
+                    onChangeAddress={checkout.changeAddress}
+                  />
+                  {checkout.busy && (
+                    <p className="text-[15px] text-[var(--color-text-secondary)]"><BusyLabel>Opening checkout…</BusyLabel></p>
+                  )}
+                </div>
+              ) : (
+                <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white p-6 shadow-sm sm:p-8 md:p-10">
+                  <SignUpSteps
+                    steps={steps}
+                    step={step}
+                    onStep={setStep}
+                    onFinish={finish}
+                    busy={checkout.busy}
+                    finishLabel="Continue to checkout"
+                    error={checkout.error}
+                    onError={checkout.setError}
+                    lastStepExtra={summary}
+                  />
+                </div>
               )}
             </div>
-          ) : (
-              <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white p-6 shadow-sm md:p-8">
-                <div className="mb-6 flex items-center gap-2">
-                  <FileText
-                    size={19}
-                    strokeWidth={2.25}
-                    aria-hidden="true"
-                    className="text-[var(--color-primary)]"
-                  />
-                  <h2 className="text-xl font-bold tracking-tight text-[var(--color-text-primary)]">
-                    Programme enrolment details
-                  </h2>
-                </div>
 
-                <div className="mb-6 flex gap-3 rounded-[var(--radius-sm)] bg-[var(--color-primary)]/10 px-4 py-3 text-xs leading-relaxed text-[var(--color-primary-deep)]">
-                  <Info
-                    size={16}
-                    strokeWidth={2.25}
-                    aria-hidden="true"
-                    className="mt-0.5 shrink-0"
-                  />
-                  <p>
-                    Complete the details needed to attach your enrolment to your
-                    payment record.
-                  </p>
-                </div>
+            {/* On a phone the summary waits for the last step, inside the form. */}
+            <div className="hidden lg:sticky lg:top-28 lg:block">{summary}</div>
 
-                <SignUpSteps
-                  steps={steps}
-                  step={step}
-                  onStep={setStep}
-                  onFinish={finish}
-                  busy={checkout.busy}
-                  finishLabel="Continue to checkout"
-                  error={checkout.error}
-                  onError={checkout.setError}
-                />
-              </div>
-          )}
-            </div>
-
-            <div className="order-2 space-y-4 lg:order-none lg:sticky lg:top-28">
-              <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white p-6 shadow-sm">
-                <p className="mb-5 text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--color-primary)]">
-                  Order summary
-                </p>
-                <h2 className="mb-5 text-lg font-bold tracking-tight text-[var(--color-text-primary)]">
-                  {selectedProgramme.title}
-                </h2>
-
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between gap-4 border-b border-[var(--color-border)] pb-4 text-sm">
-                    <span className="text-[var(--color-text-secondary)]">
-                      Payment option
-                    </span>
-                    <span className="font-semibold text-[var(--color-text-primary)]">
-                      {isFullPayment ? "Full programme" : "Monthly"}
-                    </span>
-                  </div>
-
-                  {isFullPayment && (
-                    <div className="flex items-center justify-between gap-4 border-b border-[var(--color-border)] pb-4 text-sm">
-                      <span className="text-[var(--color-text-secondary)]">
-                        Programme duration
-                      </span>
-                      <span className="font-semibold text-[var(--color-text-primary)]">
-                        {selectedProgramme.fullPaymentMonths} months
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="flex items-center justify-between gap-4 border-b border-[var(--color-border)] pb-4 text-sm">
-                    <span className="text-[var(--color-text-secondary)]">
-                      Base amount
-                    </span>
-                    <span className="font-semibold text-[var(--color-text-primary)]">
-                      {formatGhs(breakdown.baseAmount)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between gap-4 border-b border-[var(--color-border)] pb-4 text-sm">
-                    <span className="text-[var(--color-text-secondary)]">
-                      Maintenance fee
-                    </span>
-                    <span className="font-semibold text-[var(--color-text-primary)]">
-                      {formatGhs(breakdown.maintenanceFee)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between gap-4 text-sm">
-                    <span className="text-[var(--color-text-secondary)]">
-                      Speso processing fee
-                    </span>
-                    <span className="font-semibold text-[var(--color-text-primary)]">
-                      {formatGhs(breakdown.spesoFee)}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="my-5 flex items-center justify-between gap-4 rounded-[var(--radius-sm)] bg-[var(--color-primary)]/10 px-4 py-4">
-                  <span className="text-sm font-semibold text-[var(--color-primary-deep)]">
-                    Total payable
-                  </span>
-                  <span className="text-xl font-bold text-[var(--color-primary)]">
-                    {formatGhs(breakdown.customerTotal)}
-                  </span>
-                </div>
-
-                <div className="space-y-3">
-                  {feesError && (
-                    <p role="alert" className="max-w-full break-words rounded-[var(--radius-sm)] border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm leading-relaxed text-red-700">
-                      {feesError}
-                    </p>
-                  )}
-                  <Link
-                    to="/payments"
-                    className="btn-outline w-full justify-center"
-                  >
-                    Back to enrolment &amp; dues
-                  </Link>
-                </div>
-              </div>
-
-              <p className="flex items-center justify-center gap-2 text-center text-xs text-[var(--color-text-muted)]">
-                <Lock size={14} strokeWidth={2} aria-hidden="true" />
-                Payments are processed securely via Speso.
-              </p>
-            </div>
-
-            <div className="order-3 rounded-[var(--radius-md)] border border-[var(--color-primary)]/15 bg-[var(--color-primary)]/10 p-6 md:p-7 lg:order-none lg:col-start-1 lg:row-start-2">
-              <h3 className="mb-5 text-sm font-semibold tracking-tight text-[var(--color-primary-deep)]">
-                What happens next
-              </h3>
+            <div
+              className={`rounded-[var(--radius-md)] border border-[var(--color-primary)]/15 bg-[var(--color-primary)]/10 p-6 md:p-7 lg:col-start-1 lg:row-start-2 ${
+                lastStep ? "" : "hidden lg:block"
+              }`}
+            >
+              <h3 className="mb-5 text-base font-semibold tracking-tight text-[var(--color-primary-deep)]">What happens next</h3>
               <ul className="space-y-4">
-                {NEXT_STEPS.map((step) => (
-                  <li key={step} className="flex items-start gap-3">
-                    <Check
-                      size={15}
-                      strokeWidth={2}
-                      aria-hidden="true"
-                      className="mt-0.5 shrink-0 text-[var(--color-primary)]"
-                    />
-                    <span className="text-sm leading-relaxed text-[var(--color-text-secondary)]">
-                      {step}
-                    </span>
+                {NEXT_STEPS.map((item) => (
+                  <li key={item} className="flex items-start gap-3">
+                    <Check size={16} strokeWidth={2} aria-hidden="true" className="mt-0.5 shrink-0 text-[var(--color-primary)]" />
+                    <span className="text-[15px] leading-relaxed text-[var(--color-text-secondary)]">{item}</span>
                   </li>
                 ))}
               </ul>

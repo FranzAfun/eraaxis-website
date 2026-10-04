@@ -26,7 +26,7 @@ const UNLISTED_LEVELS = [
  * every register); `askLevel` asks the kind of school when it is not listed.
  * The chosen school carries its level.
  */
-export default function SchoolPicker({ slug, question, value, onChange, fieldClass, invalid, describedBy, searchSchools, askLevel = false }) {
+export default function SchoolPicker({ slug, question, value, onChange, fieldClass, invalid, describedBy, searchSchools, askLevel = false, placeholder = "Choose your school" }) {
   const allowOther = question.school?.allowOther !== false;
   const [results, setResults] = useState([]);
   const [searching, setSearching] = useState(false);
@@ -116,7 +116,7 @@ export default function SchoolPicker({ slug, question, value, onChange, fieldCla
       name={question.key}
       className={fieldClass}
       value={value?.schoolId || ""}
-      placeholder="Choose your school"
+      placeholder={placeholder}
       // The chosen school travels with the answer, so it still reads correctly
       // after a search that no longer lists it, or when a saved form is reopened.
       selectedLabel={value?.name || ""}
