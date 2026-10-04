@@ -1408,6 +1408,11 @@ footer {
   outline-color: var(--color-field-danger);
 }
 
+/* A 2px outline with a 3px offset must clear adjacent feedback text. */
+:where(input, textarea):focus-visible ~ p {
+  padding-top: 0.25rem;
+}
+
 input[type="checkbox"],
 input[type="radio"] {
   accent-color: var(--color-primary);

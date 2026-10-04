@@ -55,7 +55,8 @@
   --header-opacity: 0.794234;
   --header-scrolled-bg: rgba(9, 3, 17, var(--header-opacity));
   --header-scrolled-border: color-mix(in srgb, var(--color-accent) 14%, transparent);
-  --header-scrolled-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  /* Strong shadows can dim words in the light content immediately below. */
+  --header-scrolled-shadow: 0 8px 32px rgba(0, 0, 0, 0.01);
   --header-blur: blur(14px);
   --header-fallback-bg: var(--header-scrolled-bg);
   --drawer-bg: var(--header-scrolled-bg);
