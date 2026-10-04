@@ -99,7 +99,7 @@ export default function PaymentConfirmation() {
   return (
     <>
       <SEO {...getPageSeo("/payments/confirmation")} />
-      <section className="relative -mt-20 min-h-[60vh] overflow-hidden bg-[var(--color-background-dark)] pb-20 pt-40 text-white md:pb-28 md:pt-52">
+      <section className="dark-surface relative -mt-20 min-h-[60vh] overflow-hidden bg-[var(--color-background-dark)] pb-20 pt-40 text-white md:pb-28 md:pt-52">
         <div
           aria-hidden="true"
           className="absolute inset-0"

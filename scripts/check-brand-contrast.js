@@ -42,6 +42,7 @@ if (foundation) {
     add("pale secondary dark words", token("text-on-dark-muted"), background);
     add("accent on dark", accent, background);
     add("white dark words", white, background);
+    add("dark focus / offset edge", token("text-on-dark-muted"), background, 3);
   }
   if (!paletteOnly) {
   const alpha = Number(css.match(/--header-opacity:\s*([.\d]+)/)[1]);
@@ -68,6 +69,12 @@ if (foundation) {
   add("newsletter dark success words and icon", token("success-text-dark"), mix(rgb("00BC7D"), black, 0.1));
   add("newsletter dark error", token("error-text-dark"), black);
   add("rating selected", token("rating"), white, 3);
+  add("rating unselected", token("ui-border"), white, 3);
+  add("radio unselected", token("ui-border"), white, 3);
+  add("invalid dark focus edge", token("field-danger"), black, 3);
+  add("primary ring against white offset", primary, white, 3);
+  add("pale dark ring against dark offset", token("text-on-dark-muted"), glassBase, 3);
+  add("gallery selection ring against dark offset", accent, black, 3);
   add("caption white words on white-photo bound", white, mix(glassBase, white, 0.85));
   add("caption pale words on white-photo bound", token("text-on-dark-muted"), mix(glassBase, white, 0.85));
   add("hero white on white-photo bound", white, mix(black, white, 0.65));

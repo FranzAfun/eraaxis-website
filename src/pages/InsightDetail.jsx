@@ -167,7 +167,7 @@ export default function InsightDetail() {
       <SEO title={seoTitle} description={seoDescription} />
 
       {/* ── Article header ─────────────────────────────────────────────────── */}
-      <section className="relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-14 pt-36 text-white md:pb-20 md:pt-44">
+      <section className="dark-surface relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-14 pt-36 text-white md:pb-20 md:pt-44">
         <div
           aria-hidden="true"
           className="absolute inset-0"
@@ -330,7 +330,7 @@ export default function InsightDetail() {
       </section>
 
       {/* ── Bottom CTA ─────────────────────────────────────────────────────── */}
-      <section className="final-cta-band relative overflow-hidden py-20 md:py-28">
+      <section className="dark-surface final-cta-band relative overflow-hidden py-20 md:py-28">
         <div className="final-cta-orb pointer-events-none absolute inset-0" />
         <div className="container relative z-10 text-center">
           <h2 className="mb-4 text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl">

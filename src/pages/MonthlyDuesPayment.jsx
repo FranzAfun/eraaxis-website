@@ -354,7 +354,7 @@ export default function MonthlyDuesPayment() {
   return (
     <>
       <SEO {...getPageSeo("/payments/monthly-dues")} />
-      <section className="relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-14 pt-32 text-white md:pb-18 md:pt-36">
+      <section className="dark-surface relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-14 pt-32 text-white md:pb-18 md:pt-36">
         <div
           aria-hidden="true"
           className="absolute inset-0"

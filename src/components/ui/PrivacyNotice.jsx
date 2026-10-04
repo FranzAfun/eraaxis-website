@@ -32,7 +32,7 @@ export default function PrivacyNotice() {
     <div
       role="region"
       aria-label="Privacy notice"
-      className="fixed inset-x-0 bottom-0 z-[60] border-t border-white/10 bg-[var(--color-background-dark)] px-4 py-4 shadow-[0_-4px_24px_rgba(0,0,0,0.25)] sm:px-6"
+      className="dark-surface fixed inset-x-0 bottom-0 z-[60] border-t border-white/10 bg-[var(--color-background-dark)] px-4 py-4 shadow-[0_-4px_24px_rgba(0,0,0,0.25)] sm:px-6"
     >
       <div className="container flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
         <p className="text-sm leading-relaxed text-[var(--color-text-on-dark-muted)]">

@@ -13,7 +13,7 @@ export default function DevBoardFeature() {
   return (
     <section
       aria-label="ERA Dev Board"
-      className="bg-[var(--color-background-dark)] py-20 md:py-24 lg:py-28"
+      className="dark-surface bg-[var(--color-background-dark)] py-20 md:py-24 lg:py-28"
     >
       <div className="container">
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">

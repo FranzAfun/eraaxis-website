@@ -95,7 +95,7 @@ export default function InsightsPreview() {
       id="insights"
       ref={sectionRef}
       aria-label="Insights preview"
-      className="bg-[var(--color-background-dark)] pt-8 pb-16 md:pt-10 md:pb-20 lg:pt-12 lg:pb-24"
+      className="dark-surface bg-[var(--color-background-dark)] pt-8 pb-16 md:pt-10 md:pb-20 lg:pt-12 lg:pb-24"
     >
       <div className="container">
         {/* Section header + CTA row */}

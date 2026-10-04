@@ -332,7 +332,7 @@ export default function SelectField({
         className={[
           "flex w-full min-w-0 items-center justify-between gap-3 text-left",
           className,
-          disabled ? "cursor-not-allowed opacity-60" : "cursor-pointer",
+          disabled ? "cursor-not-allowed opacity-100" : "cursor-pointer",
         ].join(" ")}
       >
         <span
@@ -428,7 +428,7 @@ export default function SelectField({
                   className={[
                     "flex w-full items-center justify-between gap-3 rounded-[calc(var(--radius-sm)-2px)] px-3 py-2 text-left text-sm transition-colors",
                     option.disabled
-                      ? "cursor-not-allowed opacity-50"
+                      ? "cursor-not-allowed opacity-100"
                       : "",
                     isSelected || isHighlighted
                       ? "bg-[var(--color-primary)]/8 text-[var(--color-primary-deep)]"

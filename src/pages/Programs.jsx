@@ -207,7 +207,7 @@ export default function Programs() {
     <>
       <SEO {...getPageSeo("/programs")} />
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <section className="relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-16 pt-36 text-white md:pb-24 md:pt-44">
+      <section className="dark-surface relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-16 pt-36 text-white md:pb-24 md:pt-44">
         <div
           aria-hidden="true"
           className="absolute inset-0"
@@ -321,7 +321,7 @@ export default function Programs() {
       </section>
 
       {/* ── CTA Band ─────────────────────────────────────────────────────── */}
-      <section className="final-cta-band relative overflow-hidden py-16 md:py-20">
+      <section className="dark-surface final-cta-band relative overflow-hidden py-16 md:py-20">
         <div aria-hidden="true" className="final-cta-orb pointer-events-none absolute inset-0" />
         <div className="container relative text-center">
           <h2 className="mb-4 text-2xl font-black tracking-tight text-white sm:text-3xl">

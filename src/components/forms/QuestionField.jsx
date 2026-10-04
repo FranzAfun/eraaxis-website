@@ -21,7 +21,7 @@ function optionRow(selected) {
     "has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[var(--color-primary)] has-[:focus-visible]:ring-offset-2",
     selected
       ? "border-[var(--color-primary)] bg-[var(--color-primary)]/[0.06] text-[var(--color-primary-deep)]"
-      : "border-[var(--color-border)] bg-white text-[var(--color-text-primary)] hover:border-[var(--color-primary)]/40",
+      : "border-[var(--color-ui-border)] bg-white text-[var(--color-text-primary)] hover:border-[var(--color-primary)]/40",
   ].join(" ");
 }
 
@@ -34,7 +34,7 @@ function Mark({ selected, multiple }) {
       className={[
         "flex h-5 w-5 shrink-0 items-center justify-center border-2 transition-colors",
         multiple ? "rounded-[5px]" : "rounded-full",
-        selected ? "border-[var(--color-primary)] bg-[var(--color-primary)]" : "border-[var(--color-border)] bg-white",
+        selected ? "border-[var(--color-primary)] bg-[var(--color-primary)]" : "border-[var(--color-ui-border)] bg-white",
       ].join(" ")}
     >
       {selected &&
@@ -110,7 +110,7 @@ function StarRating({ question, value, onChange, describedBy }) {
                 aria-hidden="true"
                 strokeWidth={1.5}
                 className={`h-9 w-9 transition-colors ${
-                  star <= shown ? "fill-amber-400 text-amber-400" : "text-[var(--color-border)]"
+                  star <= shown ? "fill-[var(--color-rating)] text-[var(--color-rating)]" : "text-[var(--color-ui-border)]"
                 }`}
               />
             </span>
@@ -155,7 +155,7 @@ function NumberScale({ question, value, onChange, describedBy }) {
                 "has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[var(--color-primary)] has-[:focus-visible]:ring-offset-2",
                 selected
                   ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-white"
-                  : "border-[var(--color-border)] bg-white text-[var(--color-text-primary)] hover:border-[var(--color-primary)]/40",
+                  : "border-[var(--color-ui-border)] bg-white text-[var(--color-text-primary)] hover:border-[var(--color-primary)]/40",
               ].join(" ")}
             >
               <input

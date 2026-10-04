@@ -22,7 +22,7 @@ export default function ChoiceCards({ name, legend, options, value, onChange, co
               className={`group relative flex cursor-pointer flex-col rounded-[var(--radius-md)] border-2 p-4 transition-all duration-200 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[var(--color-primary)] has-[:focus-visible]:ring-offset-2 ${
                 chosen
                   ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-white shadow-lg shadow-[var(--color-primary)]/25"
-                  : "border-[var(--color-border)] bg-white hover:-translate-y-0.5 hover:border-[var(--color-primary)] hover:shadow-md"
+                  : "border-[var(--color-ui-border)] bg-white hover:-translate-y-0.5 hover:border-[var(--color-primary)] hover:shadow-md"
               }`}
             >
               <input type="radio" name={name} className="sr-only" checked={chosen} onChange={() => onChange(option.value)} />
@@ -42,7 +42,7 @@ export default function ChoiceCards({ name, legend, options, value, onChange, co
                 <span
                   aria-hidden="true"
                   className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
-                    chosen ? "border-white bg-white text-[var(--color-primary)]" : "border-[var(--color-border)]"
+                    chosen ? "border-white bg-white text-[var(--color-primary)]" : "border-[var(--color-ui-border)]"
                   }`}
                 >
                   {chosen && <Check size={12} strokeWidth={3.5} />}
@@ -83,7 +83,7 @@ export function PillChoice({ name, legend, legendCls, options, value, onChange }
               className={`cursor-pointer rounded-full border-2 px-4 py-2 text-[15px] font-medium transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[var(--color-primary)] has-[:focus-visible]:ring-offset-2 ${
                 chosen
                   ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-white"
-                  : "border-[var(--color-border)] bg-white text-[var(--color-text-primary)] hover:border-[var(--color-primary)]"
+                  : "border-[var(--color-ui-border)] bg-white text-[var(--color-text-primary)] hover:border-[var(--color-primary)]"
               }`}
             >
               <input

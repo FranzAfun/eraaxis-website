@@ -246,7 +246,7 @@
   }
 
   .field-ink[aria-invalid="true"] {
-    background-image: linear-gradient(rgb(239 68 68), rgb(239 68 68));
+    background-image: linear-gradient(var(--color-field-danger), var(--color-field-danger));
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -308,6 +308,7 @@
     gap: 0.5rem;
     border-radius: var(--radius-sm);
     background-color: var(--color-primary);
+    border: 1px solid var(--control-edge, var(--color-primary));
     padding-inline: 1.25rem;
     padding-block: 0.625rem;
     font-size: 0.875rem;
@@ -1374,4 +1375,40 @@
   .site-drawer {
     animation-duration: 1ms;
   }
+}
+
+/* The surrounding surface owns focus and control edges. The gap keeps a
+   selected purple control separate from its purple focus indicator. */
+.dark-surface,
+.site-header,
+.site-drawer,
+footer {
+  --focus-ring: var(--color-text-on-dark-muted);
+  --focus-offset: var(--color-surface-dark);
+  --control-edge: var(--color-accent);
+}
+
+:is(.dark-surface, footer) :is(div, section, form, label)[class~="bg-white"],
+:is(.dark-surface, footer) div[class~="bg-[var(--color-surface)]"] {
+  --focus-ring: var(--color-primary);
+  --focus-offset: var(--color-surface);
+  --control-edge: var(--color-primary);
+}
+
+:where(a, button, input, textarea, select, [tabindex]):focus-visible,
+:where(label):has(:focus-visible) {
+  --tw-ring-color: var(--focus-ring, var(--color-primary));
+  --tw-ring-offset-color: var(--focus-offset, var(--color-surface));
+  outline: 2px solid var(--focus-ring, var(--color-primary));
+  outline-offset: 3px;
+}
+
+[aria-invalid="true"]:focus-visible {
+  --tw-ring-color: var(--color-field-danger);
+  outline-color: var(--color-field-danger);
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--color-primary);
 }

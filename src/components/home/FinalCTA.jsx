@@ -29,7 +29,7 @@ export default function FinalCTA() {
     <section
       ref={ref}
       aria-label="Call to action — start building with ERA AXIS"
-      className="final-cta-band relative overflow-hidden border-t border-white/[0.07] py-16 md:py-20 lg:py-24"
+      className="dark-surface final-cta-band relative overflow-hidden border-t border-white/[0.07] py-16 md:py-20 lg:py-24"
     >
       {/* Decorative accent orb */}
       <div aria-hidden="true" className="final-cta-orb pointer-events-none absolute inset-0" />

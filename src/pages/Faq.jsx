@@ -61,7 +61,7 @@ export default function Faq() {
   return (
     <>
       <SEO {...getPageSeo("/faq")} />
-      <section className="relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-16 pt-36 text-white md:pb-24 md:pt-44">
+      <section className="dark-surface relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-16 pt-36 text-white md:pb-24 md:pt-44">
         <div
           aria-hidden="true"
           className="absolute inset-0"
@@ -114,7 +114,7 @@ export default function Faq() {
         </div>
       </section>
 
-      <section className="bg-[linear-gradient(180deg,var(--color-surface-dark)_0%,var(--color-primary-deep)_100%)] py-16 md:py-20 lg:py-24">
+      <section className="dark-surface bg-[linear-gradient(180deg,var(--color-surface-dark)_0%,var(--color-primary-deep)_100%)] py-16 md:py-20 lg:py-24">
         <div className="container">
           <div className="grid gap-8 lg:grid-cols-[17rem_minmax(0,1fr)] lg:gap-10">
             <aside className="lg:sticky lg:top-24 lg:self-start">

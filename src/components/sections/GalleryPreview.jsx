@@ -26,7 +26,7 @@ function GalleryThumbnail({ item, isActive, onClick }) {
       className={[
         "group relative aspect-[16/10] overflow-hidden rounded-[var(--radius-md)] border text-left transition-all duration-300",
         isActive
-          ? "border-[var(--color-accent)] shadow-[0_0_0_1px_var(--color-accent)]"
+          ? "border-[var(--color-background-dark)] ring-2 ring-[var(--color-accent)] ring-offset-2 ring-offset-[var(--color-background-dark)]"
           : "border-white/10 opacity-60 hover:opacity-90",
       ].join(" ")}
       aria-pressed={isActive}
@@ -143,7 +143,7 @@ export default function GalleryPreview() {
     <section
       id="gallery"
       aria-label="Gallery preview"
-      className="overflow-hidden bg-[var(--color-background-dark)] pt-8 pb-16 md:pt-10 md:pb-20 lg:pt-0 lg:pb-24"
+      className="dark-surface overflow-hidden bg-[var(--color-background-dark)] pt-8 pb-16 md:pt-10 md:pb-20 lg:pt-0 lg:pb-24"
     >
       <div className="container">
         <div className="mb-8 flex flex-col gap-6 md:mb-10 lg:mb-12 lg:flex-row lg:items-end lg:justify-between">

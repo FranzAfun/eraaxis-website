@@ -176,7 +176,7 @@ export default function Gallery() {
   return (
     <>
       <SEO {...getPageSeo("/gallery")} />
-      <section className="relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-16 pt-36 text-white md:pb-24 md:pt-44">
+      <section className="dark-surface relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-16 pt-36 text-white md:pb-24 md:pt-44">
         <div
           aria-hidden="true"
           className="absolute inset-0"
@@ -259,7 +259,7 @@ export default function Gallery() {
 
       {activeItem ? (
         <div
-          className="fixed inset-0 z-[120] flex items-center justify-center bg-[rgb(4_4_10_/_0.92)] p-4 sm:p-6"
+          className="dark-surface fixed inset-0 z-[120] flex items-center justify-center bg-[color-mix(in_srgb,var(--color-background-dark)_92%,transparent)] p-4 sm:p-6"
           role="dialog"
           aria-modal="true"
           aria-label={`Gallery image ${activeIndex + 1} of ${items.length}`}

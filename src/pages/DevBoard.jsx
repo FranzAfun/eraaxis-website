@@ -200,7 +200,7 @@ export default function DevBoard() {
     <>
       <SEO {...getPageSeo("/dev-board")} />
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <section className="relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-16 pt-36 text-white md:pb-24 md:pt-44">
+      <section className="dark-surface relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-16 pt-36 text-white md:pb-24 md:pt-44">
         <div
           aria-hidden="true"
           className="absolute inset-0"
@@ -588,7 +588,7 @@ export default function DevBoard() {
       </section>
 
       {/* ── AI-Assisted Learner Support ──────────────────────────────────── */}
-      <section className="bg-[var(--color-primary-deep)] py-16 md:py-20">
+      <section className="dark-surface bg-[var(--color-primary-deep)] py-16 md:py-20">
         <div className="container">
           <div className="relative overflow-hidden rounded-[var(--radius-lg)] border border-white/10 bg-white/[0.04] px-8 py-12 md:px-12 md:py-14">
             <div
@@ -705,7 +705,7 @@ export default function DevBoard() {
       </section>
 
       {/* ── Final CTA ────────────────────────────────────────────────────── */}
-      <section className="final-cta-band relative overflow-hidden py-14 md:py-16">
+      <section className="dark-surface final-cta-band relative overflow-hidden py-14 md:py-16">
         <div aria-hidden="true" className="final-cta-orb pointer-events-none absolute inset-0" />
         <div className="container relative text-center">
           <h2 className="mb-4 text-2xl font-black tracking-tight text-white sm:text-3xl">

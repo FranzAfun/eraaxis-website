@@ -27,7 +27,7 @@ export default function GuardianField({ question, value, onChange, fieldClass, i
         <input id={id("relationship")} className={`mt-1.5 ${fieldClass}`} maxLength={60}
           value={answer.relationship || ""} onChange={(event) => set({ relationship: event.target.value })} />
       </label>
-      <label className="flex items-start gap-3 rounded-[var(--radius-sm)] border border-[var(--color-border)] px-4 py-3 text-sm text-[var(--color-text)]">
+      <label className="flex items-start gap-3 rounded-[var(--radius-sm)] border border-[var(--color-border)] px-4 py-3 text-sm text-[var(--color-text-primary)]">
         <input type="checkbox" className="mt-0.5 h-4 w-4 accent-[var(--color-primary)]" checked={answer.consent === true} aria-invalid={(invalid && answer.consent !== true) || undefined}
           onChange={(event) => set({ consent: event.target.checked })} />
         <span>I am their parent or guardian, and I agree to them taking part.</span>

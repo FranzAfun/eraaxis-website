@@ -16,7 +16,7 @@ export default function NotFound() {
   }
 
   return (
-    <section className="relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-16 pt-36 text-white md:pb-24 md:pt-44">
+    <section className="dark-surface relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-16 pt-36 text-white md:pb-24 md:pt-44">
       <div
         aria-hidden="true"
         className="absolute inset-0"

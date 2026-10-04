@@ -48,7 +48,7 @@ export default function About() {
   return (
     <>
       <SEO {...getPageSeo("/about")} />
-      <section className="relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-16 pt-36 text-white md:pb-24 md:pt-44">
+      <section className="dark-surface relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-16 pt-36 text-white md:pb-24 md:pt-44">
         <div
           aria-hidden="true"
           className="absolute inset-0"
@@ -302,7 +302,7 @@ export default function About() {
 
       <ImpactStories />
 
-      <section className="final-cta-band relative overflow-hidden py-16 md:py-20">
+      <section className="dark-surface final-cta-band relative overflow-hidden py-16 md:py-20">
         <div
           aria-hidden="true"
           className="final-cta-orb pointer-events-none absolute inset-0"

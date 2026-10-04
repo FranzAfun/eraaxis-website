@@ -12,7 +12,7 @@ export default function Hero() {
   return (
     <section
       aria-label="Hero"
-      className="relative -mt-20 flex min-h-screen items-center overflow-hidden"
+      className="dark-surface relative -mt-20 flex min-h-screen items-center overflow-hidden"
     >
       {/* Background image — loaded eagerly; mobile shifts crop up to show learners */}
       <img
