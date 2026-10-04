@@ -148,7 +148,7 @@ export default function FileField({ slug, token, question, value, onChange, onBu
       </p>
 
       {problems.map((message) => (
-        <p key={message} role="alert" className="mt-2 flex items-start gap-1.5 text-sm font-medium text-red-600">
+        <p key={message} role="alert" className="mt-2 flex items-start gap-1.5 text-sm font-medium text-[var(--color-field-danger)]">
           <AlertCircle size={16} aria-hidden="true" className="mt-0.5 shrink-0" />
           <span>{message}</span>
         </p>

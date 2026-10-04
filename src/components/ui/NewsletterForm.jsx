@@ -4,7 +4,11 @@ import { api } from "../../services/api";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export default function NewsletterForm({ source }) {
+export default function NewsletterForm({ source, surface = "light" }) {
+  const onDark = surface === "dark";
+  const successInk = onDark ? "text-[var(--color-success-text-dark)]" : "text-[var(--color-success-text)]";
+  const errorInk = onDark ? "text-[var(--color-error-text-dark)]" : "text-[var(--color-field-danger)]";
+  const secondaryInk = onDark ? "text-[var(--color-text-on-dark-muted)]" : "text-[var(--color-text-muted)]";
   const [email, setEmail]                   = useState("");
   const [emailError, setEmailError]         = useState("");
   const [isSubmitting, setIsSubmitting]     = useState(false);
@@ -55,9 +59,9 @@ export default function NewsletterForm({ source }) {
 
   if (submitted) {
     return (
-      <div className="flex items-center gap-2.5 rounded-[var(--radius-sm)] border border-emerald-500/30 bg-emerald-500/10 px-4 py-3">
-        <CheckCircle2 size={18} className="shrink-0 text-emerald-500" />
-        <p className="text-sm font-semibold text-emerald-600">
+      <div className={`flex items-center gap-2.5 rounded-[var(--radius-sm)] border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 ${successInk}`}>
+        <CheckCircle2 size={18} className="shrink-0" />
+        <p className="text-sm font-semibold">
           You&apos;re subscribed! ERA AXIS updates will arrive in your inbox.
         </p>
       </div>
@@ -73,22 +77,23 @@ export default function NewsletterForm({ source }) {
           onChange={handleChange}
           placeholder="Enter your email"
           disabled={isSubmitting}
-          className={`min-h-[44px] w-full rounded-[var(--radius-sm)] border px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] outline-none transition-colors focus:ring-2 disabled:opacity-100 ${
+          aria-invalid={emailError ? true : undefined}
+          className={`min-h-[44px] w-full rounded-[var(--radius-sm)] border bg-white px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] outline-none transition-colors focus:ring-2 focus:ring-offset-2 disabled:opacity-100 ${
             emailError
-              ? "border-red-400 focus:border-red-400 focus:ring-red-400/20"
-              : "border-[var(--color-border)] bg-white focus:border-[var(--color-primary)] focus:ring-[var(--color-primary)] focus:ring-offset-2"
+              ? "border-[var(--color-field-danger)] focus:border-[var(--color-field-danger)] focus:ring-[var(--color-field-danger)]"
+              : "border-[var(--color-ui-border)] focus:border-[var(--color-primary)] focus:ring-[var(--color-primary)]"
           }`}
         />
         {emailError && (
-          <p className="text-left text-xs text-red-600">{emailError}</p>
+          <p className={`text-left text-xs ${errorInk}`}>{emailError}</p>
         )}
         {alreadySubscribed && (
-          <p className="text-left text-xs text-[var(--color-text-muted)]">
+          <p className={`text-left text-xs ${secondaryInk}`}>
             This email is already subscribed.
           </p>
         )}
         {submitError && (
-          <p className="text-left text-xs text-red-600">{submitError}</p>
+          <p className={`text-left text-xs ${errorInk}`}>{submitError}</p>
         )}
       </div>
       <button

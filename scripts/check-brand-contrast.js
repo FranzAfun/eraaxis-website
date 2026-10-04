@@ -34,6 +34,7 @@ if (foundation) {
 } else {
   for (const background of [...light, ...[0.05, 0.06, 0.08].map((alpha) => mix(primary, white, alpha))]) {
     for (const name of ["text-primary", "text-secondary", "text-muted", "primary", "primary-deep", "primary-light"]) add(name + " on light", token(name), background);
+    for (const name of ["text-primary", "text-secondary", "text-muted", "primary", "primary-deep", "primary-light"]) add(name + " below header shadow bound", token(name), mix(rgb("000000"), background, 0.01));
     add("focus / essential edge", primary, background, 3);
     add("essential UI outline", token("ui-border"), background, 3);
   }
@@ -68,6 +69,12 @@ if (foundation) {
   add("newsletter light success words and icon", token("success-text"), mix(rgb("00BC7D"), white, 0.1));
   add("newsletter dark success words and icon", token("success-text-dark"), mix(rgb("00BC7D"), black, 0.1));
   add("newsletter dark error", token("error-text-dark"), black);
+  add("newsletter dark already-subscribed / helper", token("text-on-dark-muted"), black);
+  add("light server error summary", rgb("C10007"), rgb("FEF2F2"));
+  add("light required / invalid summary", token("field-danger"), rgb("FEF2F2"));
+  for (const alpha of [0.08, 0.12]) {
+    add("hero secondary button white " + alpha, white, mix(white, mix(black, white, 0.65), alpha));
+  }
   add("rating selected", token("rating"), white, 3);
   add("rating unselected", token("ui-border"), white, 3);
   add("radio unselected", token("ui-border"), white, 3);

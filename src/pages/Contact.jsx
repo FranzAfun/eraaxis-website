@@ -45,14 +45,14 @@ function fieldCls(hasError) {
     "text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)]",
     "outline-none transition-colors focus:ring-2",
     hasError
-      ? "border-red-400 focus:border-red-400 focus:ring-red-400/20"
-      : "border-[var(--color-border)] bg-white focus:border-[var(--color-primary)] focus:ring-[var(--color-primary)] focus:ring-offset-2",
+      ? "border-[var(--color-field-danger)] focus:border-[var(--color-field-danger)] focus:ring-[var(--color-field-danger)] focus:ring-offset-2"
+      : "border-[var(--color-ui-border)] bg-white focus:border-[var(--color-primary)] focus:ring-[var(--color-primary)] focus:ring-offset-2",
   ].join(" ");
 }
 
 function FieldError({ msg }) {
   if (!msg) return null;
-  return <p className="mt-1 text-xs text-red-600">{msg}</p>;
+  return <p className="mt-1 text-xs text-[var(--color-field-danger)]">{msg}</p>;
 }
 
 function ContactFaqItem({ item, isOpen, onToggle }) {
@@ -257,11 +257,12 @@ export default function Contact() {
                   {/* Full Name */}
                   <div>
                     <label className="mb-1.5 block text-sm font-semibold text-[var(--color-text-primary)]">
-                      Full Name <span className="text-red-500">*</span>
+                      Full Name <span className="text-[var(--color-field-danger)]">*</span>
                     </label>
                     <input
                       type="text"
                       name="name"
+                      aria-invalid={errors.name ? true : undefined}
                       value={form.name}
                       onChange={handleChange}
                       placeholder="Genny Amadapah"
@@ -287,11 +288,12 @@ export default function Contact() {
                     </div>
                     <div>
                       <label className="mb-1.5 block text-sm font-semibold text-[var(--color-text-primary)]">
-                        Email Address <span className="text-red-500">*</span>
+                        Email Address <span className="text-[var(--color-field-danger)]">*</span>
                       </label>
                       <input
                         type="email"
                         name="email"
+                        aria-invalid={errors.email ? true : undefined}
                         value={form.email}
                         onChange={handleChange}
                         placeholder="genny@example.com"
@@ -322,10 +324,11 @@ export default function Contact() {
                   {/* Message */}
                   <div>
                     <label className="mb-1.5 block text-sm font-semibold text-[var(--color-text-primary)]">
-                      Message <span className="text-red-500">*</span>
+                      Message <span className="text-[var(--color-field-danger)]">*</span>
                     </label>
                     <textarea
                       name="message"
+                      aria-invalid={errors.message ? true : undefined}
                       value={form.message}
                       onChange={handleChange}
                       rows={5}

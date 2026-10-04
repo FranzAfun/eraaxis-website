@@ -65,7 +65,7 @@ export default function GoogleSignIn({ clientId, onCredential, chooseAgain = fal
 
   if (!clientId) {
     return (
-      <p className="text-sm text-red-600">
+      <p className="text-sm text-[var(--color-field-danger)]">
         Signing in isn&apos;t available on this form just now. Please try again later.
       </p>
     );
@@ -75,7 +75,7 @@ export default function GoogleSignIn({ clientId, onCredential, chooseAgain = fal
     <div>
       <div ref={buttonRef} className="min-h-[44px] w-full max-w-[400px]" />
       {failed && (
-        <p className="mt-2 text-sm text-red-600">
+        <p className="mt-2 text-sm text-[var(--color-field-danger)]">
           Google sign-in didn&apos;t load. Check your connection, then{" "}
           <button
             type="button"

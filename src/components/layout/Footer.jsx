@@ -125,7 +125,7 @@ export default function Footer() {
             </p>
           </div>
           <div className="w-full sm:max-w-sm">
-            <NewsletterForm source="footer" />
+            <NewsletterForm source="footer" surface="dark" />
           </div>
         </div>}
 

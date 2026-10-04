@@ -659,7 +659,7 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
         )}
         {current === 0 && hasRequired && (
           <p className="mt-4 text-sm text-[var(--color-text-muted)]">
-            <span className="text-red-600">*</span> Required question
+            <span className="text-[var(--color-field-danger)]">*</span> Required question
           </p>
         )}
         {paged && (
@@ -703,7 +703,7 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
             to type or confirm. We use it for your name and email, and nothing else.
           </p>
           {problem && (
-            <p role="alert" className="mb-4 flex items-start gap-1.5 text-sm font-medium text-red-600">
+            <p role="alert" className="mb-4 flex items-start gap-1.5 text-sm font-medium text-[var(--color-field-danger)]">
               <AlertCircle size={16} aria-hidden="true" className="mt-0.5 shrink-0" />
               <span>{problem}</span>
             </p>
@@ -714,11 +714,11 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
 
       {!needsSignIn && current === 0 && form.requiresSignIn && (
         <div
-          className={`${card} px-5 py-5 transition-colors sm:px-6 ${emailCardError ? "border-red-400" : ""}`}
+          className={`${card} px-5 py-5 transition-colors sm:px-6 ${emailCardError ? "border-[var(--color-field-danger)]" : ""}`}
         >
           <p className="text-base font-semibold leading-snug text-[var(--color-text-primary)]">
             Email
-            <span className="ml-1 text-red-600" aria-hidden="true">
+            <span className="ml-1 text-[var(--color-field-danger)]" aria-hidden="true">
               *
             </span>
           </p>
@@ -737,7 +737,7 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
             </span>
           </label>
           {emailCardError && (
-            <p id="record-email-error" role="alert" className="mt-3 flex items-start gap-1.5 text-sm font-medium text-red-600">
+            <p id="record-email-error" role="alert" className="mt-3 flex items-start gap-1.5 text-sm font-medium text-[var(--color-field-danger)]">
               <AlertCircle size={16} aria-hidden="true" className="mt-0.5 shrink-0" />
               <span>Please tick this to send your answers with this address.</span>
             </p>

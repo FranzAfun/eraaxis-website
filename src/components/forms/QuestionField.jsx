@@ -422,7 +422,7 @@ export default function QuestionField({ slug, token, question, value, onChange, 
   return (
     <div
       className={`rounded-[var(--radius-md)] border bg-white px-5 py-5 transition-colors sm:px-6 ${
-        invalid ? "border-red-400" : "border-[var(--color-border)]"
+        invalid ? "border-[var(--color-field-danger)]" : "border-[var(--color-border)]"
       }`}
     >
       <LabelTag
@@ -432,7 +432,7 @@ export default function QuestionField({ slug, token, question, value, onChange, 
       >
         {question.label}
         {question.required && (
-          <span className="ml-1 text-red-600" aria-hidden="true">
+          <span className="ml-1 text-[var(--color-field-danger)]" aria-hidden="true">
             *
           </span>
         )}
@@ -455,7 +455,7 @@ export default function QuestionField({ slug, token, question, value, onChange, 
         </button>
       )}
       {error && (
-        <p id={errorId} role="alert" className="mt-3 flex items-start gap-1.5 text-sm font-medium text-red-600">
+        <p id={errorId} role="alert" className="mt-3 flex items-start gap-1.5 text-sm font-medium text-[var(--color-field-danger)]">
           <AlertCircle size={16} aria-hidden="true" className="mt-0.5 shrink-0" />
           <span>{error}</span>
         </p>
