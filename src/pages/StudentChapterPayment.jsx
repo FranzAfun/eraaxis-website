@@ -97,14 +97,17 @@ export default function StudentChapterPayment() {
             </div>
             <div>
               <label className={labelCls} htmlFor="signup-other-names">{learnerLabel(signUp, "Other names")}{optionalTag}</label>
-              <input id="signup-other-names" type="text" placeholder="Middle name(s), if any" className={fieldCls} value={otherNames} onChange={(e) => setOtherNames(e.target.value)} />
-            </div>
-            <div>
-              <label className={labelCls} htmlFor="signup-year">Year or level{optionalTag}</label>
-              <input id="signup-year" type="text" placeholder="e.g. Level 200, SHS 3" className={fieldCls} value={yearLevel} onChange={(e) => setYearLevel(e.target.value)} />
+              <input id="signup-other-names" type="text" placeholder="Ama" className={fieldCls} value={otherNames} onChange={(e) => setOtherNames(e.target.value)} />
             </div>
           </div>
           <SignUpDetails part="details" value={signUp} onChange={setSignUp} schoolRequired fieldCls={fieldCls} labelCls={labelCls} optionalTag={optionalTag} />
+          <div className="space-y-6 border-t border-[var(--color-border)] pt-6">
+            <p className="text-sm font-semibold text-[var(--color-text-secondary)]">Optional · helps us prepare for {self ? "you" : "them"}</p>
+            <div className="sm:max-w-[50%] sm:pr-3">
+              <label className={labelCls} htmlFor="signup-year">Year or level</label>
+              <input id="signup-year" type="text" placeholder="Level 200" className={fieldCls} value={yearLevel} onChange={(e) => setYearLevel(e.target.value)} />
+            </div>
+          </div>
         </>
       ),
     },
@@ -138,7 +141,7 @@ export default function StudentChapterPayment() {
           </div>
           <div>
             <label className={labelCls} htmlFor="signup-notes">Anything we should know?{optionalTag}</label>
-            <textarea id="signup-notes" rows={1} placeholder="Access needs, questions, anything at all" className={growingTextCls} value={notes} onChange={(e) => setNotes(e.target.value)} />
+            <textarea id="signup-notes" rows={1} placeholder="A question, or access needs" className={growingTextCls} value={notes} onChange={(e) => setNotes(e.target.value)} />
           </div>
         </>
       ),

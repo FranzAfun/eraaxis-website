@@ -15,7 +15,7 @@ import { EMAIL_RE } from "../utils/validateEmail";
 import useSpesoFees from "../hooks/useSpesoFees";
 
 import BusyLabel from "../components/ui/BusyLabel";
-import ChoiceCards from "../components/forms/ChoiceCards";
+import ChoiceCards, { PillChoice } from "../components/forms/ChoiceCards";
 import SignUpDetails from "../components/forms/SignUpDetails";
 import SignUpEmail from "../components/forms/SignUpEmail";
 import SignUpSteps from "../components/forms/SignUpSteps";
@@ -157,19 +157,24 @@ export default function ProgrammeEnrolmentPayment() {
             </div>
             <div>
               <label className={labelCls} htmlFor="signup-other-names">{learnerLabel(signUp, "Other names")}{optionalTag}</label>
-              <input id="signup-other-names" type="text" placeholder="Middle name(s), if any" className={fieldCls} value={otherNames} onChange={(e) => setOtherNames(e.target.value)} />
+              <input id="signup-other-names" type="text" placeholder="Ama" className={fieldCls} value={otherNames} onChange={(e) => setOtherNames(e.target.value)} />
             </div>
           </div>
           <SignUpDetails part="details" value={signUp} onChange={setSignUp} schoolRequired={requiresInstitution} fieldCls={fieldCls} labelCls={labelCls} optionalTag={optionalTag} />
-          <div className="grid gap-6 sm:grid-cols-2">
+          <div className="space-y-6 border-t border-[var(--color-border)] pt-6">
+            <p className="text-sm font-semibold text-[var(--color-text-secondary)]">Optional · helps us prepare for {self ? "you" : "them"}</p>
             <div>
-              <label className={labelCls} htmlFor="signup-goal">Learning goal{optionalTag}</label>
-              <input id="signup-goal" type="text" placeholder="What do you want to achieve?" className={fieldCls} value={learningGoal} onChange={(e) => setLearningGoal(e.target.value)} />
+              <label className={labelCls} htmlFor="signup-goal">Learning goal</label>
+              <input id="signup-goal" type="text" placeholder="Build my first app" className={fieldCls} value={learningGoal} onChange={(e) => setLearningGoal(e.target.value)} />
             </div>
-            <div>
-              <label className={labelCls} htmlFor="signup-experience">Previous experience{optionalTag}</label>
-              <input id="signup-experience" type="text" placeholder="Beginner, some, or advanced" className={fieldCls} value={previousExperience} onChange={(e) => setPreviousExperience(e.target.value)} />
-            </div>
+            <PillChoice
+              name="experience"
+              legend="Experience so far"
+              legendCls={labelCls}
+              options={["Beginner", "Some experience", "Advanced"]}
+              value={previousExperience}
+              onChange={setPreviousExperience}
+            />
           </div>
         </>
       ),
@@ -205,7 +210,7 @@ export default function ProgrammeEnrolmentPayment() {
           </div>
           <div>
             <label className={labelCls} htmlFor="signup-notes">Anything we should know?{optionalTag}</label>
-            <textarea id="signup-notes" rows={1} placeholder="Access needs, questions, anything at all" className={growingTextCls} value={notes} onChange={(e) => setNotes(e.target.value)} />
+            <textarea id="signup-notes" rows={1} placeholder="A question, or access needs" className={growingTextCls} value={notes} onChange={(e) => setNotes(e.target.value)} />
           </div>
         </>
       ),

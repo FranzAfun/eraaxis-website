@@ -68,3 +68,37 @@ export default function ChoiceCards({ name, legend, options, value, onChange, co
     </fieldset>
   );
 }
+
+/** A short answer from a few, as a row of pills; choosing the chosen one again clears it. */
+export function PillChoice({ name, legend, legendCls, options, value, onChange }) {
+  return (
+    <fieldset>
+      {legend && <legend className={legendCls}>{legend}</legend>}
+      <div className="mt-2 flex flex-wrap gap-2">
+        {options.map((option) => {
+          const chosen = value === option;
+          return (
+            <label
+              key={option}
+              className={`cursor-pointer rounded-full border-2 px-4 py-2 text-[15px] font-medium transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[var(--color-primary)] has-[:focus-visible]:ring-offset-2 ${
+                chosen
+                  ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-white"
+                  : "border-[var(--color-border)] bg-white text-[var(--color-text-primary)] hover:border-[var(--color-primary)]"
+              }`}
+            >
+              <input
+                type="radio"
+                name={name}
+                className="sr-only"
+                checked={chosen}
+                onChange={() => {}}
+                onClick={() => onChange(chosen ? "" : option)}
+              />
+              {option}
+            </label>
+          );
+        })}
+      </div>
+    </fieldset>
+  );
+}

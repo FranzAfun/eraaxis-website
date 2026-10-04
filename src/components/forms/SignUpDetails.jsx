@@ -57,9 +57,6 @@ export default function SignUpDetails({ value, onChange, schoolRequired = false,
             onChange={(school) => set({ school })}
             fieldClass={fieldCls}
           />
-          {!schoolRequired && !value.school && (
-            <p className="mt-1.5 text-sm text-[var(--color-text-secondary)]">Leave this empty if the learner is not in school.</p>
-          )}
         </div>
       )}
 
@@ -87,7 +84,7 @@ export default function SignUpDetails({ value, onChange, schoolRequired = false,
       {part !== "who" && value.who && !guardianRequired && (
         <label className="flex cursor-pointer items-start gap-3 text-[15px] text-[var(--color-text-primary)]">
           <input type="checkbox" className="mt-0.5 h-5 w-5 shrink-0 cursor-pointer accent-[var(--color-primary)]" checked={value.addGuardian} onChange={(e) => set({ addGuardian: e.target.checked })} />
-          <span>Add a parent or guardian {optionalTag}</span>
+          <span>Add a parent or guardian</span>
         </label>
       )}
 
@@ -112,7 +109,7 @@ export default function SignUpDetails({ value, onChange, schoolRequired = false,
               <label className={labelCls} htmlFor="guardian-relationship">
                 {parentSigning ? "How you are related to the learner" : value.who === "learner" ? "How they are related to you" : "How they are related to the learner"}
               </label>
-              <input id="guardian-relationship" className={fieldCls} maxLength={60} placeholder="For example mother, uncle, guardian" value={value.guardian.relationship} onChange={(e) => setGuardian({ relationship: e.target.value })} />
+              <input id="guardian-relationship" className={fieldCls} maxLength={60} placeholder="Mother, uncle…" value={value.guardian.relationship} onChange={(e) => setGuardian({ relationship: e.target.value })} />
             </div>
           </div>
           <label className="flex cursor-pointer items-start gap-3 text-[15px] text-[var(--color-text-primary)]">
