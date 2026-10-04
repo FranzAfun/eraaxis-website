@@ -6,6 +6,19 @@
   --color-primary-light: #6b68a0;
   --color-accent: #c9a3ff;
 
+  /* Separate text, decoration and essential-control roles for the ERA palette. */
+  --color-surface-tint-top: #fcfbfd;
+  --color-surface-tint-strong: #f1eef5;
+  --color-ui-border: #76589e;
+  --color-text-on-dark-muted: #ebe7f1;
+  --color-accent-text-on-hero: #ebe7f1;
+  --color-field-danger: #b91c1c;
+  --color-success-text: #047857;
+  --color-success-text-dark: #6ee7b7;
+  --color-error-text-dark: #fca5a5;
+  --color-rating: #b45309;
+  --color-caption-bg: rgba(9, 3, 17, 0.85);
+
   --color-background: #ffffff;
   --color-background-dark: #06060a;
   --color-surface: #ffffff;
