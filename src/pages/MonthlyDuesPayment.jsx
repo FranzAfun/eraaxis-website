@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ArrowRight, CheckCircle2, ShieldCheck, Sparkles, UserRound } from "lucide-react";
 import { getPaymentCategoryBySlug, calculatePaymentBreakdown, formatGhs } from "../data/payments";
@@ -12,6 +12,7 @@ import useSpesoFees from "../hooks/useSpesoFees";
 
 import BusyLabel from "../components/ui/BusyLabel";
 import ChoiceCards from "../components/forms/ChoiceCards";
+import GoogleSignIn from "../components/forms/GoogleSignIn";
 import SignUpEmail from "../components/forms/SignUpEmail";
 import SignUpSteps from "../components/forms/SignUpSteps";
 import OrderSummary from "../components/forms/OrderSummary";
@@ -130,10 +131,7 @@ export default function MonthlyDuesPayment() {
         otp: otpCode.replace(/\D/g, ""),
       });
       if (!data.success) throw envelopeError(data, "That code didn't work. Please try again.");
-      setReturningEnrolment(data.data);
-      const historyData = await api.get(`/enrolments/${data.data.id}/payment-history`);
-      setPaymentHistory(historyData.success ? historyData.data : []);
-      setLoginStep("history");
+      await openMembership(data.data);
     } catch (err) {
       // Every 400 from verify-access means the same thing to the member: the
       // code they typed is not the live one. Say so, and point at the recovery.
@@ -147,6 +145,37 @@ export default function MonthlyDuesPayment() {
       setLoginBusy(false);
     }
   }
+
+  async function openMembership(enrolment) {
+    setReturningEnrolment(enrolment);
+    const historyData = await api.get(`/enrolments/${enrolment.id}/payment-history`);
+    setPaymentHistory(historyData.success ? historyData.data : []);
+    setLoginStep("history");
+  }
+
+  // Google proves the address the way the code does, so a member can skip it.
+  const handleGoogleCredential = useCallback(async (credential) => {
+    if (!credential) return;
+    setLoginError("");
+    setLoginBusy(true);
+    try {
+      const progId = duesProgrammeId || (await findDuesProgramme()).id;
+      setDuesProgrammeId(progId);
+      const data = await api.post("/enrolments/google-access", { credential, programme_id: progId });
+      if (!data.success) throw envelopeError(data, "That Google sign-in did not work. Please try again, or use a code.");
+      setReturningEmail(data.data.email || "");
+      await openMembership(data.data);
+    } catch (err) {
+      const noPaidDues = err instanceof ApiError && err.status === 404;
+      setLoginError(
+        noPaidDues
+          ? `We couldn't find paid dues for ${err.payload?.data?.email || "that Google account"}. Try the email you used before, or choose "This is my first time".`
+          : toUserMessage(err, "That Google sign-in did not work. Please try again, or use a code.")
+      );
+    } finally {
+      setLoginBusy(false);
+    }
+  }, [duesProgrammeId]);
 
   async function handlePayAgain() {
     setLoginBusy(true);
@@ -428,7 +457,7 @@ export default function MonthlyDuesPayment() {
                         <>
                           <h2 className="text-2xl font-bold tracking-tight text-[var(--color-text-primary)] sm:text-[1.75rem]">Welcome back</h2>
                           <p className="mt-2 text-[15px] leading-relaxed text-[var(--color-text-secondary)]">
-                            Enter the email you pay dues with. We&apos;ll send you a six-digit code.
+                            Sign in with the email you pay dues with: by a six-digit code we send, or with Google.
                           </p>
                           <div className="mt-7 max-w-md">
                             <label className={labelCls} htmlFor="dues-returning-email">Email address</label>
@@ -443,6 +472,16 @@ export default function MonthlyDuesPayment() {
                               onKeyDown={(e) => { if (e.key === "Enter") handleRequestOtp(); }}
                             />
                           </div>
+                          {checkout.clientId && (
+                            <div className="mt-6 max-w-md">
+                              <p className="mb-3 flex items-center gap-3 text-sm text-[var(--color-text-muted)]">
+                                <span aria-hidden="true" className="h-px flex-1 bg-[var(--color-border)]" />
+                                or skip the code
+                                <span aria-hidden="true" className="h-px flex-1 bg-[var(--color-border)]" />
+                              </p>
+                              <GoogleSignIn clientId={checkout.clientId} onCredential={handleGoogleCredential} />
+                            </div>
+                          )}
                           {loginErrorBox}
                           <div className="mt-8 flex justify-end">
                             <button type="button" onClick={handleRequestOtp} disabled={loginBusy} className={`btn-primary min-h-[48px] justify-center px-7 text-[15px]${loginBusy ? " cursor-not-allowed opacity-60" : ""}`}>
