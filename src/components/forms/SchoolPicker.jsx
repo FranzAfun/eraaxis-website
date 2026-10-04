@@ -128,6 +128,8 @@ export default function SchoolPicker({ slug, question, value, onChange, fieldCla
       onSearch={search}
       searching={searching}
       searchPlaceholder="Search by name or short name"
+      // The server sends twenty at most; a full twenty means there are more.
+      moreHint={results.length >= 20 ? "Showing the first 20. Type the school's name to find yours." : null}
       emptyText={
         failed
           ? allowOther

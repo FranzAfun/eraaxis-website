@@ -82,6 +82,9 @@ export default function SelectField({
   // searched again, so the caller can say what the trigger should read.
   selectedLabel,
   emptyText = "No matches found.",
+  // Under the results, when they are only the first few of many (a search
+  // returns a handful, not the whole list): how to find the rest.
+  moreHint,
   // Shown under the list, for a way out of it ("My school is not listed").
   footer,
   "aria-invalid": ariaInvalid,
@@ -451,6 +454,9 @@ export default function SelectField({
                 </button>
               );
             })}
+            {moreHint && normalizedOptions.length > 0 && (
+              <p className="px-3 pb-1 pt-2 text-sm text-[var(--color-text-secondary)]">{moreHint}</p>
+            )}
           </div>
 
           {footer && (
