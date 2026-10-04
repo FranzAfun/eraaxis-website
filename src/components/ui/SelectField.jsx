@@ -167,10 +167,13 @@ export default function SelectField({
     };
   }, [open, closeMenu]);
 
-  // With a search box, focus stays in it while results come and go.
+  // With a search box, the menu opens on the list, not the box: on a phone a
+  // focused box pops the keyboard up over the choices before anyone asked to
+  // type. Tapping the box searches; typing on a computer goes there by itself
+  // (handleListKeyDown).
   useEffect(() => {
     if (!open || !searchesServer) return;
-    searchRef.current?.focus();
+    listRef.current?.focus({ preventScroll: true });
   }, [open, searchesServer]);
 
   useEffect(() => {
@@ -215,8 +218,8 @@ export default function SelectField({
   function openMenu() {
     let rect = triggerRef.current?.getBoundingClientRect();
 
-    // A searchable list on a phone needs room below it for the results and, once
-    // the search box has focus, for the keyboard. Bring the field up near the top
+    // A searchable list on a phone needs room below it for the results and, if
+    // they tap into the search box, for the keyboard. Bring the field up near the top
     // first, clear of the fixed header, rather than squeezing the list in.
     if (searchesServer && rect && window.innerWidth < 640) {
       const roomBelow = window.innerHeight - rect.bottom;
@@ -251,6 +254,17 @@ export default function SelectField({
 
   function handleListKeyDown(event) {
     if (!open) return;
+
+    // Typing while the list has focus means searching: the box takes the key.
+    if (
+      searchesServer &&
+      event.target !== searchRef.current &&
+      event.key.length === 1 &&
+      !event.ctrlKey && !event.metaKey && !event.altKey
+    ) {
+      searchRef.current?.focus();
+      return;
+    }
 
     if (event.key === "ArrowDown") {
       event.preventDefault();
