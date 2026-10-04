@@ -40,7 +40,7 @@ const STATUS_PRESENTATION = {
   [CERTIFICATE_STATUS.REVOKED]: {
     icon: CircleSlash,
     label: "Revoked",
-    tone: "text-red-300",
+    tone: "text-[var(--color-error-text-on-glass)]",
     heading: "This certificate has been revoked.",
     body: "ERA AXIS issued this certificate but has since withdrawn it. It should not be relied on. Please contact us if you need to know more.",
   },

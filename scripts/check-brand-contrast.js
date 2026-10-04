@@ -12,7 +12,7 @@ const hex = (c) => "#" + c.map((v) => Math.round(v).toString(16).padStart(2, "0"
 const pairs = [];
 const add = (role, foreground, background, threshold = 4.5) => {
   const value = contrast(foreground, background);
-  pairs.push({ role, foreground: hex(foreground), background: hex(background), ratio: value, threshold, pass: value >= threshold });
+  pairs.push({ role, foreground: hex(foreground), background: hex(background), foregroundRgb: foreground, backgroundRgb: background, ratio: value, threshold, pass: value >= threshold });
 };
 const white = rgb("FFFFFF");
 const black = token("background-dark");
@@ -20,6 +20,7 @@ const primary = token("primary");
 const deep = token("primary-deep");
 const accent = token("accent");
 const glassBase = token("surface-dark");
+const headerShadowAlpha = Number(css.match(/--header-scrolled-shadow:[^;]*rgba\(0, 0, 0, ([.\d]+)\)/)[1]);
 const foundation = process.argv.includes("--foundation");
 const paletteOnly = process.argv.includes("--palette");
 const light = [white, token("surface-tint-top"), token("surface-tint-strong"), token("surface-soft"), mix(primary, white, 0.1)];
@@ -34,7 +35,7 @@ if (foundation) {
 } else {
   for (const background of [...light, ...[0.05, 0.06, 0.08].map((alpha) => mix(primary, white, alpha))]) {
     for (const name of ["text-primary", "text-secondary", "text-muted", "primary", "primary-deep", "primary-light"]) add(name + " on light", token(name), background);
-    for (const name of ["text-primary", "text-secondary", "text-muted", "primary", "primary-deep", "primary-light"]) add(name + " below header shadow bound", token(name), mix(rgb("000000"), background, 0.01));
+    for (const name of ["text-primary", "text-secondary", "text-muted", "primary", "primary-deep", "primary-light"]) add(name + " below header shadow bound", token(name), mix(rgb("000000"), background, headerShadowAlpha));
     add("focus / essential edge", primary, background, 3);
     add("essential UI outline", token("ui-border"), background, 3);
   }
@@ -91,6 +92,16 @@ if (foundation) {
   add("choice white selection mark", white, mix(white, primary, 0.15), 3);
   add("dark selected accent edge vs primary", accent, primary, 3);
   add("dark selected accent edge vs surround", accent, black, 3);
+  // Deep-gradient endpoint plus the strongest radial glow, panel and badge.
+  const statusPanel = mix(white, mix(accent, deep, 0.18), 0.06);
+  const statusBadge = mix(white, statusPanel, 0.08);
+  add("revoked certificate badge bound", token("error-text-on-glass"), statusBadge);
+  add("superseded / attendance amber badge bound", rgb("FFD230"), statusBadge);
+  add("attendance refusal amber words", rgb("FFD230"), mix(rgb("FFD230"), statusPanel, 0.08));
+  add("form sent success icon", rgb("009966"), white, 3);
+  add("renewal select label", token("text-primary"), white);
+  add("renewal select chevron", token("text-muted"), white, 3);
+  add("renewal disabled label", primary, white);
 }
 const result = { phase: foundation ? "foundation" : "implemented", pairs, failures: pairs.filter((p) => !p.pass) };
 const output = process.argv.indexOf("--out");

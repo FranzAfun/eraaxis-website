@@ -484,7 +484,7 @@ export default function MonthlyDuesPayment() {
                           )}
                           {loginErrorBox}
                           <div className="mt-8 flex justify-end">
-                            <button type="button" onClick={handleRequestOtp} disabled={loginBusy} className={`btn-primary min-h-[48px] justify-center px-7 text-[15px]${loginBusy ? " cursor-not-allowed opacity-60" : ""}`}>
+                            <button type="button" onClick={handleRequestOtp} disabled={loginBusy} className={`btn-primary min-h-[48px] justify-center px-7 text-[15px]${loginBusy ? " cursor-not-allowed opacity-100" : ""}`}>
                               {loginBusy ? <BusyLabel>Sending…</BusyLabel> : "Send my code"}
                               {!loginBusy && <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />}
                             </button>
@@ -531,7 +531,7 @@ export default function MonthlyDuesPayment() {
                           </p>
                           {loginErrorBox}
                           <div className="mt-8 flex justify-end">
-                            <button type="button" onClick={handleVerifyOtp} disabled={loginBusy} className={`btn-primary min-h-[48px] justify-center px-7 text-[15px]${loginBusy ? " cursor-not-allowed opacity-60" : ""}`}>
+                            <button type="button" onClick={handleVerifyOtp} disabled={loginBusy} className={`btn-primary min-h-[48px] justify-center px-7 text-[15px]${loginBusy ? " cursor-not-allowed opacity-100" : ""}`}>
                               {loginBusy ? <BusyLabel>Checking…</BusyLabel> : "Continue"}
                               {!loginBusy && <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />}
                             </button>
@@ -575,7 +575,7 @@ export default function MonthlyDuesPayment() {
                           {loginErrorBox}
                           <div className="mt-8 lg:hidden">{summary}</div>
                           <div className="mt-8 flex justify-end">
-                            <button type="button" onClick={handlePayAgain} disabled={loginBusy} className={`btn-primary min-h-[48px] w-full justify-center px-7 text-[15px] sm:w-auto${loginBusy ? " cursor-not-allowed opacity-60" : ""}`}>
+                            <button type="button" onClick={handlePayAgain} disabled={loginBusy} className={`btn-primary min-h-[48px] w-full justify-center px-7 text-[15px] sm:w-auto${loginBusy ? " cursor-not-allowed opacity-100" : ""}`}>
                               {loginBusy ? <BusyLabel>Opening checkout…</BusyLabel> : "Continue to checkout"}
                               {!loginBusy && <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />}
                             </button>

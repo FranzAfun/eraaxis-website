@@ -95,7 +95,7 @@ export default function SignUpSteps({ steps, step, onStep, onFinish, busy = fals
           type="button"
           onClick={next}
           disabled={busy}
-          className={`btn-primary min-h-[48px] justify-center px-7 text-[15px]${busy ? " cursor-not-allowed opacity-60" : ""}`}
+          className={`btn-primary min-h-[48px] justify-center px-7 text-[15px]${busy ? " cursor-not-allowed opacity-100" : ""}`}
         >
           {busy ? <BusyLabel>Saving…</BusyLabel> : last ? finishLabel : "Continue"}
           {!busy && <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />}

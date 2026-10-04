@@ -229,7 +229,7 @@ export default function ResumeProgrammePayment() {
                       name="months"
                       value={months}
                       onChange={(event) => setMonths(event.target.value)}
-                      className="min-h-[46px] w-full rounded-[var(--radius-sm)] border border-white/20 bg-white/[0.08] px-4 text-sm text-white"
+                      className="min-h-[46px] w-full rounded-[var(--radius-sm)] border border-[var(--color-ui-border)] bg-white px-4 text-sm text-[var(--color-text-primary)]"
                       options={monthOptions}
                     />
                   </div>
@@ -256,7 +256,7 @@ export default function ResumeProgrammePayment() {
                 type="button"
                 onClick={handlePayNow}
                 disabled={submitting}
-                className={`inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-white px-6 text-sm font-semibold text-[var(--color-primary)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/90${submitting ? " cursor-not-allowed opacity-60" : ""}`}
+                className={`inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-white px-6 text-sm font-semibold text-[var(--color-primary)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/90${submitting ? " cursor-not-allowed opacity-100" : ""}`}
               >
                 {submitting ? <BusyLabel>Processing…</BusyLabel> : "Pay Now"}
                 <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
