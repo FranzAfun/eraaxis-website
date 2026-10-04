@@ -208,7 +208,7 @@ export default function StudentChapterPayment() {
                   className="aspect-[4/3] w-full object-cover"
                 />
                 <div className="absolute bottom-4 left-4">
-                  <span className="hero-media-card-badge inline-block rounded-full bg-black/50 px-3 py-1 text-xs font-semibold text-white backdrop-blur-sm">
+                  <span className="hero-media-card-badge inline-block rounded-full bg-[var(--color-caption-bg)] px-3 py-1 text-xs font-semibold text-white backdrop-blur-sm">
                     Practical student learning
                   </span>
                 </div>

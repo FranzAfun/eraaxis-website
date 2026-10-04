@@ -81,11 +81,11 @@ export default function WhoItIsFor() {
     <section
       id="everyone"
       aria-label="Who ERA AXIS is for"
-      className="premium-settle-in relative overflow-hidden bg-[linear-gradient(180deg,#fcfbff_0%,var(--color-surface-soft)_100%)] py-20 md:py-24 lg:py-28"
+      className="premium-settle-in relative overflow-hidden bg-[linear-gradient(180deg,var(--color-surface-tint-top)_0%,var(--color-surface-soft)_100%)] py-20 md:py-24 lg:py-28"
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[radial-gradient(ellipse_at_top,rgba(201,163,255,0.16),transparent_72%)]"
+        className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[radial-gradient(ellipse_at_top,color-mix(in_srgb,var(--color-accent)_16%,transparent),transparent_72%)]"
       />
 
       <div className="container relative z-10">

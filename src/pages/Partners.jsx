@@ -140,7 +140,7 @@ export default function Partners() {
                 />
                 {/* Badge */}
                 <div className="absolute bottom-4 left-4">
-                  <span className="hero-media-card-badge inline-block rounded-full bg-black/50 px-3 py-1 text-xs font-semibold text-white backdrop-blur-sm">
+                  <span className="hero-media-card-badge inline-block rounded-full bg-[var(--color-caption-bg)] px-3 py-1 text-xs font-semibold text-white backdrop-blur-sm">
                     KOICA UNICEF Startup Lab
                   </span>
                 </div>
@@ -298,10 +298,10 @@ export default function Partners() {
                 {/* Gradient: always on mobile, fades in on hover/focus on desktop */}
                 <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/65 via-black/25 to-transparent transition-opacity duration-300 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100" />
                 <div className="absolute inset-x-0 bottom-0 flex flex-col gap-0.5 px-5 pb-5 transition-opacity duration-300 sm:flex-row sm:items-end sm:justify-between sm:gap-4 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
-                  <p className="text-xs font-semibold leading-snug text-white drop-shadow-sm sm:text-sm">
+                  <p className="text-xs font-semibold leading-snug text-white photo-caption sm:text-sm">
                     {item.caption}
                   </p>
-                  <p className="text-[10px] leading-snug text-[var(--color-text-on-dark-muted)] drop-shadow-sm sm:shrink-0 sm:whitespace-nowrap sm:text-xs sm:text-[var(--color-text-on-dark-muted)]">
+                  <p className="text-[10px] leading-snug text-[var(--color-text-on-dark-muted)] photo-caption sm:shrink-0 sm:whitespace-nowrap sm:text-xs sm:text-[var(--color-text-on-dark-muted)]">
                     {item.tag}
                   </p>
                 </div>

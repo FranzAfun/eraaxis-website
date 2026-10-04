@@ -74,7 +74,7 @@ export default function WhatYouLearn() {
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_48%_at_18%_18%,rgba(201,163,255,0.14),transparent_72%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_48%_at_18%_18%,color-mix(in_srgb,var(--color-accent)_14%,transparent),transparent_72%)]"
       />
 
       <div className="container relative z-10">

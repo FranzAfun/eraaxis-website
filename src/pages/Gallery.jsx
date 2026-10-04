@@ -48,12 +48,12 @@ function CaptionOverlay({ eventName, dateTaken }) {
       <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/65 via-black/25 to-transparent transition-opacity duration-300 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100" />
       <div className="absolute inset-x-0 bottom-0 flex flex-col gap-0.5 px-4 pb-4 transition-opacity duration-300 sm:flex-row sm:items-end sm:justify-between sm:gap-3 sm:px-5 sm:pb-5 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
         {eventName && (
-          <p className="truncate text-xs font-semibold leading-snug text-white drop-shadow-sm sm:text-sm">
+          <p className="truncate text-xs font-semibold leading-snug text-white photo-caption sm:text-sm">
             {eventName}
           </p>
         )}
         {dateTaken && (
-          <p className="text-[10px] leading-snug text-[var(--color-text-on-dark-muted)] drop-shadow-sm sm:shrink-0 sm:whitespace-nowrap sm:text-xs sm:text-[var(--color-text-on-dark-muted)]">
+          <p className="text-[10px] leading-snug text-[var(--color-text-on-dark-muted)] photo-caption sm:shrink-0 sm:whitespace-nowrap sm:text-xs sm:text-[var(--color-text-on-dark-muted)]">
             {formatDate(dateTaken)}
           </p>
         )}
@@ -229,7 +229,7 @@ export default function Gallery() {
         </div>
       </section>
 
-      <section className="bg-[linear-gradient(180deg,#f7f5ff_0%,#ffffff_100%)] py-16 md:py-20 lg:py-24">
+      <section className="bg-[linear-gradient(180deg,var(--color-surface-soft)_0%,#ffffff_100%)] py-16 md:py-20 lg:py-24">
         <div className="container">
           <div className="mb-10 max-w-2xl">
             <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
@@ -329,17 +329,17 @@ export default function Gallery() {
                   <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 rounded-b-[20px] bg-gradient-to-t from-black/70 via-black/30 to-transparent transition-opacity duration-300 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100" />
                   <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col gap-1 px-5 pb-5 pt-3 transition-opacity duration-300 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
                     {activeItem.eventName && (
-                      <p className="text-sm font-semibold leading-snug text-white drop-shadow-sm">
+                      <p className="text-sm font-semibold leading-snug text-white photo-caption">
                         {activeItem.eventName}
                       </p>
                     )}
                     {activeItem.dateTaken && (
-                      <p className="text-xs leading-snug text-[var(--color-text-on-dark-muted)] drop-shadow-sm md:hidden">
+                      <p className="text-xs leading-snug text-[var(--color-text-on-dark-muted)] photo-caption md:hidden">
                         {formatDate(activeItem.dateTaken)}
                       </p>
                     )}
                     {activeDetails && (
-                      <p className="hidden text-xs leading-snug text-[var(--color-text-on-dark-muted)] drop-shadow-sm md:block">
+                      <p className="hidden text-xs leading-snug text-[var(--color-text-on-dark-muted)] photo-caption md:block">
                         {activeDetails}
                       </p>
                     )}
