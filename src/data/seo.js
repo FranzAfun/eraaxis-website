@@ -3,7 +3,8 @@ export const DEFAULT_TITLE =
   "ERA AXIS | Practical STEM and Digital Skills Education in Ghana";
 export const DEFAULT_DESCRIPTION =
   "ERA AXIS is Ghana's practical STEM innovation platform helping students, out-of-school youth, parents, professionals, and business owners gain real technology skills through hands-on learning.";
-export const DEFAULT_IMAGE = "/og-image.webp";
+// Share images stay JPEG: LinkedIn and some other apps show no preview for WebP.
+export const DEFAULT_IMAGE = "/og-image.jpg";
 
 export function getSiteUrl() {
   const configuredUrl = String(import.meta.env.VITE_SITE_URL || "").trim();
