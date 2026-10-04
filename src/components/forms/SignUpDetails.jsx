@@ -38,23 +38,29 @@ export default function SignUpDetails({ value, onChange, schoolRequired = false,
             return (
               <label
                 key={option.value}
-                className={`flex cursor-pointer flex-col rounded-[var(--radius-sm)] border px-3 py-2.5 text-sm transition ${
+                className={`flex cursor-pointer flex-col rounded-[var(--radius-sm)] border-2 px-3.5 py-3 text-sm transition-all duration-200 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[var(--color-primary)] has-[:focus-visible]:ring-offset-2 ${
                   chosen
-                    ? "border-[var(--color-primary)] bg-[var(--color-primary)]/[0.06]"
-                    : "border-[var(--color-border)] hover:border-[var(--color-primary)]"
+                    ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-white shadow-lg shadow-[var(--color-primary)]/25"
+                    : "border-[var(--color-border)] bg-white hover:-translate-y-0.5 hover:border-[var(--color-primary)]"
                 }`}
               >
-                <span className="flex items-center gap-2 font-semibold text-[var(--color-text-primary)]">
+                <span className={`flex items-center gap-2 font-semibold ${chosen ? "text-white" : "text-[var(--color-text-primary)]"}`}>
                   <input
                     type="radio"
                     name="signed-up-by"
-                    className="h-4 w-4 accent-[var(--color-primary)]"
+                    className="sr-only"
                     checked={chosen}
                     onChange={() => set({ who: option.value })}
                   />
+                  <span
+                    aria-hidden="true"
+                    className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 ${chosen ? "border-white" : "border-[var(--color-border)]"}`}
+                  >
+                    {chosen && <span className="h-1.5 w-1.5 rounded-full bg-white" />}
+                  </span>
                   {option.title}
                 </span>
-                <span className="mt-0.5 pl-6 text-xs text-[var(--color-text-secondary)]">{option.hint}</span>
+                <span className={`mt-0.5 pl-6 text-xs ${chosen ? "text-white/85" : "text-[var(--color-text-secondary)]"}`}>{option.hint}</span>
               </label>
             );
           })}

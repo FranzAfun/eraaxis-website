@@ -1,22 +1,25 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, ArrowRight, Check, FileText, Info, Lock } from "lucide-react";
+import { ArrowLeft, Check, FileText, Info, Lock } from "lucide-react";
 import {
   getPaymentCategoryBySlug,
   calculatePaymentBreakdown,
   formatGhs,
 } from "../data/payments";
-import { api, ApiError, envelopeError, toUserMessage } from "../services/api";
+import { api, ApiError } from "../services/api";
 import BackLinkButton from "../components/navigation/BackLinkButton";
 import studentChapterHeroImg from "../assets/images/programmes/student-chapter-hero.webp";
 import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
 import { EMAIL_RE } from "../utils/validateEmail";
-import { suggestEmailCorrection } from "../utils/emailTypoCheck";
 import useSpesoFees from "../hooks/useSpesoFees";
 
 import BusyLabel from "../components/ui/BusyLabel";
 import SignUpDetails from "../components/forms/SignUpDetails";
+import SignUpEmail from "../components/forms/SignUpEmail";
+import SignUpSteps from "../components/forms/SignUpSteps";
+import ConfirmEmailStep from "../components/forms/ConfirmEmailStep";
+import useSignUpCheckout from "../components/forms/useSignUpCheckout";
 import { EMPTY_SIGNUP, learnerLabel, signUpPayload, signUpProblem } from "../components/forms/signUp";
 const category = getPaymentCategoryBySlug("student-chapter");
 const item = category.items[0];
@@ -48,55 +51,108 @@ export default function StudentChapterPayment() {
   const [lastName, setLastName]         = useState("");
   const [otherNames, setOtherNames]     = useState("");
   const [email, setEmail]               = useState("");
-  const [emailSuggestion, setEmailSuggestion] = useState("");
   const [phone, setPhone]               = useState("");
   const [signUp, setSignUp]             = useState(EMPTY_SIGNUP);
   const [yearLevel, setYearLevel]       = useState("");
   const [notes, setNotes]               = useState("");
-  const [submitting, setSubmitting]     = useState(false);
-  const [formError, setFormError]       = useState("");
+  const [step, setStep]                 = useState(0);
+  const checkout = useSignUpCheckout();
+  const self = !signUp.who || signUp.who === "learner";
 
-  async function handleSubmit() {
-    setFormError("");
-    if (!firstName.trim())   { setFormError("First name is required."); return; }
-    if (!lastName.trim())    { setFormError("Last name is required."); return; }
-    if (!email.trim())       { setFormError("Email address is required."); return; }
-    if (!EMAIL_RE.test(email.trim())) { setFormError("Please enter a valid email address."); return; }
-    if (!phone.trim())       { setFormError("Phone number is required."); return; }
-    const problem = signUpProblem(signUp, { schoolRequired: true });
-    if (problem) { setFormError(problem); return; }
-    setSubmitting(true);
-    try {
-      const programmesData = await api.get("/programmes");
-      const prog = programmesData.data?.find((p) => p.category === "student_chapter");
-      if (!prog) throw new ApiError("Student Chapter sign-up isn't available right now. Please try again shortly.");
-
-      const enrolData = await api.post("/enrolments", {
-        programme_id: prog.id,
-        first_name:   firstName.trim(),
-        last_name:    lastName.trim(),
-        other_names:  otherNames.trim() || undefined,
-        email:        email.trim(),
-        phone:        phone.trim(),
+  function finish() {
+    checkout.start({
+      findProgramme: async () => {
+        const programmesData = await api.get("/programmes");
+        const prog = programmesData.data?.find((p) => p.category === "student_chapter");
+        if (!prog) throw new ApiError("Student Chapter sign-up isn't available right now. Please try again shortly.");
+        return prog;
+      },
+      payload: {
+        first_name:  firstName.trim(),
+        last_name:   lastName.trim(),
+        other_names: otherNames.trim() || undefined,
+        email:       email.trim(),
+        phone:       phone.trim(),
         ...signUpPayload(signUp),
-        year_level:   yearLevel.trim() || undefined,
-        notes:        notes.trim() || undefined,
-      });
-      if (!enrolData.success) throw envelopeError(enrolData, "We couldn't complete your enrolment. Please try again.");
-
-      const payData = await api.post("/payments/initialize", {
-        enrolment_id: enrolData.data.id,
-        months_paid: 1,
-      });
-      if (!payData.success) throw envelopeError(payData, "We couldn't start your payment. Please try again.");
-
-      window.sessionStorage.setItem("eraaxis_payment_reference", payData.data.reference);
-      window.location.href = payData.data.authorizationUrl;
-    } catch (err) {
-      setFormError(toUserMessage(err, "We couldn't start your payment. Please try again."));
-      setSubmitting(false);
-    }
+        year_level:  yearLevel.trim() || undefined,
+        notes:       notes.trim() || undefined,
+      },
+    });
   }
+
+  const steps = [
+    {
+      title: "Who's signing up",
+      problem: () => (signUp.who ? "" : "Please choose who is signing up."),
+      body: <SignUpDetails part="who" value={signUp} onChange={setSignUp} fieldCls={fieldCls} labelCls={labelCls} optionalTag={optionalTag} />,
+    },
+    {
+      title: "The learner",
+      problem: () => {
+        if (!firstName.trim()) return self ? "Please enter your first name." : "Please enter the learner's first name.";
+        if (!lastName.trim()) return self ? "Please enter your last name." : "Please enter the learner's last name.";
+        return signUpProblem(signUp, { schoolRequired: true });
+      },
+      body: (
+        <>
+                      <div className="grid gap-5 sm:grid-cols-2">
+                        <div>
+                          <label className={labelCls} htmlFor="signup-first-name">{learnerLabel(signUp, "First name")}</label>
+                          <input id="signup-first-name" type="text" autoComplete={self ? "given-name" : "off"} placeholder="Genny" className={fieldCls} value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+                        </div>
+                        <div>
+                          <label className={labelCls} htmlFor="signup-last-name">{learnerLabel(signUp, "Last name")}</label>
+                          <input id="signup-last-name" type="text" autoComplete={self ? "family-name" : "off"} placeholder="Amadapah" className={fieldCls} value={lastName} onChange={(e) => setLastName(e.target.value)} />
+                        </div>
+                        <div>
+                          <label className={labelCls} htmlFor="signup-other-names">{learnerLabel(signUp, "Other names")} {optionalTag}</label>
+                          <input id="signup-other-names" type="text" placeholder="Middle name(s), if any" className={fieldCls} value={otherNames} onChange={(e) => setOtherNames(e.target.value)} />
+                        </div>
+                      </div>
+                      <SignUpDetails part="details" value={signUp} onChange={setSignUp} schoolRequired fieldCls={fieldCls} labelCls={labelCls} optionalTag={optionalTag} />
+                      <div className="grid gap-5 sm:grid-cols-2">
+                        <div>
+                          <label className={labelCls} htmlFor="signup-year">Year or level {optionalTag}</label>
+                          <input id="signup-year" type="text" placeholder="e.g. Year 2, Level 200, SHS 3" className={fieldCls} value={yearLevel} onChange={(e) => setYearLevel(e.target.value)} />
+                        </div>
+                      </div>
+        </>
+      ),
+    },
+    {
+      title: "Contact",
+      problem: () => {
+        if (!email.trim()) return "Please enter an email address, or continue with Google.";
+        if (!EMAIL_RE.test(email.trim())) return "Please enter a valid email address.";
+        if (!phone.trim()) return "Please enter a phone number.";
+        return "";
+      },
+      body: (
+        <>
+                      <SignUpEmail
+                        clientId={checkout.clientId}
+                        email={email}
+                        onEmail={setEmail}
+                        credential={checkout.credential}
+                        onCredential={checkout.setCredential}
+                        label={self ? "Email address" : "Your email, for receipts and updates"}
+                        fieldCls={fieldCls}
+                        labelCls={labelCls}
+                      />
+                      <div className="grid gap-5 sm:grid-cols-2">
+                        <div>
+                          <label className={labelCls} htmlFor="signup-phone">{self ? "Phone number" : "Your phone, for updates"}</label>
+                          <input id="signup-phone" type="tel" autoComplete="tel" placeholder="+233 XX XXX XXXX" className={fieldCls} value={phone} onChange={(e) => setPhone(e.target.value)} />
+                        </div>
+                      </div>
+                      <div>
+                        <label className={labelCls} htmlFor="signup-notes">Notes {optionalTag}</label>
+                        <textarea id="signup-notes" rows={3} placeholder="Anything you want ERA AXIS to know before joining..." className={`${fieldCls} min-h-20 resize-none`} value={notes} onChange={(e) => setNotes(e.target.value)} />
+                      </div>
+        </>
+      ),
+    },
+  ];
 
   return (
     <>
@@ -165,6 +221,21 @@ export default function StudentChapterPayment() {
         <div className="container">
           <div className="grid gap-6 lg:grid-cols-[1fr_330px] lg:items-start">
             <div className="order-1 lg:order-none">
+          {checkout.confirming ? (
+            <div className="space-y-3">
+              <ConfirmEmailStep
+                email={checkout.confirming.email}
+                savedNote="Your sign-up is saved."
+                checkCode={checkout.checkCode}
+                sendAgain={checkout.sendAgain}
+                onConfirmed={checkout.confirmed}
+                onChangeAddress={checkout.changeAddress}
+              />
+              {checkout.busy && (
+                <p className="text-sm text-[var(--color-text-secondary)]"><BusyLabel>Opening checkout…</BusyLabel></p>
+              )}
+            </div>
+          ) : (
               <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white p-6 shadow-sm md:p-8">
                 <div className="mb-6 flex items-center gap-2">
                   <FileText
@@ -190,110 +261,18 @@ export default function StudentChapterPayment() {
                   </p>
                 </div>
 
-                <div className="space-y-5">
-                  <SignUpDetails part="who" value={signUp} onChange={setSignUp} fieldCls={fieldCls} labelCls={labelCls} optionalTag={optionalTag} />
-                  <div className="grid gap-5 sm:grid-cols-2">
-                    <div>
-                      <label className={labelCls}>{learnerLabel(signUp, "First name")}</label>
-                      <input
-                        type="text"
-                        placeholder="Genny"
-                        className={fieldCls}
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <label className={labelCls}>{learnerLabel(signUp, "Last name")}</label>
-                      <input
-                        type="text"
-                        placeholder="Amadapah"
-                        className={fieldCls}
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid gap-5 sm:grid-cols-2">
-                    <div>
-                      <label className={labelCls}>{learnerLabel(signUp, "Other names")} {optionalTag}</label>
-                      <input
-                        type="text"
-                        placeholder="Middle name(s), if any"
-                        className={fieldCls}
-                        value={otherNames}
-                        onChange={(e) => setOtherNames(e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <label className={labelCls}>{signUp.who && signUp.who !== "learner" ? "Email for receipts and updates" : "Email address"}</label>
-                      <input
-                        type="email"
-                        placeholder="genny@example.com"
-                        className={fieldCls}
-                        value={email}
-                        onChange={(e) => { setEmail(e.target.value); setEmailSuggestion(""); }}
-                        onBlur={() => setEmailSuggestion(suggestEmailCorrection(email) || "")}
-                      />
-                      {emailSuggestion && (
-                        <p className="mt-1.5 text-xs text-[var(--color-text-muted)]">
-                          Did you mean{" "}
-                          <button
-                            type="button"
-                            onClick={() => { setEmail(emailSuggestion); setEmailSuggestion(""); }}
-                            className="font-semibold text-[var(--color-primary)] underline"
-                          >
-                            {emailSuggestion}
-                          </button>
-                          ?
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="grid gap-5 sm:grid-cols-2">
-                    <div>
-                      <label className={labelCls}>{signUp.who && signUp.who !== "learner" ? "Phone for updates" : "Phone number"}</label>
-                      <input
-                        type="tel"
-                        placeholder="+233 XX XXX XXXX"
-                        className={fieldCls}
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                  <SignUpDetails part="details" value={signUp} onChange={setSignUp} schoolRequired fieldCls={fieldCls} labelCls={labelCls} optionalTag={optionalTag} />
-
-                  <div className="grid gap-5 sm:grid-cols-2">
-                    <div>
-                      <label className={labelCls}>
-                        Year or level {optionalTag}
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="e.g. Year 2, Level 200, SHS 3"
-                        className={fieldCls}
-                        value={yearLevel}
-                        onChange={(e) => setYearLevel(e.target.value)}
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className={labelCls}>Notes {optionalTag}</label>
-                    <textarea
-                      rows={3}
-                      placeholder="Anything you want ERA AXIS to know before joining..."
-                      className={`${fieldCls} min-h-20 resize-none`}
-                      value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
-                    />
-                  </div>
-                </div>
+                <SignUpSteps
+                  steps={steps}
+                  step={step}
+                  onStep={setStep}
+                  onFinish={finish}
+                  busy={checkout.busy}
+                  finishLabel="Continue to checkout"
+                  error={checkout.error}
+                  onError={checkout.setError}
+                />
               </div>
-
+          )}
             </div>
 
             <div className="order-2 space-y-4 lg:order-none lg:sticky lg:top-28">
@@ -356,23 +335,6 @@ export default function StudentChapterPayment() {
                 </div>
 
                 <div className="space-y-3">
-                  {formError && (
-                    <p
-                      role="alert"
-                      className="max-w-full break-words rounded-[var(--radius-sm)] border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm leading-relaxed text-red-700"
-                    >
-                      {formError}
-                    </p>
-                  )}
-                  <button
-                    type="button"
-                    onClick={handleSubmit}
-                    disabled={submitting}
-                    className={`btn-primary w-full justify-center${submitting ? " cursor-not-allowed opacity-60" : ""}`}
-                  >
-                    {submitting ? <BusyLabel>Processing…</BusyLabel> : "Continue to checkout"}
-                    <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
-                  </button>
                   <Link
                     to="/payments"
                     className="btn-outline w-full justify-center"

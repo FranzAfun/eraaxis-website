@@ -15,7 +15,11 @@ const RESEND_WAIT_SECONDS = 60;
  * them; it only proves the address is real. Somebody who typed it wrong can go
  * back and correct it rather than wait for an email that will never come.
  */
-export default function ConfirmEmailStep({ receipt, email, onConfirmed, onChangeAddress }) {
+/**
+ * `checkCode` and `sendAgain` replace the form's own calls, for the sign-up
+ * pages; `savedNote` says what is already kept.
+ */
+export default function ConfirmEmailStep({ receipt, email, onConfirmed, onChangeAddress, checkCode, sendAgain, savedNote = "Your answers are saved." }) {
   const [code, setCode] = useState("");
   const [checking, setChecking] = useState(false);
   const [message, setMessage] = useState("");
@@ -40,7 +44,7 @@ export default function ConfirmEmailStep({ receipt, email, onConfirmed, onChange
     setMessage("");
     setNotice("");
     try {
-      const result = await confirmFormEmail(receipt, digits);
+      const result = checkCode ? await checkCode(digits) : await confirmFormEmail(receipt, digits);
       if (result.confirmed) onConfirmed(result);
       else setMessage(result.message || "That code doesn't match. Check the email and try again.");
     } catch (error) {
@@ -54,7 +58,7 @@ export default function ConfirmEmailStep({ receipt, email, onConfirmed, onChange
     setMessage("");
     setNotice("");
     try {
-      const result = await resendFormCode(receipt);
+      const result = sendAgain ? await sendAgain() : await resendFormCode(receipt);
       if (result.sent) {
         setCode("");
         setNotice(`A new code is on its way to ${email}. The earlier one no longer works.`);
@@ -76,7 +80,7 @@ export default function ConfirmEmailStep({ receipt, email, onConfirmed, onChange
         Confirm your email address
       </h2>
       <p className="mt-2 text-[15px] leading-relaxed text-[var(--color-text-secondary)]">
-        Your answers are saved. We&apos;ve sent a six-digit code to{" "}
+        {savedNote} We&apos;ve sent a six-digit code to{" "}
         <span className="break-all font-semibold text-[var(--color-text-primary)]">{email}</span>. Enter it here so
         we know we can reach you.
       </p>
