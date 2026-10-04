@@ -313,26 +313,25 @@ export default function ProgrammeEnrolmentPayment() {
                   />
                 </div>
               )}
+              <div
+                className={`mt-6 rounded-[var(--radius-md)] border border-[var(--color-primary)]/15 bg-[var(--color-primary)]/10 p-6 md:p-7 ${
+                  lastStep ? "" : "hidden lg:block"
+                }`}
+              >
+                <h3 className="mb-5 text-base font-semibold tracking-tight text-[var(--color-primary-deep)]">What happens next</h3>
+                <ul className="space-y-4">
+                  {NEXT_STEPS.map((item) => (
+                    <li key={item} className="flex items-start gap-3">
+                      <Check size={16} strokeWidth={2} aria-hidden="true" className="mt-0.5 shrink-0 text-[var(--color-primary)]" />
+                      <span className="text-[15px] leading-relaxed text-[var(--color-text-secondary)]">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
 
             {/* On a phone the summary waits for the last step, inside the form. */}
             <div className="hidden lg:sticky lg:top-28 lg:block">{summary}</div>
-
-            <div
-              className={`rounded-[var(--radius-md)] border border-[var(--color-primary)]/15 bg-[var(--color-primary)]/10 p-6 md:p-7 lg:col-start-1 lg:row-start-2 ${
-                lastStep ? "" : "hidden lg:block"
-              }`}
-            >
-              <h3 className="mb-5 text-base font-semibold tracking-tight text-[var(--color-primary-deep)]">What happens next</h3>
-              <ul className="space-y-4">
-                {NEXT_STEPS.map((item) => (
-                  <li key={item} className="flex items-start gap-3">
-                    <Check size={16} strokeWidth={2} aria-hidden="true" className="mt-0.5 shrink-0 text-[var(--color-primary)]" />
-                    <span className="text-[15px] leading-relaxed text-[var(--color-text-secondary)]">{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
           </div>
         </div>
       </section>
