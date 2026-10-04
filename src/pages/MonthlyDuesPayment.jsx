@@ -1,282 +1,201 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import {
-  ArrowLeft,
-  ArrowRight,
-  CheckCircle2,
-  ChevronDown,
-  FileText,
-  Info,
-  Lock,
-  ShieldCheck,
-  UserRound,
-} from "lucide-react";
-import {
-  getPaymentCategoryBySlug,
-  calculatePaymentBreakdown,
-  formatGhs,
-} from "../data/payments";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft, ArrowRight, CheckCircle2, ShieldCheck, Sparkles, UserRound } from "lucide-react";
+import { getPaymentCategoryBySlug, calculatePaymentBreakdown, formatGhs } from "../data/payments";
 import { api, ApiError, envelopeError, toUserMessage } from "../services/api";
 import BackLinkButton from "../components/navigation/BackLinkButton";
-import SelectField from "../components/ui/SelectField";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
 import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
 import { EMAIL_RE } from "../utils/validateEmail";
-import { suggestEmailCorrection } from "../utils/emailTypoCheck";
 import useSpesoFees from "../hooks/useSpesoFees";
 
 import BusyLabel from "../components/ui/BusyLabel";
+import ChoiceCards from "../components/forms/ChoiceCards";
+import SignUpEmail from "../components/forms/SignUpEmail";
+import SignUpSteps from "../components/forms/SignUpSteps";
+import OrderSummary from "../components/forms/OrderSummary";
+import ConfirmEmailStep from "../components/forms/ConfirmEmailStep";
+import useSignUpCheckout from "../components/forms/useSignUpCheckout";
+import { fieldCls, labelCls, optionalCls } from "../components/forms/signUpStyles";
+
 const category = getPaymentCategoryBySlug("monthly-dues");
 const item = category.items[0];
 
 // Returning-member login is the one place a 404 is an ordinary outcome rather
 // than a fault: the address simply has no paid dues registration behind it. The
-// recovery is to correct the email or switch to the first-time form, so it gets
+// recovery is to correct the email or switch to the first-time steps, so it gets
 // wording of its own instead of the client's generic "not found".
 const NO_PAID_DUES_MESSAGE =
-  "We couldn't find a paid monthly dues registration for this email. " +
-  "Check the email you previously used, or choose First-time dues payment if you haven't registered yet.";
+  "We couldn't find paid dues for this email. Check the email you used before, or choose \"This is my first time\".";
 
 const HISTORY_ACCESS = [
-  "Secure OTP login ensures your payment data is protected.",
-  "Using your registered email automatically links this payment to your profile.",
-  "Digital receipts and payment history will be available after confirmation.",
+  "Returning members sign in with a code sent to their email.",
+  "Paying with the same email keeps every payment on one record.",
+  "A receipt is emailed as soon as the payment goes through.",
 ];
 
-const fieldCls =
-  "min-h-[38px] w-full border-0 border-b border-[var(--color-border)] bg-transparent px-0 py-2 text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] outline-none transition-colors focus:border-[var(--color-primary)] focus:ring-0";
+const PERIODS = [
+  { value: "1", title: "1 month", hint: "This month" },
+  { value: "3", title: "3 months", hint: "A quarter" },
+  { value: "6", title: "6 months", hint: "Half a year" },
+  { value: "12", title: "12 months", hint: "A full year" },
+];
 
-const labelCls =
-  "mb-1.5 block text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--color-primary-deep)]";
+const periodOptions = PERIODS.map((period) => ({ ...period, aside: formatGhs(item.baseAmount * Number(period.value)) }));
 
-const optionalTag = (
-  <span className="ml-1 font-normal normal-case tracking-normal text-[var(--color-text-muted)]">
-    (optional)
-  </span>
-);
+const optionalTag = <span className={optionalCls}>(optional)</span>;
 
-function PaymentHistoryAccessCard({ className = "" }) {
-  return (
-    <div
-      className={`rounded-[var(--radius-md)] border border-[var(--color-primary)]/15 bg-[var(--color-primary)]/10 p-6 md:p-7 ${className}`.trim()}
-    >
-      <div className="mb-5 flex items-center gap-2">
-        <ShieldCheck
-          size={17}
-          strokeWidth={2.25}
-          aria-hidden="true"
-          className="text-[var(--color-primary)]"
-        />
-        <h3 className="text-sm font-semibold tracking-tight text-[var(--color-primary-deep)]">
-          Payment history access
-        </h3>
-      </div>
-      <ul className="space-y-4">
-        {HISTORY_ACCESS.map((detail) => (
-          <li key={detail} className="flex items-start gap-3">
-            <CheckCircle2
-              size={15}
-              strokeWidth={2}
-              aria-hidden="true"
-              className="mt-0.5 shrink-0 text-[var(--color-primary)]"
-            />
-            <span className="text-sm leading-relaxed text-[var(--color-text-secondary)]">
-              {detail}
-            </span>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
+const findDuesProgramme = async () => {
+  const programmesData = await api.get("/programmes");
+  const prog = programmesData.data?.find((p) => p.category === "monthly_dues");
+  if (!prog) throw new ApiError("Monthly dues aren't available right now. Please try again shortly.");
+  return prog;
+};
 
 export default function MonthlyDuesPayment() {
   const { feeConfig } = useSpesoFees();
-  const [showManualForm, setShowManualForm] = useState(false);
-  const [selectedMonths, setSelectedMonths] = useState("1");
-  const manualFormInnerRef = useRef(null);
-  const [manualFormHeight, setManualFormHeight] = useState(0);
-  const [firstName, setFirstName]       = useState("");
-  const [lastName, setLastName]         = useState("");
-  const [otherNames, setOtherNames]     = useState("");
-  const [email, setEmail]               = useState("");
-  const [emailSuggestion, setEmailSuggestion] = useState("");
-  const [phone, setPhone]               = useState("");
-  const [submitting, setSubmitting]     = useState(false);
-  const [formError, setFormError]       = useState("");
+  const navigate = useNavigate();
+  const [path, setPath] = useState(""); // "" | "returning" | "first"
+
+  // First time.
+  const checkout = useSignUpCheckout();
+  const [step, setStep] = useState(0);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [otherNames, setOtherNames] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [months, setMonths] = useState("1");
+
+  // Returning.
   const [loginStep, setLoginStep] = useState("email"); // "email" | "otp" | "history"
   const [duesProgrammeId, setDuesProgrammeId] = useState(null);
   const [returningEmail, setReturningEmail] = useState("");
   const [otpCode, setOtpCode] = useState("");
-  const [loginSubmitting, setLoginSubmitting] = useState(false);
+  const [loginBusy, setLoginBusy] = useState(false);
   const [loginError, setLoginError] = useState("");
   const [returningEnrolment, setReturningEnrolment] = useState(null);
   const [paymentHistory, setPaymentHistory] = useState([]);
   const [resendCooldown, setResendCooldown] = useState(0);
   const [historyMonths, setHistoryMonths] = useState("1");
+
   const [showNavConfirm, setShowNavConfirm] = useState(false);
   const isDirty = useRef(false);
   const pendingNav = useRef(null);
-  const navigate = useNavigate();
-  const checkoutMonths =
-    loginStep === "history" ? historyMonths : selectedMonths;
-  const baseTotal = item.baseAmount * Number(checkoutMonths);
-  const breakdown = calculatePaymentBreakdown(baseTotal, feeConfig);
-  const duesPeriodOptions = [
-    { value: "1", label: "1 Month (Current)" },
-    { value: "3", label: "Quarter" },
-    { value: "6", label: "Half Year" },
-    { value: "12", label: "1 Year" },
-  ];
+  const cardRef = useRef(null);
 
-  async function handleFirstTimeSubmit() {
-    setFormError("");
-    if (!firstName.trim()) { setFormError("First name is required."); return; }
-    if (!lastName.trim())  { setFormError("Last name is required."); return; }
-    if (!email.trim())    { setFormError("Email address is required."); return; }
-    if (!EMAIL_RE.test(email.trim())) { setFormError("Please enter a valid email address."); return; }
-    if (!phone.trim())    { setFormError("Phone number is required."); return; }
-    setSubmitting(true);
-    try {
-      const programmesData = await api.get("/programmes");
-      const prog = programmesData.data?.find((p) => p.category === "monthly_dues");
-      if (!prog) throw new ApiError("Monthly dues aren't available right now. Please try again shortly.");
+  const checkoutMonths = path === "returning" ? historyMonths : months;
+  const breakdown = calculatePaymentBreakdown(item.baseAmount * Number(checkoutMonths), feeConfig);
 
-      const enrolData = await api.post("/enrolments", {
-        programme_id: prog.id,
-        first_name:   firstName.trim(),
-        last_name:    lastName.trim(),
-        other_names:  otherNames.trim() || undefined,
-        email:        email.trim(),
-        phone:        phone.trim(),
-      });
-      if (!enrolData.success) throw envelopeError(enrolData, "We couldn't complete your registration. Please try again.");
-
-      const payData = await api.post("/payments/initialize", {
-        enrolment_id: enrolData.data.id,
-        months_paid: Number(selectedMonths),
-      });
-      if (!payData.success) throw envelopeError(payData, "We couldn't start your payment. Please try again.");
-
-      isDirty.current = false;
-      window.sessionStorage.setItem("eraaxis_payment_reference", payData.data.reference);
-      window.location.href = payData.data.authorizationUrl;
-    } catch (err) {
-      setFormError(toUserMessage(err, "We couldn't start your payment. Please try again."));
-      setSubmitting(false);
-    }
+  function choosePath(next) {
+    setPath(next);
+    checkout.setError("");
+    setLoginError("");
+    cardRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   async function handleRequestOtp() {
     setLoginError("");
-    if (!returningEmail.trim()) { setLoginError("Email address is required."); return; }
+    if (!returningEmail.trim()) { setLoginError("Please enter the email you pay dues with."); return; }
     if (!EMAIL_RE.test(returningEmail.trim())) { setLoginError("Please enter a valid email address."); return; }
-    setLoginSubmitting(true);
+    setLoginBusy(true);
     try {
       let progId = duesProgrammeId;
       if (!progId) {
-        const programmesData = await api.get("/programmes");
-        const prog = programmesData.data?.find((p) => p.category === "monthly_dues");
-        if (!prog) throw new ApiError("Monthly dues aren't available right now. Please try again shortly.");
-        progId = prog.id;
+        progId = (await findDuesProgramme()).id;
         setDuesProgrammeId(progId);
       }
-
-      const data = await api.post("/enrolments/request-access", {
-        email: returningEmail.trim(),
-        programme_id: progId,
-      });
+      const data = await api.post("/enrolments/request-access", { email: returningEmail.trim(), programme_id: progId });
       if (!data.success) throw envelopeError(data, "We couldn't send your code. Please try again.");
-
       setLoginStep("otp");
       setResendCooldown(120);
     } catch (err) {
       // The entered email is left in place either way so it can be corrected.
-      const noPaidDues =
-        err instanceof ApiError &&
-        err.status === 404 &&
-        err.path === "/enrolments/request-access";
-
-      setLoginError(
-        noPaidDues
-          ? NO_PAID_DUES_MESSAGE
-          : toUserMessage(err, "We couldn't send your code. Please try again.")
-      );
+      const noPaidDues = err instanceof ApiError && err.status === 404 && err.path === "/enrolments/request-access";
+      setLoginError(noPaidDues ? NO_PAID_DUES_MESSAGE : toUserMessage(err, "We couldn't send your code. Please try again."));
     } finally {
-      setLoginSubmitting(false);
+      setLoginBusy(false);
     }
   }
 
   async function handleVerifyOtp() {
     setLoginError("");
-    if (!otpCode.trim()) { setLoginError("Enter the code from your email."); return; }
-    setLoginSubmitting(true);
+    if (otpCode.replace(/\D/g, "").length !== 6) { setLoginError("Enter the six-digit code from the email."); return; }
+    setLoginBusy(true);
     try {
       const data = await api.post("/enrolments/verify-access", {
         email: returningEmail.trim(),
         programme_id: duesProgrammeId,
-        otp: otpCode.trim(),
+        otp: otpCode.replace(/\D/g, ""),
       });
       if (!data.success) throw envelopeError(data, "That code didn't work. Please try again.");
-
       setReturningEnrolment(data.data);
-
       const historyData = await api.get(`/enrolments/${data.data.id}/payment-history`);
       setPaymentHistory(historyData.success ? historyData.data : []);
-
       setLoginStep("history");
     } catch (err) {
       // Every 400 from verify-access means the same thing to the member: the
       // code they typed is not the live one. Say so, and point at the recovery.
       const badCode = err instanceof ApiError && err.status === 400;
-
       setLoginError(
         badCode
-          ? "That code didn't work. It may have expired — check the most recent email from us, or request a new code."
-          : toUserMessage(err, "We couldn't verify your code. Please try again.")
+          ? "That code didn't work. It may have expired: check the most recent email from us, or ask for a new code."
+          : toUserMessage(err, "We couldn't check your code. Please try again.")
       );
     } finally {
-      setLoginSubmitting(false);
+      setLoginBusy(false);
     }
   }
 
   async function handlePayAgain() {
-    setLoginSubmitting(true);
+    setLoginBusy(true);
     setLoginError("");
     try {
-      const payData = await api.post("/payments/initialize", {
-        enrolment_id: returningEnrolment.id,
-        months_paid: Number(historyMonths),
-      });
+      const payData = await api.post("/payments/initialize", { enrolment_id: returningEnrolment.id, months_paid: Number(historyMonths) });
       if (!payData.success) throw envelopeError(payData, "We couldn't start your payment. Please try again.");
       isDirty.current = false;
       window.sessionStorage.setItem("eraaxis_payment_reference", payData.data.reference);
       window.location.href = payData.data.authorizationUrl;
     } catch (err) {
       setLoginError(toUserMessage(err, "We couldn't start your payment. Please try again."));
-      setLoginSubmitting(false);
+      setLoginBusy(false);
     }
+  }
+
+  function finishFirstTime() {
+    isDirty.current = false;
+    checkout.start({
+      findProgramme: findDuesProgramme,
+      payload: {
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
+        other_names: otherNames.trim() || undefined,
+        email: email.trim(),
+        phone: phone.trim(),
+        // Dues are paid by the member themselves; saying so asks the server to
+        // confirm the email before payment, as the other sign-ups do.
+        signed_up_by: "learner",
+      },
+      months: Number(months),
+    });
   }
 
   useEffect(() => {
     if (resendCooldown <= 0) return undefined;
-    const timer = setInterval(() => {
-      setResendCooldown((current) => (current > 0 ? current - 1 : 0));
-    }, 1000);
+    const timer = setInterval(() => setResendCooldown((current) => (current > 0 ? current - 1 : 0)), 1000);
     return () => clearInterval(timer);
   }, [resendCooldown]);
 
-  // Track unsaved progress: a partially-filled first-time form, or a returning
-  // member who has requested/entered an OTP (losing that means re-requesting it).
+  // Unsaved progress: a partly filled first-time sign-up, or a returning member
+  // who has asked for a code (losing that means asking again).
   useEffect(() => {
     isDirty.current = Boolean(
       firstName.trim() || lastName.trim() || otherNames.trim() || email.trim() || phone.trim() || loginStep !== "email"
     );
   }, [firstName, lastName, otherNames, email, phone, loginStep]);
 
-  // Protect against tab close / page refresh — browser forces its own native dialog here,
-  // custom UI is not possible for true page reloads (browser security restriction).
+  // Tab close or reload: the browser shows its own dialog; nothing custom is possible.
   useEffect(() => {
     function handleBeforeUnload(e) {
       if (!isDirty.current) return;
@@ -286,8 +205,8 @@ export default function MonthlyDuesPayment() {
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
   }, []);
 
-  // Intercept in-app navigation (header nav / back link are <a> tags via React Router).
-  // Capture phase runs before React Router's click handler, so we can suppress it.
+  // In-app links (header, back link): asked about first. Capture phase runs
+  // before React Router's own click handler, so it can be held.
   useEffect(() => {
     function handleAnchorClick(e) {
       if (!isDirty.current) return;
@@ -304,24 +223,104 @@ export default function MonthlyDuesPayment() {
     return () => document.removeEventListener("click", handleAnchorClick, true);
   }, []);
 
-  useEffect(() => {
-    const updateManualFormHeight = () => {
-      if (!manualFormInnerRef.current) {
-        return;
-      }
+  const summary = (
+    <OrderSummary
+      title="Monthly dues"
+      rows={[
+        { label: "Monthly dues", amount: item.baseAmount },
+        { label: "Months", value: `× ${Number(checkoutMonths)}` },
+        { label: "Dues total", amount: breakdown.baseAmount },
+        { label: "Maintenance fee", amount: breakdown.maintenanceFee },
+        { label: "Speso processing fee", amount: breakdown.spesoFee },
+      ]}
+      total={breakdown.customerTotal}
+    />
+  );
 
-      setManualFormHeight(manualFormInnerRef.current.scrollHeight);
-    };
+  const switchLink = (label, next) => (
+    <button
+      type="button"
+      onClick={() => choosePath(next)}
+      className="inline-flex items-center gap-1.5 text-[15px] font-semibold text-[var(--color-primary)] underline-offset-4 hover:underline"
+    >
+      <ArrowLeft size={15} strokeWidth={2} aria-hidden="true" />
+      {label}
+    </button>
+  );
 
-    updateManualFormHeight();
+  const firstTimeSteps = [
+    {
+      title: "About you",
+      heading: "About you",
+      intro: "Your name as it should appear on your membership.",
+      problem: () => {
+        if (!firstName.trim()) return "Please enter your first name.";
+        if (!lastName.trim()) return "Please enter your last name.";
+        return "";
+      },
+      body: (
+        <div className="grid gap-6 sm:grid-cols-2">
+          <div>
+            <label className={labelCls} htmlFor="dues-first-name">First name</label>
+            <input id="dues-first-name" type="text" autoComplete="given-name" placeholder="Genny" className={fieldCls} value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+          </div>
+          <div>
+            <label className={labelCls} htmlFor="dues-last-name">Last name</label>
+            <input id="dues-last-name" type="text" autoComplete="family-name" placeholder="Amadapah" className={fieldCls} value={lastName} onChange={(e) => setLastName(e.target.value)} />
+          </div>
+          <div>
+            <label className={labelCls} htmlFor="dues-other-names">Other names{optionalTag}</label>
+            <input id="dues-other-names" type="text" placeholder="Ama" className={fieldCls} value={otherNames} onChange={(e) => setOtherNames(e.target.value)} />
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: "How long",
+      heading: "How many months?",
+      intro: "Pay a month at a time, or further ahead.",
+      problem: () => "",
+      body: <ChoiceCards name="dues-months" columns="grid-cols-2 lg:grid-cols-4" options={periodOptions} value={months} onChange={setMonths} />,
+    },
+    {
+      title: "Contact",
+      heading: "How do we reach you?",
+      intro: "Receipts and reminders go here. Use this email next time to sign straight in.",
+      problem: () => {
+        if (!email.trim()) return "Please enter an email address, or continue with Google.";
+        if (!EMAIL_RE.test(email.trim())) return "Please enter a valid email address.";
+        if (!phone.trim()) return "Please enter a phone number.";
+        return "";
+      },
+      body: (
+        <>
+          <SignUpEmail
+            clientId={checkout.clientId}
+            email={email}
+            onEmail={setEmail}
+            credential={checkout.credential}
+            onCredential={checkout.setCredential}
+            label="Email address"
+            fieldCls={fieldCls}
+            labelCls={labelCls}
+          />
+          <div className="grid gap-6 sm:grid-cols-2">
+            <div>
+              <label className={labelCls} htmlFor="dues-phone">Phone number</label>
+              <input id="dues-phone" type="tel" autoComplete="tel" placeholder="+233 XX XXX XXXX" className={fieldCls} value={phone} onChange={(e) => setPhone(e.target.value)} />
+            </div>
+          </div>
+        </>
+      ),
+    },
+  ];
+  const onLastStep = (path === "first" && step === firstTimeSteps.length - 1) || (path === "returning" && loginStep === "history");
 
-    if (!showManualForm) {
-      return undefined;
-    }
-
-    window.addEventListener("resize", updateManualFormHeight);
-    return () => window.removeEventListener("resize", updateManualFormHeight);
-  }, [showManualForm]);
+  const loginErrorBox = loginError && (
+    <p role="alert" className="mt-6 max-w-full break-words rounded-[var(--radius-sm)] border border-red-200 bg-red-50 px-4 py-3 text-[15px] leading-relaxed text-red-700">
+      {loginError}
+    </p>
+  );
 
   return (
     <>
@@ -335,14 +334,8 @@ export default function MonthlyDuesPayment() {
               "radial-gradient(circle at 15% 18%, color-mix(in srgb, var(--color-accent) 22%, transparent) 0%, transparent 30%), radial-gradient(circle at 84% 8%, color-mix(in srgb, var(--color-primary) 38%, transparent) 0%, transparent 34%), linear-gradient(135deg, var(--color-background-dark) 0%, var(--color-primary-deep) 54%, var(--color-background-dark) 100%)",
           }}
         />
-        <div
-          aria-hidden="true"
-          className="absolute -left-28 top-28 h-80 w-80 rounded-full bg-white/[0.04] blur-3xl"
-        />
-        <div
-          aria-hidden="true"
-          className="absolute -bottom-24 right-4 h-96 w-96 rounded-full bg-[var(--color-accent)]/[0.08] blur-3xl"
-        />
+        <div aria-hidden="true" className="absolute -left-28 top-28 h-80 w-80 rounded-full bg-white/[0.04] blur-3xl" />
+        <div aria-hidden="true" className="absolute -bottom-24 right-4 h-96 w-96 rounded-full bg-[var(--color-accent)]/[0.08] blur-3xl" />
 
         <div className="container relative z-10">
           <div className="max-w-3xl">
@@ -360,438 +353,222 @@ export default function MonthlyDuesPayment() {
             <h1 className="mb-5 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl">
               Pay your monthly dues.
             </h1>
-            <p className="max-w-2xl text-sm leading-relaxed text-white/75 sm:text-base">
-              Choose the path that fits your situation. Returning members can
-              continue with OTP for a faster experience, while first-time dues
-              payers can open the form and enter their details from scratch.
+            <p className="max-w-2xl text-base leading-relaxed text-white/75 sm:text-lg">
+              {formatGhs(item.baseAmount)} a month. Members sign in with a code; paying for the first time takes a minute.
             </p>
-
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <a
-                href="#dues-payment"
-                onClick={() => setShowManualForm(true)}
-                className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-white px-5 text-sm font-semibold text-[var(--color-primary)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/90"
-              >
-                First-time dues payment
-                <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
-              </a>
-              <a
-                href="#member-login"
-                className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[var(--radius-sm)] border border-white/25 bg-white/[0.08] px-5 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:text-[var(--color-primary)]"
-              >
-                Member login
-                <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
-              </a>
-            </div>
           </div>
         </div>
       </section>
 
-      <section
-        id="dues-payment"
-        className="bg-[var(--color-surface-soft)] py-8 md:py-10"
-      >
+      <section className="bg-[var(--color-surface-soft)] py-8 md:py-12">
         <div className="container">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
-            <div className="order-1 space-y-6 lg:flex-1">
-              <div
-                id="member-login"
-                className="scroll-mt-24 rounded-[var(--radius-md)] border border-[var(--color-primary)]/12 bg-white p-6 shadow-sm md:scroll-mt-28 md:p-7"
-              >
-                <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-                  <div className="max-w-xl">
-                    <div className="mb-4 flex items-start gap-3">
-                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--color-primary)]/10 text-[var(--color-primary)]">
-                        <UserRound size={18} strokeWidth={2.25} aria-hidden="true" />
-                      </span>
-                      <div>
-                        <h2 className="text-lg font-bold tracking-tight text-[var(--color-text-primary)]">
-                          Returning member login
-                        </h2>
-                        <p className="text-sm leading-relaxed text-[var(--color-text-secondary)]">
-                          Returning member? Use an OTP to automatically pull in your details.
-                        </p>
+          <div className="grid gap-6 lg:grid-cols-[1fr_340px] lg:items-start">
+            <div ref={cardRef} className="scroll-mt-28">
+              {path === "first" && checkout.confirming ? (
+                <div className="space-y-3">
+                  <ConfirmEmailStep
+                    email={checkout.confirming.email}
+                    savedNote="Your details are saved."
+                    checkCode={checkout.checkCode}
+                    sendAgain={checkout.sendAgain}
+                    onConfirmed={checkout.confirmed}
+                    onChangeAddress={checkout.changeAddress}
+                  />
+                  {checkout.busy && (
+                    <p className="text-[15px] text-[var(--color-text-secondary)]"><BusyLabel>Opening checkout…</BusyLabel></p>
+                  )}
+                </div>
+              ) : (
+                <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white p-6 shadow-sm sm:p-8 md:p-10">
+                  {!path && (
+                    <div className="signup-step">
+                      <h2 className="text-2xl font-bold tracking-tight text-[var(--color-text-primary)] sm:text-[1.75rem]">
+                        Have you paid dues with us before?
+                      </h2>
+                      <p className="mt-2 text-[15px] leading-relaxed text-[var(--color-text-secondary)]">
+                        Members sign in with a code; everyone else starts here.
+                      </p>
+                      <div className="mt-7">
+                        <ChoiceCards
+                          name="dues-path"
+                          columns="sm:grid-cols-2"
+                          options={[
+                            { value: "returning", title: "Yes, I'm a member", hint: "We'll email you a code and bring up your details.", Icon: UserRound },
+                            { value: "first", title: "No, this is my first time", hint: "Three short steps, then checkout.", Icon: Sparkles },
+                          ]}
+                          value={path}
+                          onChange={choosePath}
+                        />
                       </div>
                     </div>
+                  )}
 
-                    {loginStep === "email" && (
-                      <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
-                        <div>
-                          <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--color-primary-deep)]">
-                            Email address
-                          </label>
-                          <input
-                            type="email"
-                            placeholder="genny@example.com"
-                            value={returningEmail}
-                            onChange={(e) => setReturningEmail(e.target.value)}
-                            className="min-h-[46px] w-full rounded-[var(--radius-sm)] border border-[var(--color-primary)]/18 bg-white px-4 py-3 text-sm text-[var(--color-text-primary)] shadow-[inset_0_1px_0_rgb(255_255_255/0.7)] placeholder:text-[var(--color-text-secondary)] outline-none transition-[border-color,box-shadow,background-color] focus:border-[var(--color-primary)] focus:bg-white focus:ring-2 focus:ring-[var(--color-primary)]/10"
-                          />
-                        </div>
-                        <button
-                          type="button"
-                          onClick={handleRequestOtp}
-                          disabled={loginSubmitting}
-                          className={`btn-outline min-h-[44px] justify-center sm:px-5${loginSubmitting ? " cursor-not-allowed opacity-50" : ""}`}
-                        >
-                          {loginSubmitting ? <BusyLabel>Sending…</BusyLabel> : "Continue with OTP"}
-                        </button>
-                      </div>
-                    )}
+                  {path === "first" && (
+                    <>
+                      <div className="mb-6">{switchLink("I've paid before", "returning")}</div>
+                      <SignUpSteps
+                        steps={firstTimeSteps}
+                        step={step}
+                        onStep={setStep}
+                        onFinish={finishFirstTime}
+                        busy={checkout.busy}
+                        finishLabel="Continue to checkout"
+                        error={checkout.error}
+                        onError={checkout.setError}
+                        lastStepExtra={summary}
+                      />
+                    </>
+                  )}
 
-                    {loginStep === "otp" && (
-                      <div className="space-y-3">
-                        <p className="text-xs text-[var(--color-text-secondary)]">
-                          We sent a 6-digit code to <span className="font-semibold">{returningEmail}</span>.
-                        </p>
-                        <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
-                          <div>
-                            <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--color-primary-deep)]">
-                              Enter code
-                            </label>
+                  {path === "returning" && (
+                    <div key={loginStep} className="signup-step">
+                      {loginStep !== "history" && <div className="mb-6">{switchLink("This is my first time", "first")}</div>}
+
+                      {loginStep === "email" && (
+                        <>
+                          <h2 className="text-2xl font-bold tracking-tight text-[var(--color-text-primary)] sm:text-[1.75rem]">Welcome back</h2>
+                          <p className="mt-2 text-[15px] leading-relaxed text-[var(--color-text-secondary)]">
+                            Enter the email you pay dues with. We&apos;ll send you a six-digit code.
+                          </p>
+                          <div className="mt-7 max-w-md">
+                            <label className={labelCls} htmlFor="dues-returning-email">Email address</label>
                             <input
+                              id="dues-returning-email"
+                              type="email"
+                              autoComplete="email"
+                              placeholder="genny@example.com"
+                              className={fieldCls}
+                              value={returningEmail}
+                              onChange={(e) => setReturningEmail(e.target.value)}
+                              onKeyDown={(e) => { if (e.key === "Enter") handleRequestOtp(); }}
+                            />
+                          </div>
+                          {loginErrorBox}
+                          <div className="mt-8 flex justify-end">
+                            <button type="button" onClick={handleRequestOtp} disabled={loginBusy} className={`btn-primary min-h-[48px] justify-center px-7 text-[15px]${loginBusy ? " cursor-not-allowed opacity-60" : ""}`}>
+                              {loginBusy ? <BusyLabel>Sending…</BusyLabel> : "Send my code"}
+                              {!loginBusy && <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />}
+                            </button>
+                          </div>
+                        </>
+                      )}
+
+                      {loginStep === "otp" && (
+                        <>
+                          <h2 className="text-2xl font-bold tracking-tight text-[var(--color-text-primary)] sm:text-[1.75rem]">Check your email</h2>
+                          <p className="mt-2 text-[15px] leading-relaxed text-[var(--color-text-secondary)]">
+                            We sent a six-digit code to <span className="break-all font-semibold text-[var(--color-text-primary)]">{returningEmail}</span>.
+                          </p>
+                          <div className="mt-7 max-w-xs">
+                            <label className={labelCls} htmlFor="dues-code">Code from the email</label>
+                            <input
+                              id="dues-code"
                               type="text"
                               inputMode="numeric"
-                              maxLength={6}
-                              placeholder="123456"
+                              autoComplete="one-time-code"
+                              maxLength={7}
+                              className={`${fieldCls} font-mono tracking-[0.3em]`}
                               value={otpCode}
-                              onChange={(e) => setOtpCode(e.target.value)}
-                              className="min-h-[46px] w-full rounded-[var(--radius-sm)] border border-[var(--color-primary)]/18 bg-white px-4 py-3 text-sm tracking-[0.3em] text-[var(--color-text-primary)] shadow-[inset_0_1px_0_rgb(255_255_255/0.7)] placeholder:tracking-normal placeholder:text-[var(--color-text-secondary)] outline-none transition-[border-color,box-shadow,background-color] focus:border-[var(--color-primary)] focus:bg-white focus:ring-2 focus:ring-[var(--color-primary)]/10"
+                              onChange={(e) => setOtpCode(e.target.value.replace(/[^\d ]/g, ""))}
+                              onKeyDown={(e) => { if (e.key === "Enter") handleVerifyOtp(); }}
                             />
                           </div>
-                          <button
-                            type="button"
-                            onClick={handleVerifyOtp}
-                            disabled={loginSubmitting}
-                            className={`btn-primary min-h-[44px] justify-center sm:px-5${loginSubmitting ? " cursor-not-allowed opacity-50" : ""}`}
-                          >
-                            {loginSubmitting ? <BusyLabel>Verifying…</BusyLabel> : "Verify"}
-                          </button>
-                        </div>
-                        <div className="flex items-center gap-4 text-xs">
-                          <button
-                            type="button"
-                            onClick={handleRequestOtp}
-                            disabled={resendCooldown > 0 || loginSubmitting}
-                            className={`font-semibold text-[var(--color-primary)] underline ${resendCooldown > 0 || loginSubmitting ? "cursor-not-allowed opacity-50" : ""}`}
-                          >
-                            {resendCooldown > 0 ? `Resend code (${resendCooldown}s)` : "Resend code"}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => { setLoginStep("email"); setOtpCode(""); setLoginError(""); }}
-                            className="font-semibold text-[var(--color-text-secondary)] underline"
-                          >
-                            Change email
-                          </button>
-                        </div>
-                      </div>
-                    )}
-
-                    {loginStep === "history" && returningEnrolment && (
-                      <div className="space-y-4">
-                        <p className="text-sm text-[var(--color-text-secondary)]">
-                          Welcome back, <span className="font-semibold text-[var(--color-text-primary)]">{returningEnrolment.fullName}</span>.
-                        </p>
-
-                        {paymentHistory.length > 0 ? (
-                          <ul className="divide-y divide-[var(--color-border)] overflow-hidden rounded-[var(--radius-sm)] border border-[var(--color-border)]">
-                            {paymentHistory.map((entry) => (
-                              <li key={entry.reference} className="flex items-center justify-between gap-3 px-4 py-3 text-sm">
-                                <div>
-                                  <p className="font-medium text-[var(--color-text-primary)]">
-                                    {new Date(entry.paidAt).toLocaleDateString()}
-                                  </p>
-                                  <p className="text-xs text-[var(--color-text-muted)]">
-                                    {entry.monthsPaid} month{entry.monthsPaid === 1 ? "" : "s"} · {entry.reference}
-                                  </p>
-                                </div>
-                                <span className="font-semibold text-[var(--color-text-primary)]">
-                                  {formatGhs(entry.amount)}
-                                </span>
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <p className="text-sm text-[var(--color-text-muted)]">No previous payments found.</p>
-                        )}
-
-                        <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
-                          <div>
-                            <label className={labelCls}>Dues period to pay now</label>
-                            <SelectField
-                              name="historyMonths"
-                              value={historyMonths}
-                              onChange={(event) => setHistoryMonths(event.target.value)}
-                              className={fieldCls}
-                              options={duesPeriodOptions}
-                            />
+                          <p className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-[15px]">
+                            <button
+                              type="button"
+                              onClick={handleRequestOtp}
+                              disabled={resendCooldown > 0 || loginBusy}
+                              className="font-semibold text-[var(--color-primary)] underline underline-offset-2 disabled:cursor-not-allowed disabled:no-underline disabled:text-[var(--color-text-muted)]"
+                            >
+                              {resendCooldown > 0 ? `Send a new code in ${resendCooldown}s` : "Send a new code"}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => { setLoginStep("email"); setOtpCode(""); setLoginError(""); }}
+                              className="font-semibold text-[var(--color-text-secondary)] underline underline-offset-2"
+                            >
+                              Change email
+                            </button>
+                          </p>
+                          {loginErrorBox}
+                          <div className="mt-8 flex justify-end">
+                            <button type="button" onClick={handleVerifyOtp} disabled={loginBusy} className={`btn-primary min-h-[48px] justify-center px-7 text-[15px]${loginBusy ? " cursor-not-allowed opacity-60" : ""}`}>
+                              {loginBusy ? <BusyLabel>Checking…</BusyLabel> : "Continue"}
+                              {!loginBusy && <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />}
+                            </button>
                           </div>
-                          <button
-                            type="button"
-                            onClick={handlePayAgain}
-                            disabled={loginSubmitting}
-                            className={`btn-primary min-h-[44px] justify-center sm:px-5${loginSubmitting ? " cursor-not-allowed opacity-50" : ""}`}
-                          >
-                            {loginSubmitting ? <BusyLabel>Processing…</BusyLabel> : "Pay Now"}
-                            <ArrowRight size={15} strokeWidth={2.25} aria-hidden="true" />
-                          </button>
-                        </div>
-                      </div>
-                    )}
+                        </>
+                      )}
 
-                    {loginError && (
-                      <p
-                        role="alert"
-                        className="mt-3 max-w-full break-words rounded-[var(--radius-sm)] border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm leading-relaxed text-red-700"
-                      >
-                        {loginError}
-                      </p>
-                    )}
-                  </div>
+                      {loginStep === "history" && returningEnrolment && (
+                        <>
+                          <h2 className="text-2xl font-bold tracking-tight text-[var(--color-text-primary)] sm:text-[1.75rem]">
+                            Welcome back, {String(returningEnrolment.fullName || "").split(" ")[0]}
+                          </h2>
+                          <p className="mt-2 text-[15px] leading-relaxed text-[var(--color-text-secondary)]">How many months would you like to pay?</p>
+                          <div className="mt-7">
+                            <ChoiceCards name="dues-history-months" columns="grid-cols-2 lg:grid-cols-4" options={periodOptions} value={historyMonths} onChange={setHistoryMonths} />
+                          </div>
 
-                  {/* shrink-0 + whitespace-nowrap: an error message in the left
-                      column must never squeeze this action into a wrapped,
-                      three-line button. */}
-                  {loginStep === "email" && (
-                  <button
-                    type="button"
-                    onClick={() => setShowManualForm((current) => !current)}
-                    aria-expanded={showManualForm}
-                    className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-[var(--radius-sm)] bg-[var(--color-primary)] px-5 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-[var(--color-primary-dark)]"
-                  >
-                    {showManualForm
-                      ? "Hide first-time form"
-                      : "First time paying dues?"}
-                    <ChevronDown
-                      size={16}
-                      strokeWidth={2.25}
-                      aria-hidden="true"
-                      className={`transition-transform duration-200 ${
-                        showManualForm ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
-                  )}
-                </div>
-              </div>
+                          <div className="mt-8">
+                            <p className="text-[15px] font-semibold text-[var(--color-text-primary)]">Your payments</p>
+                            {paymentHistory.length > 0 ? (
+                              <ul className="mt-3 divide-y divide-[var(--color-border)] overflow-hidden rounded-[var(--radius-md)] border border-[var(--color-border)]">
+                                {paymentHistory.map((entry) => (
+                                  <li key={entry.reference} className="flex items-center justify-between gap-3 px-4 py-3">
+                                    <div className="min-w-0">
+                                      <p className="text-[15px] font-medium text-[var(--color-text-primary)]">
+                                        {new Date(entry.paidAt).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })}
+                                      </p>
+                                      <p className="truncate text-sm text-[var(--color-text-secondary)]">
+                                        {entry.monthsPaid} month{entry.monthsPaid === 1 ? "" : "s"} · {entry.reference}
+                                      </p>
+                                    </div>
+                                    <span className="whitespace-nowrap text-[15px] font-semibold text-[var(--color-text-primary)]">{formatGhs(entry.amount)}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            ) : (
+                              <p className="mt-2 text-[15px] text-[var(--color-text-secondary)]">No payments found yet.</p>
+                            )}
+                          </div>
 
-              <div
-                aria-hidden={!showManualForm}
-                style={{ maxHeight: showManualForm ? `${manualFormHeight}px` : "0px" }}
-                className={`overflow-hidden transition-[max-height,opacity] duration-300 ease-out ${
-                  showManualForm
-                    ? "opacity-100"
-                    : "pointer-events-none opacity-0"
-                }`}
-              >
-                <div
-                  ref={manualFormInnerRef}
-                  className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white p-6 shadow-sm md:p-8"
-                >
-                  <div className="mb-6 flex items-center gap-2">
-                    <FileText
-                      size={19}
-                      strokeWidth={2.25}
-                      aria-hidden="true"
-                      className="text-[var(--color-primary)]"
-                    />
-                    <h2 className="text-xl font-bold tracking-tight text-[var(--color-text-primary)]">
-                      First-Time Dues Payment
-                    </h2>
-                  </div>
-
-                  <div className="mb-6 flex gap-3 rounded-[var(--radius-sm)] bg-[var(--color-primary)]/10 px-4 py-3 text-xs leading-relaxed text-[var(--color-primary-deep)]">
-                    <Info
-                      size={16}
-                      strokeWidth={2.25}
-                      aria-hidden="true"
-                      className="mt-0.5 shrink-0"
-                    />
-                    <p>
-                      Use this form if you are paying dues for the first time.
-                    </p>
-                  </div>
-
-                  <div className="grid gap-x-6 gap-y-5 sm:grid-cols-2">
-                    <div>
-                      <label className={labelCls}>First name</label>
-                      <input
-                        type="text"
-                        placeholder="Genny"
-                        className={fieldCls}
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                      />
-                    </div>
-
-                    <div>
-                      <label className={labelCls}>Last name</label>
-                      <input
-                        type="text"
-                        placeholder="Amadapah"
-                        className={fieldCls}
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                      />
-                    </div>
-
-                    <div>
-                      <label className={labelCls}>Other names {optionalTag}</label>
-                      <input
-                        type="text"
-                        placeholder="Middle name(s), if any"
-                        className={fieldCls}
-                        value={otherNames}
-                        onChange={(e) => setOtherNames(e.target.value)}
-                      />
-                    </div>
-
-                    <div>
-                      <label className={labelCls}>Email address</label>
-                      <input
-                        type="email"
-                        placeholder="genny@example.com"
-                        className={fieldCls}
-                        value={email}
-                        onChange={(e) => { setEmail(e.target.value); setEmailSuggestion(""); }}
-                        onBlur={() => setEmailSuggestion(suggestEmailCorrection(email) || "")}
-                      />
-                      {emailSuggestion && (
-                        <p className="mt-1.5 text-xs text-[var(--color-text-muted)]">
-                          Did you mean{" "}
-                          <button
-                            type="button"
-                            onClick={() => { setEmail(emailSuggestion); setEmailSuggestion(""); }}
-                            className="font-semibold text-[var(--color-primary)] underline"
-                          >
-                            {emailSuggestion}
-                          </button>
-                          ?
-                        </p>
+                          {loginErrorBox}
+                          <div className="mt-8 lg:hidden">{summary}</div>
+                          <div className="mt-8 flex justify-end">
+                            <button type="button" onClick={handlePayAgain} disabled={loginBusy} className={`btn-primary min-h-[48px] w-full justify-center px-7 text-[15px] sm:w-auto${loginBusy ? " cursor-not-allowed opacity-60" : ""}`}>
+                              {loginBusy ? <BusyLabel>Opening checkout…</BusyLabel> : "Continue to checkout"}
+                              {!loginBusy && <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />}
+                            </button>
+                          </div>
+                        </>
                       )}
                     </div>
-
-                    <div>
-                      <label className={labelCls}>Phone number</label>
-                      <input
-                        type="tel"
-                        placeholder="+233 xx xxx xxxx"
-                        className={fieldCls}
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                      />
-                    </div>
-
-                    <div>
-                      <label className={labelCls}>Dues period</label>
-                      <SelectField
-                        name="selectedMonths"
-                        value={selectedMonths}
-                        onChange={(event) => setSelectedMonths(event.target.value)}
-                        className={fieldCls}
-                        options={duesPeriodOptions}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <PaymentHistoryAccessCard className="hidden lg:block" />
-            </div>
-
-            <div className="order-2 space-y-4 lg:w-[330px] lg:shrink-0 lg:sticky lg:top-28">
-              <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white p-6 shadow-sm">
-                <p className="mb-5 text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--color-primary)]">
-                  Order summary
-                </p>
-
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between gap-4 border-b border-[var(--color-border)] pb-4 text-sm">
-                    <span className="text-[var(--color-text-secondary)]">
-                      Monthly dues
-                    </span>
-                    <span className="font-semibold text-[var(--color-text-primary)]">
-                      {formatGhs(item.baseAmount)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between gap-4 border-b border-[var(--color-border)] pb-4 text-sm">
-                    <span className="text-[var(--color-text-secondary)]">
-                      Selected months
-                    </span>
-                    <span className="font-semibold text-[var(--color-text-primary)]">
-                      x {Number(checkoutMonths)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between gap-4 border-b border-[var(--color-border)] pb-4 text-sm">
-                    <span className="text-[var(--color-text-secondary)]">
-                      Base total
-                    </span>
-                    <span className="font-semibold text-[var(--color-text-primary)]">
-                      {formatGhs(breakdown.baseAmount)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between gap-4 border-b border-[var(--color-border)] pb-4 text-sm">
-                    <span className="text-[var(--color-text-secondary)]">
-                      Maintenance fee
-                    </span>
-                    <span className="font-semibold text-[var(--color-text-primary)]">
-                      {formatGhs(breakdown.maintenanceFee)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between gap-4 text-sm">
-                    <span className="text-[var(--color-text-secondary)]">
-                      Speso processing fee
-                    </span>
-                    <span className="font-semibold text-[var(--color-text-primary)]">
-                      {formatGhs(breakdown.spesoFee)}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="my-5 flex items-center justify-between gap-4 rounded-[var(--radius-sm)] bg-[var(--color-primary)]/10 px-4 py-4">
-                  <span className="text-sm font-semibold text-[var(--color-primary-deep)]">
-                    Total payable
-                  </span>
-                  <span className="text-xl font-bold text-[var(--color-primary)]">
-                    {formatGhs(breakdown.customerTotal)}
-                  </span>
-                </div>
-
-                <div className="space-y-3">
-                  {formError && (
-                    <p
-                      role="alert"
-                      className="max-w-full break-words rounded-[var(--radius-sm)] border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm leading-relaxed text-red-700"
-                    >
-                      {formError}
-                    </p>
                   )}
-                  <button
-                    type="button"
-                    onClick={handleFirstTimeSubmit}
-                    disabled={submitting || !showManualForm}
-                    className={`btn-primary w-full justify-center${submitting || !showManualForm ? " cursor-not-allowed opacity-50" : ""}`}
-                  >
-                    {submitting ? <BusyLabel>Processing…</BusyLabel> : "Continue to checkout"}
-                    <ArrowRight size={15} strokeWidth={2.25} aria-hidden="true" />
-                  </button>
-                  <Link
-                    to="/payments"
-                    className="btn-outline w-full justify-center"
-                  >
-                    Back to enrolment &amp; dues
-                  </Link>
                 </div>
+              )}
+              <div
+                className={`mt-6 rounded-[var(--radius-md)] border border-[var(--color-primary)]/15 bg-[var(--color-primary)]/10 p-6 md:p-7 ${
+                  onLastStep ? "" : "hidden lg:block"
+                }`}
+              >
+                <div className="mb-5 flex items-center gap-2">
+                  <ShieldCheck size={18} strokeWidth={2.25} aria-hidden="true" className="text-[var(--color-primary)]" />
+                  <h3 className="text-base font-semibold tracking-tight text-[var(--color-primary-deep)]">Your payment record</h3>
+                </div>
+                <ul className="space-y-4">
+                  {HISTORY_ACCESS.map((detail) => (
+                    <li key={detail} className="flex items-start gap-3">
+                      <CheckCircle2 size={16} strokeWidth={2} aria-hidden="true" className="mt-0.5 shrink-0 text-[var(--color-primary)]" />
+                      <span className="text-[15px] leading-relaxed text-[var(--color-text-secondary)]">{detail}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-
-              <p className="flex items-center justify-center gap-2 text-center text-xs text-[var(--color-text-muted)]">
-                <Lock size={14} strokeWidth={2} aria-hidden="true" />
-                Secured by Speso
-              </p>
             </div>
 
-            <PaymentHistoryAccessCard className="order-3 lg:hidden" />
+            {/* On a phone the summary waits for the last step, inside the card. */}
+            <div className="hidden lg:sticky lg:top-28 lg:block">{summary}</div>
           </div>
         </div>
       </section>
