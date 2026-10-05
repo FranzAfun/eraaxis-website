@@ -24,6 +24,8 @@ export default function ScrollScenes({ children }) {
       media = gsap.matchMedia(ref.current);
       media.add(
         {
+          // matchMedia runs this only when a condition matches, so one always does.
+          any: "all",
           wide: "(min-width: 1024px) and (pointer: fine)",
           calm: "(prefers-reduced-motion: reduce)",
         },
