@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import SEO from "../components/SEO";
+import PageLoading from "../components/ui/PageLoading";
 
 const BASE_URL = (import.meta.env.VITE_API_URL || "").replace(/\/+$/, "");
 
@@ -41,7 +42,7 @@ export default function NewsletterUnsubscribe() {
         />
         <div className="container relative z-10 text-center">
           {status === "loading" && (
-            <p className="text-base text-[var(--color-text-on-dark-muted)]">Processing your request…</p>
+            <PageLoading>Processing your request…</PageLoading>
           )}
 
           {status === "success" && (

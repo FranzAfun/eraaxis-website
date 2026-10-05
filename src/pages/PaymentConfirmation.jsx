@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import SEO from "../components/SEO";
+import PageLoading from "../components/ui/PageLoading";
 import { formatGhs } from "../data/payments";
 import { clearDraft, forgetPaymentReturn, paymentReturnFor } from "../components/forms/formDisplay";
 import { getPageSeo } from "../data/seo";
@@ -109,23 +110,7 @@ export default function PaymentConfirmation() {
           }}
         />
         <div className="container relative z-10 text-center">
-          {status === "loading" && (
-            <div>
-              <div className="mb-6 flex items-center justify-center gap-3">
-                {[0, 1, 2, 3, 4].map((i) => (
-                  <span
-                    key={i}
-                    className="h-3 w-3 rounded-full bg-[var(--color-accent)]"
-                    style={{
-                      animation: "chaseDotGlow 1.2s ease-in-out infinite",
-                      animationDelay: `${i * 0.15}s`,
-                    }}
-                  />
-                ))}
-              </div>
-              <p className="text-base text-[var(--color-text-on-dark-muted)]">Confirming your payment…</p>
-            </div>
-          )}
+          {status === "loading" && <PageLoading>Confirming your payment…</PageLoading>}
 
           {status === "pending" && (
             <div className="mx-auto max-w-lg">

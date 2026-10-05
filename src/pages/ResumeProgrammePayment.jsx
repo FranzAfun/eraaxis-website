@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ArrowRight, Lock } from "lucide-react";
 import SEO from "../components/SEO";
+import PageLoading from "../components/ui/PageLoading";
 import { getPageSeo } from "../data/seo";
 import { formatGhs, calculatePaymentBreakdown } from "../data/payments";
 import { api, envelopeError, toUserMessage } from "../services/api";
@@ -112,23 +113,7 @@ export default function ResumeProgrammePayment() {
           }}
         />
         <div className="container relative z-10 text-center">
-          {status === "loading" && (
-            <div>
-              <div className="mb-6 flex items-center justify-center gap-3">
-                {[0, 1, 2, 3, 4].map((i) => (
-                  <span
-                    key={i}
-                    className="h-3 w-3 rounded-full bg-[var(--color-accent)]"
-                    style={{
-                      animation: "chaseDotGlow 1.2s ease-in-out infinite",
-                      animationDelay: `${i * 0.15}s`,
-                    }}
-                  />
-                ))}
-              </div>
-              <p className="text-base text-[var(--color-text-on-dark-muted)]">Looking up your payment…</p>
-            </div>
-          )}
+          {status === "loading" && <PageLoading>Looking up your payment…</PageLoading>}
 
           {status === "not-found" && (
             <div className="mx-auto max-w-lg">

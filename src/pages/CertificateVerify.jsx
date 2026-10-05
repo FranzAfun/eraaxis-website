@@ -15,7 +15,7 @@ import SEO from "../components/SEO";
 import { API_ERROR_MESSAGES, toUserMessage } from "../services/api";
 import { CERTIFICATE_STATUS, verifyCertificate } from "../services/certificateService";
 
-import { Waiting } from "../components/ui/BusyLabel";
+import PageLoading from "../components/ui/PageLoading";
 const panel =
   "mx-auto max-w-xl rounded-[var(--radius-md)] border border-white/15 bg-white/[0.06] p-6 text-left backdrop-blur-xl sm:p-8";
 const primaryAction =
@@ -194,7 +194,7 @@ export default function CertificateVerify() {
         <div className="container relative z-10">
           <div aria-live="polite" aria-busy={state === "loading"}>
             {state === "loading" && (
-              <Waiting className="text-center text-base text-[var(--color-text-on-dark-muted)]">Checking this certificate…</Waiting>
+              <PageLoading>Checking this certificate…</PageLoading>
             )}
 
             {state === "found" && presentation && (

@@ -213,6 +213,23 @@
   }
 }
 
+/* PageLoading.jsx: the dots light up one after another. With less motion they
+   sit still, brightest in the middle. */
+.page-loading-dots > span {
+  animation: chaseDotGlow 1.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-loading-dots > span {
+    animation: none;
+    opacity: 0.45;
+  }
+
+  .page-loading-dots > span:nth-child(3) {
+    opacity: 1;
+  }
+}
+
 /* ── Reusable component classes ────────────────────────────────────────── */
 @layer components {
 

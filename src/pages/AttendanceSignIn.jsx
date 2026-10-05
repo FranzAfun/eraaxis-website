@@ -22,7 +22,7 @@ import {
   signInToSession,
 } from "../services/attendanceService";
 
-import { Waiting } from "../components/ui/BusyLabel";
+import PageLoading from "../components/ui/PageLoading";
 const panel =
   "mx-auto max-w-xl rounded-[var(--radius-md)] border border-white/15 bg-white/[0.06] p-6 text-left backdrop-blur-xl sm:p-8";
 const primaryAction =
@@ -222,7 +222,7 @@ export default function AttendanceSignIn() {
         <div className="container relative z-10">
           <div aria-live="polite" aria-busy={view === "loading" || busy}>
             {view === "loading" && (
-              <Waiting className="text-center text-base text-[var(--color-text-on-dark-muted)]">Opening this session…</Waiting>
+              <PageLoading>Opening this session…</PageLoading>
             )}
 
             {view === "unknown-link" && (
