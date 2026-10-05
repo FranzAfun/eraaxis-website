@@ -1459,6 +1459,23 @@ input[type="radio"] {
       0 28px 60px -32px rgb(0 0 0 / 0.65);
   }
 
+  /* On touch screens the glass keeps its look without the live blur: phone
+     browsers redraw a backdrop blur on every scroll frame and can flicker it
+     when the section around it moves or dims. */
+  @media (pointer: coarse) {
+    .glass {
+      background: rgb(255 255 255 / 0.9);
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
+
+    .glass-dark {
+      background: color-mix(in srgb, var(--color-primary-deep) 55%, rgb(255 255 255 / 0.06));
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
+  }
+
   /* The hero's ground: dark, with ERA purple light behind the circuit and a
      faint dot grid like a breadboard. */
   .hero-ground {

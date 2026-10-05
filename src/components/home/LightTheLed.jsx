@@ -49,14 +49,15 @@ export default function LightTheLed() {
       </svg>
 
       <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-[15px] leading-relaxed text-[var(--color-text-on-dark-muted)]" aria-live="polite">
+        {/* Room for two lines either way, so flipping the switch never moves the page. */}
+        <p className="min-h-[3rem] text-[15px] leading-relaxed text-[var(--color-text-on-dark-muted)] sm:min-h-0" aria-live="polite">
           {on ? "Circuit closed. Current flows and the LED lights up." : "Try it: close the switch and light the LED."}
         </p>
         <button
           type="button"
           onClick={toggle}
           aria-pressed={on}
-          className={`inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-full border px-5 text-sm font-semibold transition-all duration-300 ${
+          className={`inline-flex min-h-[44px] min-w-[9.5rem] shrink-0 items-center justify-center gap-2 rounded-full border px-5 text-sm font-semibold transition-colors duration-300 ${
             on
               ? "border-[var(--color-accent)] bg-[var(--color-accent)] text-[var(--color-primary-deep)]"
               : "border-white/25 bg-white/[0.08] text-white hover:bg-white/15"

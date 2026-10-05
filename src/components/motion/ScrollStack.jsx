@@ -25,9 +25,16 @@ export default function ScrollStack({ children }) {
     let panels = [];
     let frame = 0;
 
+    // The window's height with the address bar hidden, so the hold point does
+    // not move when the bar comes and goes.
+    const probe = document.createElement("div");
+    probe.style.cssText = "position:fixed;top:0;left:-9999px;height:100lvh;width:1px;visibility:hidden;pointer-events:none";
+    document.body.appendChild(probe);
+    const viewHeight = () => probe.offsetHeight || window.innerHeight;
+
     const measure = () => {
       panels = [...root.querySelectorAll(":scope > section")];
-      const vh = window.innerHeight;
+      const vh = viewHeight();
       panels.forEach((panel, i) => {
         const h = panel.offsetHeight;
         const top = Math.min(0, vh - h);
@@ -42,7 +49,7 @@ export default function ScrollStack({ children }) {
 
     const update = () => {
       frame = 0;
-      const vh = window.innerHeight;
+      const vh = viewHeight();
       for (let i = 0; i < panels.length - 1; i += 1) {
         const panel = panels[i];
         const h = Number(panel.dataset.stackHeight);
@@ -61,16 +68,26 @@ export default function ScrollStack({ children }) {
 
     const resize = new ResizeObserver(() => measure());
     [...root.querySelectorAll(":scope > section")].forEach((panel) => resize.observe(panel));
+    // A phone's address bar hides and shows as you scroll, changing the
+    // window's height every time. Re-measuring then would make a tall section
+    // jump by the bar's height, so only a change of width counts.
+    let width = window.innerWidth;
+    const onResize = () => {
+      if (window.innerWidth === width) return;
+      width = window.innerWidth;
+      measure();
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", measure);
+    window.addEventListener("resize", onResize);
     measure();
 
     return () => {
       cancelAnimationFrame(frame);
       resize.disconnect();
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", measure);
+      window.removeEventListener("resize", onResize);
       delete root.dataset.stacking;
+      probe.remove();
     };
   }, []);
 
