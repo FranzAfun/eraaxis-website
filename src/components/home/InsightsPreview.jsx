@@ -61,7 +61,7 @@ export default function InsightsPreview() {
     <section
       id="insights"
       aria-label="Insights preview"
-      className="dark-surface bg-[var(--color-background-dark)] pt-8 pb-16 md:pt-10 md:pb-20 lg:pt-12 lg:pb-24"
+      className="dark-surface overflow-hidden bg-[var(--color-background-dark)] pt-8 pb-16 md:pt-10 md:pb-20 lg:pt-12 lg:pb-24"
     >
       <div className="container">
         {/* Section header + CTA row */}
@@ -91,9 +91,9 @@ export default function InsightsPreview() {
         {/* Cards */}
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {insights.map((item, i) => (
-            <Reveal key={item.slug} delay={i * 90} className="flex">
+            <div key={item.slug} data-scene="drift" data-from={i % 2 ? "right" : "left"} className="flex">
               <InsightCard {...item} />
-            </Reveal>
+            </div>
           ))}
         </div>
 

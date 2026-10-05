@@ -88,6 +88,7 @@ export default function WhatYouLearn() {
         </Reveal>
 
         <Reveal delay={80}>
+          <div data-scene="zoom-in">
           <PickerTabs items={tracks} value={track} onChange={setTrack} label="Learning tracks" tone="dark">
             {(item) => (
               <div className="glass-dark grid gap-6 p-6 sm:p-8 md:grid-cols-[auto_1fr] md:items-center md:gap-10">
@@ -108,6 +109,7 @@ export default function WhatYouLearn() {
               </div>
             )}
           </PickerTabs>
+          </div>
         </Reveal>
 
         <Reveal delay={140} className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">

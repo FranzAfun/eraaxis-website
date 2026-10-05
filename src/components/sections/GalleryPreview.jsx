@@ -179,7 +179,7 @@ export default function GalleryPreview() {
           onMouseLeave={() => setPaused(false)}
         >
           <div className="gallery-stage">
-            <div className="gallery-stage-image-wrap">
+            <div className="gallery-stage-image-wrap" data-scene="zoom-in">
               {featuredItems.map((item, index) => (
                 <div
                   key={item.id}

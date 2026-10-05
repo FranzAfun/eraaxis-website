@@ -19,12 +19,14 @@ export default function Hero() {
       <div
         className="pointer-events-none absolute -right-[38%] top-1/2 w-[120%] max-w-[760px] -translate-y-1/2 opacity-35 sm:-right-[18%] sm:w-[80%] lg:pointer-events-auto lg:right-[2%] lg:w-[46%] lg:opacity-100 xl:right-[4%]"
       >
-        <CircuitField />
+        <div data-scene="hero-sink">
+          <CircuitField />
+        </div>
       </div>
 
       {/* Hero content */}
       <div className="container relative z-10 pb-16 pt-28 sm:pb-20 sm:pt-32 md:pb-24 md:pt-36 lg:pb-28 lg:pt-40">
-        <div className="hero-content max-w-2xl">
+        <div className="hero-content max-w-2xl" data-scene="hero-exit">
           {/* Eyebrow */}
           <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-[var(--color-accent)]/30 bg-[var(--color-accent)]/10 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)] sm:mb-5">
             Practical STEM &amp; Digital Skills

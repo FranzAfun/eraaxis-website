@@ -37,6 +37,7 @@ export default function DevBoardFeature() {
           </div>
 
           <Reveal delay={120} className="lg:col-start-2 lg:row-span-2 lg:row-start-1">
+            <div data-scene="tilt-zoom">
             <img
               src={devBoardImg}
               alt="The ERA Dev Board, a hands-on electronics learning kit"
@@ -44,6 +45,7 @@ export default function DevBoardFeature() {
               loading="lazy"
               decoding="async"
             />
+            </div>
           </Reveal>
 
           <Reveal delay={150} className="lg:col-start-1 lg:row-start-2 lg:self-start">

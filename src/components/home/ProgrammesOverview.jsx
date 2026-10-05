@@ -72,13 +72,16 @@ function ProgrammeCard({ image, title, text, to, cta }) {
       className="card-interactive group flex w-full flex-col overflow-hidden"
     >
       {/* Image */}
-      <div className="aspect-[16/9] overflow-hidden">
+      <div className="relative aspect-[16/9] overflow-hidden">
         {image ? (
-          <img
-            src={image}
-            alt={title}
-            className="h-full w-full object-cover brightness-75 transition-transform duration-500 group-hover:scale-105"
-          />
+          // Taller than its frame, so it can move a little slower than the page.
+          <div data-scene="parallax" className="absolute inset-x-0 -top-[9%] h-[118%]">
+            <img
+              src={image}
+              alt={title}
+              className="h-full w-full object-cover brightness-75 transition-transform duration-500 group-hover:scale-105"
+            />
+          </div>
         ) : (
           <div className="h-full w-full bg-[var(--color-surface-soft)]" />
         )}
