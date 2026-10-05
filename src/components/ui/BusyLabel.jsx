@@ -3,6 +3,8 @@ import { ThinkingOrb } from "thinking-orbs";
 
 // The orb's inline-text preset (the library draws only 20, 32 and 64).
 const ORB_SIZE = 20;
+// A little quicker than the library's own pace, so a busy button feels busy.
+const ORB_SPEED = 1.6;
 
 // Light text means a dark background, and the other way round; the orb shades
 // toward whatever it sits on either way.
@@ -28,6 +30,7 @@ function Orb({ ink }) {
     <ThinkingOrb
       state="working"
       size={ORB_SIZE}
+      speed={ORB_SPEED}
       theme={ink.theme}
       color={ink.color}
       aria-hidden="true"
