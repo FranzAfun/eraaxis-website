@@ -3,7 +3,11 @@
   X-Content-Type-Options: nosniff
   Permissions-Policy: camera=(), microphone=(), geolocation=()
   Referrer-Policy: strict-origin-when-cross-origin
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com/gsi/style; font-src https://fonts.gstatic.com; img-src 'self' data: https://eraaxis.com https://api.edos.eraaxis.com; connect-src 'self' https://api.edos.eraaxis.com https://accounts.google.com/gsi/; frame-src https://www.google.com https://accounts.google.com/gsi/
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self'; img-src 'self' data: https://eraaxis.com https://api.edos.eraaxis.com; connect-src 'self' https://api.edos.eraaxis.com https://accounts.google.com/gsi/; frame-src https://www.google.com https://accounts.google.com/gsi/
+
+# Fonts live in a folder named for their version, so they never change.
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
 
 # Private links: a certificate ID and an attendance token. Netlify answers these with
 # the generic index.html, so the page's own robots tag exists only once JavaScript
