@@ -30,8 +30,8 @@ const story = [
   },
   {
     mark: "By hand",
-    title: "Built by hand.",
-    line: "The ERA Dev Board was built by hand, and it still is.",
+    title: "Built by our own hands.",
+    line: "The ERA Dev Board was built by our own hands, and it still is.",
     photos: [{ src: devBoardImg, alt: "The ERA Dev Board", contain: true }],
   },
   {
