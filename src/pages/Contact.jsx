@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { ArrowRight, MapPin, Mail, Phone, ChevronDown } from "lucide-react";
 import linkedinImg  from "../assets/social/linkedin.webp";
 import xImg         from "../assets/social/X_white.webp";
@@ -97,7 +97,14 @@ function ContactFaqItem({ item, isOpen, onToggle }) {
 
 export default function Contact() {
   const { settings, socials: bootstrapSocials } = useBootstrap();
-  const [form, setForm]               = useState(EMPTY_FORM);
+  // Other pages can open the form already pointed at a topic, e.g. Partners:
+  // <Link to="/contact#enquiry" state={{ inquiryType, message }}>.
+  const preset = useLocation().state;
+  const [form, setForm]               = useState(() => ({
+    ...EMPTY_FORM,
+    type:    INQUIRY_TYPES.includes(preset?.inquiryType) ? preset.inquiryType : "",
+    message: typeof preset?.message === "string" ? preset.message.slice(0, 500) : "",
+  }));
   const [errors, setErrors]           = useState({});
   const [submitted, setSubmitted]     = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);

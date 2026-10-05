@@ -4,50 +4,28 @@ import { ArrowRight, BookOpen, Users, School, Zap } from "lucide-react";
 import STATIC_PARTNERS from "../data/partners";
 import mestAfricaLogo from "../assets/partners/mest-africa.webp";
 import heroImg from "../assets/partners/unicef-startup-img.webp";
+import PickerTabs from "../components/motion/PickerTabs";
+import Reveal from "../components/motion/Reveal";
+import ScrollScenes from "../components/motion/ScrollScenes";
+import { ProgrammeClose, ProgrammeHero, SectionHead } from "../components/programme/ProgrammeParts";
+import { closePrimaryClass, closeSecondaryClass, heroPrimaryClass, heroSecondaryClass } from "../components/programme/programmeClasses";
 import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
 import { api } from "../services/api";
 import { resolveMediaUrl } from "../utils/resolveMediaUrl";
 
-const galleryItems = [
-  {
-    src: heroImg,
-    alt: "KOICA UNICEF Startup Lab recognition event",
-    caption: "KOICA UNICEF Startup Lab",
-    tag: "Recognition",
-  },
-];
+const PARTNERSHIP = "School or Institutional Partnership";
 
-const partnershipAreas = [
-  {
-    Icon: BookOpen,
-    title: "STEM education access",
-    body: "Expanding access to practical, hands-on STEM education for schools and community learners across Ghana and underserved communities in Africa.",
-  },
-  {
-    Icon: Users,
-    title: "Youth skills development",
-    body: "Building digital and technical skills for young people through structured programmes, practical tools, and real learning experiences.",
-  },
-  {
-    Icon: School,
-    title: "School and community programmes",
-    body: "Working with schools, youth groups, and communities to deliver curriculum-aligned STEM and digital skills learning that creates lasting change.",
-  },
-  {
-    Icon: Zap,
-    title: "EdTech innovation and scaling",
-    body: "Developing and scaling practical EdTech solutions, including the ERA Kids Development Board and AI-assisted learning support.",
-  },
+const areas = [
+  { key: "access", label: "STEM access", Icon: BookOpen, line: "Hands-on STEM for more schools and communities across Ghana and Africa." },
+  { key: "youth", label: "Youth skills", Icon: Users, line: "Digital and technical skills for young people, through real projects." },
+  { key: "schools", label: "Schools and communities", Icon: School, line: "Curriculum-aligned learning with schools, youth groups and communities." },
+  { key: "edtech", label: "EdTech at scale", Icon: Zap, line: "Scaling the ERA Dev Board and AI-assisted learning support." },
 ];
-
-const ctaPrimaryClass =
-  "final-cta-btn-primary cta-mobile-btn inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[var(--radius-sm)] px-5 text-sm font-semibold";
-const ctaSecondaryClass =
-  "final-cta-btn-secondary cta-mobile-btn inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[var(--radius-sm)] px-5 text-sm font-semibold";
 
 export default function Partners() {
   const [apiPartners, setApiPartners] = useState(null);
+  const [area, setArea] = useState(areas[0].key);
 
   useEffect(() => {
     let cancelled = false;
@@ -64,16 +42,22 @@ export default function Partners() {
   const partners = (() => {
     if (!apiPartners || apiPartners.length === 0) return STATIC_PARTNERS;
     return apiPartners.map((p) => {
-      // No logo uploaded via the CMS yet — fall back to the bundled local
-      // asset for known partners (matched by name) rather than hiding them.
+      // Known partners (matched by name) have a bundled logo of our own.
       const staticMatch = STATIC_PARTNERS.find(
         (s) => s.name.toLowerCase() === p.name.toLowerCase()
       );
+      // A logo uploaded in EDOS wins. A pasted link to the partner's own site
+      // is used only when we have no copy of our own: those load from other
+      // sites, slowly, and some set third-party cookies. A web address saved
+      // without "https://" would otherwise open as a page on this site.
+      const uploaded = p.logo_url && !/^https?:\/\//i.test(p.logo_url);
+      const logo = uploaded ? resolveMediaUrl(p.logo_url) : staticMatch?.logo ?? resolveMediaUrl(p.logo_url);
+      const site = p.website_url || null;
       return {
         name: p.name,
-        logo: resolveMediaUrl(p.logo_url) ?? staticMatch?.logo ?? null,
+        logo: logo ?? null,
         alt: `${p.name} logo`,
-        websiteUrl: p.website_url || null,
+        websiteUrl: site && !/^https?:\/\//i.test(site) ? `https://${site}` : site,
       };
     });
   })();
@@ -81,289 +65,138 @@ export default function Partners() {
   const displayPartners = partners.length > 0 ? partners : STATIC_PARTNERS;
 
   return (
-    <>
+    <ScrollScenes>
       <SEO {...getPageSeo("/partners")} />
-      {/* ── Hero ─────────────────────────────────────────────────────────── */}
-      <section className="dark-surface relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-16 pt-36 text-white md:pb-24 md:pt-44">
-        <div
-          aria-hidden="true"
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(circle at 15% 18%, color-mix(in srgb, var(--color-accent) 24%, transparent) 0%, transparent 30%), radial-gradient(circle at 84% 8%, color-mix(in srgb, var(--color-primary) 38%, transparent) 0%, transparent 34%), linear-gradient(135deg, var(--color-background-dark) 0%, var(--color-primary-deep) 54%, var(--color-background-dark) 100%)",
-          }}
-        />
-        <div
-          aria-hidden="true"
-          className="absolute -left-28 top-28 h-80 w-80 rounded-full bg-white/[0.05] blur-3xl"
-        />
-        <div
-          aria-hidden="true"
-          className="absolute -bottom-24 right-4 h-96 w-96 rounded-full bg-[var(--color-accent)]/10 blur-3xl"
-        />
-        <div className="container relative z-10">
-          <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
+      <ProgrammeHero
+        back={false}
+        eyebrow="Partners & recognition"
+        title="Building practical STEM with the right partners."
+        line="Partners, accelerators and organisations helping ERA AXIS reach more learners."
+        image={heroImg}
+        imageAlt="KOICA UNICEF Startup Lab recognition event"
+        badge="KOICA UNICEF Startup Lab"
+        actions={
+          <>
+            <Link to="/contact#enquiry" state={{ inquiryType: PARTNERSHIP }} className={heroPrimaryClass}>
+              Start a Partnership
+              <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
+            </Link>
+            <Link to="/programs" className={heroSecondaryClass}>
+              Explore Programmes
+              <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
+            </Link>
+          </>
+        }
+      />
 
-            {/* Left: text */}
-            <div className="flex flex-col justify-center">
-              <p className="mb-5 inline-flex w-fit self-start rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)] backdrop-blur-xl">
-                Partners, Accelerators &amp; Recognition
-              </p>
-              <h1 className="mb-5 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-[4rem]">
-                Building practical STEM education with the right ecosystem.
-              </h1>
-              <p className="text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-lg">
-                ERA AXIS is supported by a growing network of partners,
-                accelerator programs, and organizations advancing innovation,
-                education, and youth development.
-              </p>
-
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <Link to="/contact#enquiry" className={ctaPrimaryClass}>
-                  Start partnership conversation
-                  <ArrowRight size={16} strokeWidth={2} />
-                </Link>
-                <Link to="/programs" className={ctaSecondaryClass}>
-                  Explore Programmes
-                  <ArrowRight size={16} strokeWidth={2} />
-                </Link>
-              </div>
-            </div>
-
-            {/* Right: image */}
-            <div className="relative hidden lg:block">
-              <div className="hero-media-card">
-                <img
-                  src={heroImg}
-                  alt="KOICA UNICEF Startup Lab recognition event"
-                  className="aspect-[4/3] w-full object-cover"
-                />
-                {/* Badge */}
-                <div className="absolute bottom-4 left-4">
-                  <span className="hero-media-card-badge inline-block rounded-full bg-[var(--color-caption-bg)] px-3 py-1 text-xs font-semibold text-white backdrop-blur-sm">
-                    KOICA UNICEF Startup Lab
-                  </span>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* ── Logo grid ────────────────────────────────────────────────────── */}
-      <section className="bg-white py-16 md:py-24">
+      {/* ── Logos ──────────────────────────────────────────────────────── */}
+      <section className="bg-white py-20 md:py-24">
         <div className="container">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
-            Our network
-          </p>
-          <h2 className="mb-3 text-2xl font-black leading-tight tracking-tight text-[var(--color-text-primary)] sm:text-3xl">
-            Our ecosystem of support.
-          </h2>
-          <p className="mb-10 max-w-2xl text-base leading-relaxed text-[var(--color-text-secondary)]">
-            Organizations and programmes supporting ERA AXIS through recognition,
-            mentorship, capacity building, and practical education partnerships.
-          </p>
-
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-            {displayPartners.map((partner) => {
-              const CardTag = partner.websiteUrl ? "a" : "div";
-              const cardProps = partner.websiteUrl
-                ? {
-                    href: partner.websiteUrl,
-                    target: "_blank",
-                    rel: "noopener noreferrer",
-                    "aria-label": `Visit ${partner.name} website`,
-                  }
-                : {};
-              return (
-                <CardTag
-                  key={partner.name}
-                  className="card-interactive flex flex-col items-center justify-center gap-3 p-5"
-                  {...cardProps}
-                >
+          <SectionHead eyebrow="Our network" title="Who supports us." />
+          {/* Centred rows, so any number of partners sits balanced. */}
+          <ul className="flex flex-wrap justify-center gap-4">
+            {displayPartners.map((partner, i) => {
+              const inner = (
+                <>
                   {partner.logo ? (
-                    <img
-                      src={partner.logo}
-                      alt={partner.alt}
-                      loading="lazy"
-                      decoding="async"
-                      className="max-h-12 w-full object-contain object-center"
-                    />
+                    <img src={partner.logo} alt={partner.alt} loading="lazy" decoding="async" className="max-h-12 w-full object-contain object-center" />
                   ) : (
-                    <div className="flex h-12 w-full items-center justify-center rounded-md bg-[var(--color-surface-soft)] text-sm font-semibold text-[var(--color-text-muted)]">
-                      {partner.name
-                        .split(" ")
-                        .map((w) => w[0])
-                        .slice(0, 3)
-                        .join("")}
-                    </div>
+                    <span className="flex h-12 w-full items-center justify-center rounded-md bg-[var(--color-surface-soft)] text-sm font-semibold text-[var(--color-text-muted)]">
+                      {partner.name.split(" ").map((w) => w[0]).slice(0, 3).join("")}
+                    </span>
                   )}
-                  <p className="text-center text-xs font-medium text-[var(--color-text-muted)]">
-                    {partner.name}
-                  </p>
-                </CardTag>
+                  <span className="text-center text-xs font-medium text-[var(--color-text-secondary)]">{partner.name}</span>
+                </>
+              );
+              const tile = "card-interactive flex h-full flex-col items-center justify-center gap-3 p-5";
+              return (
+                <Reveal as="li" key={partner.name} delay={(i % 6) * 60} className="flex w-[calc(50%-0.5rem)] sm:w-44">
+                  {partner.websiteUrl ? (
+                    <a href={partner.websiteUrl} target="_blank" rel="noopener noreferrer" aria-label={`Visit ${partner.name} website`} className={`${tile} w-full`}>
+                      {inner}
+                    </a>
+                  ) : (
+                    <div className={`${tile} w-full`}>{inner}</div>
+                  )}
+                </Reveal>
               );
             })}
-          </div>
+          </ul>
         </div>
       </section>
 
-      {/* ── Featured support ─────────────────────────────────────────────── */}
-      <section className="bg-[var(--color-surface-soft)] py-16 md:py-24">
-        <div className="container">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
-            Featured support
-          </p>
-          <h2 className="mb-10 text-2xl font-black leading-tight tracking-tight text-[var(--color-text-primary)] sm:text-3xl">
-            Accelerator &amp; fellowship support.
-          </h2>
-
-          <div className="card-interactive overflow-hidden">
-            <div className="grid gap-8 p-8 md:grid-cols-2 md:gap-12 md:p-12">
-
-              {/* Logo side */}
-              <div className="flex flex-col justify-center gap-6">
-                <div className="flex items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white p-5 max-w-[11rem]">
-                  <img
-                    src={mestAfricaLogo}
-                    alt="MEST Africa logo"
-                    loading="lazy"
-                    decoding="async"
-                    className="max-h-10 w-full object-contain object-center"
-                  />
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  <span className="rounded-full border border-[var(--color-border-soft)] bg-[var(--color-surface-soft)] px-3 py-1 text-xs font-semibold text-[var(--color-primary)]">
-                    EdTech Fellowship
-                  </span>
-                  <span className="rounded-full border border-[var(--color-border-soft)] bg-[var(--color-surface-soft)] px-3 py-1 text-xs font-semibold text-[var(--color-primary)]">
-                    Accelerator Support
-                  </span>
-                  <span className="rounded-full border border-[var(--color-border-soft)] bg-[var(--color-surface-soft)] px-3 py-1 text-xs font-semibold text-[var(--color-primary)]">
-                    Capacity Building
-                  </span>
-                </div>
-              </div>
-
-              {/* Description side */}
-              <div className="flex flex-col justify-center">
-                <h3 className="mb-4 text-xl font-black leading-tight tracking-tight text-[var(--color-text-primary)] sm:text-2xl">
-                  MEST Africa EdTech Fellowship
-                </h3>
-                <p className="text-base leading-relaxed text-[var(--color-text-secondary)]">
-                  MEST Africa is supporting ERA AXIS through the EdTech
-                  Fellowship with mentorship, strategic support, and capacity
-                  building to help scale our practical STEM education model and
-                  reach over 8,000 learners across underserved communities in
-                  Africa.
-                </p>
-              </div>
-
+      {/* ── MEST and recognition ───────────────────────────────────────── */}
+      <section className="soft-field py-20 md:py-24">
+        <div className="container grid gap-8 lg:grid-cols-2 lg:items-center lg:gap-12">
+          <Reveal className="glass p-7 sm:p-9">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">Featured support</p>
+            <div className="mb-6 flex max-w-[11rem] items-center justify-center rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white p-4">
+              <img src={mestAfricaLogo} alt="MEST Africa logo" loading="lazy" decoding="async" className="max-h-10 w-full object-contain object-center" />
             </div>
-          </div>
+            <h2 className="text-2xl font-black tracking-tight text-[var(--color-text-primary)] sm:text-3xl">MEST Africa EdTech Fellowship</h2>
+            <p className="mt-3 text-base leading-relaxed text-[var(--color-text-secondary)]">
+              Mentorship, strategy and capacity building to help ERA AXIS reach over 8,000 learners in underserved communities.
+            </p>
+            <ul className="mt-5 flex flex-wrap gap-2" aria-label="What the fellowship gives">
+              {["EdTech Fellowship", "Accelerator support", "Capacity building"].map((tag) => (
+                <li key={tag} className="rounded-full bg-[var(--color-primary)]/[0.08] px-3 py-1 text-sm font-medium text-[var(--color-primary-deep)]">{tag}</li>
+              ))}
+            </ul>
+          </Reveal>
+          <figure className="overflow-hidden rounded-[var(--radius-lg)] shadow-[var(--shadow-soft)]">
+            <div data-scene="zoom-in">
+              <img src={heroImg} alt="ERA AXIS at the KOICA UNICEF Startup Lab recognition event" loading="lazy" decoding="async" className="aspect-[16/10] w-full object-cover" />
+            </div>
+            <figcaption className="bg-white px-5 py-3 text-sm font-medium text-[var(--color-text-secondary)]">
+              Recognition: KOICA UNICEF Startup Lab
+            </figcaption>
+          </figure>
         </div>
       </section>
 
-      {/* ── Recognition gallery ──────────────────────────────────────────── */}
-      <section className="bg-white py-16 md:py-24">
+      {/* ── Partnership areas ──────────────────────────────────────────── */}
+      <section className="bg-white py-20 md:py-24">
         <div className="container">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
-            Recognition in action
-          </p>
-          <h2 className="mb-3 text-2xl font-black leading-tight tracking-tight text-[var(--color-text-primary)] sm:text-3xl">
-            Practical learning shown to the ecosystem.
-          </h2>
-          <p className="mb-10 max-w-2xl text-base leading-relaxed text-[var(--color-text-secondary)]">
-            ERA AXIS shares its practical STEM learning model through accelerator
-            programmes, showcases, and ecosystem events focused on education,
-            innovation, and youth development.
-          </p>
-
-          <div className="grid gap-4">
-            {galleryItems.map((item) => (
-              <div
-                key={item.caption}
-                tabIndex={0}
-                className="group relative aspect-[16/9] cursor-default overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-border-soft)] shadow-[var(--shadow-soft)] outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2"
-              >
-                <img
-                  src={item.src}
-                  alt={item.alt}
-                  loading="lazy"
-                  decoding="async"
-                  className="h-full w-full object-cover transition-transform duration-500 ease-out md:group-hover:scale-[1.04] md:group-focus-within:scale-[1.04]"
-                />
-                {/* Gradient: always on mobile, fades in on hover/focus on desktop */}
-                <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/65 via-black/25 to-transparent transition-opacity duration-300 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100" />
-                <div className="absolute inset-x-0 bottom-0 flex flex-col gap-0.5 px-5 pb-5 transition-opacity duration-300 sm:flex-row sm:items-end sm:justify-between sm:gap-4 md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
-                  <p className="text-xs font-semibold leading-snug text-white photo-caption sm:text-sm">
-                    {item.caption}
-                  </p>
-                  <p className="text-[10px] leading-snug text-[var(--color-text-on-dark-muted)] photo-caption sm:shrink-0 sm:whitespace-nowrap sm:text-xs sm:text-[var(--color-text-on-dark-muted)]">
-                    {item.tag}
-                  </p>
+          <SectionHead eyebrow="Partnership areas" title="What should we work on together?" className="mb-8" />
+          <Reveal>
+            <PickerTabs items={areas} value={area} onChange={setArea} label="Partnership areas">
+              {(item) => (
+                <div className="glass grid gap-6 p-6 sm:p-8 md:grid-cols-[auto_1fr_auto] md:items-center md:gap-10">
+                  <span className="flex h-16 w-16 items-center justify-center rounded-[var(--radius-lg)] bg-[var(--color-primary)] text-white shadow-[0_16px_36px_-16px_var(--color-primary)]">
+                    <item.Icon size={30} strokeWidth={1.9} aria-hidden="true" />
+                  </span>
+                  <p className="text-xl font-bold leading-snug text-[var(--color-text-primary)] sm:text-2xl">{item.line}</p>
+                  <Link
+                    to="/contact#enquiry"
+                    state={{ inquiryType: PARTNERSHIP, message: `We would like to partner with ERA AXIS on ${item.label.toLowerCase()}.` }}
+                    className="btn-primary w-fit whitespace-nowrap"
+                  >
+                    Talk to us about this
+                    <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
+                  </Link>
                 </div>
-              </div>
-            ))}
-          </div>
+              )}
+            </PickerTabs>
+          </Reveal>
         </div>
       </section>
 
-      {/* ── Partnership areas ────────────────────────────────────────────── */}
-      <section className="bg-[var(--color-surface-soft)] py-16 md:py-24">
-        <div className="container">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
-            Partnership areas
-          </p>
-          <h2 className="mb-10 text-2xl font-black leading-tight tracking-tight text-[var(--color-text-primary)] sm:text-3xl">
-            Where we work together.
-          </h2>
-
-          <div className="grid gap-5 sm:grid-cols-2">
-            {partnershipAreas.map(({ Icon, title, body }) => (
-              <div key={title} className="card-interactive p-7">
-                <span className="mb-4 flex h-11 w-11 items-center justify-center rounded-[var(--radius-sm)] bg-white">
-                  <Icon
-                    size={20}
-                    strokeWidth={1.75}
-                    className="text-[var(--color-primary)]"
-                  />
-                </span>
-                <h3 className="mb-2 text-base font-bold text-[var(--color-text-primary)]">
-                  {title}
-                </h3>
-                <p className="text-sm leading-relaxed text-[var(--color-text-secondary)]">
-                  {body}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Final CTA ────────────────────────────────────────────────────── */}
-      <section className="dark-surface final-cta-band relative overflow-hidden py-20 md:py-28">
-        <div className="final-cta-orb pointer-events-none absolute inset-0" />
-        <div className="container relative z-10 text-center">
-          <h2 className="mb-4 text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl md:text-5xl">
-            Work with ERA AXIS.
-          </h2>
-          <p className="mx-auto mb-8 max-w-xl text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-lg">
-            Partner with us to expand practical STEM and digital skills learning
-            for schools, youth groups, and communities.
-          </p>
-          <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <Link to="/contact#enquiry" className={ctaPrimaryClass}>
-              Start Partnership Conversation <ArrowRight size={16} />
+      <ProgrammeClose
+        title="Work with ERA AXIS."
+        line="Help bring practical STEM and digital skills to more schools, youth groups and communities."
+        actions={
+          <>
+            <Link to="/contact#enquiry" state={{ inquiryType: PARTNERSHIP }} className={closePrimaryClass}>
+              Start a Partnership
+              <ArrowRight size={15} strokeWidth={2.2} aria-hidden="true" />
             </Link>
-            <Link to="/programs" className={ctaSecondaryClass}>
-              Explore Programmes <ArrowRight size={16} />
+            <Link to="/contact#enquiry" state={{ inquiryType: "Sponsorship or Donation" }} className={closeSecondaryClass}>
+              Sponsor Learners
+              <ArrowRight size={15} strokeWidth={2.2} aria-hidden="true" />
             </Link>
-          </div>
-        </div>
-      </section>
-    </>
+          </>
+        }
+      />
+    </ScrollScenes>
   );
 }
