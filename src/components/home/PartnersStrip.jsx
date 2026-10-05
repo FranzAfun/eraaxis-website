@@ -44,6 +44,8 @@ export default function PartnersStrip() {
                     rel="noopener noreferrer"
                     className="partner-card"
                     aria-label={`Visit ${partner.name} website`}
+                    // The second set only repeats the first for the endless scroll.
+                    tabIndex={setIdx === 1 ? -1 : undefined}
                   >
                     <img
                       src={partner.logo}

@@ -42,7 +42,7 @@ export default function PrivacyNotice() {
             to="/privacy"
             className="font-semibold text-[var(--color-accent)] underline underline-offset-2"
           >
-            Learn more
+            Read the privacy policy
           </Link>
         </p>
         <div className="flex w-full shrink-0 items-center gap-2 sm:w-auto">

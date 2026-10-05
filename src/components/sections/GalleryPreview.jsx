@@ -30,6 +30,7 @@ function GalleryThumbnail({ item, isActive, onClick }) {
           : "border-white/10 opacity-60 hover:opacity-90",
       ].join(" ")}
       aria-pressed={isActive}
+      aria-label={`Show photo: ${item.alt}`}
     >
       <img
         src={item.src}

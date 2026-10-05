@@ -237,7 +237,7 @@ export default function Footer() {
             </Link>
           </p>
           <p className="text-xs text-white/60">
-            Website by <a  rel="noopener noreferrer" className="text-[var(--color-accent)] ">ERA Technologies</a>.
+            Website by <span className="text-[var(--color-accent)]">ERA Technologies</span>.
           </p>
         </div>
 
