@@ -13,6 +13,10 @@
  *               as it arrives (wide screens)
  *   grow-line   a progress line that fills as its section scrolls past
  *               (data-axis="y" for an upright one)
+ *   stack-card  a card in a sticky pile; it eases back as the next one
+ *               slides over it
+ *   [data-h-scroll]  a section that holds still while its [data-h-track]
+ *               slides sideways (wide screens; see below)
  *
  * Only transforms and opacity are animated. `wide` is a wide screen with a
  * mouse; phones get the gentle ones only.
@@ -150,6 +154,16 @@ export function buildScenes(gsap, root, { wide }) {
       );
     });
   }
+
+  all("stack-card").forEach((card, i, cards) => {
+    const next = cards[i + 1];
+    if (!next || next.parentElement !== card.parentElement) return;
+    gsap.to(card, {
+      scale: wide ? 0.93 : 0.96,
+      ease: "none",
+      scrollTrigger: { trigger: next, start: "top bottom", end: "top 30%", scrub: true },
+    });
+  });
 
   return () => cleanups.forEach((undo) => undo());
 }

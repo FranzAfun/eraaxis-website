@@ -1864,6 +1864,86 @@ input[type="radio"] {
     box-shadow: 0 0 0 6px color-mix(in srgb, var(--color-accent) 35%, transparent);
   }
 
+  /* Stage pile (StackedStages.jsx): cards hold near the top, a little lower
+     each, so the edges of the ones beneath show as the pile builds. */
+  .stage-pile {
+    display: grid;
+    gap: 1.5rem;
+    list-style: none;
+  }
+
+  .stage-pile-card {
+    position: sticky;
+    top: calc(6rem + var(--i, 0) * 1rem);
+    transform-origin: 50% 0;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border-soft);
+    background: #fff;
+    box-shadow:
+      0 -1px 0 rgb(255 255 255 / 0.9) inset,
+      0 28px 60px -34px color-mix(in srgb, var(--color-primary) 55%, transparent);
+  }
+
+  .stage-pile-art {
+    border-radius: 1.5rem;
+    color: #fff;
+    background: linear-gradient(140deg, var(--color-primary) 0%, var(--color-primary-deep) 100%);
+    box-shadow: 0 18px 40px -20px var(--color-primary);
+  }
+
+  .stage-pile-card:nth-child(even) .stage-pile-art {
+    color: var(--color-primary-deep);
+    background: linear-gradient(140deg, var(--color-accent) 0%, color-mix(in srgb, var(--color-accent) 55%, #fff) 100%);
+  }
+
+  /* Fit check (FitCheck.jsx): chips you tap; chosen ones fill with purple. */
+  .fit-chip {
+    min-height: 4.5rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-soft);
+    color: var(--color-text-primary);
+    transition:
+      background-color 250ms ease,
+      border-color 250ms ease,
+      color 250ms ease,
+      scale 250ms var(--ease-soft);
+  }
+
+  .fit-chip:hover {
+    border-color: color-mix(in srgb, var(--color-primary) 40%, transparent);
+  }
+
+  .fit-chip:active {
+    scale: 0.97;
+  }
+
+  .fit-chip-icon {
+    background: #fff;
+    color: var(--color-primary);
+    transition: background-color 250ms ease, color 250ms ease;
+  }
+
+  .fit-chip[aria-pressed="true"] {
+    border-color: var(--color-primary);
+    background: var(--color-primary);
+    color: #fff;
+  }
+
+  .fit-chip[aria-pressed="true"] .fit-chip-icon {
+    background: var(--color-accent);
+    color: var(--color-primary-deep);
+  }
+
+  .fit-answer {
+    animation: fit-answer-in 420ms var(--ease-soft) both;
+  }
+
+  @keyframes fit-answer-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+  }
+
   /* Stage journey (StageJourney.jsx). Phones and tablets: a row you swipe,
      snapping to each stage, the next one peeking in. Wide screens with a
      mouse: the same row, which the h-scroll scene slides sideways while the
@@ -1977,6 +2057,7 @@ input[type="radio"] {
     }
 
     .picker-panel,
+    .fit-answer,
     .track-icon::before,
     .led-demo-current,
     .lab-current,
@@ -1985,6 +2066,7 @@ input[type="radio"] {
     }
 
     .board-tour-zoom,
+    .fit-chip,
     .build-tile,
     .build-tile > span:first-child {
       transition: none;

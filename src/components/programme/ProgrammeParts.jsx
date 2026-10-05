@@ -142,6 +142,27 @@ export function DevBoardStrip({ line }) {
   );
 }
 
+/** Asks partners and sponsors in. */
+export function PartnerStrip({ title, line }) {
+  return (
+    <section className="bg-white py-16 md:py-20">
+      <div className="container">
+        <Reveal className="glass flex flex-col gap-6 p-8 md:flex-row md:items-center md:justify-between md:p-10">
+          <div className="max-w-xl">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">Partners and sponsors</p>
+            <h2 className="text-2xl font-black tracking-tight text-[var(--color-text-primary)] sm:text-3xl">{title}</h2>
+            <p className="mt-2 text-base leading-relaxed text-[var(--color-text-secondary)]">{line}</p>
+          </div>
+          <Link to="/partners" className="btn-primary min-h-[44px] w-fit shrink-0">
+            Partner With ERA
+            <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
+          </Link>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
 export function ProgrammeClose({ title, line, actions }) {
   return (
     <section className="dark-surface final-cta-band relative overflow-hidden py-16 md:py-20">
