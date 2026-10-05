@@ -27,7 +27,10 @@ export default function SiteLayout({ children }) {
   return (
     <div className="flex min-h-screen flex-col bg-[var(--color-background)]">
       <Header />
-      <main className="flex-1 pt-20">{children}</main>
+      {/* At least a screen tall, so the footer starts below the fold while a
+          page's code is still arriving, instead of showing and then being
+          pushed down (a layout shift Lighthouse counts). */}
+      <main className="min-h-[100svh] flex-1 pt-20">{children}</main>
       <Footer />
       <PrivacyNoticeBoundary>
         <Suspense fallback={null}>
