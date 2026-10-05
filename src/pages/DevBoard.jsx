@@ -29,7 +29,7 @@ import BoardTour from "../components/devboard/BoardTour";
 import SeriesParallelLab from "../components/devboard/SeriesParallelLab";
 
 // What the board is, at a glance.
-const specs = ["4 × AA, 6 V", "Polarity protected", "Breadboard practice area", "Developed in Ghana"];
+const specs = ["4 × AA, 6 V", "Polarity protected", "Breadboard practice area", "Built by hand in Ghana"];
 
 const progression = [
   { Icon: Eye, label: "Discover", line: "Power it on and watch what happens." },
