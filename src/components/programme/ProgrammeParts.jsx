@@ -11,17 +11,19 @@ import Reveal from "../motion/Reveal";
 
 const BLANK = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
 
-export function ProgrammeHero({ eyebrow, title, line, glance, image, imageAlt, imageClass = "", badge, actions }) {
+export function ProgrammeHero({ eyebrow, title, line, glance, image, imageAlt, imageClass = "", badge, actions, back = true }) {
   return (
-    <section className="dark-surface hero-ground relative -mt-20 overflow-hidden pb-16 pt-32 text-white md:pb-24 md:pt-40">
+    <section className={`dark-surface hero-ground relative -mt-20 overflow-hidden pb-16 text-white md:pb-24 ${back ? "pt-32 md:pt-40" : "pt-36 md:pt-44"}`}>
       <div className="container relative z-10">
-        <Link
-          to="/programs"
-          className="mb-8 flex w-fit items-center gap-1.5 text-xs font-medium text-[var(--color-text-on-dark-muted)] transition-colors hover:text-white"
-        >
-          <ArrowLeft size={12} strokeWidth={2.5} aria-hidden="true" />
-          Back to programmes
-        </Link>
+        {back && (
+          <Link
+            to="/programs"
+            className="mb-8 flex w-fit items-center gap-1.5 text-xs font-medium text-[var(--color-text-on-dark-muted)] transition-colors hover:text-white"
+          >
+            <ArrowLeft size={12} strokeWidth={2.5} aria-hidden="true" />
+            Back to programmes
+          </Link>
+        )}
         <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
           <div data-scene="hero-exit">
             <p className="mb-5 inline-flex w-fit rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)]">
