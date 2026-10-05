@@ -51,6 +51,42 @@ const SLUG_TO_BACKEND = {
 
 const optionalTag = <span className={optionalCls}>(optional)</span>;
 
+// The one programme someone came to enrol on: its photo, who it is for and what
+// it costs, with a quiet way to choose a different one.
+function ChosenProgramme({ programme, photo, price, onChange }) {
+  return (
+    <div className="overflow-hidden rounded-[var(--radius-md)] border-2 border-[var(--color-primary)] bg-white shadow-lg shadow-[var(--color-primary)]/10">
+      <div className="grid sm:grid-cols-[minmax(0,15rem)_1fr]">
+        {photo && (
+          <img
+            src={photo.src}
+            srcSet={photo.srcSet}
+            sizes="(min-width: 640px) 240px, calc(100vw - 4rem)"
+            alt=""
+            className="h-40 w-full object-cover sm:h-full"
+          />
+        )}
+        <div className="flex flex-col gap-1 p-5">
+          <p className="inline-flex w-fit items-center gap-1.5 rounded-full bg-[var(--color-primary)] px-2.5 py-1 text-xs font-semibold text-white">
+            <Check size={12} strokeWidth={3} aria-hidden="true" />
+            Your programme
+          </p>
+          <p className="mt-2 text-xl font-bold leading-snug text-[var(--color-text-primary)]">{programme.title}</p>
+          <p className="text-sm text-[var(--color-text-secondary)]">{programme.audience}</p>
+          <p className="mt-2 text-base font-bold text-[var(--color-primary)]">{price}</p>
+          <button
+            type="button"
+            onClick={onChange}
+            className="mt-3 w-fit min-h-[44px] text-sm font-medium text-[var(--color-text-secondary)] underline decoration-[var(--color-border)] underline-offset-4 transition-colors hover:text-[var(--color-primary)] hover:decoration-current"
+          >
+            Choose a different programme
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function ProgrammeEnrolmentPayment() {
   const { feeConfig, feesLoading, feesError } = useSpesoFees();
   const location = useLocation();
@@ -60,6 +96,9 @@ export default function ProgrammeEnrolmentPayment() {
     const requested = location.state?.programmeSlug;
     return category.items.some((programme) => programme.slug === requested) ? requested : "";
   });
+  // Came from a programme's own page: show just that programme, with a way to
+  // look at the others if they meant a different one.
+  const [showAllProgrammes, setShowAllProgrammes] = useState(() => !programmeSlug);
   const [paymentOption, setPaymentOption] = useState("monthly");
   const [signUp, setSignUp] = useState(EMPTY_SIGNUP);
   const [firstName, setFirstName] = useState("");
@@ -107,12 +146,19 @@ export default function ProgrammeEnrolmentPayment() {
   const steps = [
     {
       title: "Programme",
-      heading: "Choose your programme",
-      intro: "Pick the programme, then how you'd like to pay for it.",
+      heading: showAllProgrammes || !selectedProgramme ? "Choose your programme" : "Your programme",
+      intro: showAllProgrammes || !selectedProgramme ? "Pick the programme, then how you'd like to pay for it." : "Check it's the right one, then choose how you'd like to pay.",
       problem: () => (selectedProgramme ? "" : "Please choose a programme."),
       body: (
         <>
-          <ChoiceCards
+          {!showAllProgrammes && selectedProgramme ? (
+            <ChosenProgramme
+              programme={selectedProgramme}
+              photo={PHOTO[selectedProgramme.slug]}
+              price={`${cedis(selectedProgramme.monthlyAmount)} a month`}
+              onChange={() => setShowAllProgrammes(true)}
+            />
+          ) : <ChoiceCards
             name="programme"
             columns="sm:grid-cols-2"
             options={category.items.map((programme) => ({
@@ -125,7 +171,7 @@ export default function ProgrammeEnrolmentPayment() {
             }))}
             value={programmeSlug}
             onChange={setProgrammeSlug}
-          />
+          />}
           <ChoiceCards
             name="payment-option"
             legend="How would you like to pay?"
