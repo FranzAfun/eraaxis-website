@@ -83,6 +83,37 @@ export function buildScenes(gsap, root, { wide }) {
     );
   });
 
+  // h-scroll: a section whose cards slide sideways while you scroll down. It
+  // pins the section and moves its [data-h-track] across; until this runs
+  // (phones, reduced motion, before GSAP loads) the cards are a plain grid or a
+  // swipeable row, so none is ever out of reach.
+  const cleanups = [];
+  if (wide) {
+    root.querySelectorAll("[data-h-scroll]").forEach((section) => {
+      const track = section.querySelector("[data-h-track]");
+      if (!track) return;
+      section.setAttribute("data-h-active", "");
+      cleanups.push(() => section.removeAttribute("data-h-active"));
+      const distance = () => Math.max(0, track.scrollWidth - track.clientWidth);
+      const progress = section.querySelector("[data-h-progress]");
+      const timeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: "top top",
+          end: () => `+=${distance()}`,
+          pin: true,
+          scrub: 0.6,
+          invalidateOnRefresh: true,
+          anticipatePin: 1,
+          // Measured first, so scenes further down allow for the pinned stretch.
+          refreshPriority: 1,
+        },
+      });
+      timeline.to(track, { x: () => -distance(), ease: "none" });
+      if (progress) timeline.fromTo(progress, { scaleX: 0 }, { scaleX: 1, ease: "none" }, 0);
+    });
+  }
+
   if (wide) {
     all("parallax").forEach((el) => {
       gsap.fromTo(
@@ -119,4 +150,6 @@ export function buildScenes(gsap, root, { wide }) {
       );
     });
   }
+
+  return () => cleanups.forEach((undo) => undo());
 }

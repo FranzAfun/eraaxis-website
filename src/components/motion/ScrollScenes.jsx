@@ -30,8 +30,9 @@ export default function ScrollScenes({ children }) {
           calm: "(prefers-reduced-motion: reduce)",
         },
         (context) => {
-          if (context.conditions.calm) return;
-          buildScenes(gsap, ref.current, { wide: context.conditions.wide });
+          if (context.conditions.calm) return undefined;
+          // Anything the scenes changed outside GSAP is undone with them.
+          return buildScenes(gsap, ref.current, { wide: context.conditions.wide });
         }
       );
       // The stack's sections settle their sizes as images load.
