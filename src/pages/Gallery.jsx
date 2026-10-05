@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, ArrowRight, X } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowRight, X } from "lucide-react";
 import { galleryItems as STATIC_GALLERY } from "../data/gallery";
+import Reveal from "../components/motion/Reveal";
 import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
 import { api } from "../services/api";
 import { resolveMediaUrl } from "../utils/resolveMediaUrl";
+
+const ALL = "All";
+// Photos shown at first, and added by each "Show more".
+const PAGE = 24;
 
 function formatDate(iso) {
   if (!iso) return null;
@@ -85,6 +90,8 @@ function GalleryGridCard({ src, alt, eventName, dateTaken, index, onOpen }) {
 export default function Gallery() {
   const [apiItems, setApiItems] = useState(null);
   const [activeIndex, setActiveIndex] = useState(null);
+  const [category, setCategory] = useState(ALL);
+  const [limit, setLimit] = useState(PAGE);
 
   useEffect(() => {
     let cancelled = false;
@@ -98,13 +105,24 @@ export default function Gallery() {
     return () => { cancelled = true; };
   }, []);
 
-  const items = (() => {
+  const allItems = (() => {
     if (!apiItems || apiItems.length === 0) return STATIC_GALLERY.map(normaliseStaticItem);
     const mapped = apiItems
       .filter((item) => item.image_url)
       .map(normaliseApiItem);
     return mapped.length > 0 ? mapped : STATIC_GALLERY.map(normaliseStaticItem);
   })();
+
+  // The kinds of moment there are, in the order they first appear.
+  const categories = [...new Set(allItems.map((item) => item.category).filter(Boolean))];
+  const chosen = categories.includes(category) ? category : ALL;
+  const items = chosen === ALL ? allItems : allItems.filter((item) => item.category === chosen);
+  const visible = items.slice(0, limit);
+
+  function choose(next) {
+    setCategory(next);
+    setLimit(PAGE);
+  }
 
   const activeItem = activeIndex === null ? null : items[activeIndex];
 
@@ -176,76 +194,68 @@ export default function Gallery() {
   return (
     <>
       <SEO {...getPageSeo("/gallery")} />
-      <section className="dark-surface relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-16 pt-36 text-white md:pb-24 md:pt-44">
-        <div
-          aria-hidden="true"
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(circle at 18% 16%, color-mix(in srgb, var(--color-accent) 22%, transparent) 0%, transparent 30%), radial-gradient(circle at 84% 10%, color-mix(in srgb, var(--color-primary) 42%, transparent) 0%, transparent 36%), linear-gradient(135deg, var(--color-background-dark) 0%, var(--color-primary-deep) 54%, var(--color-background-dark) 100%)",
-          }}
-        />
-        <div
-          aria-hidden="true"
-          className="absolute -left-28 top-24 h-80 w-80 rounded-full bg-white/[0.05] blur-3xl"
-        />
-        <div
-          aria-hidden="true"
-          className="absolute -bottom-24 right-6 h-96 w-96 rounded-full bg-[var(--color-accent)]/10 blur-3xl"
-        />
-
+      <section className="dark-surface hero-ground relative -mt-20 overflow-hidden pb-16 pt-36 text-white md:pb-20 md:pt-44">
         <div className="container relative z-10">
-          <Link
-            to="/"
-            className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-[var(--color-text-on-dark-muted)] transition-colors duration-200 hover:text-white"
-          >
-            <ArrowLeft size={16} strokeWidth={2} />
-            Back to home
-          </Link>
-
           <div className="max-w-3xl">
-            <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)] backdrop-blur-xl">
+            <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)]">
               ERA AXIS Gallery
             </p>
             <h1 className="mb-5 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-[4rem]">
               Practical learning, captured in motion.
             </h1>
             <p className="mb-8 text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-lg">
-              Explore moments from workshops, learner projects, STEM sessions,
-              Dev Board activities, and community innovation programmes.
+              Workshops, learner projects and Dev Board sessions.
             </p>
-
             <div className="flex flex-col gap-3 sm:flex-row">
-              <Link to="/payments" className="btn-primary btn-on-dark">
-                Enrol now
-                <ArrowRight size={16} strokeWidth={2} />
-              </Link>
-              <Link to="/programs" className="btn-secondary">
+              <a href="#photos" className="btn-primary btn-on-dark cta-mobile-btn min-h-[48px]">
+                See the photos
+                <ArrowDown size={16} strokeWidth={2} aria-hidden="true" />
+              </a>
+              <Link to="/programs" className="btn-secondary cta-mobile-btn min-h-[48px]">
                 Explore programmes
-                <ArrowRight size={16} strokeWidth={2} />
+                <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
               </Link>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="bg-[linear-gradient(180deg,var(--color-surface-soft)_0%,#ffffff_100%)] py-16 md:py-20 lg:py-24">
+      <section id="photos" className="soft-field scroll-mt-20 py-16 md:py-20 lg:py-24">
         <div className="container">
-          <div className="mb-10 max-w-2xl">
+          <Reveal className="mb-6 max-w-2xl">
             <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
-              Gallery collection
+              Gallery
             </p>
-            <h2 className="mb-4 text-2xl font-black leading-tight tracking-tight text-[var(--color-text-primary)] sm:text-3xl">
-              Learning moments across workshops and community programmes.
+            <h2 className="text-2xl font-black leading-tight tracking-tight text-[var(--color-text-primary)] sm:text-3xl">
+              Moments from our programmes.
             </h2>
-            <p className="text-base leading-relaxed text-[var(--color-text-secondary)]">
-              Each frame reflects hands-on learning, active mentoring, and real
-              project work across the ERA AXIS experience.
-            </p>
-          </div>
+          </Reveal>
+
+          {categories.length > 1 && (
+            <div role="group" aria-label="Show photos of one kind" className="-mx-1 mb-8 flex gap-2 overflow-x-auto px-1 pb-2 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible">
+              {[ALL, ...categories].map((label) => {
+                const on = label === chosen;
+                return (
+                  <button
+                    key={label}
+                    type="button"
+                    aria-pressed={on}
+                    onClick={() => choose(label)}
+                    className={`inline-flex min-h-[44px] shrink-0 items-center rounded-full border px-4 text-sm font-semibold transition-all duration-300 ${
+                      on
+                        ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-white shadow-[0_10px_30px_-14px_var(--color-primary)]"
+                        : "border-[var(--color-ui-border)] bg-white/70 text-[var(--color-text-primary)] hover:border-[var(--color-primary)]"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
           <div className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4">
-            {items.map((item, index) => (
+            {visible.map((item, index) => (
               <GalleryGridCard
                 key={item.id}
                 {...item}
@@ -254,6 +264,17 @@ export default function Gallery() {
               />
             ))}
           </div>
+
+          {items.length > visible.length && (
+            <div className="mt-10 flex flex-col items-center gap-2">
+              <button type="button" onClick={() => setLimit((current) => current + PAGE)} className="btn-outline min-h-[44px]">
+                Show more photos
+              </button>
+              <p className="text-sm text-[var(--color-text-secondary)]">
+                {visible.length} of {items.length}
+              </p>
+            </div>
+          )}
         </div>
       </section>
 
