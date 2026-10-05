@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
@@ -8,69 +9,68 @@ import {
   Lightbulb,
   PencilRuler,
 } from "lucide-react";
+import PickerTabs from "../motion/PickerTabs";
+import Reveal from "../motion/Reveal";
 
 const tracks = [
   {
-    icon: Cpu,
+    key: "electronics",
+    Icon: Cpu,
+    label: "Electronics",
     title: "Electronics & Embedded Systems",
-    description:
-      "Components, circuits, sensors, automation, and the hardware thinking behind how systems behave.",
+    line: "How circuits, sensors and microcontrollers make things happen.",
+    tags: ["Components", "Sensors", "Automation"],
   },
   {
-    icon: Code2,
-    title: "Programming & Software Development",
-    description:
-      "Coding logic, apps, automation scripts, and the problem-solving habits that make software useful.",
+    key: "programming",
+    Icon: Code2,
+    label: "Programming",
+    title: "Programming & Software",
+    line: "The logic behind apps and the scripts that do the boring work.",
+    tags: ["Logic", "Apps", "Scripts"],
   },
   {
-    icon: Bot,
+    key: "ai",
+    Icon: Bot,
+    label: "AI",
     title: "Artificial Intelligence",
-    description:
-      "AI tools, applied machine learning concepts, automation, and intelligent systems tied to practical work.",
+    line: "AI tools and intelligent systems, put to practical work.",
+    tags: ["AI tools", "Machine learning", "Automation"],
   },
   {
-    icon: PencilRuler,
+    key: "cad",
+    Icon: PencilRuler,
+    label: "CAD & Design",
     title: "CAD & Digital Product Design",
-    description:
-      "Product sketches, enclosures, prototyping, and design thinking for ideas that can move toward production.",
+    line: "From a sketch to an enclosure to a prototype you can hold.",
+    tags: ["Sketching", "Enclosures", "Prototypes"],
   },
   {
-    icon: CircuitBoard,
+    key: "pcb",
+    Icon: CircuitBoard,
+    label: "PCB Design",
     title: "PCB & Circuit Board Design",
-    description:
-      "Moving from breadboard prototypes toward cleaner circuit board layouts and more structured hardware builds.",
+    line: "From a breadboard tangle to a clean, real circuit board.",
+    tags: ["Schematics", "Layout", "Hardware builds"],
   },
   {
-    icon: Lightbulb,
+    key: "projects",
+    Icon: Lightbulb,
+    label: "Projects",
     title: "Project-Based Innovation",
-    description:
-      "Learners combine skills to build solutions they can explain, improve, test, and present with confidence.",
+    line: "Everything together: build it, test it, improve it, present it.",
+    tags: ["Build", "Test", "Present"],
   },
 ];
 
-function TrackCard({ icon: Icon, title, description }) {
-  return (
-    <article className="insights-card group flex h-full flex-col p-6 sm:p-7">
-      <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-[var(--radius-md)] bg-white/8 text-[var(--color-accent)] transition-transform duration-300 group-hover:-translate-y-1">
-        <Icon size={22} strokeWidth={2.1} />
-      </div>
-
-      <h3 className="mb-3 text-lg font-black leading-snug text-white">
-        {title}
-      </h3>
-      <p className="text-sm leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-[15px]">
-        {description}
-      </p>
-    </article>
-  );
-}
-
 export default function WhatYouLearn() {
+  const [track, setTrack] = useState(tracks[0].key);
+
   return (
     <section
       id="learn"
       aria-label="What learners build with ERA AXIS"
-      className="dark-surface premium-settle-in relative overflow-hidden bg-[linear-gradient(135deg,var(--color-background-dark)_0%,var(--color-primary-deep)_55%,var(--color-primary)_100%)] py-20 md:py-24 lg:py-28"
+      className="dark-surface relative overflow-hidden bg-[linear-gradient(135deg,var(--color-background-dark)_0%,var(--color-primary-deep)_55%,var(--color-primary)_100%)] py-20 md:py-24 lg:py-28"
     >
       <div
         aria-hidden="true"
@@ -78,51 +78,48 @@ export default function WhatYouLearn() {
       />
 
       <div className="container relative z-10">
-        <div className="grid gap-10 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] xl:gap-12">
-          <div className="xl:pr-4">
-            <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)]">
-              What You Learn
-            </p>
-            <h2 className="mb-5 text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl lg:text-[2.7rem]">
-              Five learning tracks. One practical innovation pathway.
-            </h2>
-            <p className="max-w-xl text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-[17px]">
-              ERA AXIS helps learners build real skills across electronics,
-              programming, AI, design, and product development. Each track is
-              practical, project-based, and connected to real outcomes.
-            </p>
+        <Reveal className="mb-10 max-w-3xl">
+          <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)]">
+            What You Learn
+          </p>
+          <h2 className="text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl lg:text-[2.7rem]">
+            Six tracks. One practical pathway.
+          </h2>
+        </Reveal>
 
-            <div className="mt-8 hidden gap-3 sm:flex sm:flex-row sm:items-center">
-              <Link to="/payments" className="btn-primary cta-mobile-btn">
-                Enrol now
-                <ArrowRight size={16} strokeWidth={2} />
-              </Link>
-              <Link to="/programs" className="btn-secondary cta-mobile-btn">
-                Explore programmes
-                <ArrowRight size={16} strokeWidth={2} />
-              </Link>
-            </div>
-          </div>
+        <Reveal delay={80}>
+          <PickerTabs items={tracks} value={track} onChange={setTrack} label="Learning tracks" tone="dark">
+            {(item) => (
+              <div className="glass-dark grid gap-6 p-6 sm:p-8 md:grid-cols-[auto_1fr] md:items-center md:gap-10">
+                <span className="track-icon relative flex h-24 w-24 items-center justify-center rounded-full text-[var(--color-accent)]">
+                  <item.Icon size={40} strokeWidth={1.7} aria-hidden="true" />
+                </span>
+                <div>
+                  <h3 className="text-2xl font-black leading-snug text-white sm:text-[1.75rem]">{item.title}</h3>
+                  <p className="mt-2 text-lg leading-relaxed text-[var(--color-text-on-dark-muted)]">{item.line}</p>
+                  <ul className="mt-4 flex flex-wrap gap-2" aria-label="What it covers">
+                    {item.tags.map((tag) => (
+                      <li key={tag} className="rounded-full border border-white/15 bg-white/[0.06] px-3 py-1 text-sm font-medium text-[var(--color-text-on-dark-muted)]">
+                        {tag}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
+          </PickerTabs>
+        </Reveal>
 
-          <div className="grid gap-5 md:grid-cols-2 xl:self-start">
-            {tracks.map((track) => (
-              <TrackCard key={track.title} {...track} />
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-8 rounded-[var(--radius-md)] border border-white/10 bg-[rgb(255_255_255_/_0.06)] p-4 shadow-[0_16px_40px_rgb(0_0_0_/_0.16)] sm:hidden">
-          <div className="flex flex-col gap-3">
-            <Link to="/payments" className="btn-primary cta-mobile-btn">
-              Enrol now
-              <ArrowRight size={16} strokeWidth={2} />
-            </Link>
-            <Link to="/programs" className="btn-secondary cta-mobile-btn">
-              Explore programmes
-              <ArrowRight size={16} strokeWidth={2} />
-            </Link>
-          </div>
-        </div>
+        <Reveal delay={140} className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <Link to="/payments" className="btn-primary cta-mobile-btn">
+            Enrol now
+            <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
+          </Link>
+          <Link to="/programs" className="btn-secondary cta-mobile-btn">
+            Explore programmes
+            <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
+          </Link>
+        </Reveal>
       </div>
     </section>
   );

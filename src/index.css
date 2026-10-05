@@ -1550,6 +1550,43 @@ input[type="radio"] {
     animation-play-state: paused;
   }
 
+  /* A light section with soft colour for glass to frost over. */
+  .soft-field {
+    background:
+      radial-gradient(ellipse 38% 50% at 10% 18%, color-mix(in srgb, var(--color-accent) 30%, transparent), transparent 70%),
+      radial-gradient(ellipse 42% 55% at 92% 85%, color-mix(in srgb, var(--color-primary) 16%, transparent), transparent 70%),
+      linear-gradient(180deg, var(--color-surface-tint-top) 0%, var(--color-surface-soft) 100%);
+  }
+
+  /* A chosen tab's panel arriving. */
+  .picker-panel {
+    animation: picker-in 0.5s var(--ease-soft) both;
+  }
+
+  @keyframes picker-in {
+    from { opacity: 0; transform: translate3d(0, 10px, 0) scale(0.99); }
+    to { opacity: 1; transform: none; }
+  }
+
+  /* A track's icon, in a softly breathing ring of lilac light. */
+  .track-icon {
+    background: radial-gradient(circle, color-mix(in srgb, var(--color-accent) 22%, transparent) 0%, transparent 70%);
+  }
+
+  .track-icon::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    border: 1px solid color-mix(in srgb, var(--color-accent) 45%, transparent);
+    animation: track-breathe 3.2s var(--ease-soft) infinite;
+  }
+
+  @keyframes track-breathe {
+    0%, 100% { transform: scale(0.92); opacity: 0.9; }
+    50% { transform: scale(1.06); opacity: 0.35; }
+  }
+
   @keyframes circuit-pulse {
     from { stroke-dashoffset: 7; }
     to { stroke-dashoffset: -93; }
@@ -1587,6 +1624,11 @@ input[type="radio"] {
 
     .circuit-led-core {
       fill: var(--color-accent);
+    }
+
+    .picker-panel,
+    .track-icon::before {
+      animation: none;
     }
   }
 }

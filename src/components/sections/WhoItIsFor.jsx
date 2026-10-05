@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
@@ -8,129 +9,118 @@ import {
   Lightbulb,
   School,
 } from "lucide-react";
+import PickerTabs from "../motion/PickerTabs";
+import Reveal from "../motion/Reveal";
 
+// Who someone is, and where that takes them.
 const audiences = [
   {
-    icon: School,
-    title: "School Learners",
-    badge: "Basic to SHS learners",
-    description:
-      "Practical STEM, electronics, coding, and project-based learning designed to build confidence early.",
+    key: "school",
+    Icon: School,
+    label: "School learner",
+    badge: "Basic 1 to SHS 3",
+    line: "Build confidence early with electronics, coding and real projects.",
+    tags: ["Electronics", "Coding", "Projects"],
+    to: "/programs/school-stem",
+    cta: "See School STEM",
   },
   {
-    icon: Lightbulb,
-    title: "Out-of-School Youth",
-    badge: "Ages 16–30",
-    description:
-      "Practical innovation training for employable skills and community solutions that can grow into real opportunities.",
+    key: "youth",
+    Icon: Lightbulb,
+    label: "Out of school",
+    badge: "Ages 16 to 30",
+    line: "Practical skills you can earn with, and solutions for your community.",
+    tags: ["Employable skills", "Innovation", "Mentorship"],
+    to: "/programs/out-of-school-youth",
+    cta: "See the youth programme",
   },
   {
-    icon: GraduationCap,
-    title: "University Students & Graduates",
-    badge: "Portfolio-building",
-    description:
-      "Electronics, software, AI, and product development experience that helps strengthen technical portfolios.",
+    key: "university",
+    Icon: GraduationCap,
+    label: "University student",
+    badge: "Portfolio building",
+    line: "Hardware, software and AI work that strengthens your portfolio.",
+    tags: ["Electronics", "Software", "AI"],
+    to: "/payments/student-chapter",
+    cta: "Join the Student Chapter",
   },
   {
-    icon: BriefcaseBusiness,
-    title: "Working Professionals",
+    key: "professional",
+    Icon: BriefcaseBusiness,
+    label: "Professional",
     badge: "Applied productivity",
-    description:
-      "Learn automation, AI tools, and practical digital productivity skills you can use in real workflows.",
+    line: "AI tools and automation you can use in your work this month.",
+    tags: ["AI tools", "Automation", "Productivity"],
+    to: "/programs/era-digital-skills",
+    cta: "See ERA Digital Skills",
   },
   {
-    icon: Building2,
-    title: "Schools & Institutions",
-    badge: "Structured implementation",
-    description:
-      "Bring structured STEM learning, practical tools, and learner projects into classrooms with better support.",
+    key: "institution",
+    Icon: Building2,
+    label: "School or institution",
+    badge: "Structured delivery",
+    line: "Bring hands-on STEM into your classrooms, with the tools and support.",
+    tags: ["Curriculum", "Dev Board", "Training"],
+    to: "/programs/school-stem",
+    cta: "Bring STEM to your school",
   },
   {
-    icon: Handshake,
-    title: "NGOs, CSR & Community Partners",
+    key: "partner",
+    Icon: Handshake,
+    label: "NGO or sponsor",
     badge: "Group sponsorship",
-    description:
-      "Support cohorts of learners through practical innovation programmes built around measurable learning outcomes.",
+    line: "Sponsor a cohort of learners, with outcomes you can measure.",
+    tags: ["Cohorts", "Reporting", "Impact"],
+    to: "/partners",
+    cta: "Partner with us",
   },
 ];
 
-function AudienceCard({ icon: Icon, title, badge, description }) {
-  return (
-    <article className="card-interactive group flex h-full flex-col p-6 sm:p-7">
-      <div className="mb-5 flex items-start justify-between gap-4">
-        <div className="flex h-12 w-12 items-center justify-center rounded-[var(--radius-md)] bg-[color-mix(in_srgb,var(--color-primary)_10%,white)] text-[var(--color-primary)] transition-transform duration-300 group-hover:-translate-y-1">
-          <Icon size={22} strokeWidth={2.1} />
-        </div>
-        <span className="rounded-full border border-[var(--color-border-soft)] bg-white/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--color-text-muted)]">
-          {badge}
-        </span>
-      </div>
-
-      <h3 className="mb-3 text-lg font-black leading-snug text-[var(--color-text-primary)]">
-        {title}
-      </h3>
-      <p className="text-sm leading-relaxed text-[var(--color-text-secondary)] sm:text-[15px]">
-        {description}
-      </p>
-    </article>
-  );
-}
-
 export default function WhoItIsFor() {
+  const [who, setWho] = useState(audiences[0].key);
+
   return (
     <section
       id="everyone"
       aria-label="Who ERA AXIS is for"
-      className="premium-settle-in relative overflow-hidden bg-[linear-gradient(180deg,var(--color-surface-tint-top)_0%,var(--color-surface-soft)_100%)] py-20 md:py-24 lg:py-28"
+      className="soft-field relative overflow-hidden py-20 md:py-24 lg:py-28"
     >
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[radial-gradient(ellipse_at_top,color-mix(in_srgb,var(--color-accent)_16%,transparent),transparent_72%)]"
-      />
-
       <div className="container relative z-10">
-        <div className="mb-12 grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(280px,0.72fr)] lg:items-end">
-          <div className="max-w-3xl">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
-              Who It&apos;s For
-            </p>
-            <h2 className="mb-5 text-3xl font-black leading-tight tracking-tight text-[var(--color-text-primary)] sm:text-4xl lg:text-[2.7rem]">
-              Built for learners, builders, and institutions ready to grow.
-            </h2>
-            <p className="text-base leading-relaxed text-[var(--color-text-secondary)] sm:text-[17px]">
-              ERA AXIS is built for students, out-of-school youth, working
-              adults, schools, communities, and partners who want practical
-              STEM and digital skills that lead to real outcomes.
-            </p>
-          </div>
+        <Reveal className="mb-10 max-w-3xl">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
+            Who It&apos;s For
+          </p>
+          <h2 className="text-3xl font-black leading-tight tracking-tight text-[var(--color-text-primary)] sm:text-4xl lg:text-[2.7rem]">
+            Find your path. Tap who you are.
+          </h2>
+        </Reveal>
 
-          <div className="glass-surface-light rounded-[var(--radius-lg)] p-5 sm:p-6">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
-              Practical outcomes
-            </p>
-            <p className="text-sm leading-relaxed text-[var(--color-text-secondary)] sm:text-[15px]">
-              Every pathway is designed to move from learning concepts to
-              building projects, applying tools, and creating visible progress.
-            </p>
-          </div>
-        </div>
-
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {audiences.map((audience) => (
-            <AudienceCard key={audience.title} {...audience} />
-          ))}
-        </div>
-
-        <div className="mt-10 flex flex-col items-stretch gap-3 sm:mt-12 sm:flex-row sm:items-center">
-          <Link to="/payments" className="btn-primary cta-mobile-btn">
-            Enrol now
-            <ArrowRight size={16} strokeWidth={2} />
-          </Link>
-          <Link to="/programs" className="btn-outline cta-mobile-btn">
-            Explore programmes
-            <ArrowRight size={16} strokeWidth={2} />
-          </Link>
-        </div>
+        <Reveal delay={80}>
+          <PickerTabs items={audiences} value={who} onChange={setWho} label="Who you are">
+            {(item) => (
+              <div className="glass grid gap-6 p-6 sm:p-8 md:grid-cols-[auto_1fr_auto] md:items-center md:gap-10">
+                <span className="flex h-16 w-16 items-center justify-center rounded-[var(--radius-lg)] bg-[var(--color-primary)] text-white shadow-[0_16px_36px_-16px_var(--color-primary)]">
+                  <item.Icon size={30} strokeWidth={1.9} aria-hidden="true" />
+                </span>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">{item.badge}</p>
+                  <p className="mt-2 text-xl font-bold leading-snug text-[var(--color-text-primary)] sm:text-2xl">{item.line}</p>
+                  <ul className="mt-4 flex flex-wrap gap-2" aria-label="What it covers">
+                    {item.tags.map((tag) => (
+                      <li key={tag} className="rounded-full bg-[var(--color-primary)]/[0.08] px-3 py-1 text-sm font-medium text-[var(--color-primary-deep)]">
+                        {tag}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <Link to={item.to} className="btn-primary group justify-center whitespace-nowrap">
+                  {item.cta}
+                  <ArrowRight size={16} strokeWidth={2} className="transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true" />
+                </Link>
+              </div>
+            )}
+          </PickerTabs>
+        </Reveal>
       </div>
     </section>
   );
