@@ -1587,6 +1587,93 @@ input[type="radio"] {
     50% { transform: scale(1.06); opacity: 0.35; }
   }
 
+  /* Light the LED. */
+  .led-demo-wire,
+  .led-demo-current,
+  .led-demo-resistor {
+    fill: none;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .led-demo-wire,
+  .led-demo-resistor {
+    stroke: color-mix(in srgb, var(--color-accent) 40%, transparent);
+  }
+
+  .led-demo-current {
+    stroke: var(--color-accent);
+    stroke-dasharray: 4 14;
+    opacity: 0;
+    transition: opacity 0.4s var(--ease-soft);
+    animation: led-current 0.9s linear infinite;
+  }
+
+  [data-on] .led-demo-current {
+    opacity: 1;
+  }
+
+  .led-demo-battery rect {
+    fill: color-mix(in srgb, var(--color-accent) 18%, var(--color-primary-deep));
+    stroke: color-mix(in srgb, var(--color-accent) 55%, transparent);
+    stroke-width: 1.5;
+  }
+
+  .led-demo-battery text {
+    fill: var(--color-text-on-dark-muted);
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .led-demo-switch {
+    cursor: pointer;
+  }
+
+  .led-demo-switch circle {
+    fill: var(--color-background-dark);
+    stroke: var(--color-accent);
+    stroke-width: 2;
+  }
+
+  .led-demo-lever {
+    stroke: #fff;
+    stroke-width: 4;
+    stroke-linecap: round;
+    transform-box: view-box;
+    transform-origin: 150px 40px;
+    transition: transform 0.45s var(--ease-soft);
+  }
+
+  .led-demo-bulb {
+    fill: color-mix(in srgb, var(--color-accent) 18%, var(--color-primary-deep));
+    stroke: color-mix(in srgb, var(--color-accent) 60%, transparent);
+    stroke-width: 2;
+    transition: fill 0.35s var(--ease-soft);
+  }
+
+  .led-demo-halo {
+    fill: var(--color-accent);
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+    transform: scale(0.6);
+    transition: opacity 0.45s var(--ease-soft), transform 0.6s var(--ease-soft);
+  }
+
+  [data-on] .led-demo-bulb {
+    fill: #fff;
+  }
+
+  [data-on] .led-demo-halo {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+
+  @keyframes led-current {
+    to { stroke-dashoffset: -18; }
+  }
+
   @keyframes circuit-pulse {
     from { stroke-dashoffset: 7; }
     to { stroke-dashoffset: -93; }
@@ -1627,7 +1714,8 @@ input[type="radio"] {
     }
 
     .picker-panel,
-    .track-icon::before {
+    .track-icon::before,
+    .led-demo-current {
       animation: none;
     }
   }
