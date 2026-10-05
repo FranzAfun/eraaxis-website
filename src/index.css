@@ -1860,6 +1860,12 @@ input[type="radio"] {
     100% { opacity: 0.4; }
   }
 
+  /* A search box on a dark section: the browser's clear button in white. */
+  .search-on-dark::-webkit-search-cancel-button {
+    filter: grayscale(1) brightness(2.4);
+    cursor: pointer;
+  }
+
   /* Programme build tiles: the icon lights up under the pointer or finger. */
   .build-tile {
     transition:
