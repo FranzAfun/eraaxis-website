@@ -1701,6 +1701,20 @@ input[type="radio"] {
     transform: scale(1);
   }
 
+  /* The main button on a dark or purple ground: white, with ERA purple words,
+     so it never sits purple on purple. Pair with .btn-primary. */
+  .btn-primary.btn-on-dark {
+    background-color: #fff;
+    border-color: #fff;
+    color: var(--color-primary);
+  }
+
+  .btn-primary.btn-on-dark:hover {
+    background-color: rgb(255 255 255 / 0.9);
+    border-color: rgb(255 255 255 / 0.9);
+    color: var(--color-primary);
+  }
+
   /* Dev Board tour. */
   .board-tour-frame {
     box-shadow: 0 40px 80px -40px color-mix(in srgb, var(--color-primary) 55%, transparent);

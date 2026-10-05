@@ -101,7 +101,7 @@ export default function Faq() {
             </p>
 
             <div className="flex flex-col gap-3 sm:flex-row">
-              <Link to="/payments" className="btn-primary cta-mobile-btn">
+              <Link to="/payments" className="btn-primary btn-on-dark cta-mobile-btn">
                 Start enrolment
                 <ArrowRight size={16} strokeWidth={2} />
               </Link>

@@ -216,7 +216,7 @@ export default function Gallery() {
             </p>
 
             <div className="flex flex-col gap-3 sm:flex-row">
-              <Link to="/payments" className="btn-primary">
+              <Link to="/payments" className="btn-primary btn-on-dark">
                 Enrol now
                 <ArrowRight size={16} strokeWidth={2} />
               </Link>
