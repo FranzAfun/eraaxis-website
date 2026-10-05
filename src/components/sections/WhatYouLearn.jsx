@@ -111,7 +111,11 @@ export default function WhatYouLearn() {
         </Reveal>
 
         <Reveal delay={140} className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-          <Link to="/payments" className="btn-primary cta-mobile-btn">
+          {/* White on the purple ground, so the main action stands out. */}
+          <Link
+            to="/payments"
+            className="cta-mobile-btn inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-white px-5 text-sm font-semibold text-[var(--color-primary)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/90"
+          >
             Enrol now
             <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
           </Link>
