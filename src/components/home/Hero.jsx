@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import heroBg from "../../assets/images/hero/hero-main.webp";
+import CircuitField from "./CircuitField";
 
 const stats = [
   { value: "1000+", label: "Learners" },
@@ -12,23 +12,15 @@ export default function Hero() {
   return (
     <section
       aria-label="Hero"
-      className="dark-surface relative -mt-20 flex min-h-screen items-center overflow-hidden"
+      className="dark-surface hero-ground relative -mt-20 flex min-h-screen items-center overflow-hidden"
     >
-      {/* Background image — loaded eagerly; mobile shifts crop up to show learners */}
-      <img
-        src={heroBg}
-        alt=""
-        aria-hidden="true"
-        fetchPriority="high"
-        decoding="sync"
-        className="absolute inset-0 h-full w-full object-cover object-[center_30%] sm:object-center"
-      />
-
-      {/* Horizontal overlay — deepens from left so left-aligned text stays legible */}
-      <div className="hero-overlay-h absolute inset-0" />
-
-      {/* Vertical overlay — darkens top (behind header) and bottom edge */}
-      <div className="hero-overlay-v absolute inset-0" />
+      {/* The living circuit: beside the words on a wide screen, softly behind
+          them on a phone. */}
+      <div
+        className="pointer-events-none absolute -right-[38%] top-1/2 w-[120%] max-w-[760px] -translate-y-1/2 opacity-35 sm:-right-[18%] sm:w-[80%] lg:pointer-events-auto lg:right-[2%] lg:w-[46%] lg:opacity-100 xl:right-[4%]"
+      >
+        <CircuitField />
+      </div>
 
       {/* Hero content */}
       <div className="container relative z-10 pb-16 pt-28 sm:pb-20 sm:pt-32 md:pb-24 md:pt-36 lg:pb-28 lg:pt-40">

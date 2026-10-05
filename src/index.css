@@ -62,26 +62,6 @@
 }
 
 /* Hero overlay gradients — use theme token so the colour is maintained in one place */
-.hero-overlay-h {
-  background: linear-gradient(
-    to right,
-    color-mix(in srgb, var(--color-background-dark) 92%, transparent) 0%,
-    color-mix(in srgb, var(--color-background-dark) 70%, transparent) 45%,
-    color-mix(in srgb, var(--color-background-dark) 65%, transparent) 100%
-  );
-}
-
-.hero-overlay-v {
-  background: linear-gradient(
-    to bottom,
-    color-mix(in srgb, var(--color-background-dark) 90%, transparent) 0%,
-    color-mix(in srgb, var(--color-background-dark) 85%, transparent) 20%,
-    transparent 40%,
-    transparent 65%,
-    color-mix(in srgb, var(--color-background-dark) 55%, transparent) 100%
-  );
-}
-
 /* Hero entrance animation */
 @keyframes heroFadeUp {
   from {
@@ -1465,11 +1445,148 @@ input[type="radio"] {
       0 28px 60px -32px rgb(0 0 0 / 0.65);
   }
 
+  /* The hero's ground: dark, with ERA purple light behind the circuit and a
+     faint dot grid like a breadboard. */
+  .hero-ground {
+    background:
+      radial-gradient(ellipse 50% 55% at 76% 48%, color-mix(in srgb, var(--color-primary) 50%, transparent), transparent 72%),
+      radial-gradient(ellipse 45% 45% at 8% 100%, color-mix(in srgb, var(--color-primary-deep) 85%, transparent), transparent 70%),
+      var(--color-background-dark);
+  }
+
+  .hero-ground::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgb(255 255 255 / 0.07) 1px, transparent 1.2px);
+    background-size: 26px 26px;
+    -webkit-mask-image: radial-gradient(ellipse 70% 70% at 70% 45%, #000 20%, transparent 75%);
+    mask-image: radial-gradient(ellipse 70% 70% at 70% 45%, #000 20%, transparent 75%);
+    pointer-events: none;
+  }
+
+  /* The living circuit. */
+  .circuit-traces path {
+    fill: none;
+    stroke: color-mix(in srgb, var(--color-accent) 24%, transparent);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: stroke 0.6s var(--ease-soft);
+  }
+
+  .circuit-pulses path {
+    fill: none;
+    stroke: var(--color-accent);
+    stroke-width: 2.6;
+    stroke-linecap: round;
+    stroke-dasharray: 7 93;
+    stroke-dashoffset: 7;
+    animation: circuit-pulse 3s linear infinite;
+  }
+
+  .circuit-via {
+    fill: var(--color-background-dark);
+    stroke: color-mix(in srgb, var(--color-accent) 35%, transparent);
+    stroke-width: 1.4;
+  }
+
+  .circuit-led-core {
+    fill: color-mix(in srgb, var(--color-accent) 30%, var(--color-primary-deep));
+    animation: circuit-led var(--beat, 3s) linear infinite;
+    animation-delay: var(--wait, 0s);
+  }
+
+  .circuit-led-halo {
+    fill: var(--color-accent);
+    opacity: 0;
+    animation: circuit-halo var(--beat, 3s) linear infinite;
+    animation-delay: var(--wait, 0s);
+  }
+
+  .circuit-pins rect {
+    fill: color-mix(in srgb, var(--color-accent) 40%, var(--color-primary-deep));
+  }
+
+  .circuit-chip {
+    cursor: pointer;
+    outline: none;
+  }
+
+  .circuit-chip-body {
+    stroke: color-mix(in srgb, var(--color-accent) 45%, transparent);
+    stroke-width: 1.5;
+    transition: stroke 0.4s var(--ease-soft);
+  }
+
+  .circuit-chip:hover .circuit-chip-body,
+  .circuit-chip:focus-visible .circuit-chip-body {
+    stroke: var(--color-accent);
+    stroke-width: 2.5;
+  }
+
+  .circuit-glow {
+    background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--color-accent) 16%, transparent), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.5s var(--ease-soft);
+  }
+
+  /* Powered up: every trace lit, every LED on. */
+  .circuit-field[data-powered] .circuit-traces path {
+    stroke: color-mix(in srgb, var(--color-accent) 60%, transparent);
+  }
+
+  .circuit-field[data-powered] .circuit-led-core {
+    animation: none;
+    fill: #fff;
+  }
+
+  .circuit-field[data-powered] .circuit-led-halo {
+    animation: none;
+    opacity: 0.35;
+  }
+
+  .circuit-field[data-paused] * {
+    animation-play-state: paused;
+  }
+
+  @keyframes circuit-pulse {
+    from { stroke-dashoffset: 7; }
+    to { stroke-dashoffset: -93; }
+  }
+
+  @keyframes circuit-led {
+    0% { fill: #fff; }
+    16% { fill: color-mix(in srgb, var(--color-accent) 30%, var(--color-primary-deep)); }
+    90% { fill: color-mix(in srgb, var(--color-accent) 30%, var(--color-primary-deep)); }
+    100% { fill: #fff; }
+  }
+
+  @keyframes circuit-halo {
+    0% { opacity: 0.4; }
+    18% { opacity: 0; }
+    90% { opacity: 0; }
+    100% { opacity: 0.4; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .reveal {
       opacity: 1;
       transform: none;
       transition: none;
+    }
+
+    .circuit-pulses {
+      display: none;
+    }
+
+    .circuit-led-core,
+    .circuit-led-halo {
+      animation: none;
+    }
+
+    .circuit-led-core {
+      fill: var(--color-accent);
     }
   }
 }
