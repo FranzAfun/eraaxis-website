@@ -1701,6 +1701,103 @@ input[type="radio"] {
     transform: scale(1);
   }
 
+  /* Dev Board tour. */
+  .board-tour-frame {
+    box-shadow: 0 40px 80px -40px color-mix(in srgb, var(--color-primary) 55%, transparent);
+  }
+
+  .board-tour-zoom {
+    transform-origin: 50% 50%;
+    transition: transform 0.9s var(--ease-soft);
+  }
+
+  .board-tour-ring {
+    border: 2px solid var(--color-accent);
+    border-radius: 10px;
+    box-shadow:
+      0 0 0 4px color-mix(in srgb, var(--color-accent) 25%, transparent),
+      0 0 24px color-mix(in srgb, var(--color-accent) 55%, transparent);
+    animation: tour-ring 2.2s var(--ease-soft) infinite;
+  }
+
+  @keyframes tour-ring {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.55; }
+  }
+
+  .board-tour-spot {
+    background: var(--color-primary);
+    color: #fff;
+    box-shadow: 0 0 0 3px rgb(255 255 255 / 0.85), 0 8px 18px -6px rgb(0 0 0 / 0.5);
+    transition: scale 0.3s var(--ease-soft);
+  }
+
+  /* `scale`, not transform: Tailwind's centring uses the translate property. */
+  .board-tour-spot:hover,
+  .board-tour-spot:focus-visible {
+    scale: 1.12;
+  }
+
+  /* Series or parallel lab. */
+  .lab-wire,
+  .lab-current {
+    fill: none;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .lab-wire {
+    stroke: color-mix(in srgb, var(--color-accent) 40%, transparent);
+  }
+
+  .lab-current {
+    stroke: var(--color-accent);
+    stroke-dasharray: 4 14;
+    animation: led-current 0.9s linear infinite;
+  }
+
+  .lab-battery rect {
+    fill: color-mix(in srgb, var(--color-accent) 18%, var(--color-primary-deep));
+    stroke: color-mix(in srgb, var(--color-accent) 55%, transparent);
+    stroke-width: 1.5;
+  }
+
+  .lab-battery text,
+  .lab-label {
+    fill: var(--color-text-on-dark-muted);
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .lab-led {
+    fill: color-mix(in srgb, var(--color-accent) 18%, var(--color-primary-deep));
+    stroke: color-mix(in srgb, var(--color-accent) 60%, transparent);
+    stroke-width: 2;
+    transition: fill 0.35s var(--ease-soft);
+  }
+
+  .lab-led.is-lit {
+    fill: #fff;
+  }
+
+  .lab-halo {
+    fill: var(--color-accent);
+    opacity: 0;
+    transition: opacity 0.4s var(--ease-soft);
+  }
+
+  .lab-halo.is-lit {
+    opacity: 0.32;
+  }
+
+  .lab-led-gap {
+    fill: none;
+    stroke: color-mix(in srgb, var(--color-accent) 45%, transparent);
+    stroke-width: 2;
+    stroke-dasharray: 4 4;
+  }
+
   @keyframes led-current {
     to { stroke-dashoffset: -18; }
   }
@@ -1746,8 +1843,14 @@ input[type="radio"] {
 
     .picker-panel,
     .track-icon::before,
-    .led-demo-current {
+    .led-demo-current,
+    .lab-current,
+    .board-tour-ring {
       animation: none;
+    }
+
+    .board-tour-zoom {
+      transition: none;
     }
   }
 }
