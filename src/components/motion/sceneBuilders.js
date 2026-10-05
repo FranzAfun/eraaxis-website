@@ -11,6 +11,8 @@
  *               (wide screens); the frame must clip it
  *   drift       slides in from the side it names in data-from (left/right)
  *               as it arrives (wide screens)
+ *   grow-line   a progress line that fills as its section scrolls past
+ *               (data-axis="y" for an upright one)
  *
  * Only transforms and opacity are animated. `wide` is a wide screen with a
  * mouse; phones get the gentle ones only.
@@ -63,6 +65,20 @@ export function buildScenes(gsap, root, { wide }) {
         rotate: 0,
         ease: "none",
         scrollTrigger: { trigger: el, start: "top bottom", end: "center 55%", scrub: 0.8 },
+      }
+    );
+  });
+
+  all("grow-line").forEach((el) => {
+    const vertical = el.dataset.axis === "y";
+    gsap.fromTo(
+      el,
+      vertical ? { scaleY: 0 } : { scaleX: 0 },
+      {
+        ...(vertical ? { scaleY: 1 } : { scaleX: 1 }),
+        transformOrigin: vertical ? "50% 0%" : "0% 50%",
+        ease: "none",
+        scrollTrigger: { trigger: el.parentElement, start: "top 75%", end: "bottom 55%", scrub: 0.6 },
       }
     );
   });
