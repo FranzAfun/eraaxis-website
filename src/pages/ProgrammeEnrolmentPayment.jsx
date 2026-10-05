@@ -1,14 +1,12 @@
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
-import { ArrowLeft, Check } from "lucide-react";
+import { Check } from "lucide-react";
 import {
   getPaymentCategoryBySlug,
   calculatePaymentBreakdown,
   calculateFullProgrammeBase,
-  formatGhs,
 } from "../data/payments";
 import { api, ApiError } from "../services/api";
-import BackLinkButton from "../components/navigation/BackLinkButton";
 import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
 import { EMAIL_RE } from "../utils/validateEmail";
@@ -20,6 +18,8 @@ import SignUpDetails from "../components/forms/SignUpDetails";
 import SignUpEmail from "../components/forms/SignUpEmail";
 import SignUpSteps from "../components/forms/SignUpSteps";
 import OrderSummary from "../components/forms/OrderSummary";
+import FormPageHeader, { FormAside } from "../components/forms/FormPageHeader";
+import { PROGRAMME_IMAGES } from "../data/programmeImages";
 import ConfirmEmailStep from "../components/forms/ConfirmEmailStep";
 import useSignUpCheckout from "../components/forms/useSignUpCheckout";
 import { EMPTY_SIGNUP, learnerLabel, signUpPayload, signUpProblem } from "../components/forms/signUp";
@@ -28,10 +28,21 @@ import { fieldCls, growingTextCls, labelCls, optionalCls } from "../components/f
 const category = getPaymentCategoryBySlug("programme-enrolment");
 
 const NEXT_STEPS = [
-  "Your enrolment details will be attached to your payment record.",
-  "ERA AXIS will use your email/phone to match future receipts and payment history.",
-  "After payment, the next steps and confirmation details will be shared with you.",
+  "Your details are attached to your payment.",
+  "Future receipts are matched to your email and phone.",
+  "Next steps and confirmation follow once you've paid.",
 ];
+
+// Each programme's photo, for its card.
+const PHOTO = {
+  "junior-stem": PROGRAMME_IMAGES.school_stem,
+  "out-of-school-youth": PROGRAMME_IMAGES.out_of_school_youth,
+  "online-learning": PROGRAMME_IMAGES.online_learning,
+  "era-digital-skills": PROGRAMME_IMAGES.digital_skills,
+};
+
+// Whole cedis without ".00": GHS 200, GHS 1,200.
+const cedis = (amount) => `GHS ${Number(amount).toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
 
 // Maps frontend static slugs to backend DB slugs (where they differ)
 const SLUG_TO_BACKEND = {
@@ -108,7 +119,9 @@ export default function ProgrammeEnrolmentPayment() {
               value: programme.slug,
               title: programme.title,
               hint: programme.audience,
-              aside: `${formatGhs(programme.monthlyAmount)} / month`,
+              aside: `${cedis(programme.monthlyAmount)} a month`,
+              image: PHOTO[programme.slug]?.src,
+              srcSet: PHOTO[programme.slug]?.srcSet,
             }))}
             value={programmeSlug}
             onChange={setProgrammeSlug}
@@ -119,8 +132,18 @@ export default function ProgrammeEnrolmentPayment() {
             legendCls={labelCls}
             columns="sm:grid-cols-2"
             options={[
-              { value: "monthly", title: "Monthly", hint: "Pay one month at a time." },
-              { value: "full", title: "Full programme", hint: `All ${fullMonths} months at once.` },
+              {
+                value: "monthly",
+                title: "Monthly",
+                hint: "Pay one month at a time.",
+                aside: selectedProgramme ? `${cedis(selectedProgramme.monthlyAmount)} a month` : undefined,
+              },
+              {
+                value: "full",
+                title: "Full programme",
+                hint: `All ${fullMonths} months at once.`,
+                aside: selectedProgramme ? `${cedis(selectedProgramme.monthlyAmount * fullMonths)} once` : undefined,
+              },
             ]}
             value={paymentOption}
             onChange={setPaymentOption}
@@ -244,44 +267,9 @@ export default function ProgrammeEnrolmentPayment() {
   return (
     <>
       <SEO {...getPageSeo("/payments/programme-enrolment")} />
-      <section className="dark-surface relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-14 pt-36 text-white md:pb-20 md:pt-44">
-        <div
-          aria-hidden="true"
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(circle at 15% 18%, color-mix(in srgb, var(--color-accent) 22%, transparent) 0%, transparent 30%), radial-gradient(circle at 84% 8%, color-mix(in srgb, var(--color-primary) 38%, transparent) 0%, transparent 34%), linear-gradient(135deg, var(--color-background-dark) 0%, var(--color-primary-deep) 54%, var(--color-background-dark) 100%)",
-          }}
-        />
-        <div aria-hidden="true" className="absolute -left-28 top-28 h-80 w-80 rounded-full bg-white/[0.04] blur-3xl" />
-        <div aria-hidden="true" className="absolute -bottom-24 right-4 h-96 w-96 rounded-full bg-[var(--color-accent)]/[0.08] blur-3xl" />
-
-        <div className="container relative z-10">
-          <BackLinkButton
-            fallbackTo="/payments"
-            className="mb-8 flex w-fit items-center gap-1.5 text-xs font-medium text-[var(--color-text-on-dark-muted)] transition-colors hover:text-[var(--color-text-on-dark-muted)]"
-          >
-            <ArrowLeft size={12} strokeWidth={2.5} aria-hidden="true" />
-            Back
-          </BackLinkButton>
-
-          <div className="max-w-3xl">
-            <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)] backdrop-blur-xl">
-              Programme Enrolment
-            </p>
-            <h1 className="mb-5 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-[4rem]">
-              Choose your programme and payment option.
-            </h1>
-            <p className="max-w-2xl text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-lg">
-              Select a programme, choose monthly or full payment, and complete
-              the required enrolment details before checkout.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-[var(--color-surface-soft)] py-8 md:py-12">
+      <section className="bg-[var(--color-surface-soft)] pb-12 pt-6 md:pb-16 md:pt-8">
         <div className="container">
+          <FormPageHeader eyebrow="Enrolment" title="Enrol on a programme." line="Choose a programme, then tell us who's learning." />
           <div className="grid gap-6 lg:grid-cols-[1fr_340px] lg:items-start">
             <div>
               {checkout.confirming ? (
@@ -313,25 +301,14 @@ export default function ProgrammeEnrolmentPayment() {
                   />
                 </div>
               )}
-              <div
-                className={`mt-6 rounded-[var(--radius-md)] border border-[var(--color-primary)]/15 bg-[var(--color-primary)]/10 p-6 md:p-7 ${
-                  lastStep ? "" : "hidden lg:block"
-                }`}
-              >
-                <h3 className="mb-5 text-base font-semibold tracking-tight text-[var(--color-primary-deep)]">What happens next</h3>
-                <ul className="space-y-4">
-                  {NEXT_STEPS.map((item) => (
-                    <li key={item} className="flex items-start gap-3">
-                      <Check size={16} strokeWidth={2} aria-hidden="true" className="mt-0.5 shrink-0 text-[var(--color-primary)]" />
-                      <span className="text-[15px] leading-relaxed text-[var(--color-text-secondary)]">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {lastStep && <FormAside title="What happens next" items={NEXT_STEPS} Icon={Check} className="mt-6 lg:hidden" />}
             </div>
 
             {/* On a phone the summary waits for the last step, inside the form. */}
-            <div className="hidden lg:sticky lg:top-28 lg:block">{summary}</div>
+            <div className="hidden space-y-4 lg:sticky lg:top-28 lg:block">
+              {summary}
+              <FormAside title="What happens next" items={NEXT_STEPS} Icon={Check} />
+            </div>
           </div>
         </div>
       </section>

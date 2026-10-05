@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { ArrowLeft, Check } from "lucide-react";
+import { Check } from "lucide-react";
 import { getPaymentCategoryBySlug, calculatePaymentBreakdown } from "../data/payments";
 import { api, ApiError } from "../services/api";
-import BackLinkButton from "../components/navigation/BackLinkButton";
-import studentChapterHeroImg from "../assets/images/programmes/student-chapter-hero.webp";
+import FormPageHeader, { FormAside } from "../components/forms/FormPageHeader";
 import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
 import { EMAIL_RE } from "../utils/validateEmail";
@@ -164,62 +163,13 @@ export default function StudentChapterPayment() {
   return (
     <>
       <SEO {...getPageSeo("/payments/student-chapter")} />
-      <section className="dark-surface relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-14 pt-36 text-white md:pb-20 md:pt-44">
-        <div
-          aria-hidden="true"
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(circle at 15% 18%, color-mix(in srgb, var(--color-accent) 22%, transparent) 0%, transparent 30%), radial-gradient(circle at 84% 8%, color-mix(in srgb, var(--color-primary) 38%, transparent) 0%, transparent 34%), linear-gradient(135deg, var(--color-background-dark) 0%, var(--color-primary-deep) 54%, var(--color-background-dark) 100%)",
-          }}
-        />
-        <div aria-hidden="true" className="absolute -left-28 top-28 h-80 w-80 rounded-full bg-white/[0.04] blur-3xl" />
-        <div aria-hidden="true" className="absolute -bottom-24 right-4 h-96 w-96 rounded-full bg-[var(--color-accent)]/[0.08] blur-3xl" />
-
-        <div className="container relative z-10">
-          <BackLinkButton
-            fallbackTo="/payments"
-            className="mb-8 flex w-fit items-center gap-1.5 text-xs font-medium text-[var(--color-text-on-dark-muted)] transition-colors hover:text-[var(--color-text-on-dark-muted)]"
-          >
-            <ArrowLeft size={12} strokeWidth={2.5} aria-hidden="true" />
-            Back
-          </BackLinkButton>
-
-          <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
-            <div className="flex flex-col justify-center">
-              <p className="mb-5 inline-flex w-fit self-start rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)] backdrop-blur-xl">
-                Student Chapter
-              </p>
-              <h1 className="mb-5 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-[4rem]">
-                Join the ERA AXIS Student Chapter.
-              </h1>
-              <p className="max-w-2xl text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-lg">
-                Complete your first payment to access the Student Chapter
-                community, monthly practical sessions, and collaborative build
-                opportunities.
-              </p>
-            </div>
-
-            <div className="relative hidden lg:block">
-              <div className="hero-media-card">
-                <img
-                  src={studentChapterHeroImg}
-                  alt="ERA AXIS Student Chapter learners in a practical session"
-                  className="aspect-[4/3] w-full object-cover"
-                />
-                <div className="absolute bottom-4 left-4">
-                  <span className="hero-media-card-badge inline-block rounded-full bg-[var(--color-caption-bg)] px-3 py-1 text-xs font-semibold text-white backdrop-blur-sm">
-                    Practical student learning
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-[var(--color-surface-soft)] py-8 md:py-12">
+      <section className="bg-[var(--color-surface-soft)] pb-12 pt-6 md:pb-16 md:pt-8">
         <div className="container">
+          <FormPageHeader
+            eyebrow="Student Chapter"
+            title="Join the ERA AXIS Student Chapter."
+            line="Your first payment opens the community, monthly practical sessions and group builds."
+          />
           <div className="grid gap-6 lg:grid-cols-[1fr_340px] lg:items-start">
             <div>
               {checkout.confirming ? (
@@ -251,25 +201,14 @@ export default function StudentChapterPayment() {
                   />
                 </div>
               )}
-              <div
-                className={`mt-6 rounded-[var(--radius-md)] border border-[var(--color-primary)]/15 bg-[var(--color-primary)]/10 p-6 md:p-7 ${
-                  lastStep ? "" : "hidden lg:block"
-                }`}
-              >
-                <h3 className="mb-5 text-base font-semibold tracking-tight text-[var(--color-primary-deep)]">What you get</h3>
-                <ul className="space-y-4">
-                  {BENEFITS.map((benefit) => (
-                    <li key={benefit} className="flex items-start gap-3">
-                      <Check size={16} strokeWidth={2} aria-hidden="true" className="mt-0.5 shrink-0 text-[var(--color-primary)]" />
-                      <span className="text-[15px] leading-relaxed text-[var(--color-text-secondary)]">{benefit}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {lastStep && <FormAside title="What you get" items={BENEFITS} Icon={Check} className="mt-6 lg:hidden" />}
             </div>
 
             {/* On a phone the summary waits for the last step, inside the form. */}
-            <div className="hidden lg:sticky lg:top-28 lg:block">{summary}</div>
+            <div className="hidden space-y-4 lg:sticky lg:top-28 lg:block">
+              {summary}
+              <FormAside title="What you get" items={BENEFITS} Icon={Check} />
+            </div>
           </div>
         </div>
       </section>

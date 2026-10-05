@@ -6,7 +6,9 @@ import { Check } from "lucide-react";
  * card on /payments. Native radios underneath, so the keyboard and screen
  * readers work as they would with any radio group.
  *
- * `options`: [{ value, title, hint?, aside?, Icon? }]
+ * `options`: [{ value, title, hint?, aside?, Icon?, image?, srcSet? }]. An image
+ * shows across the top of its card. A card not chosen keeps a light border;
+ * its round marker is what shows it can be chosen.
  */
 export default function ChoiceCards({ name, legend, options, value, onChange, columns = "sm:grid-cols-3", legendCls }) {
   return (
@@ -22,10 +24,23 @@ export default function ChoiceCards({ name, legend, options, value, onChange, co
               className={`group relative flex cursor-pointer flex-col rounded-[var(--radius-md)] border-2 p-4 transition-all duration-200 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[var(--color-primary)] has-[:focus-visible]:ring-offset-2 ${
                 chosen
                   ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-white shadow-lg shadow-[var(--color-primary)]/25"
-                  : "border-[var(--color-ui-border)] bg-white hover:-translate-y-0.5 hover:border-[var(--color-primary)] hover:shadow-md"
+                  : "border-[var(--color-border)] bg-white shadow-sm hover:-translate-y-0.5 hover:border-[var(--color-primary)] hover:shadow-md"
               }`}
             >
               <input type="radio" name={name} className="sr-only" checked={chosen} onChange={() => onChange(option.value)} />
+              {option.image && (
+                <span aria-hidden="true" className="-mx-4 -mt-4 mb-3 block h-24 overflow-hidden rounded-t-[calc(var(--radius-md)-2px)] sm:h-28">
+                  <img
+                    src={option.image}
+                    srcSet={option.srcSet}
+                    sizes={option.srcSet ? "(min-width: 640px) 320px, calc(100vw - 4rem)" : undefined}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full object-cover"
+                  />
+                </span>
+              )}
               <span className="flex items-start justify-between gap-3">
                 {Icon ? (
                   <span

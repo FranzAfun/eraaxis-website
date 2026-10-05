@@ -47,7 +47,6 @@ const menuGroups = [
 // Anything not listed gets the glass bar from the top, which is the safe
 // default: white links on an unknown background is an invisible navbar.
 const DARK_HERO_ROUTES = [
-  "/",
   "/about",
   "/programs",
   "/dev-board",
@@ -56,17 +55,25 @@ const DARK_HERO_ROUTES = [
   "/gallery",
   "/faq",
   "/contact",
-  "/payments",
+  "/payments/confirmation",
+  "/payments/resume",
   "/certificates/verify",
   "/attendance",
   "/newsletter/unsubscribe",
   "/privacy",
 ];
 
-const opensOnDarkHero = (pathname) =>
-  DARK_HERO_ROUTES.some((route) =>
-    route === "/" ? pathname === "/" : pathname === route || pathname.startsWith(`${route}/`)
+// These match only themselves, not the pages under them: the payment forms
+// under /payments open on the light page, straight onto the form.
+const DARK_HERO_EXACT = ["/", "/payments"];
+
+const opensOnDarkHero = (pathname) => {
+  const path = pathname.length > 1 ? pathname.replace(/\/$/, "") : pathname;
+  return (
+    DARK_HERO_EXACT.includes(path) ||
+    DARK_HERO_ROUTES.some((route) => path === route || path.startsWith(`${route}/`))
   );
+};
 
 const linkClasses = ({ isActive }) =>
   [

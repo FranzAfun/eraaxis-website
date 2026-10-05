@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ArrowRight, CheckCircle2, ShieldCheck, Sparkles, UserRound } from "lucide-react";
 import { getPaymentCategoryBySlug, calculatePaymentBreakdown, formatGhs } from "../data/payments";
 import { api, ApiError, envelopeError, toUserMessage } from "../services/api";
-import BackLinkButton from "../components/navigation/BackLinkButton";
+import FormPageHeader from "../components/forms/FormPageHeader";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
 import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
@@ -354,43 +354,13 @@ export default function MonthlyDuesPayment() {
   return (
     <>
       <SEO {...getPageSeo("/payments/monthly-dues")} />
-      <section className="dark-surface relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-14 pt-32 text-white md:pb-18 md:pt-36">
-        <div
-          aria-hidden="true"
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(circle at 15% 18%, color-mix(in srgb, var(--color-accent) 22%, transparent) 0%, transparent 30%), radial-gradient(circle at 84% 8%, color-mix(in srgb, var(--color-primary) 38%, transparent) 0%, transparent 34%), linear-gradient(135deg, var(--color-background-dark) 0%, var(--color-primary-deep) 54%, var(--color-background-dark) 100%)",
-          }}
-        />
-        <div aria-hidden="true" className="absolute -left-28 top-28 h-80 w-80 rounded-full bg-white/[0.04] blur-3xl" />
-        <div aria-hidden="true" className="absolute -bottom-24 right-4 h-96 w-96 rounded-full bg-[var(--color-accent)]/[0.08] blur-3xl" />
-
-        <div className="container relative z-10">
-          <div className="max-w-3xl">
-            <BackLinkButton
-              fallbackTo="/payments"
-              className="mb-8 flex w-fit items-center gap-1.5 text-xs font-medium text-[var(--color-text-on-dark-muted)] transition-colors hover:text-white"
-            >
-              <ArrowLeft size={12} strokeWidth={2.5} aria-hidden="true" />
-              Back
-            </BackLinkButton>
-
-            <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)] backdrop-blur-xl">
-              Monthly Dues
-            </p>
-            <h1 className="mb-5 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl">
-              Pay your monthly dues.
-            </h1>
-            <p className="max-w-2xl text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-lg">
-              {formatGhs(item.baseAmount)} a month. Members sign in with a code; paying for the first time takes a minute.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-[var(--color-surface-soft)] py-8 md:py-12">
+      <section className="bg-[var(--color-surface-soft)] pb-12 pt-6 md:pb-16 md:pt-8">
         <div className="container">
+          <FormPageHeader
+            eyebrow="Monthly dues"
+            title="Pay your monthly dues."
+            line={`${formatGhs(item.baseAmount)} a month. Members sign in with a code; paying for the first time takes a minute.`}
+          />
           <div className="grid gap-6 lg:grid-cols-[1fr_340px] lg:items-start">
             <div ref={cardRef} className="scroll-mt-28">
               {path === "first" && checkout.confirming ? (
