@@ -5,6 +5,7 @@ import {
   GraduationCap,
   Users,
 } from "lucide-react";
+import Reveal from "../components/motion/Reveal";
 import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
 
@@ -82,7 +83,7 @@ function OptionCard({ option }) {
       };
 
   return (
-    <article className={`flex flex-col rounded-[var(--radius-md)] p-6 transition-all duration-300 hover:-translate-y-1 ${tone.card}`}>
+    <article className={`flex w-full flex-col rounded-[var(--radius-md)] p-6 transition-all duration-300 hover:-translate-y-1 ${tone.card}`}>
       {isPopular && (
         <div className="absolute right-5 top-0 -translate-y-1/2 rounded-full bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-[var(--color-primary)] shadow-sm ring-2 ring-[var(--color-primary)]">
           Most Popular
@@ -96,7 +97,7 @@ function OptionCard({ option }) {
           <h2 className={`text-2xl font-black tracking-tight ${tone.title}`}>{option.title}</h2>
         </div>
         <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--radius-md)] border shadow-sm ${tone.icon}`}>
-          <Icon size={21} className={tone.iconColour} strokeWidth={1.85} />
+          <Icon size={21} className={tone.iconColour} strokeWidth={1.85} aria-hidden="true" />
         </span>
       </div>
 
@@ -115,7 +116,7 @@ function OptionCard({ option }) {
       <div className="mt-auto pt-7">
         <Link to={option.to} className={tone.button}>
           {option.cta}
-          <ArrowRight size={16} strokeWidth={2} />
+          <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
         </Link>
       </div>
     </article>
@@ -126,19 +127,11 @@ export default function Payments() {
   return (
     <>
       <SEO {...getPageSeo("/payments")} />
-      <section className="dark-surface relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-14 pt-36 text-white md:pb-20 md:pt-44">
-        <div
-          aria-hidden="true"
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(circle at 15% 18%, color-mix(in srgb, var(--color-accent) 24%, transparent) 0%, transparent 30%), radial-gradient(circle at 84% 8%, color-mix(in srgb, var(--color-primary) 38%, transparent) 0%, transparent 34%), linear-gradient(135deg, var(--color-background-dark) 0%, var(--color-primary-deep) 54%, var(--color-background-dark) 100%)",
-          }}
-        />
+      <section className="dark-surface hero-ground relative -mt-20 overflow-hidden pb-14 pt-36 text-white md:pb-20 md:pt-44">
         <div className="container relative z-10">
           <div className="max-w-3xl">
-            <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)] backdrop-blur-xl">
-              ERA AXIS ENROLMENT
+            <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)]">
+              Enrolment
             </p>
             <h1 className="mb-5 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-[4rem]">
               Enrolment &amp; Dues
@@ -152,17 +145,19 @@ export default function Payments() {
 
       <section id="payment-options" className="bg-[var(--color-surface-soft)] py-16 md:py-24">
         <div className="container">
-          <div className="grid gap-6 pt-3 lg:grid-cols-3 lg:items-stretch">
-            {paymentOptions.map((option) => (
-              <OptionCard key={option.title} option={option} />
+          <ul className="grid gap-6 pt-3 lg:grid-cols-3 lg:items-stretch">
+            {paymentOptions.map((option, i) => (
+              <Reveal as="li" key={option.title} delay={i * 90} className="flex">
+                <OptionCard option={option} />
+              </Reveal>
             ))}
-          </div>
+          </ul>
           {/* The other ways in, quietly: groups, and help choosing. */}
           <p className="mt-10 text-center text-sm leading-relaxed text-[var(--color-text-secondary)]">
             Enrolling several learners for a school, community or organisation?{" "}
-            <Link to="/contact#enquiry" className="font-semibold text-[var(--color-primary)] underline underline-offset-2">Request a group quote</Link>.
+            <Link to="/contact#enquiry" state={{ inquiryType: "School or Institutional Partnership", message: "We would like a group quote for several learners." }} className="font-semibold text-[var(--color-primary)] underline underline-offset-2">Request a group quote</Link>.
             {" "}Not sure which to choose?{" "}
-            <Link to="/contact#enquiry" className="font-semibold text-[var(--color-primary)] underline underline-offset-2">Ask us</Link>.
+            <Link to="/contact#enquiry" state={{ inquiryType: "Enrolment / Admissions" }} className="font-semibold text-[var(--color-primary)] underline underline-offset-2">Ask us</Link>.
           </p>
         </div>
       </section>
