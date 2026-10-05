@@ -2175,6 +2175,16 @@ input[type="radio"] {
   pointer-events: none;
 }
 
+/* On a phone, a section that ends with its button (data-stack-hold) stays
+   still a little longer before the next comes over it, so the button can be
+   seen and tapped: the gap above the next section is scrolled past while this
+   one holds. */
+@media (max-width: 1023px) {
+  .scroll-stack[data-stacking] > section[data-stack-hold] + section {
+    margin-top: 40svh;
+  }
+}
+
 /* A section wholly under the next one is not drawn at all. */
 .scroll-stack[data-stacking] > section[data-covered] {
   visibility: hidden;

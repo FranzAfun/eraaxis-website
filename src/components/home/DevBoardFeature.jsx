@@ -8,6 +8,7 @@ export default function DevBoardFeature() {
   return (
     <section
       aria-label="ERA Dev Board"
+      data-stack-hold
       className="dark-surface relative overflow-hidden bg-[var(--color-background-dark)] py-20 md:py-24 lg:py-28"
     >
       <div
