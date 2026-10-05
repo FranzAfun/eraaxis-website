@@ -15,8 +15,10 @@ export default function DevBoardFeature() {
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_45%_55%_at_80%_50%,color-mix(in_srgb,var(--color-primary)_40%,transparent),transparent_70%)]"
       />
       <div className="container relative z-10">
-        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-          <div>
+        {/* On a phone: the switch, then the board itself, then the way to it. On a
+            wide screen the board sits beside the words and the button. */}
+        <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-x-16 lg:gap-y-8">
+          <div className="lg:col-start-1 lg:row-start-1">
             <Reveal>
               <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)]">
                 ERA Dev Board
@@ -32,16 +34,9 @@ export default function DevBoardFeature() {
             <Reveal delay={90}>
               <LightTheLed />
             </Reveal>
-
-            <Reveal delay={150} className="mt-8">
-              <Link to="/dev-board" className="btn-primary group w-full justify-center sm:w-auto">
-                Explore the Dev Board
-                <ArrowRight size={17} strokeWidth={2} className="transition-transform duration-300 group-hover:translate-x-2" aria-hidden="true" />
-              </Link>
-            </Reveal>
           </div>
 
-          <Reveal delay={120}>
+          <Reveal delay={120} className="lg:col-start-2 lg:row-span-2 lg:row-start-1">
             <img
               src={devBoardImg}
               alt="The ERA Dev Board, a hands-on electronics learning kit"
@@ -49,6 +44,13 @@ export default function DevBoardFeature() {
               loading="lazy"
               decoding="async"
             />
+          </Reveal>
+
+          <Reveal delay={150} className="lg:col-start-1 lg:row-start-2 lg:self-start">
+            <Link to="/dev-board" className="btn-primary group w-full justify-center sm:w-auto">
+              Explore the Dev Board
+              <ArrowRight size={17} strokeWidth={2} className="transition-transform duration-300 group-hover:translate-x-2" aria-hidden="true" />
+            </Link>
           </Reveal>
         </div>
       </div>
