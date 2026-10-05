@@ -1734,3 +1734,38 @@ input[type="radio"] {
     }
   }
 }
+
+/* ── Scroll stack ──────────────────────────────────────────────────────────
+   Unlayered on purpose: sections carry Tailwind's `relative`, which would win
+   over a layered `position: sticky`. See ScrollStack.jsx. */
+.scroll-stack[data-stacking] > section {
+  position: sticky;
+  top: var(--stick-top, 0px);
+  transform-origin: 50% var(--stack-origin, 50%);
+}
+
+/* Each section after the first arrives like a card: rounded top corners and a
+   soft shadow over the one it covers. */
+.scroll-stack[data-stacking] > section + section {
+  border-radius: 28px 28px 0 0;
+  box-shadow: 0 -28px 56px -24px rgb(0 0 0 / 0.5);
+}
+
+/* The section being covered dims as the next one comes over it. */
+.scroll-stack[data-stacking] > section::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  border-radius: inherit;
+  background: #000;
+  opacity: calc(var(--cover, 0) * 0.55);
+  pointer-events: none;
+}
+
+/* On a wide screen with a mouse it also sinks back a little. */
+@media (min-width: 1024px) and (pointer: fine) {
+  .scroll-stack[data-stacking] > section {
+    transform: scale(calc(1 - var(--cover, 0) * 0.06));
+  }
+}

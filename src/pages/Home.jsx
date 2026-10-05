@@ -9,12 +9,14 @@ import ImpactMetrics from "../components/home/ImpactMetrics";
 import InsightsPreview from "../components/home/InsightsPreview";
 import FinalCTA from "../components/home/FinalCTA";
 import SEO from "../components/SEO";
+import ScrollStack from "../components/motion/ScrollStack";
 import { getPageSeo } from "../data/seo";
 
 export default function Home() {
   return (
     <>
       <SEO {...getPageSeo("/")} />
+      <ScrollStack>
       <Hero />
       <WhoItIsFor />
       <WhatYouLearn />
@@ -25,6 +27,7 @@ export default function Home() {
       <InsightsPreview />
       <GalleryPreview />
       <FinalCTA />
+      </ScrollStack>
     </>
   );
 }
