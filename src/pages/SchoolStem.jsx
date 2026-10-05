@@ -73,7 +73,7 @@ export default function SchoolStem() {
               Start Learner Enrolment
               <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
             </Link>
-            <Link to="/contact#enquiry" className={heroSecondaryClass}>
+            <Link to="/contact#enquiry" state={{ inquiryType: "School or Institutional Partnership" }} className={heroSecondaryClass}>
               Discuss School Partnership
               <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
             </Link>
@@ -97,7 +97,7 @@ export default function SchoolStem() {
               Start Learner Enrolment
               <ArrowRight size={15} strokeWidth={2.2} aria-hidden="true" />
             </Link>
-            <Link to="/contact#enquiry" className={closeSecondaryClass}>
+            <Link to="/contact#enquiry" state={{ inquiryType: "School or Institutional Partnership" }} className={closeSecondaryClass}>
               Discuss School Partnership
               <ArrowRight size={15} strokeWidth={2.2} aria-hidden="true" />
             </Link>

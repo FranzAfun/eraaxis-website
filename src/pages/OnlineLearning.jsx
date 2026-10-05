@@ -79,7 +79,7 @@ export default function OnlineLearning() {
               Start Enrolment
               <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
             </Link>
-            <Link to="/contact#enquiry" className={heroSecondaryClass}>
+            <Link to="/contact#enquiry" state={{ inquiryType: "Enrolment / Admissions" }} className={heroSecondaryClass}>
               Ask About the Programme
               <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
             </Link>
@@ -102,7 +102,7 @@ export default function OnlineLearning() {
               Start Enrolment
               <ArrowRight size={15} strokeWidth={2.2} aria-hidden="true" />
             </Link>
-            <Link to="/contact#enquiry" className={closeSecondaryClass}>
+            <Link to="/contact#enquiry" state={{ inquiryType: "Enrolment / Admissions" }} className={closeSecondaryClass}>
               Ask a Question
               <ArrowRight size={15} strokeWidth={2.2} aria-hidden="true" />
             </Link>

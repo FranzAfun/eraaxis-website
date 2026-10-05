@@ -87,7 +87,7 @@ export default function EraDigitalSkills() {
               Start Enrolment
               <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
             </Link>
-            <Link to="/contact#enquiry" className={heroSecondaryClass}>
+            <Link to="/contact#enquiry" state={{ inquiryType: "Enrolment / Admissions" }} className={heroSecondaryClass}>
               Ask About the Programme
               <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
             </Link>
@@ -110,7 +110,7 @@ export default function EraDigitalSkills() {
               Start Enrolment
               <ArrowRight size={15} strokeWidth={2.2} aria-hidden="true" />
             </Link>
-            <Link to="/contact#enquiry" className={closeSecondaryClass}>
+            <Link to="/contact#enquiry" state={{ inquiryType: "Enrolment / Admissions", message: "We would like to enrol a team in ERA Digital Skills." }} className={closeSecondaryClass}>
               Enrol a Team
               <ArrowRight size={15} strokeWidth={2.2} aria-hidden="true" />
             </Link>

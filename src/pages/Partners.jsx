@@ -17,10 +17,10 @@ import { resolveMediaUrl } from "../utils/resolveMediaUrl";
 const PARTNERSHIP = "School or Institutional Partnership";
 
 const areas = [
-  { key: "access", label: "STEM access", Icon: BookOpen, line: "Hands-on STEM for more schools and communities across Ghana and Africa." },
-  { key: "youth", label: "Youth skills", Icon: Users, line: "Digital and technical skills for young people, through real projects." },
-  { key: "schools", label: "Schools and communities", Icon: School, line: "Curriculum-aligned learning with schools, youth groups and communities." },
-  { key: "edtech", label: "EdTech at scale", Icon: Zap, line: "Scaling the ERA Dev Board and AI-assisted learning support." },
+  { key: "access", label: "STEM access", topic: "STEM access", Icon: BookOpen, line: "Hands-on STEM for more schools and communities across Ghana and Africa." },
+  { key: "youth", label: "Youth skills", topic: "youth skills", Icon: Users, line: "Digital and technical skills for young people, through real projects." },
+  { key: "schools", label: "Schools and communities", topic: "work with schools and communities", Icon: School, line: "Curriculum-aligned learning with schools, youth groups and communities." },
+  { key: "edtech", label: "EdTech at scale", topic: "scaling EdTech", Icon: Zap, line: "Scaling the ERA Dev Board and AI-assisted learning support." },
 ];
 
 export default function Partners() {
@@ -168,7 +168,7 @@ export default function Partners() {
                   <p className="text-xl font-bold leading-snug text-[var(--color-text-primary)] sm:text-2xl">{item.line}</p>
                   <Link
                     to="/contact#enquiry"
-                    state={{ inquiryType: PARTNERSHIP, message: `We would like to partner with ERA AXIS on ${item.label.toLowerCase()}.` }}
+                    state={{ inquiryType: PARTNERSHIP, message: `We would like to partner with ERA AXIS on ${item.topic}.` }}
                     className="btn-primary w-fit whitespace-nowrap"
                   >
                     Talk to us about this

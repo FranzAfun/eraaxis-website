@@ -7,7 +7,8 @@ import instagramImg from "../assets/social/instagram.webp";
 import tiktokImg    from "../assets/social/tiktok.webp";
 import whatsappImg  from "../assets/social/whatsapp.webp";
 import { generalFaqs } from "../data/faqs";
-import SelectField from "../components/ui/SelectField";
+import Reveal from "../components/motion/Reveal";
+import { heroPrimaryClass, heroSecondaryClass } from "../components/programme/programmeClasses";
 import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
 import { api } from "../services/api";
@@ -24,6 +25,15 @@ const INQUIRY_TYPES = [
   "General Inquiry",
 ];
 
+// Short names for the topic buttons; the full name is what is sent.
+const TOPIC_LABEL = {
+  "Enrolment / Admissions":              "Enrolment",
+  "School or Institutional Partnership": "School or partnership",
+  "Sponsorship or Donation":             "Sponsorship",
+  "Media & Press":                       "Media and press",
+  "General Inquiry":                     "Something else",
+};
+
 const EMPTY_FORM = { name: "", phone: "", email: "", type: "", message: "" };
 const EMAIL_RE   = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -31,11 +41,6 @@ const EMAIL_RE   = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const FALLBACK_ADDRESS = "ERA AXIS HQ – Essikado, Ghana";
 const FALLBACK_EMAIL   = "support@eraaxis.com";
 const FALLBACK_PHONE   = "+233 59 353 5925";
-
-const ctaPrimaryClass =
-  "final-cta-btn-primary inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[var(--radius-sm)] px-5 text-sm font-semibold";
-const ctaSecondaryClass =
-  "final-cta-btn-secondary inline-flex min-h-[44px] items-center justify-center gap-2 rounded-[var(--radius-sm)] px-5 text-sm font-semibold";
 
 /* ── Helpers ─────────────────────────────────────────────────────────────── */
 
@@ -181,48 +186,26 @@ export default function Contact() {
   return (
     <>
       <SEO {...getPageSeo("/contact")} />
-      {/* ── Hero ───────────────────────────────────────────────────────── */}
-      <section className="dark-surface relative -mt-20 overflow-hidden bg-[var(--color-background-dark)] pb-16 pt-36 text-white md:pb-24 md:pt-44">
-        <div
-          aria-hidden="true"
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(circle at 15% 18%, color-mix(in srgb, var(--color-accent) 24%, transparent) 0%, transparent 30%), radial-gradient(circle at 84% 8%, color-mix(in srgb, var(--color-primary) 38%, transparent) 0%, transparent 34%), linear-gradient(135deg, var(--color-background-dark) 0%, var(--color-primary-deep) 54%, var(--color-background-dark) 100%)",
-          }}
-        />
-        <div
-          aria-hidden="true"
-          className="absolute -left-28 top-28 h-80 w-80 rounded-full bg-white/[0.05] blur-3xl"
-        />
-        <div
-          aria-hidden="true"
-          className="absolute -bottom-24 right-4 h-96 w-96 rounded-full bg-[var(--color-accent)]/10 blur-3xl"
-        />
+      <section className="dark-surface hero-ground relative -mt-20 overflow-hidden pb-16 pt-36 text-white md:pb-20 md:pt-44">
         <div className="container relative z-10">
-          <p className="mb-5 inline-flex w-fit rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)] backdrop-blur-xl">
+          <p className="mb-5 inline-flex w-fit rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)]">
             Contact ERA AXIS
           </p>
           <h1 className="mb-5 max-w-3xl text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-[4rem]">
-            Let&apos;s talk about practical STEM and digital skills learning.
+            Let&apos;s talk.
           </h1>
           <p className="mb-8 max-w-2xl text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-lg">
-            Reach out about programmes, school partnerships, sponsorships, media
-            enquiries, or general questions about ERA AXIS.
+            Programmes, partnerships, sponsorship or press: we&apos;ll get you to the right person.
           </p>
           <div className="flex flex-col gap-3 sm:flex-row">
-            <a
-              href="#enquiry"
-              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-white px-5 text-sm font-semibold text-[var(--color-primary)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/90"
-            >
-              Start enquiry <ArrowRight size={16} />
+            <a href="#enquiry" className={heroPrimaryClass}>
+              Send a message
+              <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
             </a>
-            <Link
-              to="/programs"
-              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[var(--radius-sm)] border border-white/25 bg-white/[0.08] px-5 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:text-[var(--color-primary)]"
-            >
-              View programmes
-            </Link>
+            <a href="#find-us" className={heroSecondaryClass}>
+              Find the hub
+              <MapPin size={16} strokeWidth={2} aria-hidden="true" />
+            </a>
           </div>
         </div>
       </section>
@@ -234,13 +217,9 @@ export default function Contact() {
 
             {/* Form */}
             <div>
-              <h2 className="mb-2 text-2xl font-black leading-tight tracking-tight text-[var(--color-text-primary)] sm:text-3xl">
+              <h2 className="mb-8 text-2xl font-black leading-tight tracking-tight text-[var(--color-text-primary)] sm:text-3xl">
                 Send us a message
               </h2>
-              <p className="mb-8 text-base leading-relaxed text-[var(--color-text-secondary)]">
-                Tell us what you&apos;re interested in and the right ERA AXIS team
-                member will follow up.
-              </p>
 
               {submitted ? (
                 <div className="card-interactive p-8">
@@ -261,6 +240,32 @@ export default function Contact() {
                 </div>
               ) : (
                 <form noValidate onSubmit={handleSubmit} className="space-y-5">
+                  {/* What it is about: tap one (real radio buttons, so arrow
+                      keys and screen readers work as usual). */}
+                  <fieldset>
+                    <legend className="mb-2 block text-sm font-semibold text-[var(--color-text-primary)]">
+                      What&apos;s it about?
+                    </legend>
+                    <div className="flex flex-wrap gap-2">
+                      {INQUIRY_TYPES.map((type) => (
+                        <label
+                          key={type}
+                          className="inline-flex min-h-[44px] cursor-pointer items-center rounded-full border border-[var(--color-ui-border)] bg-white px-4 text-sm font-semibold text-[var(--color-text-primary)] transition-colors hover:border-[var(--color-primary)] has-[:checked]:border-[var(--color-primary)] has-[:checked]:bg-[var(--color-primary)] has-[:checked]:text-white"
+                        >
+                          <input
+                            type="radio"
+                            name="type"
+                            value={type}
+                            checked={form.type === type}
+                            onChange={handleChange}
+                            className="sr-only"
+                          />
+                          {TOPIC_LABEL[type] || type}
+                        </label>
+                      ))}
+                    </div>
+                  </fieldset>
+
                   {/* Full Name */}
                   <div>
                     <label className="mb-1.5 block text-sm font-semibold text-[var(--color-text-primary)]">
@@ -310,24 +315,6 @@ export default function Contact() {
                     </div>
                   </div>
 
-                  {/* Inquiry Type */}
-                  <div>
-                    <label className="mb-1.5 block text-sm font-semibold text-[var(--color-text-primary)]">
-                      Inquiry Type
-                    </label>
-                    <SelectField
-                      name="type"
-                      value={form.type}
-                      onChange={handleChange}
-                      className={fieldCls(false)}
-                      placeholder="Select inquiry type"
-                      options={INQUIRY_TYPES.map((type) => ({
-                        value: type,
-                        label: type,
-                      }))}
-                    />
-                  </div>
-
                   {/* Message */}
                   <div>
                     <label className="mb-1.5 block text-sm font-semibold text-[var(--color-text-primary)]">
@@ -359,9 +346,8 @@ export default function Contact() {
                       {isSubmitting ? <BusyLabel>Sending…</BusyLabel> : "Send Message"}
                       {!isSubmitting && <ArrowRight size={16} />}
                     </button>
-                    <p className="mt-3 text-xs text-[var(--color-text-muted)]">
-                      The right ERA AXIS team member will follow up using the
-                      contact details you provide.
+                    <p className="mt-3 text-sm text-[var(--color-text-secondary)]">
+                      The right person at ERA AXIS will reply using the details you give.
                     </p>
                   </div>
                 </form>
@@ -434,19 +420,16 @@ export default function Contact() {
       </section>
 
       {/* ── Map ────────────────────────────────────────────────────────────── */}
-      <section className="bg-[var(--color-surface-soft)] py-16 md:py-24">
+      <section id="find-us" className="soft-field scroll-mt-20 py-16 md:py-24">
         <div className="container">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
-            Find us
-          </p>
-          <h2 className="mb-3 text-2xl font-black leading-tight tracking-tight text-[var(--color-text-primary)] sm:text-3xl">
-            Find ERA AXIS Hub
-          </h2>
-          <p className="mb-8 max-w-xl text-base leading-relaxed text-[var(--color-text-secondary)]">
-            Visit our hub in Takoradi or use the directions link to find us
-            easily.
-          </p>
-
+          <Reveal className="mb-8">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
+              Find us
+            </p>
+            <h2 className="text-2xl font-black leading-tight tracking-tight text-[var(--color-text-primary)] sm:text-3xl">
+              The ERA AXIS Hub, Takoradi.
+            </h2>
+          </Reveal>
           <div className="overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-border-soft)] shadow-[var(--shadow-soft)]">
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3974.8793207774065!2d-1.7167443000000002!3d4.9597231!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xfe77b000eec9f9b%3A0x26cc1a1276bcd1c1!2sERA%20Axis%20Hub!5e0!3m2!1sen!2sgh!4v1764130262261!5m2!1sen!2sgh"
@@ -476,26 +459,20 @@ export default function Contact() {
 
       <section id="faq" className="bg-white py-16 md:py-24">
         <div className="container">
-          <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <Reveal className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div className="max-w-2xl">
               <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
-                Contact FAQ
+                Quick answers
               </p>
-              <h2 className="mb-3 text-2xl font-black leading-tight tracking-tight text-[var(--color-text-primary)] sm:text-3xl">
-                A few quick answers before you reach out.
+              <h2 className="text-2xl font-black leading-tight tracking-tight text-[var(--color-text-primary)] sm:text-3xl">
+                Before you write.
               </h2>
-              <p className="text-base leading-relaxed text-[var(--color-text-secondary)]">
-                These cover the most common contact and support questions. For
-                everything else, use the full FAQ page.
-              </p>
             </div>
-
-            <Link to="/faq" className="btn-outline">
-              View full FAQ
-              <ArrowRight size={16} strokeWidth={2} />
+            <Link to="/faq" className="btn-outline w-fit">
+              All questions
+              <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
             </Link>
-          </div>
-
+          </Reveal>
           <div className="mx-auto max-w-3xl space-y-3">
             {contactFaqs.map((item) => (
               <ContactFaqItem
@@ -511,27 +488,6 @@ export default function Contact() {
         </div>
       </section>
 
-      {/* ── Final CTA ──────────────────────────────────────────────────────── */}
-      <section className="dark-surface final-cta-band relative overflow-hidden py-20 md:py-28">
-        <div className="final-cta-orb pointer-events-none absolute inset-0" />
-        <div className="container relative z-10 text-center">
-          <h2 className="mb-4 text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl md:text-5xl">
-            Ready to start the conversation?
-          </h2>
-          <p className="mx-auto mb-8 max-w-xl text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-lg">
-            Whether you are a learner, parent, school, sponsor, or partner, ERA
-            AXIS is ready to help you take the next step.
-          </p>
-          <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <a href="#enquiry" className={ctaPrimaryClass}>
-              Send an enquiry <ArrowRight size={16} />
-            </a>
-            <Link to="/programs" className={ctaSecondaryClass}>
-              Explore programmes <ArrowRight size={16} />
-            </Link>
-          </div>
-        </div>
-      </section>
     </>
   );
 }
