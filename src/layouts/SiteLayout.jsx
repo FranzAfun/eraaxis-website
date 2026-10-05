@@ -29,8 +29,10 @@ export default function SiteLayout({ children }) {
       <Header />
       {/* At least a screen tall, so the footer starts below the fold while a
           page's code is still arriving, instead of showing and then being
-          pushed down (a layout shift Lighthouse counts). */}
-      <main className="min-h-[100svh] flex-1 pt-20">{children}</main>
+          pushed down (a layout shift Lighthouse counts). On a page shorter than
+          that, its last section stretches to fill the space, so the page's own
+          colour fills it rather than a white band above the footer. */}
+      <main className="flex min-h-[100svh] flex-1 flex-col pt-20 [&>*:last-child]:grow [&>.contents>*:last-child]:grow">{children}</main>
       <Footer />
       <PrivacyNoticeBoundary>
         <Suspense fallback={null}>
