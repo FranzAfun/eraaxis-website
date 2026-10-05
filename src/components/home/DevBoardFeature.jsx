@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import devBoardImg from "../../assets/images/dev-board/dev-board-main.webp";
+import devBoardImg640 from "../../assets/images/dev-board/dev-board-main-640.webp";
+import devBoardImg768 from "../../assets/images/dev-board/dev-board-main-768.webp";
 import Reveal from "../motion/Reveal";
 import LightTheLed from "./LightTheLed";
 
@@ -41,6 +43,10 @@ export default function DevBoardFeature() {
             <div data-scene="tilt-zoom">
             <img
               src={devBoardImg}
+              srcSet={`${devBoardImg640} 640w, ${devBoardImg768} 768w, ${devBoardImg} 1024w`}
+              sizes="(min-width: 1024px) 40vw, 90vw"
+              width={1024}
+              height={1280}
               alt="The ERA Dev Board, a hands-on electronics learning kit"
               className="w-full rounded-[var(--radius-lg)] object-cover shadow-[0_30px_70px_-30px_rgb(0_0_0_/_0.7)] transition-transform duration-500 hover:-translate-y-1"
               loading="lazy"

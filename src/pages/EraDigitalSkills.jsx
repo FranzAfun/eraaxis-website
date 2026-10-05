@@ -12,13 +12,13 @@ import {
   Target,
 } from "lucide-react";
 
-import eraDigitalImg from "../assets/images/programmes/era-digital-skill.webp";
 import ScrollScenes from "../components/motion/ScrollScenes";
 import MonthStory from "../components/programme/MonthStory";
 import ToolBox from "../components/programme/ToolBox";
 import { ProgrammeClose, ProgrammeHero, ReasonLines } from "../components/programme/ProgrammeParts";
 import { closePrimaryClass, closeSecondaryClass, heroPrimaryClass, heroSecondaryClass } from "../components/programme/programmeClasses";
 import SEO from "../components/SEO";
+import { PROGRAMME_IMAGES } from "../data/programmeImages";
 import { getPageSeo } from "../data/seo";
 import { calculateFullProgrammeBase, getPaymentItemBySlug } from "../data/payments";
 
@@ -77,7 +77,8 @@ export default function EraDigitalSkills() {
         title="AI and digital skills for real work."
         line="Three months online: AI tools, spreadsheets and automation, built around your own job or business."
         glance={["3 months, online", `${monthly} a month`, `${inFull} in full`]}
-        image={eraDigitalImg}
+        image={PROGRAMME_IMAGES.digital_skills.src}
+        imageSrcSet={PROGRAMME_IMAGES.digital_skills.srcSet}
         imageAlt="Professional using digital productivity and AI tools"
         badge="Working adults & professionals"
         actions={

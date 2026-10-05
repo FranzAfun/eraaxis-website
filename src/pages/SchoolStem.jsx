@@ -17,12 +17,12 @@ import {
   Rocket,
 } from "lucide-react";
 
-import schoolStemImg from "../assets/images/programmes/school-stem-programs.webp";
 import ScrollScenes from "../components/motion/ScrollScenes";
 import StageJourney from "../components/programme/StageJourney";
 import { BuildTiles, DevBoardStrip, ProgrammeClose, ProgrammeHero, ReasonLines } from "../components/programme/ProgrammeParts";
 import { closePrimaryClass, closeSecondaryClass, heroPrimaryClass, heroSecondaryClass } from "../components/programme/programmeClasses";
 import SEO from "../components/SEO";
+import { PROGRAMME_IMAGES } from "../data/programmeImages";
 import { getPageSeo } from "../data/seo";
 
 const enrolState = {
@@ -63,7 +63,8 @@ export default function SchoolStem() {
         title={<>Hands-on STEM from Basic&nbsp;1 to SHS&nbsp;3.</>}
         line="Electronics, coding, sensors and automation, learned by building in class."
         glance={["In-school sessions", "Project-based", "ERA Dev Board"]}
-        image={schoolStemImg}
+        image={PROGRAMME_IMAGES.school_stem.src}
+        imageSrcSet={PROGRAMME_IMAGES.school_stem.srcSet}
         imageAlt="Students engaged in a hands-on school STEM class"
         badge="Basic 1 – SHS 3"
         actions={

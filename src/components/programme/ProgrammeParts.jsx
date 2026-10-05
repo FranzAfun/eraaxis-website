@@ -11,7 +11,7 @@ import Reveal from "../motion/Reveal";
 
 const BLANK = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
 
-export function ProgrammeHero({ eyebrow, title, line, glance, image, imageAlt, imageClass = "", badge, actions, back = true }) {
+export function ProgrammeHero({ eyebrow, title, line, glance, image, imageSrcSet, imageAlt, imageClass = "", badge, actions, back = true }) {
   return (
     <section className={`dark-surface hero-ground relative -mt-20 overflow-hidden pb-16 text-white md:pb-24 ${back ? "pt-32 md:pt-40" : "pt-36 md:pt-44"}`}>
       <div className="container relative z-10">
@@ -48,7 +48,14 @@ export function ProgrammeHero({ eyebrow, title, line, glance, image, imageAlt, i
                   pixel instead, so they never download it. */}
               <picture>
                 <source media="(max-width: 767px)" srcSet={BLANK} />
-                <img src={image} alt={imageAlt} className={`aspect-[4/3] w-full object-cover ${imageClass}`} fetchPriority="high" />
+                <img
+                  src={image}
+                  srcSet={imageSrcSet}
+                  sizes={imageSrcSet ? "(min-width: 1024px) 45vw, 90vw" : undefined}
+                  alt={imageAlt}
+                  className={`aspect-[4/3] w-full object-cover ${imageClass}`}
+                  fetchPriority="high"
+                />
               </picture>
               {badge && (
                 <div className="absolute bottom-4 left-4">

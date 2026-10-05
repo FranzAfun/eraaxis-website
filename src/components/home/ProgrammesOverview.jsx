@@ -4,45 +4,41 @@ import { useBootstrap } from "../../hooks/useBootstrap";
 import { resolveMediaUrl } from "../../utils/resolveMediaUrl";
 import Reveal from "../motion/Reveal";
 
-import schoolStemImg from "../../assets/images/programmes/school-stem-programs.webp";
-import outOfSchoolImg from "../../assets/images/programmes/out-of-school-youth.webp";
-import onlineLearningImg from "../../assets/images/programmes/online-learning.webp";
-import eraDigitalImg from "../../assets/images/programmes/era-digital-skill.webp";
+import { CARD_SIZES, PROGRAMME_IMAGES } from "../../data/programmeImages";
 
 // Real programmes have no admin-managed thumbnail today (images/pricing are
 // migration-only) — fall back to the same bundled local asset per category
 // that the /programs page uses, rather than a bare gray placeholder.
-const CATEGORY_IMAGE = {
-  school_stem:         schoolStemImg,
-  out_of_school_youth: outOfSchoolImg,
-  online_learning:     onlineLearningImg,
-  digital_skills:      eraDigitalImg,
-};
+const CATEGORY_IMAGE = PROGRAMME_IMAGES;
 
 const STATIC_PROGRAMMES = [
   {
-    image: schoolStemImg,
+    image: PROGRAMME_IMAGES.school_stem.src,
+    srcSet: PROGRAMME_IMAGES.school_stem.srcSet,
     title: "School STEM Programmes",
     text: "Hands-on STEM from Basic 1 to SHS 3.",
     to: "/programs/school-stem",
     cta: "Explore School STEM",
   },
   {
-    image: outOfSchoolImg,
+    image: PROGRAMME_IMAGES.out_of_school_youth.src,
+    srcSet: PROGRAMME_IMAGES.out_of_school_youth.srcSet,
     title: "Out-of-School Youth",
     text: "Employable skills for ages 16 to 30.",
     to: "/programs/out-of-school-youth",
     cta: "Explore Youth Programme",
   },
   {
-    image: onlineLearningImg,
+    image: PROGRAMME_IMAGES.online_learning.src,
+    srcSet: PROGRAMME_IMAGES.online_learning.srcSet,
     title: "Online Learning",
     text: "Code, AI and electronics, from anywhere.",
     to: "/programs/online-learning",
     cta: "Explore Online Learning",
   },
   {
-    image: eraDigitalImg,
+    image: PROGRAMME_IMAGES.digital_skills.src,
+    srcSet: PROGRAMME_IMAGES.digital_skills.srcSet,
     title: "ERA Digital Skills",
     text: "AI tools and automation for your work.",
     to: "/programs/era-digital-skills",
@@ -65,7 +61,7 @@ const CATEGORY_CTA = {
   digital_skills: "Explore Digital Skills",
 };
 
-function ProgrammeCard({ image, title, text, to, cta }) {
+function ProgrammeCard({ image, srcSet, title, text, to, cta }) {
   return (
     <Link
       to={to}
@@ -78,6 +74,8 @@ function ProgrammeCard({ image, title, text, to, cta }) {
           <div data-scene="parallax" className="absolute inset-x-0 -top-[9%] h-[118%]">
             <img
               src={image}
+              srcSet={srcSet}
+              sizes={srcSet ? CARD_SIZES : undefined}
               alt={title}
               className="h-full w-full object-cover brightness-75 transition-transform duration-500 group-hover:scale-105"
             />
@@ -110,7 +108,9 @@ export default function ProgrammesOverview() {
   const programmes =
     featuredProgrammes.length > 0
       ? featuredProgrammes.map((p) => ({
-          image: resolveMediaUrl(p.thumbnail_url) || CATEGORY_IMAGE[p.category] || schoolStemImg,
+          ...(p.thumbnail_url
+            ? { image: resolveMediaUrl(p.thumbnail_url) }
+            : { image: (CATEGORY_IMAGE[p.category] || CATEGORY_IMAGE.school_stem).src, srcSet: (CATEGORY_IMAGE[p.category] || CATEGORY_IMAGE.school_stem).srcSet }),
           title: p.name,
           text: CATEGORY_LINE[p.category] || p.description,
           to: `/programs/${p.slug}`,

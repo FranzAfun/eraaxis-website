@@ -1,0 +1,30 @@
+# ERA AXIS
+
+> ERA AXIS is Ghana's practical STEM and digital skills platform. Learners build real projects with real tools, including the ERA Dev Board, a hand-built electronics board. Programmes serve school students (Basic 1 to SHS 3), out-of-school youth (ages 16 to 30), online learners and working professionals.
+
+ERA AXIS Limited was started in 2020 and incorporated in 2024. It is based in Essikado, Ghana. Contact: support@eraaxis.com.
+
+## Programmes
+
+- [All programmes](https://eraaxis.com/programs): the four learning pathways side by side
+- [School STEM](https://eraaxis.com/programs/school-stem): hands-on STEM in school, from Basic 1 to SHS 3
+- [Out-of-School Youth](https://eraaxis.com/programs/out-of-school-youth): practical tech skills and community projects for ages 16 to 30
+- [Online Learning](https://eraaxis.com/programs/online-learning): programming, AI, electronics, PCB design, simulation and automation, online
+- [ERA Digital Skills](https://eraaxis.com/programs/era-digital-skills): three months of AI tools, spreadsheets and automation for working adults
+
+## The ERA Dev Board
+
+- [ERA Dev Board](https://eraaxis.com/dev-board): the board learners use, its parts, and what they build on it
+
+## About and contact
+
+- [About](https://eraaxis.com/about): how ERA AXIS started, its mission and vision
+- [Partners](https://eraaxis.com/partners): partners, accelerators and recognition
+- [Contact](https://eraaxis.com/contact): enquiries, partnerships and sponsorship
+- [FAQ](https://eraaxis.com/faq): common questions before enrolling
+
+## Optional
+
+- [Insights](https://eraaxis.com/insights): articles and programme stories
+- [Gallery](https://eraaxis.com/gallery): photos from workshops and programmes
+- [Enrolment and payments](https://eraaxis.com/payments): programme enrolment, student chapter and monthly dues

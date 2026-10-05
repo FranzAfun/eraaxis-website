@@ -2,26 +2,18 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, ArrowDown, Hammer, Cpu, FolderOpen, TrendingUp } from "lucide-react";
 
-import schoolStemImg from "../assets/images/programmes/school-stem-programs.webp";
-import outOfSchoolImg from "../assets/images/programmes/out-of-school-youth.webp";
-import onlineLearningImg from "../assets/images/programmes/online-learning.webp";
-import eraDigitalImg from "../assets/images/programmes/era-digital-skill.webp";
 import programmesHeroImg from "../assets/images/programmes/programmes-hero.webp";
 import Reveal from "../components/motion/Reveal";
 import ScrollScenes from "../components/motion/ScrollScenes";
 import { ProgrammeClose, ProgrammeHero, SectionHead } from "../components/programme/ProgrammeParts";
 import { closePrimaryClass, closeSecondaryClass, heroPrimaryClass, heroSecondaryClass } from "../components/programme/programmeClasses";
 import SEO from "../components/SEO";
+import { CARD_SIZES, PROGRAMME_IMAGES } from "../data/programmeImages";
 import { getPageSeo } from "../data/seo";
 import { api } from "../services/api";
 import { resolveMediaUrl } from "../utils/resolveMediaUrl";
 
-const CATEGORY_IMAGE = {
-  school_stem:        schoolStemImg,
-  out_of_school_youth: outOfSchoolImg,
-  online_learning:    onlineLearningImg,
-  digital_skills:     eraDigitalImg,
-};
+const CATEGORY_IMAGE = PROGRAMME_IMAGES;
 
 const CATEGORY_AUDIENCE = {
   school_stem:         "Basic 1 – SHS 3",
@@ -48,7 +40,8 @@ const CATEGORY_CTA = {
 
 const STATIC_PROGRAMMES = [
   {
-    image: schoolStemImg,
+    image: PROGRAMME_IMAGES.school_stem.src,
+    srcSet: PROGRAMME_IMAGES.school_stem.srcSet,
     audience: "Basic 1 – SHS 3",
     title: "School STEM Programmes",
     cta: "Explore School STEM",
@@ -56,7 +49,8 @@ const STATIC_PROGRAMMES = [
     to: "/programs/school-stem",
   },
   {
-    image: outOfSchoolImg,
+    image: PROGRAMME_IMAGES.out_of_school_youth.src,
+    srcSet: PROGRAMME_IMAGES.out_of_school_youth.srcSet,
     audience: "Ages 16 – 30",
     title: "Out-of-School Youth",
     cta: "Explore Youth Programme",
@@ -64,7 +58,8 @@ const STATIC_PROGRAMMES = [
     to: "/programs/out-of-school-youth",
   },
   {
-    image: onlineLearningImg,
+    image: PROGRAMME_IMAGES.online_learning.src,
+    srcSet: PROGRAMME_IMAGES.online_learning.srcSet,
     audience: "Remote & self-paced learners",
     title: "Online Learning",
     cta: "Explore Online Learning",
@@ -72,7 +67,8 @@ const STATIC_PROGRAMMES = [
     to: "/programs/online-learning",
   },
   {
-    image: eraDigitalImg,
+    image: PROGRAMME_IMAGES.digital_skills.src,
+    srcSet: PROGRAMME_IMAGES.digital_skills.srcSet,
     audience: "Working adults & professionals",
     title: "ERA Digital Skills",
     cta: "Explore Digital Skills",
@@ -89,12 +85,14 @@ const method = [
 ];
 
 // The whole card is one link, like the homepage's programme cards.
-function ProgrammeCard({ image, audience, title, body, to, cta }) {
+function ProgrammeCard({ image, srcSet, audience, title, body, to, cta }) {
   return (
     <Link to={to} className="card-interactive group flex h-full w-full flex-col overflow-hidden">
       <div className="h-48 shrink-0 overflow-hidden">
         <img
           src={image}
+          srcSet={srcSet}
+          sizes={srcSet ? CARD_SIZES : undefined}
           alt=""
           loading="lazy"
           decoding="async"
@@ -137,7 +135,9 @@ export default function Programs() {
     return apiProgrammes
       .filter((p) => Object.prototype.hasOwnProperty.call(CATEGORY_IMAGE, p.category))
       .map((p) => ({
-        image: resolveMediaUrl(p.coverImageUrl) || CATEGORY_IMAGE[p.category] || schoolStemImg,
+        ...(p.coverImageUrl
+          ? { image: resolveMediaUrl(p.coverImageUrl) }
+          : { image: (CATEGORY_IMAGE[p.category] || CATEGORY_IMAGE.school_stem).src, srcSet: (CATEGORY_IMAGE[p.category] || CATEGORY_IMAGE.school_stem).srcSet }),
         audience: CATEGORY_AUDIENCE[p.category] || "",
         title: p.name,
         body: CATEGORY_LINE[p.category] || p.description,

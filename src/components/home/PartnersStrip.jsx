@@ -50,6 +50,8 @@ export default function PartnersStrip() {
                     <img
                       src={partner.logo}
                       alt={partner.alt}
+                      width={partner.width}
+                      height={partner.height}
                       loading="lazy"
                       decoding="async"
                       className="partner-logo"
@@ -60,6 +62,8 @@ export default function PartnersStrip() {
                     <img
                       src={partner.logo}
                       alt={partner.alt}
+                      width={partner.width}
+                      height={partner.height}
                       loading="lazy"
                       decoding="async"
                       className="partner-logo"

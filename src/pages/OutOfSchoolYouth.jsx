@@ -19,13 +19,13 @@ import {
   CheckCircle,
 } from "lucide-react";
 
-import outOfSchoolImg from "../assets/images/programmes/out-of-school-youth.webp";
 import ScrollScenes from "../components/motion/ScrollScenes";
 import FitCheck from "../components/programme/FitCheck";
 import StackedStages from "../components/programme/StackedStages";
 import { BuildTiles, PartnerStrip, ProgrammeClose, ProgrammeHero, ReasonLines } from "../components/programme/ProgrammeParts";
 import { closePrimaryClass, closeSecondaryClass, heroPrimaryClass, heroSecondaryClass } from "../components/programme/programmeClasses";
 import SEO from "../components/SEO";
+import { PROGRAMME_IMAGES } from "../data/programmeImages";
 import { getPageSeo } from "../data/seo";
 
 const enrol = {
@@ -78,7 +78,8 @@ export default function OutOfSchoolYouth() {
         title="Practical tech skills for young people ready to build."
         line="Hands-on training, real tools and community projects. Start where you are."
         glance={["Ages 16 – 30", "3 – 6 months", "No experience needed"]}
-        image={outOfSchoolImg}
+        image={PROGRAMME_IMAGES.out_of_school_youth.src}
+        imageSrcSet={PROGRAMME_IMAGES.out_of_school_youth.srcSet}
         imageAlt="Young people working together on a hands-on technology project"
         badge="Ages 16 – 30"
         actions={
