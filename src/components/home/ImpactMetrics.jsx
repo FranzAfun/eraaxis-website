@@ -111,7 +111,7 @@ export default function ImpactMetrics() {
     <section
       ref={sectionRef}
       aria-label="Impact and reach"
-      className="dark-surface relative overflow-hidden bg-[var(--color-background-dark)] pt-10 pb-20 md:pb-24 lg:pt-0 lg:pb-28"
+      className="dark-surface relative overflow-hidden bg-[var(--color-background-dark)] pt-16 pb-20 md:pt-20 md:pb-24 lg:pt-24 lg:pb-28"
     >
       {/* Background orb — uses CSS class so no hardcoded colors in JSX */}
       <div aria-hidden="true" className="impact-orb-bg pointer-events-none absolute inset-0" />

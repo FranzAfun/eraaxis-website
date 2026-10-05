@@ -144,7 +144,7 @@ export default function GalleryPreview() {
     <section
       id="gallery"
       aria-label="Gallery preview"
-      className="dark-surface overflow-hidden bg-[var(--color-background-dark)] pt-8 pb-16 md:pt-10 md:pb-20 lg:pt-0 lg:pb-24"
+      className="dark-surface overflow-hidden bg-[var(--color-background-dark)] pt-16 pb-16 md:pt-20 md:pb-20 lg:pt-24 lg:pb-24"
     >
       <div className="container">
         <div className="mb-8 flex flex-col gap-6 md:mb-10 lg:mb-12 lg:flex-row lg:items-end lg:justify-between">
