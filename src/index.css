@@ -1780,6 +1780,23 @@ input[type="radio"] {
   pointer-events: none;
 }
 
+/* A section wholly under the next one is not drawn at all. */
+.scroll-stack[data-stacking] > section[data-covered] {
+  visibility: hidden;
+}
+
+/* On touch screens, nothing in the page blurs what is behind it live (the
+   header keeps its glass): phones redraw a backdrop blur every frame while the
+   stack moves, and flicker it. Panels keep their colours. */
+@media (pointer: coarse) {
+  main *,
+  main *::before,
+  main *::after {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+}
+
 /* On a wide screen with a mouse it also sinks back a little. */
 @media (min-width: 1024px) and (pointer: fine) {
   .scroll-stack[data-stacking] > section {

@@ -25,10 +25,11 @@ export default function ScrollStack({ children }) {
     let panels = [];
     let frame = 0;
 
-    // The window's height with the address bar hidden, so the hold point does
-    // not move when the bar comes and goes.
+    // The window's height with the address bar showing (the smallest it gets),
+    // so the hold point does not move when the bar comes and goes, and a
+    // section's last line (often its button) is never behind the bar.
     const probe = document.createElement("div");
-    probe.style.cssText = "position:fixed;top:0;left:-9999px;height:100lvh;width:1px;visibility:hidden;pointer-events:none";
+    probe.style.cssText = "position:fixed;top:0;left:-9999px;height:100svh;width:1px;visibility:hidden;pointer-events:none";
     document.body.appendChild(probe);
     const viewHeight = () => probe.offsetHeight || window.innerHeight;
 
@@ -59,6 +60,8 @@ export default function ScrollStack({ children }) {
         const nextTop = panels[i + 1].getBoundingClientRect().top;
         const cover = Math.min(1, Math.max(0, (bottom - nextTop) / visible));
         panel.style.setProperty("--cover", cover.toFixed(3));
+        // Wholly under the next one: stop drawing it (and its animations).
+        panel.toggleAttribute("data-covered", cover >= 0.999);
       }
     };
 
