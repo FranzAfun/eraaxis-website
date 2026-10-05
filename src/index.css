@@ -1417,3 +1417,59 @@ input[type="checkbox"],
 input[type="radio"] {
   accent-color: var(--color-primary);
 }
+
+/* ── Motion and glass (the lively site) ───────────────────────────────────
+   One calm motion language: things rise softly into place as they come into
+   view, glass panels float over soft colour, and nothing moves for people who
+   ask for less motion. Only opacity and transform animate. */
+@layer components {
+  :root {
+    --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translate3d(0, 22px, 0) scale(0.985);
+    transition:
+      opacity 0.8s var(--ease-soft),
+      transform 0.9s var(--ease-soft);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  .reveal[data-in] {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Glass on light sections: frosted white over soft colour. */
+  .glass {
+    background: rgb(255 255 255 / 0.66);
+    -webkit-backdrop-filter: blur(20px) saturate(1.15);
+    backdrop-filter: blur(20px) saturate(1.15);
+    border: 1px solid rgb(255 255 255 / 0.75);
+    border-radius: var(--radius-lg);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.85),
+      0 24px 48px -28px color-mix(in srgb, var(--color-primary) 38%, transparent);
+  }
+
+  /* Glass on dark sections. */
+  .glass-dark {
+    background: rgb(255 255 255 / 0.06);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgb(255 255 255 / 0.12);
+    border-radius: var(--radius-lg);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.1),
+      0 28px 60px -32px rgb(0 0 0 / 0.65);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+}
