@@ -54,22 +54,21 @@ export default function FinalCTA() {
 
           {/* Body */}
           <p className="mb-9 text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-[17px]">
-            Whether you are a learner, school, parent, or partner, ERA AXIS
-            helps you move from interest to hands-on technology skills.
+            From your first circuit to a project you can show.
           </p>
 
           {/* Buttons */}
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center sm:gap-4">
             <Link
               to="/programs"
-              className="final-cta-btn-primary cta-mobile-btn flex h-12 max-w-[300px] items-center justify-center gap-2 rounded-[var(--radius-sm)] px-7 text-sm font-semibold sm:w-[210px] sm:max-w-none"
+              className="final-cta-btn-primary cta-mobile-btn flex h-12 max-w-[300px] items-center justify-center gap-2 rounded-[var(--radius-sm)] whitespace-nowrap px-7 text-sm font-semibold sm:w-auto sm:min-w-[210px] sm:max-w-none"
             >
               Explore Programmes
               <ArrowRight size={16} strokeWidth={2} />
             </Link>
             <Link
               to="/partners"
-              className="final-cta-btn-secondary cta-mobile-btn flex h-12 max-w-[300px] items-center justify-center gap-2 rounded-[var(--radius-sm)] px-7 text-sm font-semibold sm:w-[210px] sm:max-w-none"
+              className="final-cta-btn-secondary cta-mobile-btn flex h-12 max-w-[300px] items-center justify-center gap-2 rounded-[var(--radius-sm)] whitespace-nowrap px-7 text-sm font-semibold sm:w-auto sm:min-w-[210px] sm:max-w-none"
             >
               Partner With ERA
               <ArrowRight size={16} strokeWidth={2} />

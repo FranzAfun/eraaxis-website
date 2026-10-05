@@ -7,32 +7,24 @@ const STATIC_METRICS = [
     fallback: 1000,
     suffix: "+",
     label: "Learners Reached",
-    description:
-      "Students and youth trained through ERA AXIS school and community programmes.",
   },
   {
     key: "schools",
     fallback: 5,
     suffix: "",
     label: "Partner Schools",
-    description:
-      "Schools actively embedding hands-on STEM into everyday classroom learning.",
   },
   {
     key: "projects",
     fallback: 100,
     suffix: "+",
     label: "Student Projects",
-    description:
-      "Real projects built by learners across electronics, coding, and digital design.",
   },
   {
     key: "partners",
     fallback: 13,
     suffix: "",
     label: "Year-Levels Covered",
-    description:
-      "From Basic 1 through SHS 3 — a complete school learning journey.",
   },
 ];
 
@@ -65,13 +57,13 @@ function useCountUp(target, shouldStart, reducedMotion) {
   return count;
 }
 
-function MetricCard({ value, suffix, label, description, isVisible, reducedMotion, index }) {
+function MetricCard({ value, suffix, label, isVisible, reducedMotion, index }) {
   const count = useCountUp(value, isVisible, reducedMotion);
   const delay = reducedMotion ? 0 : index * 90;
 
   return (
     <div
-      className={`impact-metric-card rounded-[var(--radius-md)] p-8 transition-all duration-500 ease-out hover:-translate-y-1 hover:duration-300 ${
+      className={`glass-dark p-8 transition-all duration-700 ease-out hover:-translate-y-1 hover:duration-300 ${
         isVisible || reducedMotion
           ? "opacity-100 translate-y-0"
           : "opacity-0 translate-y-3"
@@ -81,8 +73,7 @@ function MetricCard({ value, suffix, label, description, isVisible, reducedMotio
       <p className="mb-3 text-5xl font-black leading-none tracking-tight text-[var(--color-accent-text-on-hero)] lg:text-[3.25rem]">
         {count}{suffix}
       </p>
-      <p className="mb-2 text-[0.9375rem] font-bold text-white">{label}</p>
-      <p className="text-sm leading-relaxed text-[var(--color-text-on-dark-muted)]">{description}</p>
+      <p className="text-[0.9375rem] font-bold text-white">{label}</p>
     </div>
   );
 }
@@ -137,13 +128,9 @@ export default function ImpactMetrics() {
           <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)]">
             Our Impact
           </p>
-          <h2 className="mb-4 text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl lg:text-[2.5rem]">
-            Measurable outcomes across schools&nbsp;and communities.
+          <h2 className="text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl lg:text-[2.5rem]">
+            Real learners. Real schools. Real projects.
           </h2>
-          <p className="max-w-[520px] text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-[17px]">
-            Every number reflects a real learner, a real school, and a real
-            project built through practical STEM education.
-          </p>
         </div>
 
         {/* Metrics grid */}
