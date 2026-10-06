@@ -40,7 +40,7 @@ export default function NewsletterUnsubscribe() {
               "radial-gradient(circle at 20% 20%, color-mix(in srgb, var(--color-accent) 18%, transparent) 0%, transparent 30%), linear-gradient(135deg, var(--color-background-dark) 0%, var(--color-primary-deep) 54%, var(--color-background-dark) 100%)",
           }}
         />
-        <div className="container relative z-10 text-center">
+        <div className="land-in container relative z-10 text-center">
           {status === "loading" && (
             <PageLoading>Processing your request…</PageLoading>
           )}

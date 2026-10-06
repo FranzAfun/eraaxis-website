@@ -92,7 +92,7 @@ export default function About() {
     <>
       <SEO {...getPageSeo("/about")} />
       <section className="dark-surface hero-ground relative -mt-20 overflow-hidden pb-16 pt-36 text-white md:pb-24 md:pt-44">
-        <div className="container relative z-10">
+        <div className="land-in container relative z-10">
           <div className="max-w-3xl">
             <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)]">
               About ERA AXIS

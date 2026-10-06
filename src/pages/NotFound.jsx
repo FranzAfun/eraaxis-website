@@ -29,7 +29,7 @@ export default function NotFound() {
         aria-hidden="true"
         className="absolute left-1/2 top-24 h-[28rem] w-[28rem] -translate-x-1/2 rounded-full bg-[var(--color-accent)]/[0.08] blur-3xl"
       />
-      <div className="container relative z-10">
+      <div className="land-in container relative z-10">
         <div className="mx-auto max-w-4xl text-center">
           <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)] backdrop-blur-xl">
             Error 404

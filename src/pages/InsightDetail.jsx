@@ -187,7 +187,7 @@ export default function InsightDetail() {
           aria-hidden="true"
           className="absolute -bottom-24 right-4 h-96 w-96 rounded-full bg-[var(--color-accent)]/10 blur-3xl"
         />
-        <div className="container relative z-10">
+        <div className="land-in container relative z-10">
           <Link
             to="/insights"
             className="mb-8 flex w-fit items-center gap-1.5 text-xs font-medium text-[var(--color-text-on-dark-muted)] transition-colors hover:text-white"

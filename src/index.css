@@ -103,8 +103,8 @@
   animation: heroFadeUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-/* The same soft landing for the top of the form pages: the heading first, then
-   (.land-in-late) the form a beat after. "backwards", not "both": once it has
+/* The same soft landing for the top of every other page, and on the form pages
+   the heading first, then (.land-in-late) the form a beat after. "backwards", not "both": once it has
    landed nothing stays transformed, so the sticky order summary and anything
    pinned inside the form behave as before. */
 .land-in {

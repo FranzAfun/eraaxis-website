@@ -14,7 +14,7 @@ const BLANK = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAI
 export function ProgrammeHero({ eyebrow, title, line, glance, image, imageSrcSet, imageAlt, imageClass = "", badge, actions, back = true }) {
   return (
     <section className={`dark-surface hero-ground relative -mt-20 overflow-hidden pb-16 text-white md:pb-24 ${back ? "pt-32 md:pt-40" : "pt-36 md:pt-44"}`}>
-      <div className="container relative z-10">
+      <div className="land-in container relative z-10">
         {back && (
           <Link
             to="/programs"

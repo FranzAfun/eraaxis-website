@@ -82,7 +82,7 @@ export default function DevBoard() {
 
       {/* ── Hero: the board itself, stepping back as you scroll ──────────── */}
       <section className="dark-surface hero-ground relative -mt-20 overflow-hidden pb-16 pt-36 text-white md:pb-24 md:pt-40">
-        <div className="container relative z-10">
+        <div className="land-in container relative z-10">
           <div className="grid items-center gap-12 lg:grid-cols-[1fr_0.9fr]">
             <div data-scene="hero-exit">
               <p className="mb-5 inline-flex w-fit rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)]">

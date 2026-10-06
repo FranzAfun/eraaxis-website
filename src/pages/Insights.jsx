@@ -73,7 +73,7 @@ export default function Insights() {
     <ScrollScenes>
       <SEO {...getPageSeo("/insights")} />
       <section className="dark-surface hero-ground relative -mt-20 overflow-hidden pb-16 pt-36 text-white md:pb-24 md:pt-44">
-        <div className="container relative z-10" data-scene="hero-exit">
+        <div className="land-in container relative z-10" data-scene="hero-exit">
           <p className="mb-5 inline-flex rounded-full border border-white/15 bg-white/[0.08] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-accent-text-on-hero)]">
             Insights
           </p>
