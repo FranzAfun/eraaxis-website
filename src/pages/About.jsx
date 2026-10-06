@@ -36,8 +36,14 @@ const story = [
   },
   {
     mark: "2024",
+    title: "Registered.",
+    line: "ERA AXIS became a registered business.",
+    photos: [],
+  },
+  {
+    mark: "2026",
     title: "Incorporated.",
-    line: "ERA AXIS became a registered company.",
+    line: "ERA AXIS became a limited company: ERA AXIS Limited.",
     photos: [],
   },
   {
