@@ -1,5 +1,4 @@
 import { useState } from "react";
-import ConsentCheck from "./ConsentCheck";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { api } from "../../services/api";
 
@@ -13,7 +12,6 @@ export default function NewsletterForm({ source, surface = "light" }) {
   const [email, setEmail]                   = useState("");
   const [emailError, setEmailError]         = useState("");
   const [isSubmitting, setIsSubmitting]     = useState(false);
-  const [agreed, setAgreed]                 = useState(false);
   const [submitted, setSubmitted]           = useState(false);
   const [alreadySubscribed, setAlreadySubscribed] = useState(false);
   const [submitError, setSubmitError]       = useState("");
@@ -36,7 +34,6 @@ export default function NewsletterForm({ source, surface = "light" }) {
       setEmailError("Enter a valid email address");
       return;
     }
-    if (!agreed) return;
 
     setEmailError("");
     setSubmitError("");
@@ -72,7 +69,6 @@ export default function NewsletterForm({ source, surface = "light" }) {
   }
 
   return (
-    <div>
     <form noValidate onSubmit={handleSubmit} className="flex flex-col gap-3 sm:flex-row sm:items-start">
       <div className="flex flex-1 flex-col gap-1">
         <input
@@ -102,8 +98,8 @@ export default function NewsletterForm({ source, surface = "light" }) {
       </div>
       <button
         type="submit"
-        disabled={isSubmitting || !agreed}
-        className={`btn-primary min-h-[44px] shrink-0 justify-center disabled:opacity-100 disabled:cursor-not-allowed${agreed ? "" : " needs-consent"}`}
+        disabled={isSubmitting}
+        className="btn-primary min-h-[44px] shrink-0 justify-center disabled:opacity-100 disabled:cursor-not-allowed"
       >
         {isSubmitting ? (
           "Subscribing…"
@@ -115,7 +111,5 @@ export default function NewsletterForm({ source, surface = "light" }) {
         )}
       </button>
     </form>
-    <ConsentCheck checked={agreed} onChange={setAgreed} surface={onDark ? "dark" : "light"} size="xs" className="mt-1" />
-    </div>
   );
 }
