@@ -1444,6 +1444,13 @@ footer {
   outline-color: var(--color-field-danger);
 }
 
+/* Form fields drawn as a line (.field-ink: the LMS forms and the sign-ups) show
+   which one is active by drawing that line in purple, so they do without the
+   box outline above. Buttons, links and choice cards keep it. */
+.field-ink:focus-visible {
+  outline: none;
+}
+
 /* A 2px outline with a 3px offset must clear adjacent feedback text. */
 :where(input, textarea):focus-visible ~ p {
   padding-top: 0.25rem;
