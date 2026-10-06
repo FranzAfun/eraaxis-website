@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
 import { api } from "../../services/api";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -68,48 +68,50 @@ export default function NewsletterForm({ source, surface = "light" }) {
     );
   }
 
+  // The send button is a small arrow inside the field, on the right.
   return (
-    <form noValidate onSubmit={handleSubmit} className="flex flex-col gap-3 sm:flex-row sm:items-start">
-      <div className="flex flex-1 flex-col gap-1">
+    <form noValidate onSubmit={handleSubmit} className="flex flex-col gap-1">
+      <div className="relative">
         <input
           type="email"
           value={email}
           onChange={handleChange}
           placeholder="Enter your email"
+          aria-label="Email address"
+          autoComplete="email"
           disabled={isSubmitting}
           aria-invalid={emailError ? true : undefined}
-          className={`min-h-[44px] w-full rounded-[var(--radius-sm)] border bg-white px-4 py-3 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] outline-none transition-colors focus:ring-2 focus:ring-offset-2 disabled:opacity-100 ${
+          className={`min-h-[48px] w-full rounded-[var(--radius-sm)] border bg-white py-3 pl-4 pr-14 text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)] outline-none transition-colors focus:ring-2 focus:ring-offset-2 disabled:opacity-100 ${
             emailError
               ? "border-[var(--color-field-danger)] focus:border-[var(--color-field-danger)] focus:ring-[var(--color-field-danger)]"
               : "border-[var(--color-ui-border)] focus:border-[var(--color-primary)] focus:ring-[var(--color-primary)]"
           }`}
         />
-        {emailError && (
-          <p className={`text-left text-xs ${errorInk}`}>{emailError}</p>
-        )}
-        {alreadySubscribed && (
-          <p className={`text-left text-xs ${secondaryInk}`}>
-            This email is already subscribed.
-          </p>
-        )}
-        {submitError && (
-          <p className={`text-left text-xs ${errorInk}`}>{submitError}</p>
-        )}
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          aria-label={isSubmitting ? "Subscribing" : "Subscribe"}
+          title="Subscribe"
+          className="absolute right-1 top-1/2 inline-flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-[4px] bg-[var(--color-primary)] text-[var(--color-text-inverse)] transition-[filter,transform] duration-200 hover:brightness-110 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 disabled:cursor-not-allowed"
+        >
+          {isSubmitting ? (
+            <Loader2 size={17} strokeWidth={2.25} aria-hidden="true" className="animate-spin motion-reduce:animate-none" />
+          ) : (
+            <ArrowRight size={17} strokeWidth={2.25} aria-hidden="true" />
+          )}
+        </button>
       </div>
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="btn-primary min-h-[44px] shrink-0 justify-center disabled:opacity-100 disabled:cursor-not-allowed"
-      >
-        {isSubmitting ? (
-          "Subscribing…"
-        ) : (
-          <>
-            Subscribe
-            <ArrowRight size={15} strokeWidth={2} />
-          </>
-        )}
-      </button>
+      {emailError && (
+        <p className={`text-left text-xs ${errorInk}`}>{emailError}</p>
+      )}
+      {alreadySubscribed && (
+        <p className={`text-left text-xs ${secondaryInk}`}>
+          This email is already subscribed.
+        </p>
+      )}
+      {submitError && (
+        <p className={`text-left text-xs ${errorInk}`}>{submitError}</p>
+      )}
     </form>
   );
 }
