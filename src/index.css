@@ -1444,6 +1444,15 @@ footer {
   outline-color: var(--color-field-danger);
 }
 
+/* A send or continue button waiting for the privacy tick (ConsentCheck): greyed
+   out and still. Unlayered so it beats the buttons' own disabled and hover looks. */
+.needs-consent {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
 /* Form fields drawn as a line (.field-ink: the LMS forms and the sign-ups) show
    which one is active by drawing that line in purple, so they do without the
    box outline above. Buttons, links and choice cards keep it. */

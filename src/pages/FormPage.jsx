@@ -34,7 +34,7 @@ import { RULES_SHA, SCHEMA_VERSION, validateAnswers } from "../utils/formSchema"
 import { resolveMediaUrl } from "../utils/resolveMediaUrl";
 
 import BusyLabel from "../components/ui/BusyLabel";
-import ConsentLine from "../components/ui/ConsentLine";
+import ConsentCheck from "../components/ui/ConsentCheck";
 /**
  * A form published from EDOS, as the public fills it in.
  *
@@ -211,6 +211,8 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
   const [accountName, setAccountName] = useState("");
   const [switching, setSwitching] = useState(false);
   const [sending, setSending] = useState(false);
+  // The privacy tick beside Submit; nothing is sent without it.
+  const [agreed, setAgreed] = useState(false);
   const [problem, setProblem] = useState("");
   const [confirmReset, setConfirmReset] = useState(false);
   // Files still on their way up. Moving on or sending waits for them, or the
@@ -411,6 +413,7 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
       showFirstProblem(result.errors.map((item) => item.questionKey));
       return;
     }
+    if (!agreed) return;
     // Google's credential lasts an hour. One that has run out would be refused, so
     // ask for a fresh one first; the answers stay where they are.
     if (form.requiresSignIn && signInLapsed(profile)) {
@@ -804,6 +807,9 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
               <span>{banner}</span>
             </p>
           )}
+          {last && (
+            <ConsentCheck checked={agreed} onChange={setAgreed} className="mb-3" />
+          )}
           <div className="flex flex-wrap items-center gap-3">
             {paged && current > 0 && (
               <button type="button" onClick={() => goTo(current - 1)} className={quietButton} disabled={sending}>
@@ -816,7 +822,7 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
               </button>
             )}
             {last && (
-              <button type="button" onClick={submit} className={primaryButton} disabled={sending || uploading > 0}>
+              <button type="button" onClick={submit} className={`${primaryButton}${agreed ? "" : " needs-consent"}`} disabled={sending || uploading > 0 || !agreed}>
                 {sending ? <BusyLabel>Sending…</BusyLabel> : paid ? "Continue to pay" : "Submit"}
                 {!sending && (paid ? <ArrowRight size={16} aria-hidden="true" /> : <Send size={16} aria-hidden="true" />)}
               </button>
@@ -832,7 +838,6 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
               Clear form
             </button>
           </div>
-          {last && <ConsentLine action={paid ? "continuing" : "submitting"} className="mt-3" />}
           {uploading > 0 && (
             <p role="status" className="mt-3 text-sm text-[var(--color-text-secondary)]">
               Waiting for your file to finish uploading…

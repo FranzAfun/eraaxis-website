@@ -1,7 +1,7 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import BusyLabel from "../ui/BusyLabel";
-import ConsentLine from "../ui/ConsentLine";
+import ConsentCheck from "../ui/ConsentCheck";
 
 /**
  * A sign-up in a few short steps rather than one long page. Each step has its
@@ -14,6 +14,7 @@ import ConsentLine from "../ui/ConsentLine";
  */
 export default function SignUpSteps({ steps, step, onStep, onFinish, busy = false, finishLabel, error, onError, lastStepExtra }) {
   const topRef = useRef(null);
+  const [agreed, setAgreed] = useState(false);
   const last = step === steps.length - 1;
   const current = steps[step];
 
@@ -26,6 +27,7 @@ export default function SignUpSteps({ steps, step, onStep, onFinish, busy = fals
   function next() {
     const problem = current.problem?.() || "";
     if (problem) { onError(problem); return; }
+    if (last && !agreed) return;
     if (last) onFinish();
     else go(step + 1);
   }
@@ -85,7 +87,10 @@ export default function SignUpSteps({ steps, step, onStep, onFinish, busy = fals
 
       {last && lastStepExtra && <div className="mt-8 lg:hidden">{lastStepExtra}</div>}
 
-      <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
+      {last && (
+        <ConsentCheck checked={agreed} onChange={setAgreed} className="mt-6" />
+      )}
+      <div className={`${last ? "mt-4" : "mt-8"} flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between`}>
         {step > 0 ? (
           <button type="button" onClick={() => go(step - 1)} disabled={busy} className="btn-outline min-h-[48px] justify-center px-6">
             <ArrowLeft size={16} strokeWidth={2} aria-hidden="true" />
@@ -95,14 +100,14 @@ export default function SignUpSteps({ steps, step, onStep, onFinish, busy = fals
         <button
           type="button"
           onClick={next}
-          disabled={busy}
-          className={`btn-primary min-h-[48px] justify-center px-7 text-[15px]${busy ? " cursor-not-allowed opacity-100" : ""}`}
+          disabled={busy || (last && !agreed)}
+          className={`btn-primary min-h-[48px] justify-center px-7 text-[15px]${busy ? " cursor-not-allowed opacity-100" : ""}${last && !agreed ? " needs-consent" : ""}`}
         >
           {busy ? <BusyLabel>Saving…</BusyLabel> : last ? finishLabel : "Continue"}
           {!busy && <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />}
         </button>
       </div>
-      {last && <ConsentLine action="continuing" className="mt-4 sm:text-right" />}
+
     </div>
   );
 }

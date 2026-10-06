@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ConsentLine from "./ConsentLine";
+import ConsentCheck from "./ConsentCheck";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { api } from "../../services/api";
 
@@ -13,6 +13,7 @@ export default function NewsletterForm({ source, surface = "light" }) {
   const [email, setEmail]                   = useState("");
   const [emailError, setEmailError]         = useState("");
   const [isSubmitting, setIsSubmitting]     = useState(false);
+  const [agreed, setAgreed]                 = useState(false);
   const [submitted, setSubmitted]           = useState(false);
   const [alreadySubscribed, setAlreadySubscribed] = useState(false);
   const [submitError, setSubmitError]       = useState("");
@@ -35,6 +36,7 @@ export default function NewsletterForm({ source, surface = "light" }) {
       setEmailError("Enter a valid email address");
       return;
     }
+    if (!agreed) return;
 
     setEmailError("");
     setSubmitError("");
@@ -100,8 +102,8 @@ export default function NewsletterForm({ source, surface = "light" }) {
       </div>
       <button
         type="submit"
-        disabled={isSubmitting}
-        className="btn-primary min-h-[44px] shrink-0 justify-center disabled:opacity-100 disabled:cursor-not-allowed"
+        disabled={isSubmitting || !agreed}
+        className={`btn-primary min-h-[44px] shrink-0 justify-center disabled:opacity-100 disabled:cursor-not-allowed${agreed ? "" : " needs-consent"}`}
       >
         {isSubmitting ? (
           "Subscribing…"
@@ -113,7 +115,7 @@ export default function NewsletterForm({ source, surface = "light" }) {
         )}
       </button>
     </form>
-    <ConsentLine action="subscribing" surface={onDark ? "dark" : "light"} size="xs" className="mt-2" />
+    <ConsentCheck checked={agreed} onChange={setAgreed} surface={onDark ? "dark" : "light"} size="xs" className="mt-1" />
     </div>
   );
 }

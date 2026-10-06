@@ -15,7 +15,7 @@ import { api } from "../services/api";
 import { useBootstrap } from "../hooks/useBootstrap";
 
 import BusyLabel from "../components/ui/BusyLabel";
-import ConsentLine from "../components/ui/ConsentLine";
+import ConsentCheck from "../components/ui/ConsentCheck";
 /* ── Static data ─────────────────────────────────────────────────────────── */
 
 const INQUIRY_TYPES = [
@@ -112,6 +112,7 @@ export default function Contact() {
     message: typeof preset?.message === "string" ? preset.message.slice(0, 500) : "",
   }));
   const [errors, setErrors]           = useState({});
+  const [agreed, setAgreed]           = useState(false);
   const [submitted, setSubmitted]     = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
@@ -155,6 +156,7 @@ export default function Contact() {
     if (!form.email.trim())   next.email   = "Email address is required";
     else if (!EMAIL_RE.test(form.email.trim())) next.email = "Enter a valid email address";
     if (!form.message.trim()) next.message = "Message is required";
+    if (!agreed) next.consent = true;
     return next;
   }
 
@@ -176,6 +178,7 @@ export default function Contact() {
       });
       setSubmitted(true);
       setForm(EMPTY_FORM);
+      setAgreed(false);
       setErrors({});
     } catch {
       setSubmitError("Something went wrong. Please try again.");
@@ -334,6 +337,7 @@ export default function Contact() {
                   </div>
 
                   <div>
+                    <ConsentCheck checked={agreed} onChange={setAgreed} className="mb-3" />
                     {submitError && (
                       <p className="mb-4 rounded-[var(--radius-sm)] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
                         {submitError}
@@ -341,13 +345,12 @@ export default function Contact() {
                     )}
                     <button
                       type="submit"
-                      disabled={isSubmitting}
-                      className="btn-primary min-h-[44px] justify-center sm:px-8 disabled:opacity-100 disabled:cursor-not-allowed"
+                      disabled={isSubmitting || !agreed}
+                      className={`btn-primary min-h-[44px] justify-center sm:px-8 disabled:opacity-100 disabled:cursor-not-allowed${agreed ? "" : " needs-consent"}`}
                     >
                       {isSubmitting ? <BusyLabel>Sending…</BusyLabel> : "Send Message"}
                       {!isSubmitting && <ArrowRight size={16} />}
                     </button>
-                    <ConsentLine action="sending" className="mt-3" />
                   </div>
                 </form>
               )}
