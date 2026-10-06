@@ -4,6 +4,8 @@ import { useBootstrap } from "../../hooks/useBootstrap";
 import { insights as STATIC_INSIGHTS } from "../../data/insights";
 import { resolveMediaUrl } from "../../utils/resolveMediaUrl";
 import Reveal from "../motion/Reveal";
+import { ShareButton } from "../ui/Share";
+import { getSiteUrl } from "../../data/seo";
 
 const CONTENT_TYPE_LABEL = {
   article: "Article",
@@ -16,6 +18,7 @@ const CONTENT_TYPE_LABEL = {
 
 function InsightCard({ type, title, slug, image }) {
   return (
+    <div className="relative flex w-full">
     <Link
       to={`/insights/${slug}`}
       className="insights-card group flex h-full w-full flex-col transition-transform duration-300 hover:-translate-y-1"
@@ -42,6 +45,9 @@ function InsightCard({ type, title, slug, image }) {
         </span>
       </div>
     </Link>
+    {/* Beside the link, not inside it: sharing never opens the article. */}
+    <ShareButton url={`${getSiteUrl()}/insights/${slug}`} title={title} className="absolute right-3 top-3 z-10" />
+    </div>
   );
 }
 

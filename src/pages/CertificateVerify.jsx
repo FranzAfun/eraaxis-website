@@ -16,6 +16,7 @@ import { API_ERROR_MESSAGES, toUserMessage } from "../services/api";
 import { CERTIFICATE_STATUS, verifyCertificate } from "../services/certificateService";
 
 import PageLoading from "../components/ui/PageLoading";
+import { copyTextToClipboard } from "../utils/clipboard";
 const panel =
   "mx-auto max-w-xl rounded-[var(--radius-md)] border border-white/15 bg-white/[0.06] p-6 text-left backdrop-blur-xl sm:p-8";
 const primaryAction =
@@ -68,33 +69,6 @@ function DetailRow({ label, value, valueClassName = "break-words", stacked = fal
       </dd>
     </div>
   );
-}
-
-// navigator.clipboard is undefined outside a secure context, which includes the
-// plain-HTTP LAN address used for local phone testing, so fall back to a
-// throwaway textarea rather than leaving the button silently dead there.
-function copyTextToClipboard(value) {
-  if (navigator.clipboard?.writeText) {
-    return navigator.clipboard.writeText(value).then(() => true, () => legacyCopy(value));
-  }
-  return Promise.resolve(legacyCopy(value));
-}
-
-function legacyCopy(value) {
-  try {
-    const field = document.createElement("textarea");
-    field.value = value;
-    field.setAttribute("readonly", "");
-    field.style.position = "fixed";
-    field.style.opacity = "0";
-    document.body.appendChild(field);
-    field.select();
-    const copied = document.execCommand("copy");
-    document.body.removeChild(field);
-    return copied;
-  } catch {
-    return false;
-  }
 }
 
 function formatIssueDate(value) {

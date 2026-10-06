@@ -8,6 +8,8 @@ import { api } from "../services/api";
 import { resolveArticleMedia, resolveMediaUrl } from "../utils/resolveMediaUrl";
 
 import { Waiting } from "../components/ui/BusyLabel";
+import { ShareRow } from "../components/ui/Share";
+import { getSiteUrl } from "../data/seo";
 const CONTENT_TYPE_LABEL = {
   article:         "Article",
   news:            "News",
@@ -140,6 +142,7 @@ export default function InsightDetail() {
 
   /* ── Normalise fields across API and static shapes ───────────────────────── */
   const title       = insight.title;
+  const shareUrl    = `${getSiteUrl()}/insights/${slug}`;
   const excerpt     = insight.excerpt;
   const publishedAt = insight.publishedAt ?? insight.published_at;
   const author      = insight._isStatic ? insight.author : "ERA AXIS";
@@ -217,6 +220,7 @@ export default function InsightDetail() {
                 </span>
               )}
             </div>
+            <ShareRow url={shareUrl} title={title} surface="dark" className="mt-6" />
           </div>
           {/* The featured image beside the title, as the Partners and Dev Board
               pages show theirs; on a phone it follows the title instead. */}
@@ -274,6 +278,7 @@ export default function InsightDetail() {
                 This article is being prepared and will be published here soon.
               </p>
             )}
+            <ShareRow url={shareUrl} title={title} label="Share this article" className="mt-12 border-t border-[var(--color-border)] pt-6" />
           </div>
         </div>
       </section>

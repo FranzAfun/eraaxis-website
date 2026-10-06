@@ -11,6 +11,8 @@ import { getPageSeo } from "../data/seo";
 import { api } from "../services/api";
 import NewsletterForm from "../components/ui/NewsletterForm";
 import { resolveMediaUrl } from "../utils/resolveMediaUrl";
+import { ShareButton } from "../components/ui/Share";
+import { getSiteUrl } from "../data/seo";
 
 const CONTENT_TYPE_LABEL = {
   article:          "Article",
@@ -122,7 +124,7 @@ export default function Insights() {
           ) : (
             <ul key={chosen} className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {shown.map((item, i) => (
-                <Reveal as="li" key={item.slug} delay={(i % 3) * 80} className="flex">
+                <Reveal as="li" key={item.slug} delay={(i % 3) * 80} className="relative flex">
                   <Link to={`/insights/${item.slug}`} className="card-interactive group flex w-full flex-col overflow-hidden">
                     {item.featuredImage && (
                       <div className="h-48 overflow-hidden">
@@ -148,6 +150,8 @@ export default function Insights() {
                       </div>
                     </div>
                   </Link>
+                  {/* Beside the link, not inside it: sharing never opens the article. */}
+                  <ShareButton url={`${getSiteUrl()}/insights/${item.slug}`} title={item.title} className="absolute right-3 top-3 z-10" />
                 </Reveal>
               ))}
             </ul>
