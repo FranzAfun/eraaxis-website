@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { FORM_SLUG, injectPreview, wantsPreview } from "../netlify/shared/formPreview.js";
+import { FORM_SLUG, INSIGHT_SLUG, absoluteMediaUrl, fixedPreviewFor, injectPreview, shareableImage, wantsPreview } from "../netlify/shared/linkPreview.js";
 
 // The real shell, so a change to index.html's tags cannot quietly stop the
 // rewrite from finding them.
@@ -49,11 +49,55 @@ test("the head carries the form's own title, description, picture and address", 
 
 test("a form without a picture or description keeps the site's defaults for those", () => {
   const html = injectPreview(shell, { title: "Quick survey", description: null, image: null }, "https://eraaxis.com/forms/quick-survey");
-  assert.match(html, /<meta property="og:image" content="https:\/\/eraaxis\.com\/og-image\.webp" \/>/);
+  assert.match(html, /<meta property="og:image" content="https:\/\/eraaxis\.com\/og-image\.jpg" \/>/);
   assert.match(html, /<title>Quick survey \| ERA AXIS<\/title>/);
 });
 
 test("only a real form address is looked up", () => {
   assert.equal(FORM_SLUG.test("bootcamp-2026"), true);
   for (const bad of ["", "../etc", "Bootcamp", "a b", "-leading", "x".repeat(81)]) assert.equal(FORM_SLUG.test(bad), false, bad);
+});
+
+test("a page's own picture replaces the card's, with no stale size or alt left behind", () => {
+  const html = injectPreview(shell, { title: "Robots in class", description: "What they built.", image: "https://api.example.invalid/x.webp" }, "https://eraaxis.com/insights/robots-in-class");
+  assert.doesNotMatch(html, /og:image:(width|height|type)/);
+  assert.match(html, /<meta property="og:image:alt" content="Robots in class" \/>/);
+});
+
+test("an article stays open to search engines and says it is an article", () => {
+  const html = injectPreview(shell, { title: "Robots in class", description: "What they built.", image: null }, "https://eraaxis.com/insights/robots-in-class", { index: true, type: "article" });
+  assert.doesNotMatch(html, /name="robots" content="noindex"/);
+  assert.match(html, /<meta property="og:type" content="article" \/>/);
+  assert.match(html, /<link rel="canonical" href="https:\/\/eraaxis\.com\/insights\/robots-in-class" \/>/);
+  // Without its own picture the card stays, with its size.
+  assert.match(html, /og-image\.jpg/);
+  assert.match(html, /og:image:width/);
+});
+
+test("private links get fixed words and nothing looked up", () => {
+  assert.equal(fixedPreviewFor("/attendance/0123456789abcdef0123456789abcdef").title, "Class attendance");
+  assert.equal(fixedPreviewFor("/certificates/verify/0123456789abcdef0123456789abcdef").title, "Verify a certificate");
+  assert.equal(fixedPreviewFor("/payments/resume/abc").title, "Continue your payment");
+  assert.equal(fixedPreviewFor("/about"), null);
+  const html = injectPreview(shell, fixedPreviewFor("/attendance/abc"), "https://eraaxis.com/attendance/abc");
+  assert.match(html, /<title>Class attendance \| ERA AXIS<\/title>/);
+  assert.match(html, /<meta name="robots" content="noindex" \/>/);
+});
+
+test("an article's picture address is made whole, a pasted one kept", () => {
+  assert.equal(absoluteMediaUrl("/api/files/website-media/a.webp", "https://api.edos.eraaxis.com/api/website/"), "https://api.edos.eraaxis.com/api/files/website-media/a.webp");
+  assert.equal(absoluteMediaUrl("https://cdn.example.invalid/b.jpg", "https://api.edos.eraaxis.com/api/website/"), "https://cdn.example.invalid/b.jpg");
+  assert.equal(absoluteMediaUrl(null, "https://api.edos.eraaxis.com/"), null);
+});
+
+test("only a real article address is looked up", () => {
+  assert.equal(INSIGHT_SLUG.test("what-learners-gain-when-projects-become-the-assessment"), true);
+  for (const bad of ["", "../etc", "Robots", "a b", "-leading"]) assert.equal(INSIGHT_SLUG.test(bad), false, bad);
+});
+
+test("LinkedIn gets the ERA AXIS card instead of a WebP picture; others get the picture", () => {
+  const linkedin = "LinkedInBot/1.0 (compatible; Mozilla/5.0; Apache-HttpClient +http://www.linkedin.com)";
+  assert.equal(shareableImage("https://api.example.invalid/a.webp", linkedin), null);
+  assert.equal(shareableImage("https://api.example.invalid/a.jpg", linkedin), "https://api.example.invalid/a.jpg");
+  assert.equal(shareableImage("https://api.example.invalid/a.webp", "WhatsApp/2.23.20.0 A"), "https://api.example.invalid/a.webp");
 });

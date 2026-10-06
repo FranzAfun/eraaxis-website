@@ -1,5 +1,5 @@
 /* global Netlify -- provided by the Netlify edge runtime */
-import { FORM_SLUG, injectPreview, wantsPreview } from "../shared/formPreview.js";
+import { FORM_SLUG, previewResponse, shareableImage, wantsPreview } from "../shared/linkPreview.js";
 
 /**
  * Link previews for public forms. When WhatsApp, Facebook and the like fetch a
@@ -36,12 +36,7 @@ export default async (request, context) => {
   }
   if (!seo?.title) return response;
 
-  const html = injectPreview(await response.text(), seo, `${url.origin}/forms/${slug}`);
-  const headers = new Headers(response.headers);
-  headers.delete("content-length");
-  // People and preview fetchers get different heads from the same address.
-  headers.set("vary", "User-Agent");
-  return new Response(html, { status: response.status, headers });
+  return previewResponse(response, { ...seo, image: shareableImage(seo.image, request.headers.get("user-agent")) }, `${url.origin}/forms/${slug}`);
 };
 
 export const config = { path: "/forms/*" };
