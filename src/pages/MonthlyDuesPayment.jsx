@@ -11,6 +11,7 @@ import { EMAIL_RE } from "../utils/validateEmail";
 import useSpesoFees from "../hooks/useSpesoFees";
 
 import BusyLabel from "../components/ui/BusyLabel";
+import ConsentLine from "../components/ui/ConsentLine";
 import ChoiceCards from "../components/forms/ChoiceCards";
 import GoogleSignIn from "../components/forms/GoogleSignIn";
 import SignUpEmail from "../components/forms/SignUpEmail";
@@ -550,6 +551,7 @@ export default function MonthlyDuesPayment() {
                               {!loginBusy && <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />}
                             </button>
                           </div>
+                          <ConsentLine action="continuing" className="mt-4 sm:text-right" />
                         </>
                       )}
                     </div>

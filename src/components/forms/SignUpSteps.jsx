@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import BusyLabel from "../ui/BusyLabel";
+import ConsentLine from "../ui/ConsentLine";
 
 /**
  * A sign-up in a few short steps rather than one long page. Each step has its
@@ -101,6 +102,7 @@ export default function SignUpSteps({ steps, step, onStep, onFinish, busy = fals
           {!busy && <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />}
         </button>
       </div>
+      {last && <ConsentLine action="continuing" className="mt-4 sm:text-right" />}
     </div>
   );
 }

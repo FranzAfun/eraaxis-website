@@ -15,6 +15,7 @@ import { api } from "../services/api";
 import { useBootstrap } from "../hooks/useBootstrap";
 
 import BusyLabel from "../components/ui/BusyLabel";
+import ConsentLine from "../components/ui/ConsentLine";
 /* ── Static data ─────────────────────────────────────────────────────────── */
 
 const INQUIRY_TYPES = [
@@ -346,9 +347,7 @@ export default function Contact() {
                       {isSubmitting ? <BusyLabel>Sending…</BusyLabel> : "Send Message"}
                       {!isSubmitting && <ArrowRight size={16} />}
                     </button>
-                    <p className="mt-3 text-sm text-[var(--color-text-secondary)]">
-                      The right person at ERA AXIS will reply using the details you give.
-                    </p>
+                    <ConsentLine action="sending" className="mt-3" />
                   </div>
                 </form>
               )}

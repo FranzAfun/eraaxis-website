@@ -34,6 +34,7 @@ import { RULES_SHA, SCHEMA_VERSION, validateAnswers } from "../utils/formSchema"
 import { resolveMediaUrl } from "../utils/resolveMediaUrl";
 
 import BusyLabel from "../components/ui/BusyLabel";
+import ConsentLine from "../components/ui/ConsentLine";
 /**
  * A form published from EDOS, as the public fills it in.
  *
@@ -831,6 +832,7 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
               Clear form
             </button>
           </div>
+          {last && <ConsentLine action={paid ? "continuing" : "submitting"} className="mt-3" />}
           {uploading > 0 && (
             <p role="status" className="mt-3 text-sm text-[var(--color-text-secondary)]">
               Waiting for your file to finish uploading…

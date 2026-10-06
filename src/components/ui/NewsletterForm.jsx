@@ -1,4 +1,5 @@
 import { useState } from "react";
+import ConsentLine from "./ConsentLine";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { api } from "../../services/api";
 
@@ -69,6 +70,7 @@ export default function NewsletterForm({ source, surface = "light" }) {
   }
 
   return (
+    <div>
     <form noValidate onSubmit={handleSubmit} className="flex flex-col gap-3 sm:flex-row sm:items-start">
       <div className="flex flex-1 flex-col gap-1">
         <input
@@ -111,5 +113,7 @@ export default function NewsletterForm({ source, surface = "light" }) {
         )}
       </button>
     </form>
+    <ConsentLine action="subscribing" surface={onDark ? "dark" : "light"} size="xs" className="mt-2" />
+    </div>
   );
 }
