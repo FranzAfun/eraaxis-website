@@ -87,6 +87,24 @@ function GalleryGridCard({ src, alt, eventName, dateTaken, index, onOpen }) {
   );
 }
 
+// The filter row and a screen of photo tiles, in the same sizes as the real ones.
+function GallerySkeleton() {
+  return (
+    <div className="animate-pulse" aria-busy="true" aria-label="Loading the photos">
+      <div className="-mx-1 mb-8 flex gap-2 overflow-hidden px-1 pb-2">
+        {["w-16", "w-28", "w-24", "w-32"].map((width) => (
+          <div key={width} className={`h-[44px] ${width} shrink-0 rounded-full border border-[var(--color-ui-border)] bg-white/70`} />
+        ))}
+      </div>
+      <div className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4">
+        {[0, 1, 2, 3, 4, 5].map((item) => (
+          <div key={item} className="aspect-[4/3] w-full rounded-[var(--radius-md)] border border-[rgb(17_17_17_/_0.06)] bg-white/60" />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function Gallery() {
   const [apiItems, setApiItems] = useState(null);
   const [activeIndex, setActiveIndex] = useState(null);
@@ -105,6 +123,11 @@ export default function Gallery() {
     return () => { cancelled = true; };
   }, []);
 
+  // Until the gallery has loaded, placeholders hold the filters' and photos'
+  // places: showing the built-in photos first, then the real ones with their
+  // filters above, made the page jump. The built-in photos are only the
+  // fallback for when the gallery is empty or cannot be reached.
+  const loading = apiItems === null;
   const allItems = (() => {
     if (!apiItems || apiItems.length === 0) return STATIC_GALLERY.map(normaliseStaticItem);
     const mapped = apiItems
@@ -231,7 +254,9 @@ export default function Gallery() {
             </h2>
           </Reveal>
 
-          {categories.length > 1 && (
+          {loading && <GallerySkeleton />}
+
+          {!loading && categories.length > 1 && (
             <div role="group" aria-label="Show photos of one kind" className="-mx-1 mb-8 flex gap-2 overflow-x-auto px-1 pb-2 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible">
               {[ALL, ...categories].map((label) => {
                 const on = label === chosen;
@@ -254,7 +279,7 @@ export default function Gallery() {
             </div>
           )}
 
-          <div className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4">
+          {!loading && <div className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4">
             {visible.map((item, index) => (
               <GalleryGridCard
                 key={item.id}
@@ -263,9 +288,9 @@ export default function Gallery() {
                 onOpen={openLightbox}
               />
             ))}
-          </div>
+          </div>}
 
-          {items.length > visible.length && (
+          {!loading && items.length > visible.length && (
             <div className="mt-10 flex flex-col items-center gap-2">
               <button type="button" onClick={() => setLimit((current) => current + PAGE)} className="btn-outline min-h-[44px]">
                 Show more photos
