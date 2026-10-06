@@ -316,7 +316,7 @@ export default function ProgrammeEnrolmentPayment() {
       <section className="bg-[var(--color-surface-soft)] pb-12 pt-6 md:pb-16 md:pt-8">
         <div className="container">
           <FormPageHeader eyebrow="Enrolment" title="Enrol on a programme." line="Choose a programme, then tell us who's learning." />
-          <div className="grid gap-6 lg:grid-cols-[1fr_340px] lg:items-start">
+          <div className="land-in-late grid gap-6 lg:grid-cols-[1fr_340px] lg:items-start">
             <div>
               {checkout.confirming ? (
                 <div className="space-y-3">

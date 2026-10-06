@@ -170,7 +170,7 @@ export default function StudentChapterPayment() {
             title="Join the ERA AXIS Student Chapter."
             line="Your first payment opens the community, monthly practical sessions and group builds."
           />
-          <div className="grid gap-6 lg:grid-cols-[1fr_340px] lg:items-start">
+          <div className="land-in-late grid gap-6 lg:grid-cols-[1fr_340px] lg:items-start">
             <div>
               {checkout.confirming ? (
                 <div className="space-y-3">

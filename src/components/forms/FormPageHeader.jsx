@@ -8,7 +8,7 @@ import BackLinkButton from "../navigation/BackLinkButton";
  */
 export default function FormPageHeader({ eyebrow, title, line }) {
   return (
-    <div className="mb-6 md:mb-8">
+    <div className="land-in mb-6 md:mb-8">
       <BackLinkButton
         fallbackTo="/payments"
         className="mb-4 flex min-h-[44px] w-fit items-center gap-1.5 text-sm font-medium text-[var(--color-text-secondary)] transition-colors hover:text-[var(--color-primary)]"

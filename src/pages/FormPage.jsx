@@ -513,7 +513,7 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
 
   if (outcome?.view === "sent") {
     return (
-      <div ref={topRef} className="scroll-mt-24 space-y-3">
+      <div ref={topRef} className="land-in scroll-mt-24 space-y-3">
         <FormHeader form={form} />
         <div className={`${card} px-5 py-8 text-center sm:px-8`}>
           <CheckCircle2 size={44} strokeWidth={1.75} aria-hidden="true" className="mx-auto text-emerald-600" />
@@ -536,7 +536,7 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
 
   if (outcome?.view === "registered_already") {
     return (
-      <div ref={topRef} className="scroll-mt-24 space-y-3">
+      <div ref={topRef} className="land-in scroll-mt-24 space-y-3">
         <FormHeader form={form} />
         <div className={`${card} px-5 py-8 text-center sm:px-8`}>
           <CheckCircle2 size={44} strokeWidth={1.75} aria-hidden="true" className="mx-auto text-[var(--color-primary)]" />
@@ -556,7 +556,7 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
 
   if (outcome?.view === "confirm") {
     return (
-      <div ref={topRef} className="scroll-mt-24 space-y-3">
+      <div ref={topRef} className="land-in scroll-mt-24 space-y-3">
         <FormHeader form={form} />
         <ConfirmEmailStep
           receipt={outcome.receipt}
@@ -593,7 +593,7 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
 
   if (outcome?.view === "pay") {
     return (
-      <div ref={topRef} className="scroll-mt-24 space-y-3">
+      <div ref={topRef} className="land-in scroll-mt-24 space-y-3">
         <FormHeader form={form} />
         <div className={`${card} px-5 py-6 sm:px-8`}>
           <h2 className="text-xl font-bold tracking-tight text-[var(--color-text-primary)]">
@@ -637,7 +637,7 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
     problem || (checked && (Object.keys(errors).length || !emailRecorded) ? "Some answers need another look." : "");
 
   return (
-    <div ref={topRef} className="scroll-mt-24 space-y-3">
+    <div ref={topRef} className="land-in scroll-mt-24 space-y-3">
       <FormHeader form={form} intro={current === 0}>
         {form.requiresSignIn && signedIn && !switching && (
           <div className="mt-5 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-[var(--color-border-soft)] pt-4">

@@ -361,7 +361,7 @@ export default function MonthlyDuesPayment() {
             title="Pay your monthly dues."
             line={`${formatGhs(item.baseAmount)} a month. Members sign in with a code; paying for the first time takes a minute.`}
           />
-          <div className="grid gap-6 lg:grid-cols-[1fr_340px] lg:items-start">
+          <div className="land-in-late grid gap-6 lg:grid-cols-[1fr_340px] lg:items-start">
             <div ref={cardRef} className="scroll-mt-28">
               {path === "first" && checkout.confirming ? (
                 <div className="space-y-3">
