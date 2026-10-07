@@ -60,6 +60,7 @@ const DARK_HERO_ROUTES = [
   "/certificates/verify",
   "/attendance",
   "/newsletter/unsubscribe",
+  "/newsletter/confirm",
   "/privacy",
 ];
 

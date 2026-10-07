@@ -21,6 +21,7 @@ const NO_FOOTER_NEWSLETTER = [
   /^\/forms\//,                    // filling in a form
   /^\/certificates\/verify\//,     // checking a certificate
   /^\/newsletter\/unsubscribe\/?$/, // leaving the newsletter
+  /^\/newsletter\/confirm\/?$/,    // confirming a subscription
   /^\/payments(\/|$)/,             // registration and payment forms
   /^\/contact\/?$/,                // the contact form
   /^\/insights(\/|$)/,             // has its own signup already
