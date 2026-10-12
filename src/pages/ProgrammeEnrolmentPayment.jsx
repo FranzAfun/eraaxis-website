@@ -172,6 +172,8 @@ export default function ProgrammeEnrolmentPayment() {
             value={programmeSlug}
             onChange={setProgrammeSlug}
           />}
+          {/* Two separate choices: a soft line between the programme and how to pay. */}
+          <div aria-hidden="true" className="h-px bg-gradient-to-r from-transparent via-[var(--color-primary)]/25 to-transparent" />
           <ChoiceCards
             name="payment-option"
             legend="How would you like to pay?"
