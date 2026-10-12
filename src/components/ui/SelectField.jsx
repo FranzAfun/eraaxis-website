@@ -373,8 +373,8 @@ export default function SelectField({
           }}
         >
           {searchesServer && (
-            <div className="border-b border-[var(--color-border-soft)] p-1.5">
-              <label className="flex items-center gap-2 rounded-[calc(var(--radius-sm)-2px)] bg-[var(--color-surface-soft)] px-3">
+            <div className="border-b border-[var(--color-border-soft)] p-2">
+              <label className="select-search flex items-center gap-2 rounded-[calc(var(--radius-sm)-2px)] border border-[var(--color-border-soft)] bg-white px-3 transition-colors focus-within:border-[var(--color-primary)]">
                 <Search size={15} aria-hidden="true" className="shrink-0 text-[var(--color-text-muted)]" />
                 <input
                   ref={searchRef}
@@ -399,7 +399,7 @@ export default function SelectField({
             role="listbox"
             tabIndex={-1}
             onKeyDown={handleListKeyDown}
-            className="overflow-y-auto p-1.5 outline-none"
+            className="select-list overflow-y-auto p-1.5 outline-none"
             style={{ maxHeight: `${listMaxHeight}px` }}
           >
             {normalizedOptions.length === 0 && (
@@ -430,15 +430,19 @@ export default function SelectField({
                     option.disabled
                       ? "cursor-not-allowed opacity-100"
                       : "",
-                    isSelected || isHighlighted
-                      ? "bg-[var(--color-primary)]/8 text-[var(--color-primary-deep)]"
-                      : "text-[var(--color-text-primary)] hover:bg-[var(--color-surface-soft)]",
+                    // The chosen one stands out; the one under the pointer or the
+                    // arrow keys is only lightly marked, so the two never look alike.
+                    isSelected
+                      ? "bg-[var(--color-primary)]/10 font-semibold text-[var(--color-primary-deep)]"
+                      : isHighlighted
+                        ? "bg-[var(--color-surface-soft)] text-[var(--color-text-primary)]"
+                        : "text-[var(--color-text-primary)] hover:bg-[var(--color-surface-soft)]",
                   ].join(" ")}
                 >
                   <span className="min-w-0">
                     <span className="block break-words">{option.label}</span>
                     {option.hint && (
-                      <span className="block break-words text-xs text-[var(--color-text-muted)]">
+                      <span className="block break-words text-xs font-normal text-[var(--color-text-muted)]">
                         {option.hint}
                       </span>
                     )}

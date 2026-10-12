@@ -26,6 +26,21 @@ const UNLISTED_LEVELS = [
  * every register); `askLevel` asks the kind of school when it is not listed.
  * The chosen school carries its level.
  */
+/**
+ * The list as options, with the school already chosen at the top, so reopening
+ * the list shows it (ticked) instead of starting again at "A".
+ */
+function withChoiceFirst(results, value) {
+  const options = results.map((item) => ({
+    value: item.id,
+    label: item.name,
+    hint: [item.shortName, item.region].filter(Boolean).join(" · "),
+  }));
+  if (!value?.schoolId) return options;
+  const chosen = options.find((option) => option.value === value.schoolId) || { value: value.schoolId, label: value.name || "Your school", hint: "Your choice" };
+  return [chosen, ...options.filter((option) => option.value !== value.schoolId)];
+}
+
 export default function SchoolPicker({ slug, question, value, onChange, fieldClass, invalid, describedBy, searchSchools, askLevel = false, placeholder = "Choose your school" }) {
   const allowOther = question.school?.allowOther !== false;
   const [results, setResults] = useState([]);
@@ -120,11 +135,7 @@ export default function SchoolPicker({ slug, question, value, onChange, fieldCla
       // The chosen school travels with the answer, so it still reads correctly
       // after a search that no longer lists it, or when a saved form is reopened.
       selectedLabel={value?.name || ""}
-      options={results.map((item) => ({
-        value: item.id,
-        label: item.name,
-        hint: [item.shortName, item.region].filter(Boolean).join(" · "),
-      }))}
+      options={withChoiceFirst(results, value)}
       onSearch={search}
       searching={searching}
       searchPlaceholder="Search by name or short name"

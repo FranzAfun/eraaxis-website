@@ -1480,6 +1480,14 @@ footer {
   outline: none;
 }
 
+/* A dropdown's search box shows it is active by its own border turning purple,
+   and its list by the highlighted row, so neither draws the box outline above. */
+.select-search:has(:focus-visible),
+.select-search input:focus-visible,
+.select-list:focus-visible {
+  outline: none;
+}
+
 /* A 2px outline with a 3px offset must clear adjacent feedback text. */
 :where(input, textarea):focus-visible ~ p {
   padding-top: 0.25rem;
