@@ -49,8 +49,9 @@ test("the head carries the form's own title, description, picture and address", 
 
 test("a form without a picture or description keeps the site's defaults for those", () => {
   const html = injectPreview(shell, { title: "Quick survey", description: null, image: null }, "https://eraaxis.com/forms/quick-survey");
-  assert.match(html, /<meta property="og:image" content="https:\/\/eraaxis\.com\/og-image\.jpg" \/>/);
+  assert.match(html, /<meta property="og:image" content="https:\/\/eraaxis\.com\/og-card-2026\.jpg" \/>/);
   assert.match(html, /<title>Quick survey \| ERA AXIS<\/title>/);
+  assert.match(html, /<meta property="og:site_name" content="ERA AXIS" \/>/, "the site's name stays on every card");
 });
 
 test("only a real form address is looked up", () => {
@@ -70,7 +71,7 @@ test("an article stays open to search engines and says it is an article", () => 
   assert.match(html, /<meta property="og:type" content="article" \/>/);
   assert.match(html, /<link rel="canonical" href="https:\/\/eraaxis\.com\/insights\/robots-in-class" \/>/);
   // Without its own picture the card stays, with its size.
-  assert.match(html, /og-image\.jpg/);
+  assert.match(html, /og-card-2026\.jpg/);
   assert.match(html, /og:image:width/);
 });
 
