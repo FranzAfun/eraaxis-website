@@ -10,6 +10,8 @@ import { useMediaQuery } from "../motion/useMediaQuery";
  * buttons. Every part named here is on the board in the photo.
  *
  * Boxes are percentages of the photo (dev-board-front.webp, 1280 x 853).
+ * A small part's number sits beside it (`spot`, x and y), on bare board, so
+ * the number never hides the part it points to.
  */
 const PARTS = [
   {
@@ -29,24 +31,28 @@ const PARTS = [
     title: "ON/OFF switch",
     line: "Learners power up on purpose, and see why every circuit needs a switch.",
     box: [46.5, 12, 11, 8.5],
+    spot: [52, 5.5],
   },
   {
     key: "diode",
     title: "Protection diode",
     line: "Batteries in the wrong way round? Diode D3 blocks the current.",
     box: [43.8, 21, 3.6, 14.5],
+    spot: [45.6, 40],
   },
   {
     key: "led",
     title: "Power LED",
     line: "The red light that shows, at a glance, that the board is on.",
     box: [53.5, 26, 7, 9.5],
+    spot: [57.5, 41],
   },
   {
     key: "test",
     title: "Test points",
     line: "VBATT, GND and +RAIL: where learners measure what is really happening.",
     box: [43.5, 70, 13.5, 8.5],
+    spot: [50.25, 85],
   },
   {
     key: "breadboard",
@@ -55,6 +61,8 @@ const PARTS = [
     box: [61.5, 2, 32, 94],
   },
 ];
+
+const spotOf = (p) => p.spot || [p.box[0] + p.box[2] / 2, p.box[1] + p.box[3] / 2];
 
 // Zoom the photo so the part fills most of the frame, centred.
 function viewFor(box) {
@@ -69,7 +77,7 @@ function viewFor(box) {
 function Board({ active, onPick }) {
   const part = PARTS[active];
   return (
-    <div className="board-tour-frame relative aspect-[1280/853] w-full overflow-hidden rounded-[var(--radius-lg)] bg-[#c9cbe0]">
+    <div className="board-tour-frame @container relative aspect-[1280/853] w-full overflow-hidden rounded-[var(--radius-lg)] bg-[#c9cbe0]">
       <div className="board-tour-zoom absolute inset-0" style={viewFor(part.box)}>
         <img src={boardImg} alt="The ERA Dev Board from the front" loading="lazy" decoding="async" className="h-full w-full object-cover" draggable="false" />
         {part.box && (
@@ -87,8 +95,9 @@ function Board({ active, onPick }) {
             key={p.key}
             type="button"
             onClick={() => onPick(i + 1)}
-            className="board-tour-spot absolute flex h-8 w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full text-sm font-bold"
-            style={{ left: `${p.box[0] + p.box[2] / 2}%`, top: `${p.box[1] + p.box[3] / 2}%` }}
+            // Sized with the board: small on a phone, never covering much of it.
+            className="board-tour-spot absolute flex aspect-square -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full font-bold"
+            style={{ left: `${spotOf(p)[0]}%`, top: `${spotOf(p)[1]}%`, width: "clamp(20px, 3.6%, 30px)", fontSize: "clamp(11px, 1.6cqw, 14px)" }}
             aria-label={`Show the ${p.title.toLowerCase()}`}
           >
             {i + 1}
