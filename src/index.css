@@ -1480,6 +1480,19 @@ footer {
   outline: none;
 }
 
+/* A dropdown's list arrives as EDOS's does: a short fade and lift. */
+.select-menu {
+  animation: select-menu 160ms ease-out both;
+}
+
+@keyframes select-menu {
+  from { opacity: 0; translate: 0 4px; scale: 0.985; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .select-menu { animation: none; }
+}
+
 /* A dropdown's search box shows it is active by its own border turning purple,
    and its list by the highlighted row, so neither draws the box outline above. */
 .select-search:has(:focus-visible),
