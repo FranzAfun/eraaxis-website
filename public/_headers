@@ -3,7 +3,7 @@
   X-Content-Type-Options: nosniff
   Permissions-Policy: camera=(), microphone=(), geolocation=()
   Referrer-Policy: strict-origin-when-cross-origin
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self'; img-src 'self' data: https://eraaxis.com https://api.edos.eraaxis.com; connect-src 'self' https://api.edos.eraaxis.com https://accounts.google.com/gsi/; frame-src https://www.google.com https://accounts.google.com/gsi/
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://apis.google.com; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; font-src 'self'; img-src 'self' data: https://eraaxis.com https://api.edos.eraaxis.com; connect-src 'self' https://api.edos.eraaxis.com https://accounts.google.com/gsi/ https://www.googleapis.com https://content.googleapis.com; frame-src https://www.google.com https://accounts.google.com/gsi/ https://docs.google.com https://drive.google.com https://content.googleapis.com
 
 # Fonts live in a folder named for their version, so they never change.
 /fonts/*

@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { AlertCircle, FileText, Paperclip, X } from "lucide-react";
 import { toUserMessage } from "../../services/api";
 import { uploadFormFile } from "../../services/formsService";
+import { driveAvailable, pickFromDrive } from "../../utils/googleDrive";
 
 /**
  * Attaching files to a form, one at a time or several at once.
@@ -29,8 +30,23 @@ const extensionOf = (name) => {
   return at === -1 ? "" : String(name).slice(at).toLowerCase();
 };
 
+// Google Drive's mark, drawn small beside the words.
+function DriveMark() {
+  return (
+    <svg width="16" height="14" viewBox="0 0 87.3 78" aria-hidden="true">
+      <path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="#0066da" />
+      <path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0 -1.2 4.5h27.5z" fill="#00ac47" />
+      <path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.502l5.852 11.5z" fill="#ea4335" />
+      <path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z" fill="#00832d" />
+      <path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z" fill="#2684fc" />
+      <path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 28h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#ffba00" />
+    </svg>
+  );
+}
+
 export default function FileField({ slug, token, question, value, onChange, onBusyChange, invalid, describedBy }) {
   const inputRef = useRef(null);
+  const [opening, setOpening] = useState(false);
   const [uploads, setUploads] = useState([]);
   const [problems, setProblems] = useState([]);
   const files = Array.isArray(value) ? value : [];
@@ -79,6 +95,19 @@ export default function FileField({ slug, token, question, value, onChange, onBu
     if (done.length) onChange([...files, ...done]);
   }
 
+  // Files from Google Drive go through the same checks and upload as any other.
+  async function fromDrive() {
+    setOpening(true);
+    try {
+      const chosen = await pickFromDrive({ multiple: room > 1 });
+      if (chosen.length) await send(chosen);
+    } catch (error) {
+      setProblems([error?.message || "Google Drive could not be opened. Please try again."]);
+    } finally {
+      setOpening(false);
+    }
+  }
+
   return (
     <div>
       {(files.length > 0 || uploads.length > 0) && (
@@ -113,7 +142,7 @@ export default function FileField({ slug, token, question, value, onChange, onBu
       )}
 
       {room > 0 && (
-        <>
+        <div className="flex flex-wrap gap-2">
           <button
             type="button"
             onClick={() => inputRef.current?.click()}
@@ -140,7 +169,18 @@ export default function FileField({ slug, token, question, value, onChange, onBu
               if (chosen.length) send(chosen);
             }}
           />
-        </>
+          {driveAvailable && (
+            <button
+              type="button"
+              onClick={fromDrive}
+              disabled={opening}
+              className="inline-flex min-h-[44px] items-center gap-2 rounded-[var(--radius-sm)] border border-[var(--color-border)] bg-white px-4 text-[15px] font-semibold text-[var(--color-text-primary)] transition-colors hover:border-[var(--color-primary)]/40 disabled:opacity-60"
+            >
+              <DriveMark />
+              {opening ? "Opening Google Drive…" : "From Google Drive"}
+            </button>
+          )}
+        </div>
       )}
 
       <p className="mt-2 text-xs text-[var(--color-text-muted)]">
