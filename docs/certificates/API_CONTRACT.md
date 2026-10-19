@@ -4,7 +4,7 @@ Contract: `certificates.v1.4` (2026-09-07). EDOS owns this file; the website kee
 an identical copy. This defines the first implementation, not deployed endpoints.
 Changes to required fields, meanings or access rules require a new contract
 version and matching fixtures before consumers change. Additive optional fields
-are allowed. See PROGRESS.md for what actually exists.
+are allowed. The code and its tests show what actually exists.
 
 ## Transport and identity
 
