@@ -57,6 +57,29 @@ export function looksLikeFullName(value) {
 }
 
 /**
+ * Answers brought back from this device, less any choice the form no longer
+ * offers: a course that has closed since, or an option taken out. Restored as
+ * they were, they would only be refused on sending.
+ */
+export function keepOffered(answers, questions) {
+  if (!answers) return {};
+  const out = { ...answers };
+  for (const question of questions) {
+    if (!(question.key in out) || !Array.isArray(question.options)) continue;
+    const offered = new Set(question.options.map((option) => option.value));
+    const value = out[question.key];
+    if (Array.isArray(value)) {
+      const kept = value.filter((item) => offered.has(item));
+      if (kept.length) out[question.key] = kept;
+      else delete out[question.key];
+    } else if (typeof value === "string" && !offered.has(value)) {
+      delete out[question.key];
+    }
+  }
+  return out;
+}
+
+/**
  * Answers in progress, kept on this device so a dropped signal or a closed tab
  * does not cost somebody what they had typed. Per form rather than per version:
  * question keys are never reused, so answers survive the form being edited.

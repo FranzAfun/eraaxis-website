@@ -23,6 +23,7 @@ import {
   clearDraft,
   credentialProfile,
   hasAnswers,
+  keepOffered,
   looksLikeFullName,
   readDraft,
   rememberPaymentReturn,
@@ -194,7 +195,7 @@ function FormFill({ slug, form, loadedAt, onFormChanged }) {
   const trustRules = form.rulesSha === RULES_SHA && form.schemaVersion === SCHEMA_VERSION;
 
   const [draft] = useState(() => readDraft(slug));
-  const [answers, setAnswers] = useState(() => draft?.answers || {});
+  const [answers, setAnswers] = useState(() => keepOffered(draft?.answers, (definition.sections || []).flatMap((section) => section.questions || [])));
   const [step, setStep] = useState(() => (draft?.version === form.version ? draft.step || 0 : 0));
   const [restored, setRestored] = useState(() => hasAnswers(draft?.answers) && !draft?.receipt);
   // The form was edited since these answers were started on this device.
