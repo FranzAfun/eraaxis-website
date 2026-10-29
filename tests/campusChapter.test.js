@@ -10,7 +10,7 @@ test("Campus Chapter checkout keeps stored identifiers and charges one 12-month 
   assert.equal(item.membershipMonths, 12);
   assert.equal(item.baseAmount, 200);
   assert.deepEqual(item.breakdown, [{ label: "Campus Chapter membership (12 months)", amount: 200 }]);
-  assert.deepEqual(calculatePaymentBreakdown(item.baseAmount), { baseAmount: 200, maintenanceFee: 2, spesoFee: 3.24, customerTotal: 205.24 });
+  assert.deepEqual(calculatePaymentBreakdown(item.baseAmount), { baseAmount: 200, maintenanceFee: 2, spesoFee: 3.23, customerTotal: 205.23 });
 });
 
 test("separate Monthly Dues keep their original price and payment route", () => {

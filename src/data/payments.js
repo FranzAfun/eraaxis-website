@@ -20,15 +20,10 @@ export function calculateCustomerTotal(
   baseAmount,
   feeConfig = DEFAULT_SPESO_FEE_CONFIG
 ) {
-  const subtotal = Number(baseAmount) + MAINTENANCE_FEE_GHS;
-  const businessFee = roundMoney(
-    subtotal * (Number(feeConfig.businessRate) / 100)
-  );
-  const providerFee = roundMoney(
-    (subtotal + businessFee) * (Number(feeConfig.providerRate) / 100)
-  );
+  const subtotal = roundMoney(Number(baseAmount) + MAINTENANCE_FEE_GHS);
+  // Same calculation as the API: one combined rate, one rounding, then total.
   const spesoFee = roundMoney(
-    Math.min(businessFee + providerFee, Number(feeConfig.cap))
+    Math.min(subtotal * (Number(feeConfig.businessRate) + Number(feeConfig.providerRate)) / 100, Number(feeConfig.cap))
   );
   const customerPays = roundMoney(subtotal + spesoFee);
 
@@ -39,7 +34,7 @@ export function calculatePaymentBreakdown(
   baseAmount,
   feeConfig = DEFAULT_SPESO_FEE_CONFIG
 ) {
-  const normalizedBaseAmount = Number(baseAmount);
+  const normalizedBaseAmount = roundMoney(baseAmount);
   const subtotal = normalizedBaseAmount + MAINTENANCE_FEE_GHS;
   const customerTotal = calculateCustomerTotal(normalizedBaseAmount, feeConfig);
   const spesoFee = customerTotal - subtotal;
