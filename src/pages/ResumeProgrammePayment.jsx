@@ -188,7 +188,7 @@ export default function ResumeProgrammePayment() {
               </h1>
               <p className="mb-8 text-base leading-relaxed text-[var(--color-text-on-dark-muted)]">
                 {isStudentChapter
-                  ? "Renew your Campus Chapter membership for 12 months at GHS 200, plus processing fees. No monthly chapter dues."
+                  ? "Renew your Campus Chapter membership for 12 months at GHS 200. No monthly chapter dues."
                   : summary.durationMonths
                     ? `You've paid ${summary.monthsPaidTotal} of ${summary.durationMonths} months for ${summary.programmeName}.`
                     : `Continue your payment for ${summary.programmeName}.`}

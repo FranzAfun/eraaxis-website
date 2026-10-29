@@ -22,12 +22,11 @@ const category = getPaymentCategoryBySlug("student-chapter");
 const item = category.items[0];
 
 const BENEFITS = [
-  "12 months of membership for GHS 200. Renew yearly for GHS 200.",
+  "12 months of membership for GHS 200, with no monthly dues. Renew yearly for GHS 200.",
   "Practical sessions and builds, real projects, and national sessions and support.",
   "Choose a track: Electronics & Embedded Systems, Software Development, or CAD & Product Design.",
   "The chance to build a verified portfolio.",
   "Payment gives access. Completion credentials require attendance, assignments and verified work.",
-  "The GHS 2 maintenance fee and Speso processing fee are added at checkout. No monthly chapter dues.",
 ];
 
 const optionalTag = <span className={optionalCls}>(optional)</span>;

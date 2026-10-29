@@ -33,7 +33,7 @@ const paymentOptions = [
     bullets: [
       "Practical sessions, builds and real projects",
       "National sessions, support and a verified portfolio opportunity",
-      "Renew yearly for GHS 200; processing fees apply",
+      "Renew yearly for GHS 200",
     ],
     cta: "Join Campus Chapters",
     to: "/payments/campus-chapter",
