@@ -46,10 +46,14 @@ export async function searchFormSchools(slug, questionKey, query) {
  * colleges, senior high schools, and schools ERA AXIS has added, each with its
  * level.
  */
-export async function searchSignupSchools(query) {
-  const body = await api.get(`/schools?${new URLSearchParams({ q: query || "" })}`);
+export async function searchSignupSchools(query, { tertiaryOnly = false } = {}) {
+  const params = new URLSearchParams({ q: query || "" });
+  if (tertiaryOnly) params.set("level", "tertiary");
+  const body = await api.get(`/schools?${params}`);
   return body?.data?.items || [];
 }
+
+export const searchChapterSchools = (query) => searchSignupSchools(query, { tertiaryOnly: true });
 
 /** Communities ERA AXIS has recorded, for a form's community question. */
 export async function searchFormCommunities(slug, questionKey, query) {

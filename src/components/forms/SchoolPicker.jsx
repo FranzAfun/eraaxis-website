@@ -41,7 +41,7 @@ function withChoiceFirst(results, value) {
   return [chosen, ...options.filter((option) => option.value !== value.schoolId)];
 }
 
-export default function SchoolPicker({ slug, question, value, onChange, fieldClass, invalid, describedBy, searchSchools, askLevel = false, placeholder = "Choose your school" }) {
+export default function SchoolPicker({ slug, question, value, onChange, fieldClass, invalid, describedBy, searchSchools, askLevel = false, unlistedLevel = "", placeholder = "Choose your school" }) {
   const allowOther = question.school?.allowOther !== false;
   const [results, setResults] = useState([]);
   const [searching, setSearching] = useState(false);
@@ -97,7 +97,7 @@ export default function SchoolPicker({ slug, question, value, onChange, fieldCla
           aria-invalid={invalid || undefined}
           aria-describedby={describedBy}
           className={fieldClass}
-          onChange={(event) => onChange(event.target.value ? { other: event.target.value, level: value?.level || "" } : null)}
+          onChange={(event) => onChange(event.target.value ? { other: event.target.value, level: unlistedLevel || value?.level || "" } : null)}
         />
         {askLevel && (
           <SelectField

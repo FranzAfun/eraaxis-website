@@ -82,7 +82,7 @@ export default function StudentChapterPayment() {
       problem: () => {
         if (!firstName.trim()) return self ? "Please enter your first name." : "Please enter the learner's first name.";
         if (!lastName.trim()) return self ? "Please enter your last name." : "Please enter the learner's last name.";
-        return signUpProblem(signUp, { schoolRequired: true });
+        return signUpProblem(signUp, { schoolRequired: true, tertiaryOnly: true });
       },
       body: (
         <>
@@ -100,7 +100,7 @@ export default function StudentChapterPayment() {
               <input id="signup-other-names" type="text" placeholder="Ama" className={fieldCls} value={otherNames} onChange={(e) => setOtherNames(e.target.value)} />
             </div>
           </div>
-          <SignUpDetails part="details" value={signUp} onChange={setSignUp} schoolRequired fieldCls={fieldCls} labelCls={labelCls} optionalTag={optionalTag} />
+          <SignUpDetails part="details" value={signUp} onChange={setSignUp} schoolRequired tertiaryOnly fieldCls={fieldCls} labelCls={labelCls} optionalTag={optionalTag} />
           <div className="space-y-6 border-t border-[var(--color-border)] pt-6">
             <p className="text-sm font-semibold text-[var(--color-text-secondary)]">Optional · helps us prepare for {self ? "you" : "them"}</p>
             <div className="sm:max-w-[50%] sm:pr-3">
@@ -123,6 +123,12 @@ export default function StudentChapterPayment() {
       },
       body: (
         <>
+          <div className="grid gap-6 sm:grid-cols-2">
+            <div>
+              <label className={labelCls} htmlFor="signup-phone">{self ? "Phone number" : "Your phone, for updates"}</label>
+              <input id="signup-phone" type="tel" autoComplete="tel" placeholder="+233 XX XXX XXXX" className={fieldCls} value={phone} onChange={(e) => setPhone(e.target.value)} />
+            </div>
+          </div>
           <SignUpEmail
             clientId={checkout.clientId}
             email={email}
@@ -133,12 +139,6 @@ export default function StudentChapterPayment() {
             fieldCls={fieldCls}
             labelCls={labelCls}
           />
-          <div className="grid gap-6 sm:grid-cols-2">
-            <div>
-              <label className={labelCls} htmlFor="signup-phone">{self ? "Phone number" : "Your phone, for updates"}</label>
-              <input id="signup-phone" type="tel" autoComplete="tel" placeholder="+233 XX XXX XXXX" className={fieldCls} value={phone} onChange={(e) => setPhone(e.target.value)} />
-            </div>
-          </div>
           <div>
             <label className={labelCls} htmlFor="signup-notes">Anything we should know?{optionalTag}</label>
             <textarea id="signup-notes" rows={1} placeholder="A question, or access needs" className={growingTextCls} value={notes} onChange={(e) => setNotes(e.target.value)} />
@@ -170,8 +170,8 @@ export default function StudentChapterPayment() {
             line="An ERA AXIS learning and innovation network on campuses. Learn by building, with 12 months of membership for GHS 200."
           />
           <FormAside title="What membership includes" items={BENEFITS} Icon={Check} className="mb-6 lg:hidden" />
-          <div className="land-in-late grid gap-6 lg:grid-cols-[1fr_340px] lg:items-start">
-            <div>
+          <div className="land-in-late grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
+            <div className="min-w-0">
               {checkout.confirming ? (
                 <div className="space-y-3">
                   <ConfirmEmailStep

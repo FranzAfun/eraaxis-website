@@ -25,9 +25,10 @@ export function learnerLabel(value, label) {
 }
 
 /** The first thing to put right, or "" when the section is complete. */
-export function signUpProblem(value, { schoolRequired = false } = {}) {
+export function signUpProblem(value, { schoolRequired = false, tertiaryOnly = false } = {}) {
   if (!value.who) return "Please say who is signing up.";
   if (schoolRequired && !value.school) return value.who === "learner" ? "Please choose your school." : "Please choose the learner's school.";
+  if (tertiaryOnly && value.school?.level !== "tertiary") return "Please choose a university or other tertiary institution.";
   if (value.school?.other !== undefined && !value.school.other.trim()) return "Please type the school's name, or choose it from the list.";
   if (value.school?.other !== undefined && !value.school.level) return "Please say what kind of school it is.";
   if (value.who === "organisation") {

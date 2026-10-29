@@ -263,6 +263,12 @@ export default function ProgrammeEnrolmentPayment() {
       },
       body: (
         <>
+          <div className="grid gap-6 sm:grid-cols-2">
+            <div>
+              <label className={labelCls} htmlFor="signup-phone">{self ? "Phone number" : "Your phone, for updates"}</label>
+              <input id="signup-phone" type="tel" autoComplete="tel" placeholder="+233 XX XXX XXXX" className={fieldCls} value={phone} onChange={(e) => setPhone(e.target.value)} />
+            </div>
+          </div>
           <SignUpEmail
             clientId={checkout.clientId}
             email={email}
@@ -273,12 +279,6 @@ export default function ProgrammeEnrolmentPayment() {
             fieldCls={fieldCls}
             labelCls={labelCls}
           />
-          <div className="grid gap-6 sm:grid-cols-2">
-            <div>
-              <label className={labelCls} htmlFor="signup-phone">{self ? "Phone number" : "Your phone, for updates"}</label>
-              <input id="signup-phone" type="tel" autoComplete="tel" placeholder="+233 XX XXX XXXX" className={fieldCls} value={phone} onChange={(e) => setPhone(e.target.value)} />
-            </div>
-          </div>
           <div>
             <label className={labelCls} htmlFor="signup-notes">Anything we should know?{optionalTag}</label>
             <textarea id="signup-notes" rows={1} placeholder="A question, or access needs" className={growingTextCls} value={notes} onChange={(e) => setNotes(e.target.value)} />
@@ -318,8 +318,8 @@ export default function ProgrammeEnrolmentPayment() {
       <section className="bg-[var(--color-surface-soft)] pb-12 pt-6 md:pb-16 md:pt-8">
         <div className="container">
           <FormPageHeader eyebrow="Enrolment" title="Enrol on a programme." line="Choose a programme, then tell us who's learning." />
-          <div className="land-in-late grid gap-6 lg:grid-cols-[1fr_340px] lg:items-start">
-            <div>
+          <div className="land-in-late grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
+            <div className="min-w-0">
               {checkout.confirming ? (
                 <div className="space-y-3">
                   <ConfirmEmailStep
