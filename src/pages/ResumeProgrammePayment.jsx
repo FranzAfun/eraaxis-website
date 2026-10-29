@@ -55,7 +55,7 @@ export default function ResumeProgrammePayment() {
         setSummary(json.data);
         setMonths(
           json.data.category === "student_chapter"
-            ? String(json.data.renewalMonths || 3)
+            ? String(json.data.renewalMonths || 12)
             : buildMonthOptions(json.data.durationMonths, json.data.monthsPaidTotal)[0].value
         );
         setStatus(json.data.hasDueObligation ? "owes" : "paid-up");
@@ -90,7 +90,7 @@ export default function ResumeProgrammePayment() {
   const monthOptions = summary && !isStudentChapter
     ? buildMonthOptions(summary.durationMonths, summary.monthsPaidTotal)
     : [];
-  // Student Chapter renews in a fixed 3-month block at a flat per-cycle fee
+  // Campus Chapter renews in a fixed 12-month block at a flat per-cycle fee
   // (totalBase, from the summary endpoint) — not a monthly rate multiplied
   // by a chosen month count like every other programme type.
   const breakdown = summary
@@ -188,7 +188,7 @@ export default function ResumeProgrammePayment() {
               </h1>
               <p className="mb-8 text-base leading-relaxed text-[var(--color-text-on-dark-muted)]">
                 {isStudentChapter
-                  ? "Renew your Student Chapter membership for another 3 months."
+                  ? "Renew your Campus Chapter membership for 12 months at GHS 200, plus processing fees. No monthly chapter dues."
                   : summary.durationMonths
                     ? `You've paid ${summary.monthsPaidTotal} of ${summary.durationMonths} months for ${summary.programmeName}.`
                     : `Continue your payment for ${summary.programmeName}.`}
@@ -198,15 +198,17 @@ export default function ResumeProgrammePayment() {
                 {isStudentChapter ? (
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center justify-between gap-4">
-                      <span className="text-[var(--color-text-on-dark-muted)]">Chapter fee (3 months)</span>
+                      <span className="text-[var(--color-text-on-dark-muted)]">Campus Chapter membership (12 months)</span>
                       <span className="font-semibold text-white">{formatGhs(summary.chapterFee)}</span>
                     </div>
-                    {summary.duesRequired && (
-                      <div className="flex items-center justify-between gap-4">
-                        <span className="text-[var(--color-text-on-dark-muted)]">Membership dues (not covered)</span>
-                        <span className="font-semibold text-white">{formatGhs(summary.duesFee)}</span>
-                      </div>
-                    )}
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="text-[var(--color-text-on-dark-muted)]">Maintenance fee</span>
+                      <span className="font-semibold text-white">{formatGhs(breakdown.maintenanceFee)}</span>
+                    </div>
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="text-[var(--color-text-on-dark-muted)]">Speso processing fee</span>
+                      <span className="font-semibold text-white">{formatGhs(breakdown.spesoFee)}</span>
+                    </div>
                   </div>
                 ) : (
                   <div>

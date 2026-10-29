@@ -2,7 +2,7 @@ import { Lock } from "lucide-react";
 import { formatGhs } from "../../data/payments";
 
 /**
- * What the sign-up costs, line by line, for the programme and Student Chapter
+ * What the sign-up costs, line by line, for the programme and Campus Chapter
  * pages: beside the form on a computer, and above the last step's button on a
  * phone. `rows`: [{ label, amount?, value? }]; `empty` replaces the sums until
  * there is something to price.

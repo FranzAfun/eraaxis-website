@@ -1,7 +1,7 @@
 import { fieldClass } from "./formDisplay";
 
 /**
- * The look of the programme, Student Chapter and dues sign-ups: the LMS forms'
+ * The look of the programme, Campus Chapter and dues sign-ups: the LMS forms'
  * fields (16px text, the brand line drawn in from the left when active), with
  * labels in plain sentence case at a size people can read without squinting.
  */

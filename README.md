@@ -17,7 +17,7 @@ Programmes, partners, insights, gallery, forms and certificates are managed in *
 
 ## Pages and Features
 - Home, About, Programmes (School STEM, Out-of-School Youth, Online Learning, ERA Digital Skills), Dev Board, Partners, Insights, Gallery, FAQ, Contact, Privacy
-- `/payments`: programme enrolment, Student Chapter and monthly dues sign-ups (email confirmed by Google or code before paying), continue a payment, payment confirmation
+- `/payments`: programme enrolment, Campus Chapter and monthly dues sign-ups (email confirmed by Google or code before paying), continue a payment, payment confirmation
 - `/forms/:slug`: forms built in EDOS's LMS (paid or free, file questions with Google Drive, school picker, consent tick)
 - Attendance sign-in with Google for LMS sessions
 - Public certificate verification (`/certificates/verify/:id`)

@@ -22,10 +22,12 @@ const category = getPaymentCategoryBySlug("student-chapter");
 const item = category.items[0];
 
 const BENEFITS = [
-  "Student Chapter community access",
-  "One practical class every month",
-  "Collaborative project and build sessions",
-  "Opportunities to connect with mentors and industry partners",
+  "12 months of membership for GHS 200. Renew yearly for GHS 200.",
+  "Practical sessions and builds, real projects, and national sessions and support.",
+  "Choose a track: Electronics & Embedded Systems, Software Development, or CAD & Product Design.",
+  "The chance to build a verified portfolio.",
+  "Payment gives access. Completion credentials require attendance, assignments and verified work.",
+  "The GHS 2 maintenance fee and Speso processing fee are added at checkout. No monthly chapter dues.",
 ];
 
 const optionalTag = <span className={optionalCls}>(optional)</span>;
@@ -50,7 +52,7 @@ export default function StudentChapterPayment() {
       findProgramme: async () => {
         const programmesData = await api.get("/programmes");
         const prog = programmesData.data?.find((p) => p.category === "student_chapter");
-        if (!prog) throw new ApiError("Student Chapter sign-up isn't available right now. Please try again shortly.");
+        if (!prog) throw new ApiError("Campus Chapter sign-up isn't available right now. Please try again shortly.");
         return prog;
       },
       payload: {
@@ -70,7 +72,7 @@ export default function StudentChapterPayment() {
     {
       title: "Who's signing up",
       heading: "Who's signing up?",
-      intro: "Use the learner's official details. They go on the Student Chapter membership and on certificates later.",
+      intro: "Use the member's official details for their Campus Chapter membership.",
       problem: () => (signUp.who ? "" : "Please choose who is signing up."),
       body: <SignUpDetails part="who" value={signUp} onChange={setSignUp} fieldCls={fieldCls} labelCls={labelCls} optionalTag={optionalTag} />,
     },
@@ -146,11 +148,9 @@ export default function StudentChapterPayment() {
       ),
     },
   ];
-  const lastStep = step === steps.length - 1;
-
   const summary = (
     <OrderSummary
-      title="Student Chapter, first payment"
+      title="Campus Chapter membership"
       rows={[
         ...item.breakdown,
         { label: "Maintenance fee", amount: breakdown.maintenanceFee },
@@ -162,14 +162,15 @@ export default function StudentChapterPayment() {
 
   return (
     <>
-      <SEO {...getPageSeo("/payments/student-chapter")} />
+      <SEO {...getPageSeo("/payments/campus-chapter")} />
       <section className="bg-[var(--color-surface-soft)] pb-12 pt-6 md:pb-16 md:pt-8">
         <div className="container">
           <FormPageHeader
-            eyebrow="Student Chapter"
-            title="Join the ERA AXIS Student Chapter."
-            line="Your first payment opens the community, monthly practical sessions and group builds."
+            eyebrow="Campus Chapter"
+            title="Join ERA AXIS Campus Chapters."
+            line="An ERA AXIS learning and innovation network on campuses. Learn by building, with 12 months of membership for GHS 200."
           />
+          <FormAside title="What membership includes" items={BENEFITS} Icon={Check} className="mb-6 lg:hidden" />
           <div className="land-in-late grid gap-6 lg:grid-cols-[1fr_340px] lg:items-start">
             <div>
               {checkout.confirming ? (
@@ -201,13 +202,12 @@ export default function StudentChapterPayment() {
                   />
                 </div>
               )}
-              {lastStep && <FormAside title="What you get" items={BENEFITS} Icon={Check} className="mt-6 lg:hidden" />}
             </div>
 
             {/* On a phone the summary waits for the last step, inside the form. */}
             <div className="hidden space-y-4 lg:sticky lg:top-28 lg:block">
               {summary}
-              <FormAside title="What you get" items={BENEFITS} Icon={Check} />
+              <FormAside title="What membership includes" items={BENEFITS} Icon={Check} />
             </div>
           </div>
         </div>

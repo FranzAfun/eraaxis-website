@@ -6,7 +6,7 @@ import { needsGuardian } from "./signUp";
 
 /**
  * Who is signing up, the learner's school, and the parent or guardian or
- * organisation behind them, for the programme and Student Chapter sign-ups.
+ * organisation behind them, for the programme and Campus Chapter sign-ups.
  *
  * Whether a parent or guardian has to agree is decided by who is signing up
  * and the kind of school, never by an age: a parent signing up always gives

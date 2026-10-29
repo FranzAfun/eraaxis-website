@@ -3,7 +3,7 @@ import { api, envelopeError, toUserMessage } from "../../services/api";
 import { confirmSignupEmail, loadSignupConfig, resendSignupCode } from "../../services/signupService";
 
 /**
- * Sending a programme or Student Chapter sign-up and taking it to checkout.
+ * Sending a programme or Campus Chapter sign-up and taking it to checkout.
  *
  * The email is confirmed first: a Google sign-in for the same address confirms it
  * as the sign-up is sent; otherwise the server emails a code and `confirming`

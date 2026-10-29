@@ -1,7 +1,7 @@
 import { ApiError, api } from "./api";
 
 /**
- * The programme and Student Chapter sign-ups: their email check before payment.
+ * The programme and Campus Chapter sign-ups: their email check before payment.
  * A wrong or expired code is an answer, returned with the server's wording; only
  * an outage throws.
  */

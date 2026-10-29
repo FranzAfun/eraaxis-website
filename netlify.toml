@@ -37,6 +37,13 @@
   status = 301
   force = true
 
+# Keep old payment links working at the new public URL.
+[[redirects]]
+  from = "/payments/student-chapter"
+  to = "/payments/campus-chapter"
+  status = 301
+  force = true
+
 # SPA fallback
 [[redirects]]
   from = "/*"

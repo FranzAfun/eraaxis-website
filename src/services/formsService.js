@@ -42,7 +42,7 @@ export async function searchFormSchools(slug, questionKey, query) {
 }
 
 /**
- * Schools for the programme and Student Chapter sign-ups: universities and
+ * Schools for the programme and Campus Chapter sign-ups: universities and
  * colleges, senior high schools, and schools ERA AXIS has added, each with its
  * level.
  */

@@ -103,7 +103,7 @@ export const pageSeo = {
     pathname: "/payments",
     title: "Enrolment & Dues | ERA AXIS",
     description:
-      "Start programme enrolment, pay dues, join the Student Chapter, or request institutional support through ERA AXIS enrolment and dues options.",
+      "Start programme enrolment, pay dues, join the Campus Chapter, or request institutional support through ERA AXIS enrolment and dues options.",
   },
   "/payments/programme-enrolment": {
     pathname: "/payments/programme-enrolment",
@@ -111,11 +111,11 @@ export const pageSeo = {
     description:
       "Choose your ERA AXIS programme, select monthly or full payment, and complete the details needed for enrolment before checkout.",
   },
-  "/payments/student-chapter": {
-    pathname: "/payments/student-chapter",
-    title: "Student Chapter Enrolment | ERA AXIS",
+  "/payments/campus-chapter": {
+    pathname: "/payments/campus-chapter",
+    title: "ERA AXIS Campus Chapters | GHS 200 for 12 months",
     description:
-      "Join the ERA AXIS Student Chapter and complete your first payment for community access, monthly sessions, and collaborative projects.",
+      "Learn by building with ERA AXIS Campus Chapters. GHS 200 covers 12 months of practical sessions, projects and support. Completion credentials are earned.",
   },
   "/payments/monthly-dues": {
     pathname: "/payments/monthly-dues",

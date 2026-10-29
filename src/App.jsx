@@ -1,5 +1,5 @@
 import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import SiteLayout from "./layouts/SiteLayout";
 import ScrollToTop from "./components/ScrollToTop";
 import RouteTransitionOverlay, {
@@ -145,7 +145,8 @@ function AppShell() {
             <Route path="/payments/programme-enrolment" element={<ProgrammeEnrolmentPayment />} />
             <Route path="/payments/monthly-dues" element={<MonthlyDuesPayment />} />
             <Route path="/payments/resume/:enrolmentId" element={<ResumeProgrammePayment />} />
-            <Route path="/payments/student-chapter" element={<StudentChapterPayment />} />
+            <Route path="/payments/campus-chapter" element={<StudentChapterPayment />} />
+            <Route path="/payments/student-chapter" element={<StudentChapterRedirect />} />
             <Route path="/payments/confirmation" element={<PaymentConfirmation />} />
             <Route path="/certificates/verify/:publicId" element={<CertificateVerify />} />
             <Route path="/attendance/:token" element={<AttendanceSignIn />} />
@@ -159,6 +160,11 @@ function AppShell() {
       </SiteLayout>
     </>
   );
+}
+
+function StudentChapterRedirect() {
+  const { search, hash } = useLocation();
+  return <Navigate to={`/payments/campus-chapter${search}${hash}`} replace />;
 }
 
 export default function App() {

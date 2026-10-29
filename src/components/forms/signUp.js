@@ -1,5 +1,5 @@
 /**
- * The rules behind the programme and Student Chapter sign-up details (see
+ * The rules behind the programme and Campus Chapter sign-up details (see
  * SignUpDetails.jsx): what an empty answer is, when a parent or guardian has
  * to agree, what is missing, and what is sent. The server applies the same
  * rules (server/controllers/websiteEnrolmentsController.js, readSigner).

@@ -13,7 +13,19 @@ export const faqGroups = [
         id: "faq-programmes",
         question: "What programmes does ERA AXIS offer?",
         answer:
-          "ERA AXIS offers School STEM programmes, Out-of-School Youth training, Online Learning, ERA Digital Skills, Student Chapter access, and practical learning around the ERA Dev Board.",
+          "ERA AXIS offers School STEM programmes, Out-of-School Youth training, Online Learning, ERA Digital Skills, ERA AXIS Campus Chapters, and practical learning around the ERA Dev Board.",
+      },
+      {
+        id: "faq-campus-chapters",
+        question: "What is ERA AXIS Campus Chapters?",
+        answer:
+          "It is an ERA AXIS learning and innovation network on campuses. Members learn by building through practical sessions and builds, real projects, national sessions and support, with the chance to build a verified portfolio.",
+      },
+      {
+        id: "faq-campus-tracks",
+        question: "Which tracks can Campus Chapter members follow?",
+        answer:
+          "Choose one of three tracks: Electronics & Embedded Systems, Software Development, or CAD & Product Design.",
       },
       {
         id: "faq-practical",
@@ -44,6 +56,18 @@ export const faqGroups = [
         question: "Can I pay for a full programme upfront?",
         answer:
           "Yes. Programme enrolment supports both monthly payment and full programme payment options. Final totals are shown clearly before checkout.",
+      },
+      {
+        id: "faq-campus-price",
+        question: "What does Campus Chapter membership cost?",
+        answer:
+          "Joining costs GHS 200 for 12 months. Renewal is GHS 200 every 12 months. There are no monthly chapter dues. The usual GHS 2 maintenance fee and Speso processing fee are added at checkout, where you can see the total before paying.",
+      },
+      {
+        id: "faq-campus-credentials",
+        question: "Does paying for Campus Chapter membership guarantee a credential?",
+        answer:
+          "Payment gives access to membership and learning activities. Completion credentials must be earned through attendance, assignments and verified work.",
       },
       {
         id: "faq-monthly-dues",

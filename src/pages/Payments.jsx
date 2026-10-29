@@ -9,8 +9,8 @@ import Reveal from "../components/motion/Reveal";
 import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
 
-// Three ways in, side by side. Student Chapter is the one most people choose,
-// so it carries the badge and the brand colour. Group or institutional support
+// Three ways in, side by side. Campus Chapter's yearly membership offer
+// carries the badge and the brand colour. Group or institutional support
 // is a line under the cards, not a fourth card.
 const paymentOptions = [
   {
@@ -27,23 +27,23 @@ const paymentOptions = [
     Icon: GraduationCap,
   },
   {
-    title: "Student Chapter",
-    amount: "GHS 125 first payment",
-    description: "Join the ERA AXIS Student Chapter.",
+    title: "Campus Chapter",
+    amount: "GHS 200 for 12 months",
+    description: "Learn by building with ERA AXIS Campus Chapters, a learning and innovation network on campuses.",
     bullets: [
-      "GHS 110 chapter fee",
-      "GHS 15 first month dues",
-      "Then GHS 110 every 3 months",
+      "Practical sessions, builds and real projects",
+      "National sessions, support and a verified portfolio opportunity",
+      "Renew yearly for GHS 200; processing fees apply",
     ],
-    cta: "Join the chapter",
-    to: "/payments/student-chapter",
+    cta: "Join Campus Chapters",
+    to: "/payments/campus-chapter",
     Icon: Users,
     isPopular: true,
   },
   {
     title: "Monthly Dues",
     amount: "GHS 15/month",
-    description: "Pay monthly membership or chapter dues.",
+    description: "Pay monthly membership dues.",
     bullets: [
       "For active members",
       "Monthly payment record",
@@ -57,7 +57,7 @@ const paymentOptions = [
 
 function OptionCard({ option }) {
   const { Icon, isPopular } = option;
-  // The popular card is filled with the primary colour, its words in white.
+  // The highlighted card is filled with the primary colour, its words in white.
   const tone = isPopular
     ? {
         card: "relative border-2 border-[var(--color-primary)] bg-[var(--color-primary)] text-white shadow-xl shadow-[var(--color-primary)]/25 lg:-my-3",
@@ -86,7 +86,7 @@ function OptionCard({ option }) {
     <article className={`flex w-full flex-col rounded-[var(--radius-md)] p-6 transition-all duration-300 hover:-translate-y-1 ${tone.card}`}>
       {isPopular && (
         <div className="absolute right-5 top-0 -translate-y-1/2 rounded-full bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-[var(--color-primary)] shadow-sm ring-2 ring-[var(--color-primary)]">
-          Most Popular
+          Yearly membership
         </div>
       )}
       <div className="mb-6 flex items-start justify-between gap-4">
@@ -137,7 +137,7 @@ export default function Payments() {
               Enrolment &amp; Dues
             </h1>
             <p className="max-w-2xl text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-lg">
-              Enrol on a programme, join the Student Chapter, or pay your dues. Totals are shown before you pay.
+              Enrol on a programme, join the Campus Chapter, or pay your dues. Totals are shown before you pay.
             </p>
           </div>
         </div>

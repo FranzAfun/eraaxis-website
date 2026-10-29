@@ -70,7 +70,7 @@ export default function Privacy() {
 
           <SectionHeading>Payments</SectionHeading>
           <Paragraph>
-            When you make a payment (enrolment, dues, or Student Chapter
+            When you make a payment (enrolment, dues, or Campus Chapter
             fees), you&apos;re redirected to Speso&apos;s secure checkout
             to complete the transaction. Speso is a separate service with
             its own cookies and privacy practices, which are outside ERA

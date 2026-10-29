@@ -146,23 +146,20 @@ export const PAYMENT_CATEGORIES = [
   },
   {
     slug: "student-chapter",
-    title: "Student Chapter",
-    description: "First payment for Student Chapter access.",
-    route: "/payments/student-chapter",
+    title: "Campus Chapter",
+    description: "GHS 200 for 12 months of membership. Renew yearly for GHS 200, plus processing fees.",
+    route: "/payments/campus-chapter",
     referencePrefix: "ERA-SC",
     items: [
       {
         slug: "student-chapter-first-payment",
-        title: "Student Chapter First Payment",
-        baseAmount: 125,
+        title: "Campus Chapter membership (12 months)",
+        baseAmount: 200,
+        membershipMonths: 12,
         breakdown: [
           {
-            label: "Chapter Fee",
-            amount: 110,
-          },
-          {
-            label: "First Month Dues",
-            amount: 15,
+            label: "Campus Chapter membership (12 months)",
+            amount: 200,
           },
         ],
       },
