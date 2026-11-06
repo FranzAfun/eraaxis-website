@@ -39,13 +39,13 @@ export default function PrivacyNotice() {
       role="region"
       aria-label="Privacy notice"
       style={{ borderColor: "color-mix(in srgb, var(--color-accent) 30%, transparent)" }}
-      className="privacy-notice dark-surface fixed inset-x-3 bottom-3 z-[60] overflow-hidden rounded-2xl border bg-[var(--color-background-dark)] shadow-[0_24px_60px_-12px_rgba(0,0,0,0.55)] sm:inset-x-auto sm:bottom-6 sm:left-6 sm:w-[25rem]"
+      className="privacy-notice dark-surface fixed inset-x-3 bottom-3 z-[60] overflow-hidden rounded-2xl border bg-[var(--color-background-dark)] shadow-[0_24px_60px_-12px_rgba(0,0,0,0.55)] sm:inset-x-auto sm:bottom-6 sm:right-6 sm:w-[25rem]"
     >
       {/* A soft purple glow along the top edge, like the site's dark panels. */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 top-0 h-24"
-        style={{ background: "radial-gradient(120% 100% at 0% 0%, color-mix(in srgb, var(--color-accent) 22%, transparent) 0%, transparent 70%)" }}
+        style={{ background: "radial-gradient(120% 100% at 100% 0%, color-mix(in srgb, var(--color-accent) 22%, transparent) 0%, transparent 70%)" }}
       />
       <div className="relative p-5">
         <div className="flex items-start gap-3 pr-8">
