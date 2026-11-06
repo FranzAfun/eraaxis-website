@@ -12,6 +12,7 @@ import {
   Mail,
   Menu,
   Newspaper,
+  ShieldCheck,
   Wallet,
   X,
 } from "lucide-react";
@@ -35,6 +36,7 @@ const moreLinks = [
   { label: "Gallery", to: "/gallery", icon: Images },
   { label: "FAQ", to: "/faq", icon: HelpCircle },
   { label: "Dues", to: "/payments/monthly-dues", icon: Wallet },
+  { label: "Privacy Policy", to: "/privacy", icon: ShieldCheck },
 ];
 
 const menuGroups = [

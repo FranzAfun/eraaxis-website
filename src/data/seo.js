@@ -139,7 +139,7 @@ export const pageSeo = {
     pathname: "/privacy",
     title: "Privacy & Cookie Policy | ERA AXIS",
     description:
-      "How ERA AXIS handles cookies, local storage, and information collected through this website.",
+      "How ERA AXIS Limited, registered with Ghana's Data Protection Commission, collects, uses, shares and protects your information, and your rights.",
   },
 };
 
