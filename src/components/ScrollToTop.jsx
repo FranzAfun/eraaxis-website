@@ -8,6 +8,14 @@ import { useLocation } from "react-router-dom";
  * that difference, the first press of such a button changed the address, this
  * ran, and jumped, cutting the smooth scroll short.
  */
+// A refresh opens at the top too, every time. Left to the browser, Chrome jumps
+// back to where you were after this has already sent the page to the top, and
+// which one wins changes from refresh to refresh, so the scroll animations
+// start from a different place each time.
+if (typeof window !== "undefined" && "scrollRestoration" in window.history) {
+  window.history.scrollRestoration = "manual";
+}
+
 export default function ScrollToTop() {
   const { pathname, hash } = useLocation();
   const lastPath = useRef(null);

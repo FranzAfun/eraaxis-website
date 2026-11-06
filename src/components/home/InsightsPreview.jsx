@@ -96,8 +96,8 @@ export default function InsightsPreview() {
 
         {/* Cards */}
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {insights.map((item, i) => (
-            <div key={item.slug} data-scene="drift" data-from={i % 2 ? "right" : "left"} className="flex">
+          {insights.map((item) => (
+            <div key={item.slug} data-scene="drift" data-from="left" className="flex">
               <InsightCard {...item} />
             </div>
           ))}
