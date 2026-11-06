@@ -128,7 +128,9 @@ export default function ProgrammesOverview() {
       : STATIC_PROGRAMMES;
 
   return (
-    <section className="bg-[var(--color-surface-soft)] py-20 md:py-24 lg:py-28">
+    // Holds a little before the next section covers it, so the Campus
+    // Chapters strip at its foot is seen (see .scroll-stack in index.css).
+    <section data-stack-hold="always" className="bg-[var(--color-surface-soft)] py-20 md:py-24 lg:py-28">
       <div className="container">
         {/* Section header */}
         <Reveal className="mb-12 max-w-2xl">

@@ -2280,6 +2280,13 @@ input[type="radio"] {
   pointer-events: none;
 }
 
+/* A section marked data-stack-hold="always" holds a little on every screen
+   before the next one comes over it: the programmes, so the Campus Chapters
+   strip under their cards is seen. (Phones get the longer hold below.) */
+.scroll-stack[data-stacking] > section[data-stack-hold="always"] + section {
+  margin-top: 30svh;
+}
+
 /* On a phone, a section that ends with its button (data-stack-hold) stays
    still a little longer before the next comes over it, so the button can be
    seen and tapped: the gap above the next section is scrolled past while this
