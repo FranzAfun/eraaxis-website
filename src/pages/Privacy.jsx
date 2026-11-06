@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
 import privacySeal from "../assets/images/compliance/dpc-privacy-seal.webp";
+import privacySealLarge from "../assets/images/compliance/dpc-privacy-seal-large.webp";
 
 const LAST_UPDATED = { iso: "2026-11-06", label: "6 November 2026" };
 const CONTACT_EMAIL = "support@eraaxis.com";
@@ -236,14 +237,24 @@ export default function Privacy() {
               </Paragraph>
               <Pairs rows={REGISTRATION} />
             </div>
-            <img
-              src={privacySeal}
-              alt="DPC Ghana Privacy Seal awarded to ERA AXIS Limited"
-              width="438"
-              height="646"
-              loading="lazy"
-              className="mx-auto w-32 rounded-2xl bg-white p-3 shadow-sm ring-1 ring-[var(--color-border)] sm:w-36"
-            />
+            <a
+              href={privacySealLarge}
+              target="_blank"
+              rel="noopener"
+              className="mx-auto block w-32 text-center sm:w-36"
+            >
+              <img
+                src={privacySeal}
+                alt="DPC Ghana Privacy Seal awarded to ERA AXIS Limited"
+                width="438"
+                height="646"
+                loading="lazy"
+                className="w-full rounded-2xl bg-white p-3 shadow-sm ring-1 ring-[var(--color-border)]"
+              />
+              <span className="mt-2 block text-xs font-semibold text-[var(--color-primary)] underline underline-offset-2">
+                Open full size to scan
+              </span>
+            </a>
           </div>
 
           <SectionHeading id="what-we-collect">3. What we collect</SectionHeading>
