@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react";
 import CircuitField from "./CircuitField";
 
 const stats = [
-  { value: "1000+", label: "Learners" },
+  { value: "4000+", label: "Learners" },
   { value: "STEM", label: "Programmes" },
   { value: "Community", label: "Impact" },
 ];
