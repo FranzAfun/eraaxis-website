@@ -4,7 +4,7 @@ import { useBootstrap } from "../../hooks/useBootstrap";
 const STATIC_METRICS = [
   {
     key: "students",
-    fallback: 1000,
+    fallback: 4000,
     suffix: "+",
     label: "Learners Reached",
   },
