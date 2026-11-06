@@ -23,6 +23,7 @@ import { BuildTiles, DevBoardStrip, ProgrammeClose, ProgrammeHero, ReasonLines }
 import { closePrimaryClass, closeSecondaryClass, heroPrimaryClass, heroSecondaryClass } from "../components/programme/programmeClasses";
 import SEO from "../components/SEO";
 import { PROGRAMME_IMAGES } from "../data/programmeImages";
+import { getProgrammePrice } from "../data/payments";
 import { getPageSeo } from "../data/seo";
 
 const enrolState = {
@@ -62,6 +63,7 @@ export default function SchoolStem() {
         eyebrow="School STEM"
         title={<>Hands-on STEM from Basic&nbsp;1 to SHS&nbsp;3.</>}
         line="Electronics, coding, sensors and automation, learned by building in class."
+        price={getProgrammePrice("school_stem")}
         glance={["In-school sessions", "Project-based", "ERA Dev Board"]}
         image={PROGRAMME_IMAGES.school_stem.src}
         imageSrcSet={PROGRAMME_IMAGES.school_stem.srcSet}

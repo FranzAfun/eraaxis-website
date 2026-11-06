@@ -196,3 +196,35 @@ export function getPaymentCategoryBySlug(slug) {
 export function getPaymentItemBySlug(slug) {
   return PAYMENT_ITEMS_BY_SLUG[slug] || null;
 }
+
+const cedis = (amount) => `GHS ${Number(amount).toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
+
+// The fee each kind of programme signs up for, by programme category.
+const PROGRAMME_FEE_SLUG = {
+  school_stem: "junior-stem",
+  out_of_school_youth: "out-of-school-youth",
+  online_learning: "online-learning",
+  digital_skills: "era-digital-skills",
+};
+
+/**
+ * A programme's price as cards and programme pages show it, from the same list
+ * the checkout uses: `amount` and `per` ("GHS 200", "a month"), and `note` for
+ * paying the whole programme at once. Null for a category with no fee here.
+ */
+export function getProgrammePrice(category) {
+  const item = getPaymentItemBySlug(PROGRAMME_FEE_SLUG[category]);
+  if (!item) return null;
+  const whole = calculateFullProgrammeBase(item.monthlyAmount, item.fullPaymentMonths);
+  return {
+    amount: cedis(item.monthlyAmount),
+    per: "a month",
+    note: `or ${cedis(whole)} for all ${item.fullPaymentMonths} months`,
+  };
+}
+
+/** Campus Chapter membership, as cards show it: one price for the year. */
+export function getChapterPrice() {
+  const item = getPaymentItemBySlug("student-chapter-first-payment");
+  return item ? { amount: cedis(item.baseAmount), per: `for ${item.membershipMonths} months` } : null;
+}

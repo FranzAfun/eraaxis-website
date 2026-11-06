@@ -24,6 +24,7 @@ import { ProgrammeClose, ProgrammeHero, ReasonLines } from "../components/progra
 import { closePrimaryClass, closeSecondaryClass, heroPrimaryClass, heroSecondaryClass } from "../components/programme/programmeClasses";
 import SEO from "../components/SEO";
 import { PROGRAMME_IMAGES } from "../data/programmeImages";
+import { getProgrammePrice } from "../data/payments";
 import { getPageSeo } from "../data/seo";
 
 const enrol = {
@@ -68,6 +69,7 @@ export default function OnlineLearning() {
         eyebrow="Online Learning"
         title="Learn technology around your life."
         line="Guided online lessons and real projects in code, AI and electronics."
+        price={getProgrammePrice("online_learning")}
         glance={["Students", "Graduates", "Working professionals", "Your own pace"]}
         image={PROGRAMME_IMAGES.online_learning.src}
         imageSrcSet={PROGRAMME_IMAGES.online_learning.srcSet}

@@ -7,8 +7,11 @@ import Reveal from "../components/motion/Reveal";
 import ScrollScenes from "../components/motion/ScrollScenes";
 import { ProgrammeClose, ProgrammeHero, SectionHead } from "../components/programme/ProgrammeParts";
 import { closePrimaryClass, closeSecondaryClass, heroPrimaryClass, heroSecondaryClass } from "../components/programme/programmeClasses";
+import CampusChapterStrip from "../components/programme/CampusChapterStrip";
+import PriceTag from "../components/programme/PriceTag";
 import SEO from "../components/SEO";
 import { CARD_SIZES, PROGRAMME_IMAGES } from "../data/programmeImages";
+import { getProgrammePrice } from "../data/payments";
 import { getPageSeo } from "../data/seo";
 import { api } from "../services/api";
 import { resolveMediaUrl } from "../utils/resolveMediaUrl";
@@ -42,6 +45,7 @@ const STATIC_PROGRAMMES = [
   {
     image: PROGRAMME_IMAGES.school_stem.src,
     srcSet: PROGRAMME_IMAGES.school_stem.srcSet,
+    category: "school_stem",
     audience: "Basic 1 – SHS 3",
     title: "School STEM Programmes",
     cta: "Explore School STEM",
@@ -51,6 +55,7 @@ const STATIC_PROGRAMMES = [
   {
     image: PROGRAMME_IMAGES.out_of_school_youth.src,
     srcSet: PROGRAMME_IMAGES.out_of_school_youth.srcSet,
+    category: "out_of_school_youth",
     audience: "Ages 16 – 30",
     title: "Out-of-School Youth",
     cta: "Explore Youth Programme",
@@ -60,6 +65,7 @@ const STATIC_PROGRAMMES = [
   {
     image: PROGRAMME_IMAGES.online_learning.src,
     srcSet: PROGRAMME_IMAGES.online_learning.srcSet,
+    category: "online_learning",
     audience: "Remote & self-paced learners",
     title: "Online Learning",
     cta: "Explore Online Learning",
@@ -69,6 +75,7 @@ const STATIC_PROGRAMMES = [
   {
     image: PROGRAMME_IMAGES.digital_skills.src,
     srcSet: PROGRAMME_IMAGES.digital_skills.srcSet,
+    category: "digital_skills",
     audience: "Working adults & professionals",
     title: "ERA Digital Skills",
     cta: "Explore Digital Skills",
@@ -84,8 +91,9 @@ const method = [
   { Icon: TrendingUp, title: "Grow with outcomes", line: "Portfolio-ready results for your next step." },
 ];
 
-// The whole card is one link, like the homepage's programme cards.
-function ProgrammeCard({ image, srcSet, audience, title, body, to, cta }) {
+// The whole card is one link, like the homepage's programme cards. The price
+// sits above the link line, from the same list the checkout uses.
+function ProgrammeCard({ image, srcSet, category, audience, title, body, to, cta }) {
   return (
     <Link to={to} className="card-interactive group flex h-full w-full flex-col overflow-hidden">
       <div className="h-48 shrink-0 overflow-hidden">
@@ -103,7 +111,8 @@ function ProgrammeCard({ image, srcSet, audience, title, body, to, cta }) {
         <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary-light)]">{audience}</p>
         <h3 className="mb-2 text-lg font-bold leading-snug text-[var(--color-text-primary)]">{title}</h3>
         <p className="mb-5 line-clamp-3 text-[15px] leading-relaxed text-[var(--color-text-secondary)]">{body}</p>
-        <span className="mt-auto inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--color-primary)] transition-gap duration-200 group-hover:gap-2.5">
+        <PriceTag price={getProgrammePrice(category)} className="mb-5 mt-auto" />
+        <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--color-primary)] transition-gap duration-200 group-hover:gap-2.5">
           {cta}
           <ArrowRight size={15} strokeWidth={2} aria-hidden="true" />
         </span>
@@ -135,6 +144,7 @@ export default function Programs() {
     return apiProgrammes
       .filter((p) => Object.prototype.hasOwnProperty.call(CATEGORY_IMAGE, p.category))
       .map((p) => ({
+        category: p.category,
         ...(p.coverImageUrl
           ? { image: resolveMediaUrl(p.coverImageUrl) }
           : { image: (CATEGORY_IMAGE[p.category] || CATEGORY_IMAGE.school_stem).src, srcSet: (CATEGORY_IMAGE[p.category] || CATEGORY_IMAGE.school_stem).srcSet }),
@@ -181,6 +191,9 @@ export default function Programs() {
               </Reveal>
             ))}
           </ul>
+          <Reveal className="mt-5">
+            <CampusChapterStrip />
+          </Reveal>
         </div>
       </section>
 

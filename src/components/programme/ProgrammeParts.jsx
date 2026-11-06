@@ -11,7 +11,9 @@ import Reveal from "../motion/Reveal";
 
 const BLANK = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
 
-export function ProgrammeHero({ eyebrow, title, line, glance, image, imageSrcSet, imageAlt, imageClass = "", badge, actions, back = true }) {
+// `price` (from getProgrammePrice) shows large under the opening line, so the
+// cost is plain before anyone scrolls.
+export function ProgrammeHero({ eyebrow, title, line, price, glance, image, imageSrcSet, imageAlt, imageClass = "", badge, actions, back = true }) {
   return (
     <section className={`dark-surface hero-ground relative -mt-20 overflow-hidden pb-16 text-white md:pb-24 ${back ? "pt-32 md:pt-40" : "pt-36 md:pt-44"}`}>
       <div className="land-in container relative z-10">
@@ -31,6 +33,15 @@ export function ProgrammeHero({ eyebrow, title, line, glance, image, imageSrcSet
             </p>
             <h1 className="mb-5 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-[3.6rem]">{title}</h1>
             <p className="mb-7 max-w-xl text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-lg">{line}</p>
+            {price && (
+              <p className="mb-7">
+                <span className="flex flex-wrap items-baseline gap-x-2">
+                  <span className="text-3xl font-black tracking-tight text-white sm:text-4xl">{price.amount}</span>
+                  <span className="text-base font-medium text-[var(--color-text-on-dark-muted)]">{price.per}</span>
+                </span>
+                {price.note && <span className="mt-1 block text-sm text-[var(--color-text-on-dark-muted)]">{price.note}</span>}
+              </p>
+            )}
             {glance && (
               <ul className="mb-9 flex flex-wrap gap-2" aria-label="At a glance">
                 {glance.map((item) => (

@@ -74,7 +74,7 @@ export default function ChoiceCards({ name, legend, options, value, onChange, co
                 </span>
               )}
               {option.aside && (
-                <span className={`mt-3 text-sm font-bold ${chosen ? "text-white" : "text-[var(--color-primary)]"}`}>{option.aside}</span>
+                <span className={`mt-3 text-base font-bold ${chosen ? "text-white" : "text-[var(--color-primary)]"}`}>{option.aside}</span>
               )}
             </label>
           );

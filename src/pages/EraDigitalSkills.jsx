@@ -20,7 +20,7 @@ import { closePrimaryClass, closeSecondaryClass, heroPrimaryClass, heroSecondary
 import SEO from "../components/SEO";
 import { PROGRAMME_IMAGES } from "../data/programmeImages";
 import { getPageSeo } from "../data/seo";
-import { calculateFullProgrammeBase, getPaymentItemBySlug } from "../data/payments";
+import { getProgrammePrice } from "../data/payments";
 
 const enrolState = {
   programmeSlug: "era-digital-skills",
@@ -28,11 +28,6 @@ const enrolState = {
   returnLabel: "Back to ERA Digital Skills",
 };
 
-// The price comes from the payments list, so the page and checkout agree.
-const fee = getPaymentItemBySlug("era-digital-skills");
-const ghs = (amount) => `GHS ${Number(amount).toLocaleString("en-US")}`;
-const monthly = ghs(fee.monthlyAmount);
-const inFull = ghs(calculateFullProgrammeBase(fee.monthlyAmount, fee.fullPaymentMonths));
 
 const months = [
   {
@@ -76,7 +71,8 @@ export default function EraDigitalSkills() {
         eyebrow="ERA Digital Skills"
         title="AI and digital skills for real work."
         line="Three months online: AI tools, spreadsheets and automation, built around your own job or business."
-        glance={["3 months, online", `${monthly} a month`, `${inFull} in full`]}
+        price={getProgrammePrice("digital_skills")}
+        glance={["3 months, online"]}
         image={PROGRAMME_IMAGES.digital_skills.src}
         imageSrcSet={PROGRAMME_IMAGES.digital_skills.srcSet}
         imageAlt="Professional using digital productivity and AI tools"

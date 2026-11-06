@@ -26,6 +26,7 @@ import { BuildTiles, PartnerStrip, ProgrammeClose, ProgrammeHero, ReasonLines } 
 import { closePrimaryClass, closeSecondaryClass, heroPrimaryClass, heroSecondaryClass } from "../components/programme/programmeClasses";
 import SEO from "../components/SEO";
 import { PROGRAMME_IMAGES } from "../data/programmeImages";
+import { getProgrammePrice } from "../data/payments";
 import { getPageSeo } from "../data/seo";
 
 const enrol = {
@@ -77,6 +78,7 @@ export default function OutOfSchoolYouth() {
         eyebrow="Out-of-School Youth"
         title="Practical tech skills for young people ready to build."
         line="Hands-on training, real tools and community projects. Start where you are."
+        price={getProgrammePrice("out_of_school_youth")}
         glance={["Ages 16 – 30", "3 – 6 months", "No experience needed"]}
         image={PROGRAMME_IMAGES.out_of_school_youth.src}
         imageSrcSet={PROGRAMME_IMAGES.out_of_school_youth.srcSet}

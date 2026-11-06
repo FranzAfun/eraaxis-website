@@ -3,6 +3,9 @@ import { ArrowRight } from "lucide-react";
 import { useBootstrap } from "../../hooks/useBootstrap";
 import { resolveMediaUrl } from "../../utils/resolveMediaUrl";
 import Reveal from "../motion/Reveal";
+import CampusChapterStrip from "../programme/CampusChapterStrip";
+import PriceTag from "../programme/PriceTag";
+import { getProgrammePrice } from "../../data/payments";
 
 import { CARD_SIZES, PROGRAMME_IMAGES } from "../../data/programmeImages";
 
@@ -15,6 +18,7 @@ const STATIC_PROGRAMMES = [
   {
     image: PROGRAMME_IMAGES.school_stem.src,
     srcSet: PROGRAMME_IMAGES.school_stem.srcSet,
+    category: "school_stem",
     title: "School STEM Programmes",
     text: "Hands-on STEM from Basic 1 to SHS 3.",
     to: "/programs/school-stem",
@@ -23,6 +27,7 @@ const STATIC_PROGRAMMES = [
   {
     image: PROGRAMME_IMAGES.out_of_school_youth.src,
     srcSet: PROGRAMME_IMAGES.out_of_school_youth.srcSet,
+    category: "out_of_school_youth",
     title: "Out-of-School Youth",
     text: "Employable skills for ages 16 to 30.",
     to: "/programs/out-of-school-youth",
@@ -31,6 +36,7 @@ const STATIC_PROGRAMMES = [
   {
     image: PROGRAMME_IMAGES.online_learning.src,
     srcSet: PROGRAMME_IMAGES.online_learning.srcSet,
+    category: "online_learning",
     title: "Online Learning",
     text: "Code, AI and electronics, from anywhere.",
     to: "/programs/online-learning",
@@ -39,6 +45,7 @@ const STATIC_PROGRAMMES = [
   {
     image: PROGRAMME_IMAGES.digital_skills.src,
     srcSet: PROGRAMME_IMAGES.digital_skills.srcSet,
+    category: "digital_skills",
     title: "ERA Digital Skills",
     text: "AI tools and automation for your work.",
     to: "/programs/era-digital-skills",
@@ -61,7 +68,7 @@ const CATEGORY_CTA = {
   digital_skills: "Explore Digital Skills",
 };
 
-function ProgrammeCard({ image, srcSet, title, text, to, cta }) {
+function ProgrammeCard({ image, srcSet, category, title, text, to, cta }) {
   return (
     <Link
       to={to}
@@ -93,6 +100,7 @@ function ProgrammeCard({ image, srcSet, title, text, to, cta }) {
         <p className="mb-5 flex-1 text-[15px] leading-relaxed text-[var(--color-text-secondary)]">
           {text}
         </p>
+        <PriceTag price={getProgrammePrice(category)} className="mb-5" />
         <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--color-primary)] transition-gap duration-200 group-hover:gap-2.5">
           {cta}
           <ArrowRight size={15} strokeWidth={2} />
@@ -108,6 +116,7 @@ export default function ProgrammesOverview() {
   const programmes =
     featuredProgrammes.length > 0
       ? featuredProgrammes.map((p) => ({
+          category: p.category,
           ...(p.thumbnail_url
             ? { image: resolveMediaUrl(p.thumbnail_url) }
             : { image: (CATEGORY_IMAGE[p.category] || CATEGORY_IMAGE.school_stem).src, srcSet: (CATEGORY_IMAGE[p.category] || CATEGORY_IMAGE.school_stem).srcSet }),
@@ -139,6 +148,9 @@ export default function ProgrammesOverview() {
             </Reveal>
           ))}
         </div>
+        <Reveal className="mt-5">
+          <CampusChapterStrip />
+        </Reveal>
       </div>
     </section>
   );
