@@ -1,14 +1,17 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import CircuitField from "./CircuitField";
-
-const stats = [
-  { value: "4000+", label: "Learners" },
-  { value: "STEM", label: "Programmes" },
-  { value: "Community", label: "Impact" },
-];
+import { useBootstrap } from "../../hooks/useBootstrap";
+import { reachFigure } from "../../data/reach";
 
 export default function Hero() {
+  // Learners reached is the same figure as the impact section's (EDOS, Website > Settings).
+  const { metrics } = useBootstrap();
+  const stats = [
+    { value: `${reachFigure(metrics, "students")}+`, label: "Learners" },
+    { value: "STEM", label: "Programmes" },
+    { value: "Community", label: "Impact" },
+  ];
   return (
     <section
       aria-label="Hero"

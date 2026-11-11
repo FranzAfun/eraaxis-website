@@ -1,28 +1,25 @@
 import { useEffect, useRef, useState } from "react";
 import { useBootstrap } from "../../hooks/useBootstrap";
+import { reachFigure } from "../../data/reach";
 
 const STATIC_METRICS = [
   {
     key: "students",
-    fallback: 4000,
     suffix: "+",
     label: "Learners Reached",
   },
   {
     key: "schools",
-    fallback: 5,
     suffix: "",
     label: "Partner Schools",
   },
   {
     key: "projects",
-    fallback: 100,
     suffix: "+",
     label: "Student Projects",
   },
   {
     key: "partners",
-    fallback: 13,
     suffix: "",
     label: "Year-Levels Covered",
   },
@@ -88,7 +85,7 @@ export default function ImpactMetrics() {
 
   const METRICS = STATIC_METRICS.map((m) => ({
     ...m,
-    value: metrics?.[m.key] || m.fallback,
+    value: reachFigure(metrics, m.key),
   }));
 
   useEffect(() => {
