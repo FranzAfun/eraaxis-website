@@ -121,8 +121,8 @@ export default function ProgrammesOverview() {
       : STATIC_PROGRAMMES;
 
   return (
-    // Holds a little before the next section covers it, so the Campus
-    // Chapters strip at its foot is seen (see .scroll-stack in index.css).
+    // Holds a little before the next section covers it, so the programme
+    // cards at its foot are seen (see .scroll-stack in index.css).
     <section data-stack-hold="always" className="bg-[var(--color-surface-soft)] py-20 md:py-24 lg:py-28">
       <div className="container">
         {/* Section header */}
@@ -141,6 +141,11 @@ export default function ProgrammesOverview() {
           </Link>
         </Reveal>
 
+        {/* Campus Chapters (the Purple Innovators) lead on the home page. */}
+        <Reveal className="mb-5">
+          <CampusChapterStrip />
+        </Reveal>
+
         {/* Cards grid */}
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {programmes.map((prog, i) => (
@@ -149,9 +154,6 @@ export default function ProgrammesOverview() {
             </Reveal>
           ))}
         </div>
-        <Reveal className="mt-5">
-          <CampusChapterStrip />
-        </Reveal>
       </div>
     </section>
   );
