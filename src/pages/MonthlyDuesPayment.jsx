@@ -15,6 +15,8 @@ import ChoiceCards from "../components/forms/ChoiceCards";
 import GoogleSignIn from "../components/forms/GoogleSignIn";
 import SignUpEmail from "../components/forms/SignUpEmail";
 import SignUpSteps from "../components/forms/SignUpSteps";
+import DraftNotice from "../components/forms/DraftNotice";
+import { useKeepDraft, useSavedDraft } from "../components/forms/useSignUpDraft";
 import OrderSummary from "../components/forms/OrderSummary";
 import ConfirmEmailStep from "../components/forms/ConfirmEmailStep";
 import useSignUpCheckout from "../components/forms/useSignUpCheckout";
@@ -54,20 +56,35 @@ const findDuesProgramme = async () => {
   return prog;
 };
 
+// What a returning first-time payer gets back (useSavedDraft); blank is a fresh page.
+const BLANK_DRAFT = { path: "", firstName: "", lastName: "", otherNames: "", email: "", phone: "", months: "1", step: 0 };
+
 export default function MonthlyDuesPayment() {
   const { feeConfig } = useSpesoFees();
   const navigate = useNavigate();
-  const [path, setPath] = useState(""); // "" | "returning" | "first"
+  // A first-time payer's fields start from what they typed last time, if anything.
+  const draft = useSavedDraft("monthly-dues", BLANK_DRAFT);
+  const start = draft.initial;
+  const [path, setPath] = useState(start.path === "first" ? "first" : ""); // "" | "returning" | "first"
 
   // First time.
-  const checkout = useSignUpCheckout();
-  const [step, setStep] = useState(0);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [otherNames, setOtherNames] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [months, setMonths] = useState("1");
+  const checkout = useSignUpCheckout({ draftKey: draft.key });
+  const [step, setStep] = useState(Number(start.step) || 0);
+  const [firstName, setFirstName] = useState(start.firstName);
+  const [lastName, setLastName] = useState(start.lastName);
+  const [otherNames, setOtherNames] = useState(start.otherNames);
+  const [email, setEmail] = useState(start.email);
+  const [phone, setPhone] = useState(start.phone);
+  const [months, setMonths] = useState(String(start.months || "1"));
+  // Only the first-time sign-up is kept; a returning payer signs in instead.
+  useKeepDraft(
+    draft.key,
+    path === "first" ? { path, firstName, lastName, otherNames, email, phone, months, step } : BLANK_DRAFT,
+    BLANK_DRAFT,
+  );
+  const startAgain = () => {
+    setFirstName(""); setLastName(""); setOtherNames(""); setEmail(""); setPhone(""); setMonths("1"); setStep(0);
+  };
 
   // Returning.
   const [loginStep, setLoginStep] = useState("email"); // "email" | "otp" | "history"
@@ -405,6 +422,7 @@ export default function MonthlyDuesPayment() {
                   {path === "first" && (
                     <>
                       <div className="mb-6">{switchLink("I've paid before", "returning")}</div>
+                      <DraftNotice draft={draft} onStartAgain={startAgain} className="mb-6" />
                       <SignUpSteps
                         steps={firstTimeSteps}
                         step={step}

@@ -8,6 +8,8 @@ import {
   openProgrammeItems,
 } from "../data/payments";
 import useProgrammeCatalogue from "../hooks/useProgrammeCatalogue";
+import DraftNotice from "../components/forms/DraftNotice";
+import { useKeepDraft, useSavedDraft } from "../components/forms/useSignUpDraft";
 import { api, ApiError } from "../services/api";
 import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
@@ -46,6 +48,12 @@ const PHOTO = {
 const cedis = (amount) => `GHS ${Number(amount).toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
 
 const optionalTag = <span className={optionalCls}>(optional)</span>;
+
+// What a returning visitor gets back (useSavedDraft); blank is a fresh page.
+const BLANK_DRAFT = {
+  programmeSlug: "", paymentOption: "monthly", signUp: EMPTY_SIGNUP, firstName: "", lastName: "", otherNames: "",
+  email: "", phone: "", learningGoal: "", previousExperience: "", notes: "", step: 0,
+};
 
 // The one programme someone came to enrol on: its photo, who it is for and what
 // it costs, with a quiet way to choose a different one.
@@ -87,27 +95,40 @@ function ChosenProgramme({ programme, photo, price, onChange }) {
 export default function ProgrammeEnrolmentPayment() {
   const { feeConfig, feesLoading, feesError } = useSpesoFees();
   const location = useLocation();
-  // Arriving from a programme's own page chooses it; otherwise nothing is chosen
-  // for them.
+  // Fields start from what this visitor typed last time, if anything.
+  const draft = useSavedDraft("programme-enrolment", BLANK_DRAFT);
+  const start = draft.initial;
+  // Arriving from a programme's own page chooses it, whatever was saved;
+  // otherwise the saved choice, or nothing.
   const [programmeSlug, setProgrammeSlug] = useState(() => {
-    const requested = location.state?.programmeSlug;
+    const requested = location.state?.programmeSlug || start.programmeSlug;
     return category.items.some((programme) => programme.slug === requested) ? requested : "";
   });
   // Came from a programme's own page: show just that programme, with a way to
   // look at the others if they meant a different one.
   const [showAllProgrammes, setShowAllProgrammes] = useState(() => !programmeSlug);
-  const [paymentOption, setPaymentOption] = useState("monthly");
-  const [signUp, setSignUp] = useState(EMPTY_SIGNUP);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [otherNames, setOtherNames] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [learningGoal, setLearningGoal] = useState("");
-  const [previousExperience, setPreviousExperience] = useState("");
-  const [notes, setNotes] = useState("");
-  const [step, setStep] = useState(0);
-  const checkout = useSignUpCheckout();
+  const [paymentOption, setPaymentOption] = useState(start.paymentOption === "full" ? "full" : "monthly");
+  const [signUp, setSignUp] = useState(() => ({ ...EMPTY_SIGNUP, ...start.signUp }));
+  const [firstName, setFirstName] = useState(start.firstName);
+  const [lastName, setLastName] = useState(start.lastName);
+  const [otherNames, setOtherNames] = useState(start.otherNames);
+  const [email, setEmail] = useState(start.email);
+  const [phone, setPhone] = useState(start.phone);
+  const [learningGoal, setLearningGoal] = useState(start.learningGoal);
+  const [previousExperience, setPreviousExperience] = useState(start.previousExperience);
+  const [notes, setNotes] = useState(start.notes);
+  const [step, setStep] = useState(Number(start.step) || 0);
+  useKeepDraft(
+    draft.key,
+    { programmeSlug, paymentOption, signUp, firstName, lastName, otherNames, email, phone, learningGoal, previousExperience, notes, step },
+    BLANK_DRAFT,
+  );
+  const startAgain = () => {
+    if (!location.state?.programmeSlug) setProgrammeSlug("");
+    setPaymentOption("monthly"); setSignUp(EMPTY_SIGNUP); setFirstName(""); setLastName(""); setOtherNames("");
+    setEmail(""); setPhone(""); setLearningGoal(""); setPreviousExperience(""); setNotes(""); setStep(0);
+  };
+  const checkout = useSignUpCheckout({ draftKey: draft.key });
   const self = !signUp.who || signUp.who === "learner";
 
   // Only programmes open for sign-up online are offered, at EDOS's price
@@ -339,6 +360,7 @@ export default function ProgrammeEnrolmentPayment() {
                 </div>
               ) : (
                 <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white p-6 shadow-sm sm:p-8 md:p-10">
+                  <DraftNotice draft={draft} onStartAgain={startAgain} className="mb-6" />
                   <SignUpSteps
                     steps={steps}
                     step={step}

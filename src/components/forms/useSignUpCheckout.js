@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { clearDraft } from "./formDisplay";
 import { api, envelopeError, toUserMessage } from "../../services/api";
 import { confirmSignupEmail, loadSignupConfig, resendSignupCode } from "../../services/signupService";
 
@@ -9,7 +10,8 @@ import { confirmSignupEmail, loadSignupConfig, resendSignupCode } from "../../se
  * as the sign-up is sent; otherwise the server emails a code and `confirming`
  * holds what the code step needs. Payment starts once the address is confirmed.
  */
-export default function useSignUpCheckout() {
+// `draftKey`: the page's saved draft (useSignUpDraft), cleared on the way to payment.
+export default function useSignUpCheckout({ draftKey = "" } = {}) {
   const [clientId, setClientId] = useState(null);
   const [credential, setCredential] = useState("");
   const [confirming, setConfirming] = useState(null);
@@ -26,6 +28,7 @@ export default function useSignUpCheckout() {
     const payData = await api.post("/payments/initialize", { enrolment_id: enrolmentId, months_paid: months });
     if (!payData.success) throw envelopeError(payData, "We couldn't start your payment. Please try again.");
     window.sessionStorage.setItem("eraaxis_payment_reference", payData.data.reference);
+    if (draftKey) clearDraft(draftKey);
     window.location.href = payData.data.authorizationUrl;
   }
 

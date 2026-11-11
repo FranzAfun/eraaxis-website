@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowDown, Check, Sparkles } from "lucide-react";
 import ChapterRequestForm from "../components/forms/ChapterRequestForm";
+import DraftNotice from "../components/forms/DraftNotice";
+import { useKeepDraft, useSavedDraft } from "../components/forms/useSignUpDraft";
 import { findChapterSchools } from "../services/formsService";
 import { getPaymentCategoryBySlug, calculatePaymentBreakdown } from "../data/payments";
 import { api, ApiError } from "../services/api";
@@ -33,19 +35,30 @@ const BENEFITS = [
 
 const optionalTag = <span className={optionalCls}>(optional)</span>;
 
+// What a returning visitor gets back (useSavedDraft); blank is a fresh page.
+const BLANK_DRAFT = { firstName: "", lastName: "", otherNames: "", email: "", phone: "", signUp: EMPTY_SIGNUP, yearLevel: "", notes: "", step: 0 };
+
 export default function StudentChapterPayment() {
   const { feeConfig } = useSpesoFees();
   const breakdown = calculatePaymentBreakdown(item.baseAmount, feeConfig);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [otherNames, setOtherNames] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [signUp, setSignUp] = useState(EMPTY_SIGNUP);
-  const [yearLevel, setYearLevel] = useState("");
-  const [notes, setNotes] = useState("");
-  const [step, setStep] = useState(0);
-  const checkout = useSignUpCheckout();
+  // Fields start from what this visitor typed last time, if anything.
+  const draft = useSavedDraft("campus-chapter", BLANK_DRAFT);
+  const start = draft.initial;
+  const [firstName, setFirstName] = useState(start.firstName);
+  const [lastName, setLastName] = useState(start.lastName);
+  const [otherNames, setOtherNames] = useState(start.otherNames);
+  const [email, setEmail] = useState(start.email);
+  const [phone, setPhone] = useState(start.phone);
+  const [signUp, setSignUp] = useState(() => ({ ...EMPTY_SIGNUP, ...start.signUp }));
+  const [yearLevel, setYearLevel] = useState(start.yearLevel);
+  const [notes, setNotes] = useState(start.notes);
+  const [step, setStep] = useState(Number(start.step) || 0);
+  useKeepDraft(draft.key, { firstName, lastName, otherNames, email, phone, signUp, yearLevel, notes, step }, BLANK_DRAFT);
+  const startAgain = () => {
+    setFirstName(""); setLastName(""); setOtherNames(""); setEmail(""); setPhone("");
+    setSignUp(EMPTY_SIGNUP); setYearLevel(""); setNotes(""); setStep(0);
+  };
+  const checkout = useSignUpCheckout({ draftKey: draft.key });
   const self = !signUp.who || signUp.who === "learner";
   // Sign-up opens only at schools where a chapter is established; until one
   // is, and for anyone whose school is not listed, the page asks for a chapter
@@ -205,7 +218,7 @@ export default function StudentChapterPayment() {
             onClick={goToForm}
             className="btn-primary mb-8 min-h-[52px] w-full justify-center text-base lg:hidden"
           >
-            {askForChapter ? "Request a chapter at your school" : "Continue to register"}
+            {askForChapter ? "Request a chapter at your school" : draft.restored ? "Continue where you left off" : "Continue to register"}
             <ArrowDown size={18} strokeWidth={2.2} aria-hidden="true" />
           </button>
           <div className="land-in-late grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
@@ -234,6 +247,7 @@ export default function StudentChapterPayment() {
                 </div>
               ) : (
                 <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white p-6 shadow-sm sm:p-8 md:p-10">
+                  <DraftNotice draft={draft} onStartAgain={startAgain} className="mb-6" />
                   <SignUpSteps
                     steps={steps}
                     step={step}
