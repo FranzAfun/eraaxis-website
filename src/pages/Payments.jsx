@@ -8,24 +8,37 @@ import {
 import Reveal from "../components/motion/Reveal";
 import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
+import { openProgrammeItems } from "../data/payments";
+import useProgrammeCatalogue from "../hooks/useProgrammeCatalogue";
 
 // Three ways in, side by side. Campus Chapter's yearly membership offer
 // carries the badge and the brand colour. Group or institutional support
 // is a line under the cards, not a fourth card.
-const paymentOptions = [
-  {
+// Programme Enrolment offers what is open for sign-up online, at EDOS's price
+// (Out-of-School Youth, Nov 2026); schools are priced through a partnership.
+function programmeOption(open) {
+  const lowest = Math.min(...open.map((item) => item.monthlyAmount));
+  const amount = open.length === 0
+    ? "Opening soon"
+    : `${open.length > 1 ? "From " : ""}GHS ${lowest.toLocaleString("en-US")}/month`;
+  return {
     title: "Programme Enrolment",
-    amount: "From GHS 200/month",
-    description: "Choose an ERA AXIS learning programme. Monthly or full upfront.",
+    amount,
+    description: open.length
+      ? `${open.map((item) => item.title).join(", ")}: per learner, monthly or ${open[0].fullPaymentMonths} months upfront.`
+      : "Programme sign-ups open here as each programme launches.",
     bullets: [
-      "4 programmes across school, youth, and professional tracks",
       "Monthly or full programme enrolment options",
       "Full pricing and checkout totals shown at the next step",
+      "Pay with Mobile Money or card",
     ],
     cta: "Choose programme",
     to: "/payments/programme-enrolment",
     Icon: GraduationCap,
-  },
+  };
+}
+
+const paymentOptions = [
   {
     title: "Campus Chapter",
     amount: "GHS 200 for 12 months",
@@ -124,6 +137,7 @@ function OptionCard({ option }) {
 }
 
 export default function Payments() {
+  const options = [programmeOption(openProgrammeItems(useProgrammeCatalogue())), ...paymentOptions];
   return (
     <>
       <SEO {...getPageSeo("/payments")} />
@@ -146,7 +160,7 @@ export default function Payments() {
       <section id="payment-options" className="bg-[var(--color-surface-soft)] py-16 md:py-24">
         <div className="container">
           <ul className="grid gap-6 pt-3 lg:grid-cols-3 lg:items-stretch">
-            {paymentOptions.map((option, i) => (
+            {options.map((option, i) => (
               <Reveal as="li" key={option.title} delay={i * 90} className="flex">
                 <OptionCard option={option} />
               </Reveal>

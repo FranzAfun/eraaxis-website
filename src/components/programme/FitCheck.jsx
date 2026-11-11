@@ -48,10 +48,12 @@ export default function FitCheck({ eyebrow, title, items, yes, enrol }) {
             {any && (
               <div className="fit-answer flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <p className="text-base font-semibold text-[var(--color-text-primary)]">{yes}</p>
-                <Link to={enrol.to} state={enrol.state} className="btn-primary min-h-[44px] w-fit shrink-0">
-                  {enrol.label}
-                  <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
-                </Link>
+                {enrol && (
+                  <Link to={enrol.to} state={enrol.state} className="btn-primary min-h-[44px] w-fit shrink-0">
+                    {enrol.label}
+                    <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
+                  </Link>
+                )}
               </div>
             )}
           </div>

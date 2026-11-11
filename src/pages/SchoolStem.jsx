@@ -19,17 +19,24 @@ import {
 
 import ScrollScenes from "../components/motion/ScrollScenes";
 import StageJourney from "../components/programme/StageJourney";
+import JoinLink from "../components/programme/JoinLink";
 import { BuildTiles, DevBoardStrip, ProgrammeClose, ProgrammeHero, ReasonLines } from "../components/programme/ProgrammeParts";
 import { closePrimaryClass, closeSecondaryClass, heroPrimaryClass, heroSecondaryClass } from "../components/programme/programmeClasses";
 import SEO from "../components/SEO";
 import { PROGRAMME_IMAGES } from "../data/programmeImages";
-import { getProgrammePrice } from "../data/payments";
 import { getPageSeo } from "../data/seo";
+import { useProgrammeOffer } from "../hooks/useProgrammeCatalogue";
 
-const enrolState = {
-  programmeSlug: "junior-stem",
-  returnTo: "/programs/school-stem",
-  returnLabel: "Back to School STEM",
+// Schools join through a partnership, priced per semester or term (EDOS sets
+// how School STEM is joined; a learner sign-up shows only if it is reopened).
+const enrol = {
+  to: "/payments/programme-enrolment",
+  state: { programmeSlug: "junior-stem", returnTo: "/programs/school-stem", returnLabel: "Back to School STEM" },
+  label: "Start Learner Enrolment",
+};
+const partnership = {
+  inquiryType: "School or Institutional Partnership",
+  message: "We would like to bring ERA AXIS School STEM to our school.",
 };
 
 const stages = [
@@ -56,6 +63,8 @@ const reasons = [
 ];
 
 export default function SchoolStem() {
+  const { mode, price } = useProgrammeOffer("school_stem");
+  const open = mode === "online";
   return (
     <ScrollScenes>
       <SEO {...getPageSeo("/programs/school-stem")} />
@@ -63,7 +72,7 @@ export default function SchoolStem() {
         eyebrow="School STEM"
         title={<>Hands-on STEM from Basic&nbsp;1 to SHS&nbsp;3.</>}
         line="Electronics, coding, sensors and automation, learned by building in class."
-        price={getProgrammePrice("school_stem")}
+        price={price}
         glance={["In-school sessions", "Project-based", "ERA Dev Board"]}
         image={PROGRAMME_IMAGES.school_stem.src}
         imageSrcSet={PROGRAMME_IMAGES.school_stem.srcSet}
@@ -71,14 +80,18 @@ export default function SchoolStem() {
         badge="Basic 1 – SHS 3"
         actions={
           <>
-            <Link to="/payments/programme-enrolment" state={enrolState} className={heroPrimaryClass}>
-              Start Learner Enrolment
-              <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
-            </Link>
-            <Link to="/contact#enquiry" state={{ inquiryType: "School or Institutional Partnership" }} className={heroSecondaryClass}>
-              Discuss School Partnership
-              <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
-            </Link>
+            <JoinLink mode={mode} enrol={enrol} enquiry={partnership} className={heroPrimaryClass} />
+            {open ? (
+              <Link to="/contact#enquiry" state={partnership} className={heroSecondaryClass}>
+                Discuss School Partnership
+                <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
+              </Link>
+            ) : (
+              <Link to="/programs#pricing" className={heroSecondaryClass}>
+                See pricing
+                <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
+              </Link>
+            )}
           </>
         }
       />
@@ -93,16 +106,16 @@ export default function SchoolStem() {
 
       <ProgrammeClose
         title="Bring practical STEM into your school."
+        line={open ? undefined : "Pricing is set with each school and billed per semester or term. Tell us about your school and we will take it from there."}
         actions={
           <>
-            <Link to="/payments/programme-enrolment" state={enrolState} className={closePrimaryClass}>
-              Start Learner Enrolment
-              <ArrowRight size={15} strokeWidth={2.2} aria-hidden="true" />
-            </Link>
-            <Link to="/contact#enquiry" state={{ inquiryType: "School or Institutional Partnership" }} className={closeSecondaryClass}>
-              Discuss School Partnership
-              <ArrowRight size={15} strokeWidth={2.2} aria-hidden="true" />
-            </Link>
+            <JoinLink mode={mode} enrol={enrol} enquiry={partnership} className={closePrimaryClass} iconSize={15} />
+            {open && (
+              <Link to="/contact#enquiry" state={partnership} className={closeSecondaryClass}>
+                Discuss School Partnership
+                <ArrowRight size={15} strokeWidth={2.2} aria-hidden="true" />
+              </Link>
+            )}
           </>
         }
       />

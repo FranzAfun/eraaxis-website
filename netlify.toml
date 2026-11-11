@@ -44,6 +44,13 @@
   status = 301
   force = true
 
+# Online Learning was retired (Nov 2026): its old page goes to the programmes.
+[[redirects]]
+  from = "/programs/online-learning"
+  to = "/programs"
+  status = 301
+  force = true
+
 # SPA fallback
 [[redirects]]
   from = "/*"

@@ -85,8 +85,12 @@ export const PAYMENT_CATEGORIES = [
     route: "/payments/programme-enrolment",
     referencePrefix: "ERA-PROG",
     items: [
+      // Only programmes open online are offered here (see enrolmentModeOf);
+      // the others stay listed so EDOS can reopen them without a release.
       {
         slug: "junior-stem",
+        backendSlug: "school-stem",
+        category: "school_stem",
         title: "Junior STEM",
         monthlyAmount: 200,
         fullPaymentMonths: 3,
@@ -95,6 +99,8 @@ export const PAYMENT_CATEGORIES = [
       },
       {
         slug: "out-of-school-youth",
+        backendSlug: "out-of-school-youth",
+        category: "out_of_school_youth",
         title: "Out-of-School Youth",
         monthlyAmount: 400,
         fullPaymentMonths: 3,
@@ -102,15 +108,9 @@ export const PAYMENT_CATEGORIES = [
         paymentModes: ["monthly", "full"],
       },
       {
-        slug: "online-learning",
-        title: "Online Learning",
-        monthlyAmount: 400,
-        fullPaymentMonths: 3,
-        audience: "Remote learners",
-        paymentModes: ["monthly", "full"],
-      },
-      {
         slug: "era-digital-skills",
+        backendSlug: "era-digital-skills",
+        category: "digital_skills",
         title: "ERA Digital Skills",
         monthlyAmount: 700,
         fullPaymentMonths: 3,
@@ -203,24 +203,58 @@ const cedis = (amount) => `GHS ${Number(amount).toLocaleString("en-US", { maximu
 const PROGRAMME_FEE_SLUG = {
   school_stem: "junior-stem",
   out_of_school_youth: "out-of-school-youth",
-  online_learning: "online-learning",
   digital_skills: "era-digital-skills",
 };
 
 /**
- * A programme's price as cards and programme pages show it, from the same list
- * the checkout uses: `amount` and `per` ("GHS 200", "a month"), and `note` for
- * paying the whole programme at once. Null for a category with no fee here.
+ * How people join each programme: "online" (sign up and pay here), "enquiry"
+ * (get in touch; schools are priced per semester or term) or "coming_soon".
+ * EDOS holds the real value (website_programmes.enrolment_mode, which the API
+ * sends); these are only for when the API cannot be reached.
  */
-export function getProgrammePrice(category) {
-  const item = getPaymentItemBySlug(PROGRAMME_FEE_SLUG[category]);
-  if (!item) return null;
-  const whole = calculateFullProgrammeBase(item.monthlyAmount, item.fullPaymentMonths);
-  return {
-    amount: cedis(item.monthlyAmount),
-    per: "a month",
-    note: `or ${cedis(whole)} for all ${item.fullPaymentMonths} months`,
-  };
+export const DEFAULT_ENROLMENT_MODE = {
+  school_stem: "enquiry",
+  out_of_school_youth: "online",
+  digital_skills: "coming_soon",
+};
+
+/** `programme` is a row from the API (/programmes or the bootstrap), if there is one. */
+export function enrolmentModeOf(category, programme) {
+  return programme?.enrolmentMode || programme?.enrolment_mode || DEFAULT_ENROLMENT_MODE[category] || "online";
+}
+
+/** The monthly fee: the API's price when there is one, otherwise the checkout list's. */
+export function monthlyFeeOf(category, programme) {
+  const price = Number(programme?.price);
+  if (price > 0) return price;
+  return getPaymentItemBySlug(PROGRAMME_FEE_SLUG[category])?.monthlyAmount ?? null;
+}
+
+/**
+ * The sign-up list's programmes that are open online, each at EDOS's price
+ * (`catalogue`: the API's programme list, or null before it arrives).
+ */
+export function openProgrammeItems(catalogue) {
+  return getPaymentCategoryBySlug("programme-enrolment")
+    .items.map((item) => {
+      const row = catalogue?.find((p) => p.slug === item.backendSlug) || null;
+      return { ...item, mode: enrolmentModeOf(item.category, row), monthlyAmount: monthlyFeeOf(item.category, row) ?? item.monthlyAmount };
+    })
+    .filter((item) => item.mode === "online");
+}
+
+/**
+ * A programme's price as cards and programme pages show it (see PriceTag):
+ * open online, `amount` and `per` ("GHS 400", "a month, per learner"); by
+ * enquiry, "Customised pricing" "per semester/term"; coming soon, a `badge`
+ * and no price at all.
+ */
+export function getProgrammePrice(category, programme) {
+  const mode = enrolmentModeOf(category, programme);
+  if (mode === "coming_soon") return { badge: "Coming soon" };
+  if (mode === "enquiry") return { amount: "Customised pricing", per: "per semester/term" };
+  const monthly = monthlyFeeOf(category, programme);
+  return monthly ? { amount: cedis(monthly), per: "a month, per learner" } : null;
 }
 
 /** Campus Chapter membership, as cards show it: one price for the year. */

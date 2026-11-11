@@ -22,12 +22,13 @@ import {
 import ScrollScenes from "../components/motion/ScrollScenes";
 import FitCheck from "../components/programme/FitCheck";
 import StackedStages from "../components/programme/StackedStages";
+import JoinLink from "../components/programme/JoinLink";
 import { BuildTiles, PartnerStrip, ProgrammeClose, ProgrammeHero, ReasonLines } from "../components/programme/ProgrammeParts";
 import { closePrimaryClass, closeSecondaryClass, heroPrimaryClass, heroSecondaryClass } from "../components/programme/programmeClasses";
 import SEO from "../components/SEO";
 import { PROGRAMME_IMAGES } from "../data/programmeImages";
-import { getProgrammePrice } from "../data/payments";
 import { getPageSeo } from "../data/seo";
+import { useProgrammeOffer } from "../hooks/useProgrammeCatalogue";
 
 const enrol = {
   to: "/payments/programme-enrolment",
@@ -36,8 +37,9 @@ const enrol = {
     returnTo: "/programs/out-of-school-youth",
     returnLabel: "Back to Out-of-School Youth",
   },
-  label: "Start Enrolment",
+  label: "Enrol Now",
 };
+const question = { inquiryType: "Enrolment / Admissions" };
 
 const fits = [
   { label: "I have finished or left school", Icon: GraduationCap },
@@ -71,6 +73,7 @@ const gains = [
 ];
 
 export default function OutOfSchoolYouth() {
+  const { mode, price } = useProgrammeOffer("out_of_school_youth");
   return (
     <ScrollScenes>
       <SEO {...getPageSeo("/programs/out-of-school-youth")} />
@@ -78,7 +81,7 @@ export default function OutOfSchoolYouth() {
         eyebrow="Out-of-School Youth"
         title="Practical tech skills for young people ready to build."
         line="Hands-on training, real tools and community projects. Start where you are."
-        price={getProgrammePrice("out_of_school_youth")}
+        price={price}
         glance={["Ages 16 – 30", "3 – 6 months", "No experience needed"]}
         image={PROGRAMME_IMAGES.out_of_school_youth.src}
         imageSrcSet={PROGRAMME_IMAGES.out_of_school_youth.srcSet}
@@ -86,11 +89,8 @@ export default function OutOfSchoolYouth() {
         badge="Ages 16 – 30"
         actions={
           <>
-            <Link to={enrol.to} state={enrol.state} className={heroPrimaryClass}>
-              Start Enrolment
-              <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
-            </Link>
-            <Link to="/contact#enquiry" state={{ inquiryType: "Enrolment / Admissions" }} className={heroSecondaryClass}>
+            <JoinLink mode={mode} enrol={enrol} enquiry={question} className={heroPrimaryClass} />
+            <Link to="/contact#enquiry" state={question} className={heroSecondaryClass}>
               Ask About the Programme
               <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
             </Link>
@@ -103,7 +103,7 @@ export default function OutOfSchoolYouth() {
         title="Built for young people ready to start."
         items={fits}
         yes="Sounds like you. No experience needed to start."
-        enrol={enrol}
+        enrol={mode === "online" ? enrol : undefined}
       />
 
       <StackedStages eyebrow="The journey" title="Five stages, start to final build." stages={stages} />
@@ -118,11 +118,8 @@ export default function OutOfSchoolYouth() {
         title="Ready to start building?"
         actions={
           <>
-            <Link to={enrol.to} state={enrol.state} className={closePrimaryClass}>
-              Start Enrolment
-              <ArrowRight size={15} strokeWidth={2.2} aria-hidden="true" />
-            </Link>
-            <Link to="/contact#enquiry" state={{ inquiryType: "Enrolment / Admissions" }} className={closeSecondaryClass}>
+            <JoinLink mode={mode} enrol={enrol} enquiry={question} className={closePrimaryClass} iconSize={15} />
+            <Link to="/contact#enquiry" state={question} className={closeSecondaryClass}>
               Ask a Question
               <ArrowRight size={15} strokeWidth={2.2} aria-hidden="true" />
             </Link>

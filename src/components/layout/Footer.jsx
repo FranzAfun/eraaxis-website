@@ -25,12 +25,12 @@ const NO_FOOTER_NEWSLETTER = [
   /^\/payments(\/|$)/,             // registration and payment forms
   /^\/contact\/?$/,                // the contact form
   /^\/insights(\/|$)/,             // has its own signup already
+  /^\/programs\/era-digital-skills\/?$/, // its "Stay connected" signup while Coming soon
 ];
 
 const programmes = [
   { label: "School STEM",         to: "/programs/school-stem" },
   { label: "Out-of-School Youth", to: "/programs/out-of-school-youth" },
-  { label: "Online Learning",     to: "/programs/online-learning" },
   { label: "ERA Digital Skills",  to: "/programs/era-digital-skills" },
 ];
 

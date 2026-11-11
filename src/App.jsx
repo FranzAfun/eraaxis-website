@@ -12,7 +12,6 @@ const Programs = lazy(() => import("./pages/Programs"));
 const About = lazy(() => import("./pages/About"));
 const SchoolStem = lazy(() => import("./pages/SchoolStem"));
 const OutOfSchoolYouth = lazy(() => import("./pages/OutOfSchoolYouth"));
-const OnlineLearning = lazy(() => import("./pages/OnlineLearning"));
 const EraDigitalSkills = lazy(() => import("./pages/EraDigitalSkills"));
 const DevBoard = lazy(() => import("./pages/DevBoard"));
 const Partners = lazy(() => import("./pages/Partners"));
@@ -132,7 +131,8 @@ function AppShell() {
             <Route path="/about" element={<About />} />
             <Route path="/programs/school-stem" element={<SchoolStem />} />
             <Route path="/programs/out-of-school-youth" element={<OutOfSchoolYouth />} />
-            <Route path="/programs/online-learning" element={<OnlineLearning />} />
+            {/* Online Learning was retired (Nov 2026); Netlify sends the old address on with a 301. */}
+            <Route path="/programs/online-learning" element={<Navigate to="/programs" replace />} />
             <Route path="/programs/era-digital-skills" element={<EraDigitalSkills />} />
             <Route path="/dev-board" element={<DevBoard />} />
             <Route path="/partners" element={<Partners />} />

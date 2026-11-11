@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, ArrowDown, Hammer, Cpu, FolderOpen, TrendingUp } from "lucide-react";
 
@@ -7,13 +6,13 @@ import Reveal from "../components/motion/Reveal";
 import ScrollScenes from "../components/motion/ScrollScenes";
 import { ProgrammeClose, ProgrammeHero, SectionHead } from "../components/programme/ProgrammeParts";
 import { closePrimaryClass, closeSecondaryClass, heroPrimaryClass, heroSecondaryClass } from "../components/programme/programmeClasses";
-import CampusChapterStrip from "../components/programme/CampusChapterStrip";
 import PriceTag from "../components/programme/PriceTag";
+import PricingSection from "../components/programme/PricingSection";
 import SEO from "../components/SEO";
 import { CARD_SIZES, PROGRAMME_IMAGES } from "../data/programmeImages";
 import { getProgrammePrice } from "../data/payments";
 import { getPageSeo } from "../data/seo";
-import { api } from "../services/api";
+import useProgrammeCatalogue from "../hooks/useProgrammeCatalogue";
 import { resolveMediaUrl } from "../utils/resolveMediaUrl";
 
 const CATEGORY_IMAGE = PROGRAMME_IMAGES;
@@ -21,7 +20,6 @@ const CATEGORY_IMAGE = PROGRAMME_IMAGES;
 const CATEGORY_AUDIENCE = {
   school_stem:         "Basic 1 – SHS 3",
   out_of_school_youth: "Ages 16 – 30",
-  online_learning:     "Remote & self-paced learners",
   digital_skills:      "Working adults & professionals",
 };
 
@@ -30,14 +28,12 @@ const CATEGORY_AUDIENCE = {
 const CATEGORY_LINE = {
   school_stem:         "Hands-on STEM in school, built around practical projects.",
   out_of_school_youth: "Practical tech skills and community projects for young people.",
-  online_learning:     "Programming, AI, electronics and PCB design, online.",
   digital_skills:      "AI tools, spreadsheets and automation for real work.",
 };
 
 const CATEGORY_CTA = {
   school_stem:         "Explore School STEM",
   out_of_school_youth: "Explore Youth Programme",
-  online_learning:     "Explore Online Learning",
   digital_skills:      "Explore Digital Skills",
 };
 
@@ -63,16 +59,6 @@ const STATIC_PROGRAMMES = [
     to: "/programs/out-of-school-youth",
   },
   {
-    image: PROGRAMME_IMAGES.online_learning.src,
-    srcSet: PROGRAMME_IMAGES.online_learning.srcSet,
-    category: "online_learning",
-    audience: "Remote & self-paced learners",
-    title: "Online Learning",
-    cta: "Explore Online Learning",
-    body: "Programming, AI, electronics and PCB design, online.",
-    to: "/programs/online-learning",
-  },
-  {
     image: PROGRAMME_IMAGES.digital_skills.src,
     srcSet: PROGRAMME_IMAGES.digital_skills.srcSet,
     category: "digital_skills",
@@ -92,8 +78,8 @@ const method = [
 ];
 
 // The whole card is one link, like the homepage's programme cards. The price
-// sits above the link line, from the same list the checkout uses.
-function ProgrammeCard({ image, srcSet, category, audience, title, body, to, cta }) {
+// (or "Coming soon") sits above the link line; `programme` is the EDOS row.
+function ProgrammeCard({ image, srcSet, category, programme, audience, title, body, to, cta }) {
   return (
     <Link to={to} className="card-interactive group flex h-full w-full flex-col overflow-hidden">
       <div className="h-48 shrink-0 overflow-hidden">
@@ -111,7 +97,7 @@ function ProgrammeCard({ image, srcSet, category, audience, title, body, to, cta
         <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary-light)]">{audience}</p>
         <h3 className="mb-2 text-lg font-bold leading-snug text-[var(--color-text-primary)]">{title}</h3>
         <p className="mb-5 line-clamp-3 text-[15px] leading-relaxed text-[var(--color-text-secondary)]">{body}</p>
-        <PriceTag price={getProgrammePrice(category)} className="mb-5 mt-auto" />
+        <PriceTag price={getProgrammePrice(category, programme)} className="mb-5 mt-auto" />
         <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--color-primary)] transition-gap duration-200 group-hover:gap-2.5">
           {cta}
           <ArrowRight size={15} strokeWidth={2} aria-hidden="true" />
@@ -122,19 +108,7 @@ function ProgrammeCard({ image, srcSet, category, audience, title, body, to, cta
 }
 
 export default function Programs() {
-  const [apiProgrammes, setApiProgrammes] = useState(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    api.get("/programmes")
-      .then((json) => {
-        if (!cancelled) setApiProgrammes(json?.data ?? []);
-      })
-      .catch(() => {
-        if (!cancelled) setApiProgrammes([]);
-      });
-    return () => { cancelled = true; };
-  }, []);
+  const apiProgrammes = useProgrammeCatalogue();
 
   const programmes = (() => {
     if (!apiProgrammes || apiProgrammes.length === 0) return STATIC_PROGRAMMES;
@@ -145,6 +119,7 @@ export default function Programs() {
       .filter((p) => Object.prototype.hasOwnProperty.call(CATEGORY_IMAGE, p.category))
       .map((p) => ({
         category: p.category,
+        programme: p,
         ...(p.coverImageUrl
           ? { image: resolveMediaUrl(p.coverImageUrl) }
           : { image: (CATEGORY_IMAGE[p.category] || CATEGORY_IMAGE.school_stem).src, srcSet: (CATEGORY_IMAGE[p.category] || CATEGORY_IMAGE.school_stem).srcSet }),
@@ -173,10 +148,10 @@ export default function Programs() {
               Explore pathways
               <ArrowDown size={16} strokeWidth={2} aria-hidden="true" />
             </a>
-            <Link to="/partners" className={heroSecondaryClass}>
-              Partner with ERA
-              <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
-            </Link>
+            <a href="#pricing" className={heroSecondaryClass}>
+              See pricing
+              <ArrowDown size={16} strokeWidth={2} aria-hidden="true" />
+            </a>
           </>
         }
       />
@@ -184,18 +159,17 @@ export default function Programs() {
       <section id="pathways" className="soft-field scroll-mt-20 py-20 md:py-24">
         <div className="container">
           <SectionHead eyebrow="Pathways" title="Choose your pathway." />
-          <ul className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+          <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {programmes.map((prog, i) => (
-              <Reveal as="li" key={prog.to} delay={(i % 4) * 80} className="flex">
+              <Reveal as="li" key={prog.to} delay={(i % 3) * 80} className="flex">
                 <ProgrammeCard {...prog} />
               </Reveal>
             ))}
           </ul>
-          <Reveal className="mt-5">
-            <CampusChapterStrip />
-          </Reveal>
         </div>
       </section>
+
+      <PricingSection programmes={apiProgrammes} />
 
       <section className="bg-white py-20 md:py-24">
         <div className="container">

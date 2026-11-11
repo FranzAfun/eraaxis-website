@@ -37,7 +37,7 @@ export const pageSeo = {
     pathname: "/programs",
     title: "Programmes | ERA AXIS Practical Learning Pathways",
     description:
-      "Explore ERA AXIS programmes in school STEM, out-of-school youth training, online learning, and digital skills built around hands-on outcomes.",
+      "Explore ERA AXIS programmes and pricing: School Partnerships for school STEM, Out-of-School Youth training, and ERA Digital Skills, coming soon.",
   },
   "/programs/school-stem": {
     pathname: "/programs/school-stem",
@@ -51,17 +51,11 @@ export const pageSeo = {
     description:
       "Practical innovation training for young people aged 16 to 30 to build employable skills, real projects, and community-focused solutions.",
   },
-  "/programs/online-learning": {
-    pathname: "/programs/online-learning",
-    title: "Online Learning Programme | ERA AXIS",
-    description:
-      "Flexible online training in programming, AI, electronics, PCB design, simulation tools, and automation for practical learners.",
-  },
   "/programs/era-digital-skills": {
     pathname: "/programs/era-digital-skills",
     title: "ERA Digital Skills | ERA AXIS",
     description:
-      "Practical AI, spreadsheet, automation, and digital productivity training for working adults, professionals, and business owners.",
+      "ERA Digital Skills is coming soon: practical AI, spreadsheet, automation, and digital productivity training for working adults, professionals, and business owners.",
   },
   "/dev-board": {
     pathname: "/dev-board",
@@ -109,7 +103,7 @@ export const pageSeo = {
     pathname: "/payments/programme-enrolment",
     title: "Programme Enrolment | ERA AXIS",
     description:
-      "Choose your ERA AXIS programme, select monthly or full payment, and complete the details needed for enrolment before checkout.",
+      "Enrol in an ERA AXIS programme, select monthly or full payment, and complete the details needed for enrolment before checkout.",
   },
   "/payments/campus-chapter": {
     pathname: "/payments/campus-chapter",

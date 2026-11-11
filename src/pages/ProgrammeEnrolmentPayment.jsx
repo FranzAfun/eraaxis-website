@@ -5,7 +5,9 @@ import {
   getPaymentCategoryBySlug,
   calculatePaymentBreakdown,
   calculateFullProgrammeBase,
+  openProgrammeItems,
 } from "../data/payments";
+import useProgrammeCatalogue from "../hooks/useProgrammeCatalogue";
 import { api, ApiError } from "../services/api";
 import SEO from "../components/SEO";
 import { getPageSeo } from "../data/seo";
@@ -37,23 +39,18 @@ const NEXT_STEPS = [
 const PHOTO = {
   "junior-stem": PROGRAMME_IMAGES.school_stem,
   "out-of-school-youth": PROGRAMME_IMAGES.out_of_school_youth,
-  "online-learning": PROGRAMME_IMAGES.online_learning,
   "era-digital-skills": PROGRAMME_IMAGES.digital_skills,
 };
 
 // Whole cedis without ".00": GHS 200, GHS 1,200.
 const cedis = (amount) => `GHS ${Number(amount).toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
 
-// Maps frontend static slugs to backend DB slugs (where they differ)
-const SLUG_TO_BACKEND = {
-  "junior-stem": "school-stem",
-};
-
 const optionalTag = <span className={optionalCls}>(optional)</span>;
 
 // The one programme someone came to enrol on: its photo, who it is for and what
 // it costs, with a quiet way to choose a different one.
 function ChosenProgramme({ programme, photo, price, onChange }) {
+  // `onChange` is left out when there is nothing else to choose.
   return (
     <div className="overflow-hidden rounded-[var(--radius-md)] border-2 border-[var(--color-primary)] bg-white shadow-lg shadow-[var(--color-primary)]/10">
       <div className="grid sm:grid-cols-[minmax(0,15rem)_1fr]">
@@ -74,13 +71,13 @@ function ChosenProgramme({ programme, photo, price, onChange }) {
           <p className="mt-2 text-xl font-bold leading-snug text-[var(--color-text-primary)]">{programme.title}</p>
           <p className="text-sm text-[var(--color-text-secondary)]">{programme.audience}</p>
           <p className="mt-2 text-base font-bold text-[var(--color-primary)]">{price}</p>
-          <button
+          {onChange && <button
             type="button"
             onClick={onChange}
             className="mt-3 w-fit min-h-[44px] text-sm font-medium text-[var(--color-text-secondary)] underline decoration-[var(--color-border)] underline-offset-4 transition-colors hover:text-[var(--color-primary)] hover:decoration-current"
           >
             Choose a different programme
-          </button>
+          </button>}
         </div>
       </div>
     </div>
@@ -113,8 +110,14 @@ export default function ProgrammeEnrolmentPayment() {
   const checkout = useSignUpCheckout();
   const self = !signUp.who || signUp.who === "learner";
 
-  const selectedProgramme = category.items.find((programme) => programme.slug === programmeSlug) || null;
-  const requiresInstitution = programmeSlug === "junior-stem";
+  // Only programmes open for sign-up online are offered, at EDOS's price
+  // (School STEM is by enquiry and Digital Skills is coming soon, Nov 2026);
+  // the server refuses the others too. With one open, it is simply chosen.
+  const openProgrammes = openProgrammeItems(useProgrammeCatalogue());
+  const onlyProgramme = openProgrammes.length === 1 ? openProgrammes[0] : null;
+  const selectedProgramme = openProgrammes.find((programme) => programme.slug === programmeSlug) || onlyProgramme;
+  const listProgrammes = (showAllProgrammes && !onlyProgramme) || !selectedProgramme;
+  const requiresInstitution = selectedProgramme?.slug === "junior-stem";
   const isFullPayment = paymentOption === "full";
   const fullMonths = selectedProgramme?.fullPaymentMonths ?? 3;
 
@@ -122,7 +125,7 @@ export default function ProgrammeEnrolmentPayment() {
     checkout.start({
       findProgramme: async () => {
         const programmesData = await api.get("/programmes");
-        const backendSlug = SLUG_TO_BACKEND[programmeSlug] || programmeSlug;
+        const backendSlug = selectedProgramme.backendSlug;
         const prog = programmesData.data?.find((p) => p.slug === backendSlug);
         if (!prog) throw new ApiError("This programme isn't available right now. Please try again shortly.");
         return prog;
@@ -146,22 +149,22 @@ export default function ProgrammeEnrolmentPayment() {
   const steps = [
     {
       title: "Programme",
-      heading: showAllProgrammes || !selectedProgramme ? "Choose your programme" : "Your programme",
-      intro: showAllProgrammes || !selectedProgramme ? "Pick the programme, then how you'd like to pay for it." : "Check it's the right one, then choose how you'd like to pay.",
+      heading: listProgrammes ? "Choose your programme" : "Your programme",
+      intro: listProgrammes ? "Pick the programme, then how you'd like to pay for it." : "Check it's the right one, then choose how you'd like to pay.",
       problem: () => (selectedProgramme ? "" : "Please choose a programme."),
       body: (
         <>
-          {!showAllProgrammes && selectedProgramme ? (
+          {!listProgrammes ? (
             <ChosenProgramme
               programme={selectedProgramme}
               photo={PHOTO[selectedProgramme.slug]}
-              price={`${cedis(selectedProgramme.monthlyAmount)} a month`}
-              onChange={() => setShowAllProgrammes(true)}
+              price={`${cedis(selectedProgramme.monthlyAmount)} a month, per learner`}
+              onChange={onlyProgramme ? undefined : () => setShowAllProgrammes(true)}
             />
           ) : <ChoiceCards
             name="programme"
             columns="sm:grid-cols-2"
-            options={category.items.map((programme) => ({
+            options={openProgrammes.map((programme) => ({
               value: programme.slug,
               title: programme.title,
               hint: programme.audience,
@@ -169,7 +172,7 @@ export default function ProgrammeEnrolmentPayment() {
               image: PHOTO[programme.slug]?.src,
               srcSet: PHOTO[programme.slug]?.srcSet,
             }))}
-            value={programmeSlug}
+            value={selectedProgramme?.slug || ""}
             onChange={setProgrammeSlug}
           />}
           {/* Two separate choices: a soft line between the programme and how to pay. */}

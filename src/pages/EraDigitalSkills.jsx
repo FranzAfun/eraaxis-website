@@ -15,18 +15,23 @@ import {
 import ScrollScenes from "../components/motion/ScrollScenes";
 import MonthStory from "../components/programme/MonthStory";
 import ToolBox from "../components/programme/ToolBox";
+import JoinLink from "../components/programme/JoinLink";
 import { ProgrammeClose, ProgrammeHero, ReasonLines } from "../components/programme/ProgrammeParts";
+import StayConnected from "../components/programme/StayConnected";
 import { closePrimaryClass, closeSecondaryClass, heroPrimaryClass, heroSecondaryClass } from "../components/programme/programmeClasses";
 import SEO from "../components/SEO";
 import { PROGRAMME_IMAGES } from "../data/programmeImages";
 import { getPageSeo } from "../data/seo";
-import { getProgrammePrice } from "../data/payments";
+import { useProgrammeOffer } from "../hooks/useProgrammeCatalogue";
 
-const enrolState = {
-  programmeSlug: "era-digital-skills",
-  returnTo: "/programs/era-digital-skills",
-  returnLabel: "Back to ERA Digital Skills",
+// Coming soon for now (Partnerships, Nov 2026): no price, no enrolment, and a
+// "Stay connected" signup. EDOS opens it when it launches, with no release.
+const enrol = {
+  to: "/payments/programme-enrolment",
+  state: { programmeSlug: "era-digital-skills", returnTo: "/programs/era-digital-skills", returnLabel: "Back to ERA Digital Skills" },
+  label: "Enrol Now",
 };
+const question = { inquiryType: "Enrolment / Admissions" };
 
 
 const months = [
@@ -64,6 +69,8 @@ const gains = [
 ];
 
 export default function EraDigitalSkills() {
+  const { mode, price } = useProgrammeOffer("digital_skills");
+  const open = mode === "online";
   return (
     <ScrollScenes>
       <SEO {...getPageSeo("/programs/era-digital-skills")} />
@@ -71,7 +78,7 @@ export default function EraDigitalSkills() {
         eyebrow="ERA Digital Skills"
         title="AI and digital skills for real work."
         line="Three months online: AI tools, spreadsheets and automation, built around your own job or business."
-        price={getProgrammePrice("digital_skills")}
+        price={price}
         glance={["3 months, online"]}
         image={PROGRAMME_IMAGES.digital_skills.src}
         imageSrcSet={PROGRAMME_IMAGES.digital_skills.srcSet}
@@ -79,11 +86,8 @@ export default function EraDigitalSkills() {
         badge="Working adults & professionals"
         actions={
           <>
-            <Link to="/payments/programme-enrolment" state={enrolState} className={heroPrimaryClass}>
-              Start Enrolment
-              <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
-            </Link>
-            <Link to="/contact#enquiry" state={{ inquiryType: "Enrolment / Admissions" }} className={heroSecondaryClass}>
+            <JoinLink mode={mode} enrol={enrol} enquiry={question} className={heroPrimaryClass} />
+            <Link to="/contact#enquiry" state={question} className={heroSecondaryClass}>
               Ask About the Programme
               <ArrowRight size={16} strokeWidth={2} aria-hidden="true" />
             </Link>
@@ -97,19 +101,30 @@ export default function EraDigitalSkills() {
 
       <ReasonLines eyebrow="What you gain" title="Skills you use the next morning." items={gains} />
 
+      {mode === "coming_soon" && (
+        <StayConnected
+          source="digital-skills"
+          line="Exciting digital skills learning opportunities are on the way. Stay connected for updates."
+        />
+      )}
+
       <ProgrammeClose
         title="Build a system for your own work."
         line="Your capstone is a workflow, dashboard or automation for your own job or business."
         actions={
           <>
-            <Link to="/payments/programme-enrolment" state={enrolState} className={closePrimaryClass}>
-              Start Enrolment
-              <ArrowRight size={15} strokeWidth={2.2} aria-hidden="true" />
-            </Link>
-            <Link to="/contact#enquiry" state={{ inquiryType: "Enrolment / Admissions", message: "We would like to enrol a team in ERA Digital Skills." }} className={closeSecondaryClass}>
-              Enrol a Team
-              <ArrowRight size={15} strokeWidth={2.2} aria-hidden="true" />
-            </Link>
+            <JoinLink mode={mode} enrol={enrol} enquiry={question} className={closePrimaryClass} iconSize={15} />
+            {open ? (
+              <Link to="/contact#enquiry" state={{ ...question, message: "We would like to enrol a team in ERA Digital Skills." }} className={closeSecondaryClass}>
+                Enrol a Team
+                <ArrowRight size={15} strokeWidth={2.2} aria-hidden="true" />
+              </Link>
+            ) : (
+              <Link to="/contact#enquiry" state={question} className={closeSecondaryClass}>
+                Ask a Question
+                <ArrowRight size={15} strokeWidth={2.2} aria-hidden="true" />
+              </Link>
+            )}
           </>
         }
       />

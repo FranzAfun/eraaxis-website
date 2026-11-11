@@ -16,6 +16,8 @@ import { useBootstrap } from "../hooks/useBootstrap";
 
 import BusyLabel from "../components/ui/BusyLabel";
 import ConsentCheck from "../components/ui/ConsentCheck";
+import SchoolPicker from "../components/forms/SchoolPicker";
+import { searchSignupSchools } from "../services/formsService";
 /* ── Static data ─────────────────────────────────────────────────────────── */
 
 const INQUIRY_TYPES = [
@@ -36,6 +38,31 @@ const TOPIC_LABEL = {
 };
 
 const EMPTY_FORM = { name: "", phone: "", email: "", type: "", message: "" };
+
+// On the school topic, a few optional questions about the school (Partnerships
+// price each school per semester or term). They travel as a short block at the
+// end of the message, so EDOS Website > Contacts shows them as they are.
+const SCHOOL_TOPIC = "School or Institutional Partnership";
+const SCHOOL_LEVELS = ["Basic", "JHS", "SHS"];
+const SCHOOL_STARTS = ["This term", "Next term", "Next academic year", "Not sure yet"];
+const EMPTY_SCHOOL = { school: null, learners: "", levels: [], start: "" };
+
+function schoolName(school) {
+  return (school.school?.name || school.school?.other || "").trim();
+}
+
+function schoolBlock(school) {
+  const lines = [
+    schoolName(school) && `School: ${schoolName(school)}`,
+    school.learners && `Approximate learners: ${school.learners}`,
+    school.levels.length > 0 && `Levels: ${SCHOOL_LEVELS.filter((level) => school.levels.includes(level)).join(", ")}`,
+    school.start && `Preferred start: ${school.start}`,
+  ].filter(Boolean);
+  return lines.length ? `\n\nAbout the school\n${lines.join("\n")}` : "";
+}
+
+const pillCls =
+  "inline-flex min-h-[44px] cursor-pointer items-center rounded-full border border-[var(--color-ui-border)] bg-white px-4 text-sm font-semibold text-[var(--color-text-primary)] transition-colors hover:border-[var(--color-primary)] has-[:checked]:border-[var(--color-primary)] has-[:checked]:bg-[var(--color-primary)] has-[:checked]:text-white has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[var(--color-primary)] has-[:focus-visible]:ring-offset-2";
 const EMAIL_RE   = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // Static fallbacks — used when bootstrap values are absent (matches Footer.jsx)
@@ -111,6 +138,7 @@ export default function Contact() {
     type:    INQUIRY_TYPES.includes(preset?.inquiryType) ? preset.inquiryType : "",
     message: typeof preset?.message === "string" ? preset.message.slice(0, 500) : "",
   }));
+  const [school, setSchool]           = useState(EMPTY_SCHOOL);
   const [errors, setErrors]           = useState({});
   const [agreed, setAgreed]           = useState(false);
   const [submitted, setSubmitted]     = useState(false);
@@ -150,6 +178,13 @@ export default function Contact() {
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   }
 
+  function toggleLevel(level) {
+    setSchool((prev) => ({
+      ...prev,
+      levels: prev.levels.includes(level) ? prev.levels.filter((item) => item !== level) : [...prev.levels, level],
+    }));
+  }
+
   function validate() {
     const next = {};
     if (!form.name.trim())    next.name    = "Full name is required";
@@ -168,16 +203,19 @@ export default function Contact() {
     setIsSubmitting(true);
     setSubmitError("");
 
+    const aboutSchool = form.type === SCHOOL_TOPIC;
     try {
       await api.post("/contacts", {
-        full_name: form.name.trim(),
-        email:     form.email.trim(),
-        phone:     form.phone.trim() || undefined,
-        subject:   form.type || undefined,
-        message:   form.message.trim(),
+        full_name:    form.name.trim(),
+        email:        form.email.trim(),
+        phone:        form.phone.trim() || undefined,
+        organization: aboutSchool ? schoolName(school).slice(0, 200) || undefined : undefined,
+        subject:      form.type || undefined,
+        message:      form.message.trim() + (aboutSchool ? schoolBlock(school) : ""),
       });
       setSubmitted(true);
       setForm(EMPTY_FORM);
+      setSchool(EMPTY_SCHOOL);
       setAgreed(false);
       setErrors({});
     } catch {
@@ -269,6 +307,84 @@ export default function Contact() {
                       ))}
                     </div>
                   </fieldset>
+
+                  {form.type === SCHOOL_TOPIC && (
+                    <div className="space-y-5 rounded-[var(--radius-md)] border border-[var(--color-border)] bg-[var(--color-surface-soft)] p-5">
+                      <div>
+                        <p className="text-base font-semibold text-[var(--color-text-primary)]">
+                          About your school <span className="text-sm font-normal text-[var(--color-text-muted)]">(optional)</span>
+                        </p>
+                        <p className="mt-1 text-sm leading-relaxed text-[var(--color-text-secondary)]">
+                          A few details help us prepare. School pricing is agreed per semester or term.
+                        </p>
+                      </div>
+                      <div>
+                        <label htmlFor="q-contact-school" className="mb-1.5 block text-sm font-semibold text-[var(--color-text-primary)]">
+                          School
+                        </label>
+                        <SchoolPicker
+                          question={{ key: "contact-school", school: { allowOther: true } }}
+                          searchSchools={searchSignupSchools}
+                          placeholder="Choose your school"
+                          value={school.school}
+                          onChange={(value) => setSchool((prev) => ({ ...prev, school: value }))}
+                          fieldClass={fieldCls(false)}
+                        />
+                      </div>
+                      <div className="grid gap-5 sm:grid-cols-[minmax(0,12rem)_1fr]">
+                        <div>
+                          <label htmlFor="contact-learners" className="mb-1.5 block text-sm font-semibold text-[var(--color-text-primary)]">
+                            Roughly how many learners?
+                          </label>
+                          <input
+                            id="contact-learners"
+                            type="number"
+                            inputMode="numeric"
+                            min="1"
+                            max="100000"
+                            value={school.learners}
+                            onChange={(e) => setSchool((prev) => ({ ...prev, learners: e.target.value.replace(/\D/g, "").slice(0, 6) }))}
+                            placeholder="e.g. 120"
+                            className={fieldCls(false)}
+                          />
+                        </div>
+                        <fieldset>
+                          <legend className="mb-1.5 block text-sm font-semibold text-[var(--color-text-primary)]">Levels</legend>
+                          <div className="flex flex-wrap gap-2">
+                            {SCHOOL_LEVELS.map((level) => (
+                              <label key={level} className={pillCls}>
+                                <input
+                                  type="checkbox"
+                                  checked={school.levels.includes(level)}
+                                  onChange={() => toggleLevel(level)}
+                                  className="sr-only"
+                                />
+                                {level}
+                              </label>
+                            ))}
+                          </div>
+                        </fieldset>
+                      </div>
+                      <fieldset>
+                        <legend className="mb-1.5 block text-sm font-semibold text-[var(--color-text-primary)]">When would you like to start?</legend>
+                        <div className="flex flex-wrap gap-2">
+                          {SCHOOL_STARTS.map((start) => (
+                            <label key={start} className={pillCls}>
+                              <input
+                                type="radio"
+                                name="school-start"
+                                value={start}
+                                checked={school.start === start}
+                                onChange={() => setSchool((prev) => ({ ...prev, start }))}
+                                className="sr-only"
+                              />
+                              {start}
+                            </label>
+                          ))}
+                        </div>
+                      </fieldset>
+                    </div>
+                  )}
 
                   {/* Full Name */}
                   <div>

@@ -12,7 +12,8 @@ import Reveal from "../motion/Reveal";
 const BLANK = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
 
 // `price` (from getProgrammePrice) shows large under the opening line, so the
-// cost is plain before anyone scrolls.
+// cost is plain before anyone scrolls; a programme not open yet shows its
+// badge ("Coming soon") there instead, just as large.
 export function ProgrammeHero({ eyebrow, title, line, price, glance, image, imageSrcSet, imageAlt, imageClass = "", badge, actions, back = true }) {
   return (
     <section className={`dark-surface hero-ground relative -mt-20 overflow-hidden pb-16 text-white md:pb-24 ${back ? "pt-32 md:pt-40" : "pt-36 md:pt-44"}`}>
@@ -33,7 +34,14 @@ export function ProgrammeHero({ eyebrow, title, line, price, glance, image, imag
             </p>
             <h1 className="mb-5 text-4xl font-black leading-[1.05] tracking-tight text-white sm:text-5xl md:text-[3.6rem]">{title}</h1>
             <p className="mb-7 max-w-xl text-base leading-relaxed text-[var(--color-text-on-dark-muted)] sm:text-lg">{line}</p>
-            {price && (
+            {price?.badge && (
+              <p className="mb-7">
+                <span className="inline-flex items-center rounded-full bg-[var(--color-accent)] px-5 py-2.5 text-lg font-black uppercase tracking-[0.18em] text-[var(--color-primary-deep)] sm:text-xl">
+                  {price.badge}
+                </span>
+              </p>
+            )}
+            {price && !price.badge && (
               <p className="mb-7">
                 <span className="flex flex-wrap items-baseline gap-x-2">
                   <span className="text-3xl font-black tracking-tight text-white sm:text-4xl">{price.amount}</span>

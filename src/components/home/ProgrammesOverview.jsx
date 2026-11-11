@@ -34,15 +34,6 @@ const STATIC_PROGRAMMES = [
     cta: "Explore Youth Programme",
   },
   {
-    image: PROGRAMME_IMAGES.online_learning.src,
-    srcSet: PROGRAMME_IMAGES.online_learning.srcSet,
-    category: "online_learning",
-    title: "Online Learning",
-    text: "Code, AI and electronics, from anywhere.",
-    to: "/programs/online-learning",
-    cta: "Explore Online Learning",
-  },
-  {
     image: PROGRAMME_IMAGES.digital_skills.src,
     srcSet: PROGRAMME_IMAGES.digital_skills.srcSet,
     category: "digital_skills",
@@ -57,18 +48,16 @@ const STATIC_PROGRAMMES = [
 const CATEGORY_LINE = {
   school_stem: "Hands-on STEM from Basic 1 to SHS 3.",
   out_of_school_youth: "Employable skills for ages 16 to 30.",
-  online_learning: "Code, AI and electronics, from anywhere.",
   digital_skills: "AI tools and automation for your work.",
 };
 
 const CATEGORY_CTA = {
   school_stem: "Explore School STEM",
   out_of_school_youth: "Explore Youth Programme",
-  online_learning: "Explore Online Learning",
   digital_skills: "Explore Digital Skills",
 };
 
-function ProgrammeCard({ image, srcSet, category, title, text, to, cta }) {
+function ProgrammeCard({ image, srcSet, category, programme, title, text, to, cta }) {
   return (
     <Link
       to={to}
@@ -100,7 +89,7 @@ function ProgrammeCard({ image, srcSet, category, title, text, to, cta }) {
         <p className="mb-5 flex-1 text-[15px] leading-relaxed text-[var(--color-text-secondary)]">
           {text}
         </p>
-        <PriceTag price={getProgrammePrice(category)} className="mb-5" />
+        <PriceTag price={getProgrammePrice(category, programme)} className="mb-5" />
         <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--color-primary)] transition-gap duration-200 group-hover:gap-2.5">
           {cta}
           <ArrowRight size={15} strokeWidth={2} />
@@ -113,10 +102,14 @@ function ProgrammeCard({ image, srcSet, category, title, text, to, cta }) {
 export default function ProgrammesOverview() {
   const { featuredProgrammes } = useBootstrap();
 
+  // Only the teaching programmes this page has a photo for (the bootstrap
+  // already leaves out billing-only ones and anything retired).
+  const featured = featuredProgrammes.filter((p) => Object.prototype.hasOwnProperty.call(CATEGORY_IMAGE, p.category));
   const programmes =
-    featuredProgrammes.length > 0
-      ? featuredProgrammes.map((p) => ({
+    featured.length > 0
+      ? featured.map((p) => ({
           category: p.category,
+          programme: p,
           ...(p.thumbnail_url
             ? { image: resolveMediaUrl(p.thumbnail_url) }
             : { image: (CATEGORY_IMAGE[p.category] || CATEGORY_IMAGE.school_stem).src, srcSet: (CATEGORY_IMAGE[p.category] || CATEGORY_IMAGE.school_stem).srcSet }),
@@ -133,17 +126,23 @@ export default function ProgrammesOverview() {
     <section data-stack-hold="always" className="bg-[var(--color-surface-soft)] py-20 md:py-24 lg:py-28">
       <div className="container">
         {/* Section header */}
-        <Reveal className="mb-12 max-w-2xl">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
-            Programmes
-          </p>
-          <h2 className="text-3xl font-black leading-tight tracking-tight text-[var(--color-text-primary)] sm:text-4xl">
-            Learning pathways for every stage of growth.
-          </h2>
+        <Reveal className="mb-12 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+          <div className="max-w-2xl">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">
+              Programmes
+            </p>
+            <h2 className="text-3xl font-black leading-tight tracking-tight text-[var(--color-text-primary)] sm:text-4xl">
+              Learning pathways for every stage of growth.
+            </h2>
+          </div>
+          <Link to="/programs#pricing" className="btn-outline min-h-[44px] w-fit shrink-0 text-sm">
+            See pricing
+            <ArrowRight size={15} strokeWidth={2} aria-hidden="true" />
+          </Link>
         </Reveal>
 
         {/* Cards grid */}
-        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {programmes.map((prog, i) => (
             <Reveal key={prog.to} delay={i * 80} className="flex">
               <ProgrammeCard {...prog} />

@@ -6,11 +6,10 @@ ERA AXIS was started in 2020, registered as a business in 2024, and incorporated
 
 ## Programmes
 
-- [All programmes](https://eraaxis.com/programs): the four learning pathways side by side
-- [School STEM](https://eraaxis.com/programs/school-stem): hands-on STEM in school, from Basic 1 to SHS 3
-- [Out-of-School Youth](https://eraaxis.com/programs/out-of-school-youth): practical tech skills and community projects for ages 16 to 30
-- [Online Learning](https://eraaxis.com/programs/online-learning): programming, AI, electronics, PCB design, simulation and automation, online
-- [ERA Digital Skills](https://eraaxis.com/programs/era-digital-skills): three months of AI tools, spreadsheets and automation for working adults
+- [All programmes and pricing](https://eraaxis.com/programs): the learning pathways side by side, with pricing
+- [School STEM](https://eraaxis.com/programs/school-stem): hands-on STEM in school, from Basic 1 to SHS 3, through School Partnerships priced per semester or term (get in touch)
+- [Out-of-School Youth](https://eraaxis.com/programs/out-of-school-youth): practical tech skills and community projects for ages 16 to 30, paid monthly per learner
+- [ERA Digital Skills](https://eraaxis.com/programs/era-digital-skills): coming soon; three months of AI tools, spreadsheets and automation for working adults
 
 ## The ERA Dev Board
 

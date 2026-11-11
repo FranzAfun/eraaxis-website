@@ -13,7 +13,7 @@ export const faqGroups = [
         id: "faq-programmes",
         question: "What programmes does ERA AXIS offer?",
         answer:
-          "ERA AXIS offers School STEM programmes, Out-of-School Youth training, Online Learning, ERA Digital Skills, ERA AXIS Campus Chapters, and practical learning around the ERA Dev Board.",
+          "ERA AXIS offers School STEM through School Partnerships, Out-of-School Youth training, ERA AXIS Campus Chapters, and practical learning around the ERA Dev Board. ERA Digital Skills is coming soon.",
       },
       {
         id: "faq-campus-chapters",
@@ -50,6 +50,12 @@ export const faqGroups = [
         question: "How do I enrol in a programme?",
         answer:
           "Visit the Enrolment & Dues page, choose Programme Enrolment, select your programme, and complete the enrolment details. The ERA AXIS team will follow up with the next steps after confirmation.",
+      },
+      {
+        id: "faq-school-pricing",
+        question: "How is pricing set for schools?",
+        answer:
+          "Schools join through a School Partnership. There is no fixed fee on the website: pricing is agreed with each school and billed per semester or term. Get in touch through the Contact page and the team will take it from there.",
       },
       {
         id: "faq-full-programme-payment",
@@ -139,7 +145,7 @@ export const faqGroups = [
         id: "faq-location",
         question: "Where is ERA AXIS located?",
         answer:
-          "ERA AXIS is based in Essikado, Ghana, and supports learners, institutions, and partners through in-person and online learning pathways.",
+          "ERA AXIS is based in Essikado, Ghana, and supports learners, institutions, and partners through practical, hands-on learning pathways.",
       },
     ],
   },

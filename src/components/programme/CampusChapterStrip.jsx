@@ -5,7 +5,7 @@ import PriceTag from "./PriceTag";
 
 /**
  * Campus Chapters beside the programme cards: a full-width strip under the
- * grid rather than a fifth card, so the four programmes keep their rows.
+ * grid rather than another card, so the programme cards keep their rows.
  */
 export default function CampusChapterStrip({ className = "" }) {
   return (
