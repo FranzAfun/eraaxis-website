@@ -28,6 +28,7 @@ const PLANS = [
       label: "Enrol Now",
     },
     page: "/programs/school-stem",
+    highlight: true,
   },
   {
     category: "out_of_school_youth",
@@ -42,7 +43,6 @@ const PLANS = [
       label: "Enrol Now",
     },
     page: "/programs/out-of-school-youth",
-    highlight: true,
   },
 ];
 
@@ -56,8 +56,8 @@ function PlanCard({ plan, programme }) {
   const { Icon, highlight } = plan;
   const mode = enrolmentModeOf(plan.category, programme);
   const price = getProgrammePrice(plan.category, programme);
-  // The individual plan is filled with the primary colour, so the two read
-  // apart at a glance; its words are white on it.
+  // School Partnerships is the focus card, filled with the primary colour so
+  // the two read apart at a glance; its words are white on it.
   const tone = highlight
     ? {
         card: "border-2 border-[var(--color-primary)] bg-[var(--color-primary)] shadow-xl shadow-[var(--color-primary)]/25",
