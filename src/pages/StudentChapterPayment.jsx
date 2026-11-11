@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { Check, Sparkles } from "lucide-react";
-import chapterPhoto from "../assets/images/programmes/campus-chapter.webp";
-import chapterPhoto768 from "../assets/images/programmes/campus-chapter-768.webp";
 import ChapterRequestForm from "../components/forms/ChapterRequestForm";
 import { findChapterSchools } from "../services/formsService";
 import { getPaymentCategoryBySlug, calculatePaymentBreakdown } from "../data/payments";
@@ -34,20 +32,6 @@ const BENEFITS = [
 ];
 
 const optionalTag = <span className={optionalCls}>(optional)</span>;
-
-// The chapter page's face: members at work on a build.
-const PHOTO = (
-  <div className="relative overflow-hidden rounded-[var(--radius-md)] shadow-[0_24px_60px_-30px_var(--color-primary)]">
-    <img
-      src={chapterPhoto}
-      srcSet={`${chapterPhoto768} 768w, ${chapterPhoto} 1448w`}
-      sizes="(min-width: 1024px) 416px, calc(100vw - 2rem)"
-      alt="ERA AXIS Campus Chapter members building an electronics project around a laptop"
-      className="h-52 w-full object-cover sm:h-64 lg:aspect-[4/3] lg:h-auto"
-      fetchPriority="high"
-    />
-  </div>
-);
 
 export default function StudentChapterPayment() {
   const { feeConfig } = useSpesoFees();
@@ -199,7 +183,6 @@ export default function StudentChapterPayment() {
             eyebrow="Campus Chapter"
             title="Join ERA AXIS Campus Chapters."
             line="An ERA AXIS learning and innovation network on campuses. Learn by building, with 12 months of membership for GHS 200."
-            media={PHOTO}
           >
             <p className="mt-4 flex max-w-2xl flex-wrap items-center gap-x-2.5 gap-y-1.5 text-[15px] text-[var(--color-text-secondary)]">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--color-primary)] px-3 py-1 text-xs font-bold uppercase tracking-widest text-white">

@@ -6,9 +6,8 @@ import BackLinkButton from "../navigation/BackLinkButton";
  * No hero: like the forms made in the LMS, these pages open straight onto
  * the form.
  */
-// `children` sit under the line; `media` (a photo) stands beside the words
-// from large screens up, and under them on a phone.
-export default function FormPageHeader({ eyebrow, title, line, children, media }) {
+// `children` sit under the line (the Campus Chapter page's Purple Innovators note).
+export default function FormPageHeader({ eyebrow, title, line, children }) {
   const words = (
     <>
       <BackLinkButton
@@ -25,14 +24,7 @@ export default function FormPageHeader({ eyebrow, title, line, children, media }
     </>
   );
   return (
-    <div className="land-in mb-6 md:mb-8">
-      {media ? (
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:items-center lg:gap-10">
-          <div className="min-w-0">{words}</div>
-          {media}
-        </div>
-      ) : words}
-    </div>
+    <div className="land-in mb-6 md:mb-8">{words}</div>
   );
 }
 

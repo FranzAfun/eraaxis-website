@@ -4,6 +4,8 @@ import outOfSchool from "../assets/images/programmes/out-of-school-youth.webp";
 import outOfSchool768 from "../assets/images/programmes/out-of-school-youth-768.webp";
 import eraDigital from "../assets/images/programmes/era-digital-skill.webp";
 import eraDigital768 from "../assets/images/programmes/era-digital-skill-768.webp";
+import campusChapter from "../assets/images/programmes/campus-chapter.webp";
+import campusChapter768 from "../assets/images/programmes/campus-chapter-768.webp";
 
 /**
  * Each programme's photo, by programme category, at full size and at 768 px
@@ -17,6 +19,9 @@ export const PROGRAMME_IMAGES = {
   out_of_school_youth: set(outOfSchool, 1600, outOfSchool768),
   digital_skills:      set(eraDigital, 1600, eraDigital768),
 };
+
+/** Campus Chapters' photo, for its card beside the programmes; not a programme category. */
+export const CHAPTER_IMAGE = set(campusChapter, 1448, campusChapter768);
 
 /** For a programme card in a grid of up to three across. */
 export const CARD_SIZES = "(min-width: 1280px) 400px, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, calc(100vw - 2rem)";
