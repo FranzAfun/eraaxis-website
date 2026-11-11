@@ -31,12 +31,13 @@ export default function ChapterRequestForm({ initial = {}, onBack = null, standa
   const [error, setError] = useState("");
   const [sent, setSent] = useState(null);
   const heading = useRef(null);
+  const top = useRef(null);
 
   // Arriving from the sign-up, the keyboard and screen reader move here with them.
   useEffect(() => {
     if (standalone) return;
     heading.current?.focus({ preventScroll: true });
-    heading.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    top.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, [standalone]);
 
   useEffect(() => {
@@ -101,7 +102,19 @@ export default function ChapterRequestForm({ initial = {}, onBack = null, standa
   }
 
   return (
-    <form noValidate onSubmit={submit} className="space-y-5">
+    <form ref={top} noValidate onSubmit={submit} className="scroll-mt-28 space-y-5">
+      {/* Pressed "My school is not listed" by mistake? One tap back, with
+          everything typed in the sign-up still there. */}
+      {onBack && (
+        <button
+          type="button"
+          onClick={onBack}
+          className="-mt-1 inline-flex min-h-[44px] items-center gap-1.5 text-sm font-semibold text-[var(--color-primary)] hover:underline"
+        >
+          <ArrowLeft size={15} strokeWidth={2.2} aria-hidden="true" />
+          Back to the sign-up: my school is listed
+        </button>
+      )}
       <div>
         <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-primary)]">Request a chapter</p>
         <h2 ref={heading} tabIndex={-1} className={`scroll-mt-28 ${titleCls}`}>Bring a chapter to your school.</h2>
