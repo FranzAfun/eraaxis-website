@@ -101,7 +101,9 @@ export function ShareRow({ url, title, surface = "light", label = "Share", class
  * The small button on an article card. Placed beside the card's link, never
  * inside it, so pressing it never opens the article.
  */
-export function ShareButton({ url, title, className = "" }) {
+// `label` shows the word beside the icon (a page's own Share, on its hero);
+// without it, the round icon button that sits on a card's photo.
+export function ShareButton({ url, title, className = "", label = "" }) {
   const [open, setOpen] = useState(false);
   const [copied, copy] = useCopied();
   const wrapRef = useRef(null);
@@ -132,9 +134,12 @@ export function ShareButton({ url, title, className = "" }) {
         aria-expanded={hasShareSheet() ? undefined : open}
         aria-controls={hasShareSheet() ? undefined : menuId}
         aria-label={`Share "${title}"`}
-        className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-[var(--color-primary)] shadow-[0_6px_20px_-8px_rgb(0_0_0_/_0.45)] transition-transform duration-200 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]"
+        className={`inline-flex items-center justify-center gap-2 rounded-full bg-white/95 text-[var(--color-primary)] shadow-[0_6px_20px_-8px_rgb(0_0_0_/_0.45)] transition-transform duration-200 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] ${
+          label ? "min-h-[40px] px-4 text-sm font-semibold" : "h-10 w-10"
+        }`}
       >
-        <Share2 size={17} aria-hidden="true" />
+        <Share2 size={label ? 15 : 17} aria-hidden="true" />
+        {label && <span aria-hidden="true">{label}</span>}
       </button>
       {open && (
         <div

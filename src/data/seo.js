@@ -5,6 +5,12 @@ export const DEFAULT_DESCRIPTION =
   "ERA AXIS is Ghana's practical STEM innovation platform helping students, out-of-school youth, parents, professionals, and business owners gain real technology skills through hands-on learning.";
 // Share images stay JPEG: LinkedIn and some other apps show no preview for WebP.
 export const DEFAULT_IMAGE = "/og-card-2026.jpg";
+export const DEFAULT_IMAGE_ALT =
+  "The ERA AXIS E mark beside the words ERA AXIS, Practical STEM and Digital Skills, eraaxis.com, on a purple circuit-board background";
+
+// A page's own link preview: a 1200 x 630 JPEG in public/share (made from the
+// page's photo), so a shared programme shows that programme.
+const share = (file, alt) => ({ image: `/share/${file}`, imageAlt: alt });
 
 export function getSiteUrl() {
   const configuredUrl = String(import.meta.env.VITE_SITE_URL || "").trim();
@@ -35,24 +41,28 @@ export const pageSeo = {
   },
   "/programs": {
     pathname: "/programs",
+    ...share("programmes.jpg", "ERA AXIS learners at work in a practical programme session"),
     title: "Programmes | ERA AXIS Practical Learning Pathways",
     description:
       "Explore ERA AXIS programmes and pricing: School Partnerships for school STEM, Out-of-School Youth training, and ERA Digital Skills, coming soon.",
   },
   "/programs/school-stem": {
     pathname: "/programs/school-stem",
+    ...share("school-stem.jpg", "School learners holding up the circuits they built in an ERA AXIS STEM class"),
     title: "School STEM Programmes | ERA AXIS",
     description:
       "Hands-on STEM learning for Basic 1 to SHS 3 with electronics, coding, sensors, automation, and project-based classroom experiences.",
   },
   "/programs/out-of-school-youth": {
     pathname: "/programs/out-of-school-youth",
+    ...share("out-of-school-youth.jpg", "A young person building an electronics project in the ERA AXIS Out-of-School Youth programme"),
     title: "Out-of-School Youth Programme | ERA AXIS",
     description:
       "Practical innovation training for young people aged 16 to 30 to build employable skills, real projects, and community-focused solutions.",
   },
   "/programs/era-digital-skills": {
     pathname: "/programs/era-digital-skills",
+    ...share("era-digital-skills.jpg", "Professionals working with digital tools in ERA Digital Skills"),
     title: "ERA Digital Skills | ERA AXIS",
     description:
       "ERA Digital Skills is coming soon: practical AI, spreadsheet, automation, and digital productivity training for working adults, professionals, and business owners.",
@@ -107,6 +117,7 @@ export const pageSeo = {
   },
   "/payments/campus-chapter": {
     pathname: "/payments/campus-chapter",
+    ...share("campus-chapter.jpg", "ERA AXIS Campus Chapter members, the Purple Innovators, building an electronics project together"),
     title: "ERA AXIS Campus Chapters | GHS 200 for 12 months",
     description:
       "Learn by building with ERA AXIS Campus Chapters. GHS 200 covers 12 months of practical sessions, projects and support. Completion credentials are earned.",

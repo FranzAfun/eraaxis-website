@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
-import { Check, Sparkles } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ArrowDown, Check, Sparkles } from "lucide-react";
 import ChapterRequestForm from "../components/forms/ChapterRequestForm";
 import { findChapterSchools } from "../services/formsService";
 import { getPaymentCategoryBySlug, calculatePaymentBreakdown } from "../data/payments";
 import { api, ApiError } from "../services/api";
 import FormPageHeader, { FormAside } from "../components/forms/FormPageHeader";
 import SEO from "../components/SEO";
-import { getPageSeo } from "../data/seo";
+import { buildCanonicalUrl, getPageSeo } from "../data/seo";
 import { EMAIL_RE } from "../utils/validateEmail";
 import useSpesoFees from "../hooks/useSpesoFees";
 
@@ -60,6 +60,12 @@ export default function StudentChapterPayment() {
     return () => { live = false; };
   }, []);
   const askForChapter = established === 0 || requesting;
+  // On a phone the benefits come first; this takes people straight to the form.
+  const formRef = useRef(null);
+  const goToForm = () => {
+    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    formRef.current?.focus({ preventScroll: true });
+  };
 
   function finish() {
     checkout.start({
@@ -183,6 +189,7 @@ export default function StudentChapterPayment() {
             eyebrow="Campus Chapter"
             title="Join ERA AXIS Campus Chapters."
             line="An ERA AXIS learning and innovation network on campuses. Learn by building, with 12 months of membership for GHS 200."
+            share={{ url: buildCanonicalUrl("/payments/campus-chapter"), title: "Join ERA AXIS Campus Chapters" }}
           >
             <p className="mt-4 flex max-w-2xl flex-wrap items-center gap-x-2.5 gap-y-1.5 text-[15px] text-[var(--color-text-secondary)]">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--color-primary)] px-3 py-1 text-xs font-bold uppercase tracking-widest text-white">
@@ -192,9 +199,17 @@ export default function StudentChapterPayment() {
               Every Campus Chapter member is a Purple Innovator.
             </p>
           </FormPageHeader>
-          <FormAside title="What membership includes" items={BENEFITS} Icon={Check} className="mb-6 lg:hidden" />
+          <FormAside title="What membership includes" items={BENEFITS} Icon={Check} className="mb-4 lg:hidden" />
+          <button
+            type="button"
+            onClick={goToForm}
+            className="btn-primary mb-8 min-h-[52px] w-full justify-center text-base lg:hidden"
+          >
+            {askForChapter ? "Request a chapter at your school" : "Continue to register"}
+            <ArrowDown size={18} strokeWidth={2.2} aria-hidden="true" />
+          </button>
           <div className="land-in-late grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
-            <div className="min-w-0">
+            <div ref={formRef} tabIndex={-1} className="min-w-0 scroll-mt-24 outline-none focus-visible:outline-none">
               {checkout.confirming ? (
                 <div className="space-y-3">
                   <ConfirmEmailStep

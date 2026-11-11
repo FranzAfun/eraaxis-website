@@ -71,6 +71,16 @@ function renderPage(template, seo) {
   html = replaceOrInsert(html, /<meta\s+name="twitter:title"[^>]*\/?>/i, `<meta name="twitter:title" content="${title}" />`);
   html = replaceOrInsert(html, /<meta\s+name="twitter:description"[^>]*\/?>/i, `<meta name="twitter:description" content="${description}" />`);
   html = replaceOrInsert(html, /<link\s+rel="canonical"[^>]*\/?>/i, `<link rel="canonical" href="${canonicalUrl}" />`);
+  // A page with its own link preview (a programme's photo) uses it in place of
+  // the site card; the size and type tags already match (1200 x 630 JPEG).
+  if (seo.image) {
+    const imageUrl = `${getSiteUrl()}${seo.image}`;
+    html = replaceOrInsert(html, /<meta\s+property="og:image"\s[^>]*\/?>/i, `<meta property="og:image" content="${imageUrl}" />`);
+    html = replaceOrInsert(html, /<meta\s+name="twitter:image"[^>]*\/?>/i, `<meta name="twitter:image" content="${imageUrl}" />`);
+    if (seo.imageAlt) {
+      html = replaceOrInsert(html, /<meta\s+property="og:image:alt"[^>]*\/?>/i, `<meta property="og:image:alt" content="${escapeHtml(seo.imageAlt)}" />`);
+    }
+  }
 
   return html;
 }

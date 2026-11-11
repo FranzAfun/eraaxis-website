@@ -11,7 +11,7 @@ import PricingSection from "../components/programme/PricingSection";
 import SEO from "../components/SEO";
 import { CARD_SIZES, PROGRAMME_IMAGES } from "../data/programmeImages";
 import { getProgrammePrice } from "../data/payments";
-import { getPageSeo } from "../data/seo";
+import { buildCanonicalUrl, getPageSeo } from "../data/seo";
 import useProgrammeCatalogue from "../hooks/useProgrammeCatalogue";
 import { resolveMediaUrl } from "../utils/resolveMediaUrl";
 
@@ -135,6 +135,7 @@ export default function Programs() {
     <ScrollScenes>
       <SEO {...getPageSeo("/programs")} />
       <ProgrammeHero
+        share={{ url: buildCanonicalUrl("/programs"), title: "ERA AXIS programmes" }}
         back={false}
         eyebrow="Programmes"
         title="Learning pathways for every stage of growth."

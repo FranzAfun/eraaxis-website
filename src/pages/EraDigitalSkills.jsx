@@ -21,7 +21,7 @@ import StayConnected from "../components/programme/StayConnected";
 import { closePrimaryClass, closeSecondaryClass, heroPrimaryClass, heroSecondaryClass } from "../components/programme/programmeClasses";
 import SEO from "../components/SEO";
 import { PROGRAMME_IMAGES } from "../data/programmeImages";
-import { getPageSeo } from "../data/seo";
+import { buildCanonicalUrl, getPageSeo } from "../data/seo";
 import { useProgrammeOffer } from "../hooks/useProgrammeCatalogue";
 
 // Coming soon for now (Partnerships, Nov 2026): no price, no enrolment, and a
@@ -75,6 +75,7 @@ export default function EraDigitalSkills() {
     <ScrollScenes>
       <SEO {...getPageSeo("/programs/era-digital-skills")} />
       <ProgrammeHero
+        share={{ url: buildCanonicalUrl("/programs/era-digital-skills"), title: "ERA Digital Skills" }}
         eyebrow="ERA Digital Skills"
         title="AI and digital skills for real work."
         line="Three months online: AI tools, spreadsheets and automation, built around your own job or business."

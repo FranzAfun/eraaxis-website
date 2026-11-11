@@ -24,7 +24,7 @@ import { BuildTiles, DevBoardStrip, ProgrammeClose, ProgrammeHero, ReasonLines }
 import { closePrimaryClass, closeSecondaryClass, heroPrimaryClass, heroSecondaryClass } from "../components/programme/programmeClasses";
 import SEO from "../components/SEO";
 import { PROGRAMME_IMAGES } from "../data/programmeImages";
-import { getPageSeo } from "../data/seo";
+import { buildCanonicalUrl, getPageSeo } from "../data/seo";
 import { useProgrammeOffer } from "../hooks/useProgrammeCatalogue";
 
 // Schools join through a partnership, priced per semester or term (EDOS sets
@@ -69,6 +69,7 @@ export default function SchoolStem() {
     <ScrollScenes>
       <SEO {...getPageSeo("/programs/school-stem")} />
       <ProgrammeHero
+        share={{ url: buildCanonicalUrl("/programs/school-stem"), title: "ERA AXIS School STEM" }}
         eyebrow="School STEM"
         title={<>Hands-on STEM from Basic&nbsp;1 to SHS&nbsp;3.</>}
         line="Electronics, coding, sensors and automation, learned by building in class."

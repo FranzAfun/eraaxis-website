@@ -27,7 +27,7 @@ import { BuildTiles, PartnerStrip, ProgrammeClose, ProgrammeHero, ReasonLines } 
 import { closePrimaryClass, closeSecondaryClass, heroPrimaryClass, heroSecondaryClass } from "../components/programme/programmeClasses";
 import SEO from "../components/SEO";
 import { PROGRAMME_IMAGES } from "../data/programmeImages";
-import { getPageSeo } from "../data/seo";
+import { buildCanonicalUrl, getPageSeo } from "../data/seo";
 import { useProgrammeOffer } from "../hooks/useProgrammeCatalogue";
 
 const enrol = {
@@ -78,6 +78,7 @@ export default function OutOfSchoolYouth() {
     <ScrollScenes>
       <SEO {...getPageSeo("/programs/out-of-school-youth")} />
       <ProgrammeHero
+        share={{ url: buildCanonicalUrl("/programs/out-of-school-youth"), title: "ERA AXIS Out-of-School Youth" }}
         eyebrow="Out-of-School Youth"
         title="Practical tech skills for young people ready to build."
         line="Hands-on training, real tools and community projects. Start where you are."

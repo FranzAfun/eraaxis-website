@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import devBoardImg from "../../assets/images/dev-board/dev-board-main-640.webp";
 import Reveal from "../motion/Reveal";
+import { ShareButton } from "../ui/Share";
 
 /**
  * The pieces every programme page shares: the hero, the tiles of what
@@ -11,21 +12,28 @@ import Reveal from "../motion/Reveal";
 
 const BLANK = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
 
+// `share` ({ url, title }) puts a Share button at the top right, on the line
+// with "Back to programmes": the share menu, never a row of social icons.
 // `price` (from getProgrammePrice) shows large under the opening line, so the
 // cost is plain before anyone scrolls; a programme not open yet shows its
 // badge ("Coming soon") there instead, just as large.
-export function ProgrammeHero({ eyebrow, title, line, price, glance, image, imageSrcSet, imageAlt, imageClass = "", badge, actions, back = true }) {
+export function ProgrammeHero({ eyebrow, title, line, price, glance, image, imageSrcSet, imageAlt, imageClass = "", badge, actions, back = true, share = null }) {
   return (
     <section className={`dark-surface hero-ground relative -mt-20 overflow-hidden pb-16 text-white md:pb-24 ${back ? "pt-32 md:pt-40" : "pt-36 md:pt-44"}`}>
       <div className="land-in container relative z-10">
-        {back && (
-          <Link
-            to="/programs"
-            className="mb-8 flex w-fit items-center gap-1.5 text-xs font-medium text-[var(--color-text-on-dark-muted)] transition-colors hover:text-white"
-          >
-            <ArrowLeft size={12} strokeWidth={2.5} aria-hidden="true" />
-            Back to programmes
-          </Link>
+        {(back || share) && (
+          <div className="mb-8 flex items-center justify-between gap-4">
+            {back ? (
+              <Link
+                to="/programs"
+                className="flex w-fit items-center gap-1.5 text-xs font-medium text-[var(--color-text-on-dark-muted)] transition-colors hover:text-white"
+              >
+                <ArrowLeft size={12} strokeWidth={2.5} aria-hidden="true" />
+                Back to programmes
+              </Link>
+            ) : <span />}
+            {share && <ShareButton url={share.url} title={share.title} label="Share" className="z-20" />}
+          </div>
         )}
         <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
           <div data-scene="hero-exit">

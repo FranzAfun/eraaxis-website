@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import {
   DEFAULT_DESCRIPTION,
   DEFAULT_IMAGE,
+  DEFAULT_IMAGE_ALT,
   DEFAULT_TITLE,
   buildCanonicalUrl,
   getSiteUrl,
@@ -39,6 +40,7 @@ export default function SEO({
   description = DEFAULT_DESCRIPTION,
   type = "website",
   image = DEFAULT_IMAGE,
+  imageAlt = DEFAULT_IMAGE_ALT,
   pathname,
   noindex = false,
 }) {
@@ -134,11 +136,14 @@ export default function SEO({
           name: "twitter:image",
         });
       ensuredTwitterImageMeta.setAttribute("content", resolvedImage);
+
+      getOrCreateMeta('meta[property="og:image:alt"]', { property: "og:image:alt" })
+        .setAttribute("content", imageAlt || DEFAULT_IMAGE_ALT);
     } else {
       ogImageMeta?.remove();
       twitterImageMeta?.remove();
     }
-  }, [description, image, location.pathname, noindex, pathname, title, type]);
+  }, [description, image, imageAlt, location.pathname, noindex, pathname, title, type]);
 
   return null;
 }
