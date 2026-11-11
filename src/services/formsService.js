@@ -53,7 +53,25 @@ export async function searchSignupSchools(query, { tertiaryOnly = false } = {}) 
   return body?.data?.items || [];
 }
 
-export const searchChapterSchools = (query) => searchSignupSchools(query, { tertiaryOnly: true });
+export const searchTertiarySchools = (query) => searchSignupSchools(query, { tertiaryOnly: true });
+
+/**
+ * The schools where an ERA AXIS Campus Chapter is established (EDOS, Website >
+ * Campus Chapters): `{ items, established }`, `established` being how many are
+ * open anywhere.
+ */
+export async function findChapterSchools(query) {
+  const params = new URLSearchParams({ q: query || "" });
+  const body = await api.get(`/campus-chapters/schools?${params}`);
+  return { items: body?.data?.items || [], established: body?.data?.established ?? 0 };
+}
+
+export const searchChapterSchools = async (query) => (await findChapterSchools(query)).items;
+
+/** "Bring a chapter to my school", from the chapter page. */
+export function requestCampusChapter(payload) {
+  return api.post("/campus-chapters/requests", payload);
+}
 
 /** Communities ERA AXIS has recorded, for a form's community question. */
 export async function searchFormCommunities(slug, questionKey, query) {

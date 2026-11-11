@@ -24,7 +24,9 @@ const UNLISTED_LEVELS = [
 /**
  * `searchSchools` replaces the form's own school list (the sign-up pages search
  * every register); `askLevel` asks the kind of school when it is not listed.
- * The chosen school carries its level.
+ * The chosen school carries its level. `onNotListed` hands "My school is not
+ * listed" to the page instead of a typing box (the Campus Chapter page offers
+ * a request for a chapter there).
  */
 /**
  * The list as options, with the school already chosen at the top, so reopening
@@ -41,8 +43,8 @@ function withChoiceFirst(results, value) {
   return [chosen, ...options.filter((option) => option.value !== value.schoolId)];
 }
 
-export default function SchoolPicker({ slug, question, value, onChange, fieldClass, invalid, describedBy, searchSchools, askLevel = false, unlistedLevel = "", placeholder = "Choose your school" }) {
-  const allowOther = question.school?.allowOther !== false;
+export default function SchoolPicker({ slug, question, value, onChange, fieldClass, invalid, describedBy, searchSchools, askLevel = false, unlistedLevel = "", placeholder = "Choose your school", onNotListed = null, emptyText = "No school matches that." }) {
+  const allowOther = question.school?.allowOther !== false && !onNotListed;
   const [results, setResults] = useState([]);
   const [searching, setSearching] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -146,7 +148,7 @@ export default function SchoolPicker({ slug, question, value, onChange, fieldCla
           ? allowOther
             ? "The list couldn't be reached just now. You can type your school instead."
             : "The list couldn't be reached just now. Please try again in a moment."
-          : "No school matches that."
+          : emptyText
       }
       aria-invalid={invalid || undefined}
       aria-describedby={describedBy}
@@ -155,11 +157,15 @@ export default function SchoolPicker({ slug, question, value, onChange, fieldCla
         onChange(event.target.value ? { schoolId: event.target.value, name: school?.name || "", level: school?.level || "" } : null);
       }}
       footer={
-        allowOther ? (
+        allowOther || onNotListed ? (
           <button
             type="button"
             className="w-full rounded-[calc(var(--radius-sm)-2px)] px-3 py-2.5 text-left text-sm font-semibold text-[var(--color-primary)] hover:bg-[var(--color-surface-soft)]"
             onClick={() => {
+              if (onNotListed) {
+                onNotListed();
+                return;
+              }
               setTyping(true);
               onChange(null);
             }}

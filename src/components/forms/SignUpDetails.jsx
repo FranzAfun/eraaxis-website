@@ -22,7 +22,9 @@ const WHO = [
 ];
 
 /** `part`: "who" for the choice alone, "details" for the rest, or both. */
-export default function SignUpDetails({ value, onChange, schoolRequired = false, tertiaryOnly = false, fieldCls, labelCls, optionalTag, part = "all" }) {
+// `onSchoolNotListed` (Campus Chapters): the school list holds only schools with a
+// chapter, and "My school is not listed" opens the page's request form instead.
+export default function SignUpDetails({ value, onChange, schoolRequired = false, tertiaryOnly = false, fieldCls, labelCls, optionalTag, part = "all", onSchoolNotListed = null }) {
   const set = (patch) => onChange({ ...value, ...patch });
   const setGuardian = (patch) => set({ guardian: { ...value.guardian, ...patch } });
   const setOrganisation = (patch) => set({ organisation: { ...value.organisation, ...patch } });
@@ -53,6 +55,8 @@ export default function SignUpDetails({ value, onChange, schoolRequired = false,
             searchSchools={tertiaryOnly ? searchChapterSchools : searchSignupSchools}
             askLevel={!tertiaryOnly}
             unlistedLevel={tertiaryOnly ? "tertiary" : ""}
+            onNotListed={onSchoolNotListed}
+            emptyText={onSchoolNotListed ? "No Campus Chapter at a school by that name yet." : undefined}
             placeholder={value.who === "learner" ? "Choose your school" : "Choose the learner's school"}
             value={value.school}
             onChange={(school) => set({ school })}

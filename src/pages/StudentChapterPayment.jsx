@@ -1,5 +1,9 @@
-import { useState } from "react";
-import { Check } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Check, Sparkles } from "lucide-react";
+import chapterPhoto from "../assets/images/programmes/campus-chapter.webp";
+import chapterPhoto768 from "../assets/images/programmes/campus-chapter-768.webp";
+import ChapterRequestForm from "../components/forms/ChapterRequestForm";
+import { findChapterSchools } from "../services/formsService";
 import { getPaymentCategoryBySlug, calculatePaymentBreakdown } from "../data/payments";
 import { api, ApiError } from "../services/api";
 import FormPageHeader, { FormAside } from "../components/forms/FormPageHeader";
@@ -31,6 +35,20 @@ const BENEFITS = [
 
 const optionalTag = <span className={optionalCls}>(optional)</span>;
 
+// The chapter page's face: members at work on a build.
+const PHOTO = (
+  <div className="relative overflow-hidden rounded-[var(--radius-md)] shadow-[0_24px_60px_-30px_var(--color-primary)]">
+    <img
+      src={chapterPhoto}
+      srcSet={`${chapterPhoto768} 768w, ${chapterPhoto} 1448w`}
+      sizes="(min-width: 1024px) 416px, calc(100vw - 2rem)"
+      alt="ERA AXIS Campus Chapter members building an electronics project around a laptop"
+      className="h-52 w-full object-cover sm:h-64 lg:aspect-[4/3] lg:h-auto"
+      fetchPriority="high"
+    />
+  </div>
+);
+
 export default function StudentChapterPayment() {
   const { feeConfig } = useSpesoFees();
   const breakdown = calculatePaymentBreakdown(item.baseAmount, feeConfig);
@@ -45,6 +63,19 @@ export default function StudentChapterPayment() {
   const [step, setStep] = useState(0);
   const checkout = useSignUpCheckout();
   const self = !signUp.who || signUp.who === "learner";
+  // Sign-up opens only at schools where a chapter is established; until one
+  // is, and for anyone whose school is not listed, the page asks for a chapter
+  // instead, in place of the form (no leaving the page).
+  const [established, setEstablished] = useState(null);
+  const [requesting, setRequesting] = useState(false);
+  useEffect(() => {
+    let live = true;
+    findChapterSchools("")
+      .then((result) => { if (live) setEstablished(result.established); })
+      .catch(() => { if (live) setEstablished(-1); }); // unknown: keep the sign-up
+    return () => { live = false; };
+  }, []);
+  const askForChapter = established === 0 || requesting;
 
   function finish() {
     checkout.start({
@@ -100,7 +131,7 @@ export default function StudentChapterPayment() {
               <input id="signup-other-names" type="text" placeholder="Ama" className={fieldCls} value={otherNames} onChange={(e) => setOtherNames(e.target.value)} />
             </div>
           </div>
-          <SignUpDetails part="details" value={signUp} onChange={setSignUp} schoolRequired tertiaryOnly fieldCls={fieldCls} labelCls={labelCls} optionalTag={optionalTag} />
+          <SignUpDetails part="details" value={signUp} onChange={setSignUp} schoolRequired tertiaryOnly onSchoolNotListed={() => setRequesting(true)} fieldCls={fieldCls} labelCls={labelCls} optionalTag={optionalTag} />
           <div className="space-y-6 border-t border-[var(--color-border)] pt-6">
             <p className="text-sm font-semibold text-[var(--color-text-secondary)]">Optional · helps us prepare for {self ? "you" : "them"}</p>
             <div className="sm:max-w-[50%] sm:pr-3">
@@ -168,7 +199,16 @@ export default function StudentChapterPayment() {
             eyebrow="Campus Chapter"
             title="Join ERA AXIS Campus Chapters."
             line="An ERA AXIS learning and innovation network on campuses. Learn by building, with 12 months of membership for GHS 200."
-          />
+            media={PHOTO}
+          >
+            <p className="mt-4 flex max-w-2xl flex-wrap items-center gap-x-2.5 gap-y-1.5 text-[15px] text-[var(--color-text-secondary)]">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--color-primary)] px-3 py-1 text-xs font-bold uppercase tracking-widest text-white">
+                <Sparkles size={13} strokeWidth={2.2} aria-hidden="true" />
+                Purple Innovators
+              </span>
+              Every Campus Chapter member is a Purple Innovator.
+            </p>
+          </FormPageHeader>
           <FormAside title="What membership includes" items={BENEFITS} Icon={Check} className="mb-6 lg:hidden" />
           <div className="land-in-late grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
             <div className="min-w-0">
@@ -185,6 +225,14 @@ export default function StudentChapterPayment() {
                   {checkout.busy && (
                     <p className="text-[15px] text-[var(--color-text-secondary)]"><BusyLabel>Opening checkout…</BusyLabel></p>
                   )}
+                </div>
+              ) : askForChapter ? (
+                <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white p-6 shadow-sm sm:p-8 md:p-10">
+                  <ChapterRequestForm
+                    standalone={established === 0}
+                    initial={{ fullName: [firstName, lastName].filter((part) => part.trim()).join(" "), email, phone }}
+                    onBack={established === 0 ? null : () => setRequesting(false)}
+                  />
                 </div>
               ) : (
                 <div className="rounded-[var(--radius-md)] border border-[var(--color-border)] bg-white p-6 shadow-sm sm:p-8 md:p-10">
